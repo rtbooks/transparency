@@ -10,17 +10,27 @@ interface DashboardPageProps {
 export default async function OrganizationDashboard({
   params,
 }: DashboardPageProps) {
-  const { userId } = await auth();
+  const { userId: clerkUserId } = await auth();
 
-  if (!userId) {
+  if (!clerkUserId) {
     redirect('/login');
   }
 
+  // First, find the user in our database by their Clerk auth ID
+  const user = await prisma.user.findUnique({
+    where: { authId: clerkUserId },
+  });
+
+  if (!user) {
+    redirect('/profile'); // Will create user record
+  }
+
+  // Now find the organization and check if user has access
   const organization = await prisma.organization.findUnique({
     where: { slug: params.slug },
     include: {
       organizationUsers: {
-        where: { clerkUserId: userId },
+        where: { userId: user.id },
       },
     },
   });
