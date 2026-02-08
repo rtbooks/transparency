@@ -235,6 +235,7 @@ export type OrganizationWhereInput = {
   plannedPurchases?: Prisma.PlannedPurchaseListRelationFilter
   organizationUsers?: Prisma.OrganizationUserListRelationFilter
   bankAccounts?: Prisma.BankAccountListRelationFilter
+  invitations?: Prisma.InvitationListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -254,6 +255,7 @@ export type OrganizationOrderByWithRelationInput = {
   plannedPurchases?: Prisma.PlannedPurchaseOrderByRelationAggregateInput
   organizationUsers?: Prisma.OrganizationUserOrderByRelationAggregateInput
   bankAccounts?: Prisma.BankAccountOrderByRelationAggregateInput
+  invitations?: Prisma.InvitationOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -276,6 +278,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   plannedPurchases?: Prisma.PlannedPurchaseListRelationFilter
   organizationUsers?: Prisma.OrganizationUserListRelationFilter
   bankAccounts?: Prisma.BankAccountListRelationFilter
+  invitations?: Prisma.InvitationListRelationFilter
 }, "id" | "slug">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -329,6 +332,7 @@ export type OrganizationCreateInput = {
   plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -348,6 +352,7 @@ export type OrganizationUncheckedCreateInput = {
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
@@ -367,6 +372,7 @@ export type OrganizationUpdateInput = {
   plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -386,6 +392,7 @@ export type OrganizationUncheckedUpdateInput = {
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -567,6 +574,20 @@ export type OrganizationUpdateOneRequiredWithoutBankAccountsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutBankAccountsInput, Prisma.OrganizationUpdateWithoutBankAccountsInput>, Prisma.OrganizationUncheckedUpdateWithoutBankAccountsInput>
 }
 
+export type OrganizationCreateNestedOneWithoutInvitationsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutInvitationsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutInvitationsInput
+  upsert?: Prisma.OrganizationUpsertWithoutInvitationsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutInvitationsInput, Prisma.OrganizationUpdateWithoutInvitationsInput>, Prisma.OrganizationUncheckedUpdateWithoutInvitationsInput>
+}
+
 export type OrganizationCreateWithoutOrganizationUsersInput = {
   id?: string
   name: string
@@ -583,6 +604,7 @@ export type OrganizationCreateWithoutOrganizationUsersInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutOrganizationUsersInput = {
@@ -601,6 +623,7 @@ export type OrganizationUncheckedCreateWithoutOrganizationUsersInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutOrganizationUsersInput = {
@@ -635,6 +658,7 @@ export type OrganizationUpdateWithoutOrganizationUsersInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutOrganizationUsersInput = {
@@ -653,6 +677,7 @@ export type OrganizationUncheckedUpdateWithoutOrganizationUsersInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutAccountsInput = {
@@ -671,6 +696,7 @@ export type OrganizationCreateWithoutAccountsInput = {
   plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutAccountsInput = {
@@ -689,6 +715,7 @@ export type OrganizationUncheckedCreateWithoutAccountsInput = {
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutAccountsInput = {
@@ -723,6 +750,7 @@ export type OrganizationUpdateWithoutAccountsInput = {
   plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutAccountsInput = {
@@ -741,6 +769,7 @@ export type OrganizationUncheckedUpdateWithoutAccountsInput = {
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutTransactionsInput = {
@@ -759,6 +788,7 @@ export type OrganizationCreateWithoutTransactionsInput = {
   plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutTransactionsInput = {
@@ -777,6 +807,7 @@ export type OrganizationUncheckedCreateWithoutTransactionsInput = {
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutTransactionsInput = {
@@ -811,6 +842,7 @@ export type OrganizationUpdateWithoutTransactionsInput = {
   plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutTransactionsInput = {
@@ -829,6 +861,7 @@ export type OrganizationUncheckedUpdateWithoutTransactionsInput = {
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutPlannedPurchasesInput = {
@@ -847,6 +880,7 @@ export type OrganizationCreateWithoutPlannedPurchasesInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutPlannedPurchasesInput = {
@@ -865,6 +899,7 @@ export type OrganizationUncheckedCreateWithoutPlannedPurchasesInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutPlannedPurchasesInput = {
@@ -899,6 +934,7 @@ export type OrganizationUpdateWithoutPlannedPurchasesInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutPlannedPurchasesInput = {
@@ -917,6 +953,7 @@ export type OrganizationUncheckedUpdateWithoutPlannedPurchasesInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutBankAccountsInput = {
@@ -935,6 +972,7 @@ export type OrganizationCreateWithoutBankAccountsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutBankAccountsInput = {
@@ -953,6 +991,7 @@ export type OrganizationUncheckedCreateWithoutBankAccountsInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutBankAccountsInput = {
@@ -987,6 +1026,7 @@ export type OrganizationUpdateWithoutBankAccountsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutBankAccountsInput = {
@@ -1005,6 +1045,99 @@ export type OrganizationUncheckedUpdateWithoutBankAccountsInput = {
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutInvitationsInput = {
+  id?: string
+  name: string
+  slug: string
+  ein?: string | null
+  mission?: string | null
+  logoUrl?: string | null
+  fiscalYearStart?: Date | string
+  status?: $Enums.OrganizationStatus
+  subscriptionTier?: $Enums.SubscriptionTier
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
+  plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
+  organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutInvitationsInput = {
+  id?: string
+  name: string
+  slug: string
+  ein?: string | null
+  mission?: string | null
+  logoUrl?: string | null
+  fiscalYearStart?: Date | string
+  status?: $Enums.OrganizationStatus
+  subscriptionTier?: $Enums.SubscriptionTier
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutInvitationsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
+}
+
+export type OrganizationUpsertWithoutInvitationsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutInvitationsInput, Prisma.OrganizationUncheckedUpdateWithoutInvitationsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutInvitationsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutInvitationsInput, Prisma.OrganizationUncheckedUpdateWithoutInvitationsInput>
+}
+
+export type OrganizationUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
+  plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
+  organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 
@@ -1018,6 +1151,7 @@ export type OrganizationCountOutputType = {
   plannedPurchases: number
   organizationUsers: number
   bankAccounts: number
+  invitations: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1026,6 +1160,7 @@ export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   plannedPurchases?: boolean | OrganizationCountOutputTypeCountPlannedPurchasesArgs
   organizationUsers?: boolean | OrganizationCountOutputTypeCountOrganizationUsersArgs
   bankAccounts?: boolean | OrganizationCountOutputTypeCountBankAccountsArgs
+  invitations?: boolean | OrganizationCountOutputTypeCountInvitationsArgs
 }
 
 /**
@@ -1073,6 +1208,13 @@ export type OrganizationCountOutputTypeCountBankAccountsArgs<ExtArgs extends run
   where?: Prisma.BankAccountWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvitationWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1091,6 +1233,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   plannedPurchases?: boolean | Prisma.Organization$plannedPurchasesArgs<ExtArgs>
   organizationUsers?: boolean | Prisma.Organization$organizationUsersArgs<ExtArgs>
   bankAccounts?: boolean | Prisma.Organization$bankAccountsArgs<ExtArgs>
+  invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -1143,6 +1286,7 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   plannedPurchases?: boolean | Prisma.Organization$plannedPurchasesArgs<ExtArgs>
   organizationUsers?: boolean | Prisma.Organization$organizationUsersArgs<ExtArgs>
   bankAccounts?: boolean | Prisma.Organization$bankAccountsArgs<ExtArgs>
+  invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1156,6 +1300,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     plannedPurchases: Prisma.$PlannedPurchasePayload<ExtArgs>[]
     organizationUsers: Prisma.$OrganizationUserPayload<ExtArgs>[]
     bankAccounts: Prisma.$BankAccountPayload<ExtArgs>[]
+    invitations: Prisma.$InvitationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1568,6 +1713,7 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   plannedPurchases<T extends Prisma.Organization$plannedPurchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$plannedPurchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlannedPurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   organizationUsers<T extends Prisma.Organization$organizationUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$organizationUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bankAccounts<T extends Prisma.Organization$bankAccountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$bankAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invitations<T extends Prisma.Organization$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2113,6 +2259,30 @@ export type Organization$bankAccountsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.BankAccountScalarFieldEnum | Prisma.BankAccountScalarFieldEnum[]
+}
+
+/**
+ * Organization.invitations
+ */
+export type Organization$invitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invitation
+   */
+  select?: Prisma.InvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invitation
+   */
+  omit?: Prisma.InvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvitationInclude<ExtArgs> | null
+  where?: Prisma.InvitationWhereInput
+  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[]
+  cursor?: Prisma.InvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
 }
 
 /**

@@ -95,19 +95,11 @@ export function UserList({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Team Members</h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Manage who has access to your organization
-          </p>
-        </div>
-        {currentUserRole === 'ORG_ADMIN' || currentUserRole === 'PLATFORM_ADMIN' ? (
-          <Button>
-            <UserPlus className="mr-2 h-4 w-4" />
-            Invite User
-          </Button>
-        ) : null}
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900">Team Members</h2>
+        <p className="text-sm text-gray-600 mt-1">
+          Manage who has access to your organization
+        </p>
       </div>
 
       <div className="rounded-md border">

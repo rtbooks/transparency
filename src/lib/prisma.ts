@@ -1,6 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/generated/prisma/client";
 
 const { Pool } = pg;
 

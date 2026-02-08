@@ -84,3 +84,8 @@ export type BankAccount = Prisma.BankAccountModel
  * 
  */
 export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model Invitation
+ * 
+ */
+export type Invitation = Prisma.InvitationModel

@@ -1,10 +1,9 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import { UserList } from '@/components/users/UserList';
+import { UsersPageClient } from './UsersPageClient';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
 
 interface UsersPageProps {
   params: Promise<{ slug: string }>;
@@ -73,6 +72,25 @@ export default async function UsersPage({ params }: UsersPageProps) {
     },
   });
 
+  // Fetch pending invitations
+  const pendingInvitations = await prisma.invitation.findMany({
+    where: {
+      organizationId: organization.id,
+      status: 'PENDING',
+    },
+    include: {
+      invitedBy: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
   // Serialize the data to convert Decimal to number for client component
   const serializedUsers = organizationUsers.map((orgUser) => ({
     ...orgUser,
@@ -82,27 +100,29 @@ export default async function UsersPage({ params }: UsersPageProps) {
     },
   }));
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-6">
-          <Link href={`/org/${slug}/dashboard`}>
-            <Button variant="ghost" size="sm">
-              <ChevronLeft className="mr-1 h-4 w-4" />
-              Back to Dashboard
-            </Button>
-          </Link>
-        </div>
+  // Serialize invitations
+  const serializedInvitations = pendingInvitations.map((inv) => ({
+    id: inv.id,
+    email: inv.email,
+    role: inv.role,
+    token: inv.token,
+    status: inv.status,
+    invitedBy: inv.invitedBy,
+    expiresAt: inv.expiresAt.toISOString(),
+    createdAt: inv.createdAt.toISOString(),
+  }));
 
-        <div className="rounded-lg bg-white p-6 shadow">
-          <UserList
-            organizationId={organization.id}
-            organizationSlug={slug}
-            users={serializedUsers}
-            currentUserRole={userAccess.role}
-          />
-        </div>
-      </div>
-    </div>
+  const canManageUsers = userAccess.role === 'ORG_ADMIN' || userAccess.role === 'PLATFORM_ADMIN';
+
+  return (
+    <UsersPageClient
+      slug={slug}
+      organizationName={organization.name}
+      users={serializedUsers}
+      organizationId={organization.id}
+      canManageUsers={canManageUsers}
+      currentUserRole={userAccess.role}
+      pendingInvitations={serializedInvitations}
+    />
   );
 }

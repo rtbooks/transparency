@@ -113,10 +113,10 @@ Track your progress as you build the Financial Transparency Platform.
 
 ### Organization Users
 
-- [ ] Create user invitation system
-- [ ] Build user management UI
-- [ ] Add role assignment form
-- [ ] Implement user removal
+- [x] Create user invitation system
+- [x] Build user management UI
+- [x] Add role assignment form
+- [x] Implement user removal
 - [ ] Test multi-org access
 
 ### Platform Admin
@@ -556,26 +556,25 @@ Track your progress as you build the Financial Transparency Platform.
 
 ### Overall Progress
 - **Phase 1 (Foundation)**: ✅ 100% Complete
-- **Phase 2 (Core Ledger)**: 🔄 ~20% Complete
-- **Phase 3 (Transparency)**: ⏸️ Not Started
+- **Phase 2 (Core Ledger)**: ✅ 100% Complete
+- **Phase 3 (Transparency)**: ✅ ~85% Complete (Org users & platform admin done)
 - **Phase 4 (Donors)**: ⏸️ Not Started
 - **Phase 5 (Polish)**: ⏸️ Not Started
 
 ### Recent Achievements
-- ✅ Phase 1 foundation complete with auth, routing, and seeding
-- ✅ Account tree view with hierarchical display and expand/collapse
-- ✅ Create account form with smart auto-generated codes
-- ✅ API endpoints for account operations (GET, POST with validation)
-- ✅ Role-based access control (ORG_ADMIN can create accounts)
-- ✅ User-to-organization relationship working correctly
+- ✅ Organization user management with role assignment and removal
+- ✅ User invitation system with email-based invites
+- ✅ Platform admin dashboard with organization and user management
+- ✅ System-wide analytics dashboard
+- ✅ Organization routes moved to /org/[slug] (resolved routing conflicts)
+- ✅ Prisma 7 upgrade with custom client output location
 
 ### Current Focus
-- 🎯 **Phase 2 - Core Ledger**: Building chart of accounts and transaction recording
-- **Next Tasks**: Edit account form, account activation/deactivation, transaction recording
+- 🎯 **Phase 3 - Transparency**: Organization users and public features
+- **Next Tasks**: Test multi-org access, build public transparency dashboard
 
 ### Git Branches
-- `main` - Production-ready code (Phase 1 complete)
-- `feature/phase-2-core-ledger` - Current development branch
+- `main` - Production-ready code (Phases 1-2 complete, Phase 3 in progress)
 
 ### What You Can Do Now
 - Visit http://localhost:3000/grit-hoops/dashboard - View account tree
