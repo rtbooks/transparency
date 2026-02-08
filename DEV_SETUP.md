@@ -1,0 +1,284 @@
+# Development Environment Setup Guide
+
+Quick reference for getting the development environment running.
+
+## 🚀 Quick Start (Devcontainer - Recommended)
+
+**Prerequisites**: Docker Desktop + VS Code with Dev Containers extension
+
+1. **Open in VS Code**
+   ```bash
+   code /home/hayep/code/transparency
+   ```
+
+2. **Reopen in Container**
+   - VS Code will prompt: "Reopen in Container"
+   - Click the button and wait (~5-10 minutes first time)
+
+3. **Start developing**
+   ```bash
+   npm run dev
+   ```
+
+Done! Everything is automatically set up. ✨
+
+## 📋 What You Get
+
+- ✅ Node.js 20
+- ✅ PostgreSQL 16 (running and configured)
+- ✅ Next.js project initialized
+- ✅ All dependencies installed
+- ✅ Prisma configured
+- ✅ Database schema synced
+- ✅ VS Code extensions installed
+- ✅ Linting & formatting configured
+
+## 🔧 Manual Setup (Alternative)
+
+If you prefer not to use devcontainers:
+
+### 1. Install Prerequisites
+
+```bash
+# Node.js 20+
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# PostgreSQL 14+
+sudo apt install postgresql postgresql-contrib
+
+# Start PostgreSQL
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+```
+
+### 2. Create Database
+
+```bash
+sudo -u postgres createdb transparency_dev
+sudo -u postgres psql -c "CREATE USER transparency WITH PASSWORD 'your_password';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE transparency_dev TO transparency;"
+```
+
+### 3. Initialize Project
+
+```bash
+cd /home/hayep/code/transparency
+
+# Create Next.js project
+npx create-next-app@latest transparency-platform \
+  --typescript --tailwind --app --src-dir --import-alias "@/*"
+
+cd transparency-platform
+
+# Install dependencies
+npm install prisma @prisma/client @clerk/nextjs stripe zod \
+  react-hook-form @hookform/resolvers date-fns recharts
+
+# Initialize Prisma
+npx prisma init
+
+# Copy schema
+cp ../schema.prisma prisma/schema.prisma
+
+# Generate Prisma Client
+npx prisma generate
+```
+
+### 4. Configure Environment
+
+```bash
+# Copy example env file
+cp ../.env.example .env.local
+
+# Edit .env.local with your credentials
+nano .env.local
+```
+
+### 5. Initialize Database
+
+```bash
+# Push schema to database
+npx prisma db push
+
+# Seed with sample data
+npx prisma db seed
+```
+
+### 6. Start Development
+
+```bash
+npm run dev
+```
+
+## 🔑 Required API Keys
+
+You'll need accounts and API keys from:
+
+### 1. Clerk (Authentication)
+- Sign up: https://clerk.com
+- Create application
+- Copy keys to `.env.local`:
+  - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+  - `CLERK_SECRET_KEY`
+
+### 2. Stripe (Payments)
+- Sign up: https://stripe.com
+- Get test API keys: https://dashboard.stripe.com/test/apikeys
+- Copy keys to `.env.local`:
+  - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+  - `STRIPE_SECRET_KEY`
+
+### 3. Cloudflare R2 (File Storage) - Optional for MVP
+- Sign up: https://cloudflare.com
+- Create R2 bucket
+- Copy credentials to `.env.local`
+
+## 📍 Port Reference
+
+| Port | Service | URL |
+|------|---------|-----|
+| 3000 | Next.js | http://localhost:3000 |
+| 5432 | PostgreSQL | postgresql://localhost:5432 |
+| 5555 | Prisma Studio | http://localhost:5555 |
+
+## 🛠️ Daily Workflow
+
+```bash
+# Start development server
+npm run dev
+
+# Open database GUI in another terminal
+npm run db:studio
+
+# Optional: Listen for Stripe webhooks (requires Stripe CLI)
+npm run stripe:listen
+```
+
+## 📦 Useful Commands
+
+```bash
+# Development
+npm run dev              # Start dev server
+npm run build            # Build for production
+npm run start            # Start production server
+npm run lint             # Lint code
+
+# Database
+npm run db:push          # Push schema changes
+npm run db:seed          # Seed with data
+npm run db:studio        # Open Prisma Studio
+npm run db:reset         # Reset database (⚠️ deletes data)
+
+# Prisma
+npx prisma generate      # Generate Prisma Client
+npx prisma migrate dev   # Create migration
+npx prisma studio        # Open database GUI
+```
+
+## 🐛 Troubleshooting
+
+### Devcontainer Issues
+
+**Container won't start:**
+```bash
+# Rebuild container
+# In VS Code: Cmd+Shift+P → "Dev Containers: Rebuild Container"
+```
+
+**Database connection failed:**
+```bash
+# Check PostgreSQL is running
+docker-compose -f .devcontainer/docker-compose.yml ps
+
+# Restart database
+docker-compose -f .devcontainer/docker-compose.yml restart db
+```
+
+### Manual Setup Issues
+
+**PostgreSQL connection refused:**
+```bash
+# Check PostgreSQL is running
+sudo systemctl status postgresql
+
+# Restart PostgreSQL
+sudo systemctl restart postgresql
+```
+
+**Prisma Client out of sync:**
+```bash
+# Regenerate Prisma Client
+npx prisma generate
+```
+
+**Port 3000 already in use:**
+```bash
+# Find process using port 3000
+lsof -i :3000
+
+# Kill process (replace PID)
+kill -9 <PID>
+
+# Or run on different port
+PORT=3001 npm run dev
+```
+
+**npm install fails:**
+```bash
+# Clear npm cache
+npm cache clean --force
+
+# Delete node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+## 🔄 Updating Dependencies
+
+```bash
+# Check for outdated packages
+npm outdated
+
+# Update all packages
+npm update
+
+# Update to latest (use with caution)
+npx npm-check-updates -u
+npm install
+```
+
+## 🧹 Cleanup
+
+**Reset everything (devcontainer):**
+```bash
+# Remove containers and volumes
+docker-compose -f .devcontainer/docker-compose.yml down -v
+
+# Rebuild in VS Code
+# Cmd+Shift+P → "Dev Containers: Rebuild Container"
+```
+
+**Reset database only:**
+```bash
+npm run db:reset
+```
+
+## 📚 Additional Resources
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [Clerk Documentation](https://clerk.com/docs)
+- [Stripe Documentation](https://stripe.com/docs)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [Shadcn/ui](https://ui.shadcn.com)
+
+## 🆘 Need Help?
+
+- Check [.devcontainer/README.md](.devcontainer/README.md) for detailed devcontainer info
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines
+- See [QUICKSTART.md](QUICKSTART.md) for step-by-step setup
+
+---
+
+**Tip**: Using the devcontainer is highly recommended for the smoothest experience! 🎯

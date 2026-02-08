@@ -1,0 +1,131 @@
+{
+  "name": "Financial Transparency Platform",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+
+  // Configure tool-specific properties
+  "customizations": {
+    "vscode": {
+      // VS Code extensions to install automatically
+      "extensions": [
+        // Essential
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        
+        // TypeScript & React
+        "ms-vscode.vscode-typescript-next",
+        "dsznajder.es7-react-js-snippets",
+        
+        // Database
+        "Prisma.prisma",
+        "ckolkman.vscode-postgres",
+        
+        // Git
+        "eamodio.gitlens",
+        
+        // Tools
+        "yoavbls.pretty-ts-errors",
+        "wix.vscode-import-cost",
+        "christian-kohler.path-intellisense",
+        "formulahendry.auto-rename-tag",
+        
+        // Markdown
+        "yzhang.markdown-all-in-one",
+        
+        // Docker
+        "ms-azuretools.vscode-docker",
+        
+        // Testing
+        "vitest.explorer"
+      ],
+      
+      // VS Code settings
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit",
+          "source.organizeImports": "explicit"
+        },
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true,
+        "tailwindCSS.experimental.classRegex": [
+          ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+          ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+        ],
+        "[prisma]": {
+          "editor.defaultFormatter": "Prisma.prisma"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "files.exclude": {
+          "**/.git": true,
+          "**/.DS_Store": true,
+          "**/node_modules": true,
+          "**/.next": true
+        },
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/package-lock.json": true,
+          "**/.next": true,
+          "**/build": true,
+          "**/dist": true
+        }
+      }
+    }
+  },
+
+  // Features to install
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    }
+  },
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally
+  "forwardPorts": [3000, 5432, 5555],
+  
+  // Port labels
+  "portsAttributes": {
+    "3000": {
+      "label": "Next.js App",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "5555": {
+      "label": "Prisma Studio",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // Run commands after the container is created
+  "postCreateCommand": "bash /workspace/.devcontainer/post-create.sh",
+
+  // Run commands when container starts
+  "postStartCommand": "bash /workspace/.devcontainer/post-start.sh",
+
+  // Keep container running for persistent development
+  "overrideCommand": true,
+
+  // Comment out to connect as root instead
+  "remoteUser": "node",
+
+  // Environment variables
+  "remoteEnv": {
+    "DATABASE_URL": "postgresql://transparency:devpassword@db:5432/transparency_dev",
+    "NODE_ENV": "development"
+  }
+}

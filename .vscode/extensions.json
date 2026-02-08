@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "Prisma.prisma",
+    "ms-vscode-remote.remote-containers",
+    "eamodio.gitlens",
+    "yoavbls.pretty-ts-errors",
+    "christian-kohler.path-intellisense",
+    "formulahendry.auto-rename-tag",
+    "yzhang.markdown-all-in-one"
+  ]
+}
