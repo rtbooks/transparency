@@ -89,8 +89,17 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/node:1": {
       "version": "20"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": false
     }
   },
+
+  // Mount git config from host
+  "mounts": [
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached"
+  ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally
   "forwardPorts": [3000, 5432, 5555],
