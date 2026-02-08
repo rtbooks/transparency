@@ -56,11 +56,15 @@ export async function GET(
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // Fetch all accounts for the organization
+    // Check query parameter for including inactive accounts
+    const { searchParams } = new URL(request.url);
+    const includeInactive = searchParams.get('includeInactive') === 'true';
+
+    // Fetch accounts for the organization
     const accounts = await prisma.account.findMany({
       where: {
         organizationId: organization.id,
-        isActive: true,
+        ...(includeInactive ? {} : { isActive: true }),
       },
       orderBy: [{ code: 'asc' }],
     });
