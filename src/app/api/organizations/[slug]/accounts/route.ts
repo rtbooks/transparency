@@ -7,10 +7,22 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId: clerkUserId } = await auth();
 
-    if (!userId) {
+    if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // First, find the user in our database by their Clerk auth ID
+    const user = await prisma.user.findUnique({
+      where: { authId: clerkUserId },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found in database' },
+        { status: 404 }
+      );
     }
 
     // Find organization by slug
@@ -18,7 +30,7 @@ export async function GET(
       where: { slug: params.slug },
       include: {
         organizationUsers: {
-          where: { clerkUserId: userId },
+          where: { userId: user.id },
         },
       },
     });
