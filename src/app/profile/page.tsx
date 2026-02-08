@@ -81,7 +81,7 @@ export default async function ProfilePage() {
               {dbUser.organizations.map((orgUser) => (
                 <li key={orgUser.id}>
                   <a
-                    href={`/${orgUser.organization.slug}/dashboard`}
+                    href={`/org/${orgUser.organization.slug}/dashboard`}
                     className="block rounded-lg border border-gray-200 p-4 transition hover:border-gray-300 hover:bg-gray-50"
                   >
                     <div className="font-medium text-gray-900">

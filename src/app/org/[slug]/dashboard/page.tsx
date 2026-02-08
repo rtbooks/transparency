@@ -74,10 +74,10 @@ export default async function OrganizationDashboard({
           <div className="flex gap-2">
             {userAccess.role === 'ORG_ADMIN' && (
               <>
-                <Link href={`/${slug}/settings`}>
+                <Link href={`/org/${slug}/settings`}>
                   <Button variant="outline">Settings</Button>
                 </Link>
-                <Link href={`/${slug}/users`}>
+                <Link href={`/org/${slug}/users`}>
                   <Button variant="outline">Manage Users</Button>
                 </Link>
               </>

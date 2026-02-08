@@ -9,6 +9,7 @@ export default async function OrganizationPublicPage({
   params,
 }: OrganizationPageProps) {
   const { slug } = await params;
+
   const organization = await prisma.organization.findUnique({
     where: { slug },
   });

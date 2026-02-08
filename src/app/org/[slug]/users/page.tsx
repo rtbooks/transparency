@@ -52,7 +52,7 @@ export default async function UsersPage({ params }: UsersPageProps) {
           <p className="mt-2 text-gray-600">
             You don't have permission to manage users in this organization.
           </p>
-          <Link href={`/${slug}/dashboard`} className="mt-4 inline-block">
+          <Link href={`/org/${slug}/dashboard`} className="mt-4 inline-block">
             <Button>Back to Dashboard</Button>
           </Link>
         </div>
@@ -86,7 +86,7 @@ export default async function UsersPage({ params }: UsersPageProps) {
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-6">
-          <Link href={`/${slug}/dashboard`}>
+          <Link href={`/org/${slug}/dashboard`}>
             <Button variant="ghost" size="sm">
               <ChevronLeft className="mr-1 h-4 w-4" />
               Back to Dashboard

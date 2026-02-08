@@ -123,7 +123,7 @@ export function CreateOrganizationForm({ onSuccess }: CreateOrganizationFormProp
       if (onSuccess) {
         onSuccess(result.slug);
       } else {
-        router.push(`/${result.slug}/dashboard`);
+        router.push(`/org/${result.slug}/dashboard`);
       }
     } catch (error) {
       console.error('Error creating organization:', error);
