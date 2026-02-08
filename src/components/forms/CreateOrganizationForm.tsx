@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -85,12 +85,15 @@ export function CreateOrganizationForm({ onSuccess }: CreateOrganizationFormProp
   };
 
   // Update slug when name changes (if auto-generate is enabled)
-  if (autoGenerateSlug && organizationName) {
-    const newSlug = generateSlug(organizationName);
-    if (newSlug !== form.getValues('slug')) {
-      form.setValue('slug', newSlug);
+  React.useEffect(() => {
+    if (autoGenerateSlug && organizationName) {
+      const newSlug = generateSlug(organizationName);
+      if (newSlug !== form.getValues('slug')) {
+        form.setValue('slug', newSlug);
+      }
     }
-  }
+  }, [organizationName, autoGenerateSlug, form]);
+
 
   const onSubmit = async (data: OrganizationFormData) => {
     try {

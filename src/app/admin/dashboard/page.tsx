@@ -154,7 +154,7 @@ export default async function AdminDashboard() {
                     <Activity className="mr-1 h-4 w-4" />
                     {org._count.transactions} transactions
                   </div>
-                  <Link href={`/admin/organizations/${org.id}`}>
+                  <Link href={`/org/${org.slug}/dashboard`}>
                     <Button variant="ghost" size="sm">
                       View
                     </Button>
