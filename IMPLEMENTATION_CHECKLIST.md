@@ -106,7 +106,7 @@ Track your progress as you build the Financial Transparency Platform.
 ### User Roles
 
 - [x] Implement role-based middleware
-- [ ] Create role assignment UI
+- [x] Create role assignment UI
 - [x] Build org admin permissions
 - [x] Test permission boundaries
 - [x] Add audit logging
