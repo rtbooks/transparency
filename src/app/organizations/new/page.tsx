@@ -1,0 +1,50 @@
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import { CreateOrganizationForm } from '@/components/forms/CreateOrganizationForm';
+
+export default async function NewOrganizationPage() {
+  const { userId: clerkUserId } = await auth();
+
+  if (!clerkUserId) {
+    redirect('/login');
+  }
+
+  // Check if user exists in database
+  const user = await prisma.user.findUnique({
+    where: { authId: clerkUserId },
+  });
+
+  if (!user) {
+    redirect('/profile'); // Will create user record
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Create a New Organization
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Set up your nonprofit organization's financial transparency platform
+          </p>
+        </div>
+
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
+          <CreateOrganizationForm />
+        </div>
+
+        <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <h3 className="font-semibold text-blue-900">What happens next?</h3>
+          <ul className="mt-2 space-y-1 text-sm text-blue-800">
+            <li>• You'll be set as the organization administrator</li>
+            <li>• A chart of accounts will be ready to customize</li>
+            <li>• You can start recording transactions immediately</li>
+            <li>• Invite team members to collaborate</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
