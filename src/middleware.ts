@@ -8,6 +8,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks/(.*)',
   '/org/:slug', // Public organization dashboard
   '/org/:slug/donate', // Public donation page
+  '/invite/:token', // Invitation acceptance page (handles auth internally)
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
