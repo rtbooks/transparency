@@ -53,8 +53,8 @@ Track your progress as you build the Financial Transparency Platform.
 
 ### Chart of Accounts
 
-- [ ] Create Account model UI components
-- [ ] Build account tree view component
+- [x] Create Account model UI components
+- [x] Build account tree view component
 - [ ] Implement create account form
 - [ ] Implement edit account form
 - [ ] Add account activation/deactivation
