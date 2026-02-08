@@ -56,7 +56,7 @@ Track your progress as you build the Financial Transparency Platform.
 - [x] Create Account model UI components
 - [x] Build account tree view component
 - [x] Implement create account form (with auto-generated codes)
-- [ ] Implement edit account form
+- [x] Implement edit account form
 - [ ] Add account activation/deactivation
 - [ ] Create standard account templates
 - [ ] Test hierarchical relationships
