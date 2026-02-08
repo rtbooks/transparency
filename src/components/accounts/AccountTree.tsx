@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { CreateAccountForm } from '@/components/forms/CreateAccountForm';
+import { ApplyTemplateDialog } from './ApplyTemplateDialog';
 import { Plus } from 'lucide-react';
 
 interface AccountTreeProps {
@@ -105,6 +106,13 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
               Show inactive
             </Label>
           </div>
+          
+          {/* Use Template Button (only if no accounts) */}
+          <ApplyTemplateDialog
+            organizationSlug={organizationSlug}
+            hasExistingAccounts={flatAccounts.length > 0}
+            onSuccess={fetchAccounts}
+          />
           
           {/* Add Account Button */}
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
