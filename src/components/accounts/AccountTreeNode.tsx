@@ -100,9 +100,9 @@ export function AccountTreeNodeComponent({
   return (
     <div>
       <div
-        className={`flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50 ${
+        className={`flex items-center justify-between rounded-lg border bg-white p-3 hover:bg-gray-50 ${
           level > 0 ? 'ml-6' : ''
-        }`}
+        } ${!node.isActive ? 'border-gray-300 bg-gray-50 opacity-60' : 'border-gray-200'}`}
       >
         <div className="flex flex-1 items-center gap-3">
           {/* Expand/Collapse Button */}
@@ -130,8 +130,11 @@ export function AccountTreeNodeComponent({
           </span>
 
           {/* Account Name */}
-          <span className="flex-1 text-sm font-medium text-gray-900">
+          <span className={`flex-1 text-sm font-medium ${node.isActive ? 'text-gray-900' : 'text-gray-500'}`}>
             {node.name}
+            {!node.isActive && (
+              <span className="ml-2 text-xs text-gray-400">(Inactive)</span>
+            )}
           </span>
 
           {/* Account Type */}

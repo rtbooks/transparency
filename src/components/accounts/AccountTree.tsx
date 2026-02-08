@@ -5,6 +5,8 @@ import { AccountTreeNode, buildAccountTree } from '@/lib/utils/account-tree';
 import { AccountTreeNodeComponent } from './AccountTreeNode';
 import { Account } from '@prisma/client';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -26,6 +28,7 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
 
   const fetchAccounts = async () => {
     try {
@@ -42,9 +45,9 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
       const data: Account[] = await response.json();
       setFlatAccounts(data);
       
-      // Only show active accounts in the tree by default
-      const activeAccounts = data.filter(a => a.isActive);
-      const tree = buildAccountTree(activeAccounts);
+      // Filter based on showInactive toggle
+      const filteredAccounts = showInactive ? data : data.filter(a => a.isActive);
+      const tree = buildAccountTree(filteredAccounts);
       setAccounts(tree);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -55,7 +58,7 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
 
   useEffect(() => {
     fetchAccounts();
-  }, [organizationSlug]);
+  }, [organizationSlug, showInactive]);
 
   const handleSuccess = () => {
     setDialogOpen(false);
@@ -90,34 +93,49 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
         <h2 className="text-xl font-semibold text-gray-900">
           Chart of Accounts
         </h2>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Account
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Create New Account</DialogTitle>
-              <DialogDescription>
-                Add a new account to your chart of accounts.
-              </DialogDescription>
-            </DialogHeader>
-            <CreateAccountForm
-              organizationSlug={organizationSlug}
-              accounts={flatAccounts.map(a => ({
-                id: a.id,
-                code: a.code,
-                name: a.name,
-                type: a.type,
-                parentAccountId: a.parentAccountId
-              }))}
-              onSuccess={handleSuccess}
-              onCancel={() => setDialogOpen(false)}
+        <div className="flex items-center gap-4">
+          {/* Show Inactive Toggle */}
+          <div className="flex items-center gap-2">
+            <Switch
+              id="show-inactive"
+              checked={showInactive}
+              onCheckedChange={setShowInactive}
             />
-          </DialogContent>
-        </Dialog>
+            <Label htmlFor="show-inactive" className="text-sm text-gray-600 cursor-pointer">
+              Show inactive
+            </Label>
+          </div>
+          
+          {/* Add Account Button */}
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Account
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Create New Account</DialogTitle>
+                <DialogDescription>
+                  Add a new account to your chart of accounts.
+                </DialogDescription>
+              </DialogHeader>
+              <CreateAccountForm
+                organizationSlug={organizationSlug}
+                accounts={flatAccounts.map(a => ({
+                  id: a.id,
+                  code: a.code,
+                  name: a.name,
+                  type: a.type,
+                  parentAccountId: a.parentAccountId
+                }))}
+                onSuccess={handleSuccess}
+                onCancel={() => setDialogOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {accounts.length === 0 ? (
