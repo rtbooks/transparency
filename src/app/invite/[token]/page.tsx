@@ -12,8 +12,8 @@ export default async function InvitePage({ params }: InvitePageProps) {
 
   // User must be authenticated to accept an invitation
   if (!clerkUserId) {
-    // Redirect to login with a return URL to come back after authentication
-    redirect(`/login?redirect=/invite/${token}`);
+    // Redirect to login, and Clerk will redirect back here after authentication
+    redirect(`/login?redirect_url=${encodeURIComponent(`/invite/${token}`)}`);
   }
 
   // Find the user in our database

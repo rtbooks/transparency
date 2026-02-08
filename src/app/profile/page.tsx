@@ -40,6 +40,74 @@ export default async function ProfilePage() {
         },
       },
     });
+
+    // Check for pending invitations for this email
+    const pendingInvitations = await prisma.invitation.findMany({
+      where: {
+        email: dbUser.email.toLowerCase(),
+        status: 'PENDING',
+      },
+      include: {
+        organization: true,
+      },
+    });
+
+    // Auto-accept all pending invitations
+    for (const invitation of pendingInvitations) {
+      const now = new Date();
+      const isExpired = invitation.expiresAt < now;
+
+      if (!isExpired) {
+        try {
+          await prisma.$transaction([
+            // Create organization membership
+            prisma.organizationUser.create({
+              data: {
+                userId: dbUser.id,
+                organizationId: invitation.organizationId,
+                role: invitation.role,
+              },
+            }),
+            // Mark invitation as accepted
+            prisma.invitation.update({
+              where: { id: invitation.id },
+              data: {
+                status: 'ACCEPTED',
+                acceptedAt: new Date(),
+                updatedAt: new Date(),
+              },
+            }),
+          ]);
+
+          // Redirect to the first organization that was just joined
+          if (pendingInvitations.length === 1) {
+            redirect(`/org/${invitation.organization.slug}/dashboard`);
+          }
+        } catch (error) {
+          console.error('Error auto-accepting invitation:', error);
+          // Continue to next invitation
+        }
+      }
+    }
+
+    // If multiple invitations were accepted, reload the user to show organizations
+    if (pendingInvitations.length > 1) {
+      dbUser = await prisma.user.findUnique({
+        where: { authId: user.id },
+        include: {
+          organizations: {
+            include: {
+              organization: true,
+            },
+          },
+        },
+      }) as any;
+    }
+  }
+
+  // At this point dbUser should never be null, but TypeScript doesn't know that
+  if (!dbUser) {
+    redirect('/login');
   }
 
   return (
