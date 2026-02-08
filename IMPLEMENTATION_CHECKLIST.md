@@ -73,12 +73,12 @@ Track your progress as you build the Financial Transparency Platform.
 
 ### Balance Calculations
 
-- [ ] Write balance calculation function
-- [ ] Test asset account balances
-- [ ] Test revenue account balances
-- [ ] Test expense account balances
-- [ ] Create balance caching strategy
-- [ ] Add balance recalculation triggers
+- [x] Write balance calculation function
+- [x] Test asset account balances
+- [x] Test revenue account balances
+- [x] Test expense account balances
+- [x] Create balance caching strategy
+- [x] Add balance recalculation triggers
 
 ### Transaction List
 
