@@ -1,6 +1,8 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { InviteSuccess } from './InviteSuccess';
+import { ROLE_LABELS } from '@/lib/auth/permissions';
 
 interface InvitePageProps {
   params: Promise<{ token: string }>;
@@ -138,17 +140,26 @@ export default async function InvitePage({ params }: InvitePageProps) {
   });
 
   if (existingMembership) {
-    // User is already a member - mark invitation as accepted and redirect
-    await prisma.invitation.update({
-      where: { id: invitation.id },
-      data: {
-        status: 'ACCEPTED',
-        acceptedAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
+    // User is already a member - mark invitation as accepted if not already
+    if (invitation.status === 'PENDING') {
+      await prisma.invitation.update({
+        where: { id: invitation.id },
+        data: {
+          status: 'ACCEPTED',
+          acceptedAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+    }
 
-    redirect(`/org/${invitation.organization.slug}/dashboard`);
+    // Show success message and redirect via client component
+    return (
+      <InviteSuccess
+        organizationSlug={invitation.organization.slug}
+        organizationName={invitation.organization.name}
+        role={ROLE_LABELS[existingMembership.role]}
+      />
+    );
   }
 
   // Check if the invited email matches the user's email
@@ -213,8 +224,14 @@ export default async function InvitePage({ params }: InvitePageProps) {
       }),
     ]);
 
-    // Redirect to the organization dashboard
-    redirect(`/org/${invitation.organization.slug}/dashboard`);
+    // Show success message and redirect via client component
+    return (
+      <InviteSuccess
+        organizationSlug={invitation.organization.slug}
+        organizationName={invitation.organization.name}
+        role={ROLE_LABELS[invitation.role]}
+      />
+    );
   } catch (error) {
     console.error('Error accepting invitation:', error);
     
