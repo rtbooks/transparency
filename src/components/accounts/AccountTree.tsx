@@ -107,7 +107,8 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
                 id: a.id,
                 code: a.code,
                 name: a.name,
-                type: a.type
+                type: a.type,
+                parentAccountId: a.parentAccountId
               }))}
               onSuccess={handleSuccess}
               onCancel={() => setDialogOpen(false)}

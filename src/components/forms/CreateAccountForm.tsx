@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -40,6 +40,7 @@ const formSchema = z.object({
   type: z.enum(['ASSET', 'LIABILITY', 'EQUITY', 'REVENUE', 'EXPENSE']),
   parentAccountId: z.string().optional().transform(val => val === 'none' ? undefined : val),
   description: z.string().max(500).optional(),
+  autoGenerateCode: z.boolean().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -51,6 +52,7 @@ interface CreateAccountFormProps {
     code: string;
     name: string;
     type: string;
+    parentAccountId?: string | null;
   }>;
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -64,6 +66,7 @@ export function CreateAccountForm({
 }: CreateAccountFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [autoGenerate, setAutoGenerate] = useState(true);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -77,9 +80,62 @@ export function CreateAccountForm({
   });
 
   const selectedType = form.watch('type');
+  const selectedParentId = form.watch('parentAccountId');
   const availableParents = accounts.filter(
     (account) => account.type === selectedType
   );
+
+  // Auto-generate code when type or parent changes
+  useEffect(() => {
+    if (!autoGenerate) return;
+
+    const generateCode = () => {
+      const typePrefix: Record<string, string> = {
+        ASSET: '1',
+        LIABILITY: '2',
+        EQUITY: '3',
+        REVENUE: '4',
+        EXPENSE: '5',
+      };
+
+      const prefix = typePrefix[selectedType];
+      
+      // If parent is selected, use parent code as base
+      if (selectedParentId && selectedParentId !== 'none') {
+        const parent = accounts.find(a => a.id === selectedParentId);
+        if (parent) {
+          // Find highest child code under this parent
+          const siblings = accounts.filter(a => a.parentAccountId === parent.id);
+          if (siblings.length === 0) {
+            // First child: parent code + 10
+            const nextCode = (parseInt(parent.code) + 10).toString();
+            return nextCode;
+          } else {
+            // Find max sibling code and add 10
+            const maxCode = Math.max(...siblings.map(s => parseInt(s.code)));
+            return (maxCode + 10).toString();
+          }
+        }
+      }
+
+      // Top-level account: find highest code for this type
+      const typeAccounts = accounts.filter(
+        a => a.type === selectedType && !a.parentAccountId
+      );
+      
+      if (typeAccounts.length === 0) {
+        // First account of this type: use X000
+        return `${prefix}000`;
+      }
+
+      // Find max code and add 100
+      const maxCode = Math.max(...typeAccounts.map(a => parseInt(a.code)));
+      return (maxCode + 100).toString();
+    };
+
+    const newCode = generateCode();
+    form.setValue('code', newCode);
+  }, [selectedType, selectedParentId, autoGenerate, accounts, form]);
 
   async function onSubmit(values: FormValues) {
     setIsSubmitting(true);
@@ -126,10 +182,27 @@ export function CreateAccountForm({
             <FormItem>
               <FormLabel>Account Code</FormLabel>
               <FormControl>
-                <Input placeholder="1000" {...field} />
+                <div className="flex gap-2">
+                  <Input 
+                    placeholder="1000" 
+                    {...field}
+                    disabled={autoGenerate}
+                    className={autoGenerate ? 'bg-gray-50' : ''}
+                  />
+                  <Button
+                    type="button"
+                    variant={autoGenerate ? "outline" : "secondary"}
+                    onClick={() => setAutoGenerate(!autoGenerate)}
+                    className="shrink-0"
+                  >
+                    {autoGenerate ? 'Manual' : 'Auto'}
+                  </Button>
+                </div>
               </FormControl>
               <FormDescription>
-                Unique numeric code for this account (e.g., 1000, 2100)
+                {autoGenerate 
+                  ? 'Code is auto-generated. Click "Manual" to enter your own.'
+                  : 'Enter a unique numeric code (e.g., 1000, 2100)'}
               </FormDescription>
               <FormMessage />
             </FormItem>
