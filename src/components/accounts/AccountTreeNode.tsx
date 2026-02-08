@@ -1,22 +1,52 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, Edit } from 'lucide-react';
 import { AccountTreeNode } from '@/lib/utils/account-tree';
 import { formatCurrency, getAccountTypeInfo } from '@/lib/utils/account-tree';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { EditAccountForm } from '@/components/forms/EditAccountForm';
 
 interface AccountTreeNodeProps {
   node: AccountTreeNode;
   level?: number;
+  organizationSlug: string;
+  allAccounts: Array<{
+    id: string;
+    code: string;
+    name: string;
+    type: string;
+    parentAccountId?: string | null;
+  }>;
+  onAccountUpdated?: () => void;
 }
 
 export function AccountTreeNodeComponent({
   node,
   level = 0,
+  organizationSlug,
+  allAccounts,
+  onAccountUpdated,
 }: AccountTreeNodeProps) {
-  const [isExpanded, setIsExpanded] = useState(level < 2); // Auto-expand first 2 levels
+  const [isExpanded, setIsExpanded] = useState(level < 2);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const hasChildren = node.children.length > 0;
   const typeInfo = getAccountTypeInfo(node.type);
+
+  const handleEditSuccess = () => {
+    setEditDialogOpen(false);
+    if (onAccountUpdated) {
+      onAccountUpdated();
+    }
+  };
 
   return (
     <div>
@@ -72,6 +102,37 @@ export function AccountTreeNodeComponent({
           >
             {formatCurrency(node.currentBalance)}
           </span>
+
+          {/* Edit Button */}
+          <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Edit className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Edit Account</DialogTitle>
+                <DialogDescription>
+                  Update account details. Changes will be reflected immediately.
+                </DialogDescription>
+              </DialogHeader>
+              <EditAccountForm
+                organizationSlug={organizationSlug}
+                account={{
+                  id: node.id,
+                  code: node.code,
+                  name: node.name,
+                  type: node.type,
+                  parentAccountId: node.parentAccountId,
+                  description: node.description,
+                }}
+                accounts={allAccounts}
+                onSuccess={handleEditSuccess}
+                onCancel={() => setEditDialogOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -83,6 +144,9 @@ export function AccountTreeNodeComponent({
               key={child.id}
               node={child}
               level={level + 1}
+              organizationSlug={organizationSlug}
+              allAccounts={allAccounts}
+              onAccountUpdated={onAccountUpdated}
             />
           ))}
         </div>

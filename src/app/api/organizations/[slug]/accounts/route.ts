@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
-const createAccountSchema = z.object({
+const accountSchema = z.object({
   code: z.string().min(1).max(20),
   name: z.string().min(1).max(100),
   type: z.enum(['ASSET', 'LIABILITY', 'EQUITY', 'REVENUE', 'EXPENSE']),
@@ -122,7 +122,7 @@ export async function POST(
 
     // Parse and validate request body
     const body = await request.json();
-    const validatedData = createAccountSchema.parse(body);
+    const validatedData = accountSchema.parse(body);
 
     // Check if account code already exists
     const existingAccount = await prisma.account.findFirst({

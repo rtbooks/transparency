@@ -131,7 +131,19 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
           </div>
           <div className="space-y-2">
             {accounts.map((account) => (
-              <AccountTreeNodeComponent key={account.id} node={account} />
+              <AccountTreeNodeComponent 
+                key={account.id} 
+                node={account}
+                organizationSlug={organizationSlug}
+                allAccounts={flatAccounts.map(a => ({
+                  id: a.id,
+                  code: a.code,
+                  name: a.name,
+                  type: a.type,
+                  parentAccountId: a.parentAccountId
+                }))}
+                onAccountUpdated={fetchAccounts}
+              />
             ))}
           </div>
         </>
