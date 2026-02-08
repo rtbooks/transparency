@@ -32,7 +32,7 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        `/api/organizations/${organizationSlug}/accounts`
+        `/api/organizations/${organizationSlug}/accounts?includeInactive=true`
       );
 
       if (!response.ok) {
@@ -41,7 +41,10 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
 
       const data: Account[] = await response.json();
       setFlatAccounts(data);
-      const tree = buildAccountTree(data);
+      
+      // Only show active accounts in the tree by default
+      const activeAccounts = data.filter(a => a.isActive);
+      const tree = buildAccountTree(activeAccounts);
       setAccounts(tree);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
