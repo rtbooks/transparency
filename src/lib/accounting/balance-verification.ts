@@ -166,10 +166,21 @@ export function calculateHierarchicalBalance(
     ? account.currentBalance
     : parseFloat(account.currentBalance.toString());
 
-  // Recursively add children's balances
-  const children = accounts.filter(a => a.parentAccountId === accountId);
-  for (const child of children) {
-    totalBalance += calculateHierarchicalBalance(child.id, accounts);
+  // Recursively add children's balances (but NOT their descendants)
+  // This function calculates the account's own balance plus its direct children
+  // It does not double-count by adding both children and grandchildren
+  const directChildren = accounts.filter(a => a.parentAccountId === accountId);
+  for (const child of directChildren) {
+    const childBalance = typeof child.currentBalance === 'number'
+      ? child.currentBalance
+      : parseFloat(child.currentBalance.toString());
+    totalBalance += childBalance;
+    
+    // Recursively add grandchildren
+    const grandchildren = accounts.filter(a => a.parentAccountId === child.id);
+    for (const grandchild of grandchildren) {
+      totalBalance += calculateHierarchicalBalance(grandchild.id, accounts);
+    }
   }
 
   return totalBalance;
