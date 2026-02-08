@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { AccountTree } from '@/components/accounts/AccountTree';
 
 interface DashboardPageProps {
   params: { slug: string };
@@ -55,13 +56,8 @@ export default async function OrganizationDashboard({
           </p>
         </div>
         
-        <div className="rounded-lg bg-white p-6 shadow">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Welcome to your dashboard
-          </h2>
-          <p className="mt-4 text-gray-600">
-            This is where you'll manage transactions, accounts, and planned purchases.
-          </p>
+        <div className="space-y-8">
+          <AccountTree organizationSlug={params.slug} />
         </div>
       </div>
     </div>
