@@ -97,11 +97,11 @@ Track your progress as you build the Financial Transparency Platform.
 
 ### Organization Setup
 
-- [ ] Create organization creation form
-- [ ] Build organization settings page
+- [x] Create organization creation form
+- [x] Build organization settings page
 - [ ] Add logo upload
-- [ ] Configure fiscal year settings
-- [ ] Create organization slug/URL
+- [x] Configure fiscal year settings
+- [x] Create organization slug/URL
 
 ### User Roles
 

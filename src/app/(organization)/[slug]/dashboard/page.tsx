@@ -1,12 +1,10 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { AccountTree } from '@/components/accounts/AccountTree';
 import { RecordTransactionButton } from '@/components/transactions/RecordTransactionButton';
 import { TransactionList } from '@/components/transactions/TransactionList';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 interface DashboardPageProps {
@@ -74,12 +72,9 @@ export default async function OrganizationDashboard({
           </div>
           <div className="flex gap-2">
             {userAccess.role === 'ORG_ADMIN' && (
-              <Button
-                variant="outline"
-                onClick={() => router.push(`/${params.slug}/settings`)}
-              >
-                Settings
-              </Button>
+              <Link href={`/${params.slug}/settings`}>
+                <Button variant="outline">Settings</Button>
+              </Link>
             )}
             <RecordTransactionButton organizationSlug={params.slug} />
           </div>
