@@ -58,7 +58,7 @@ Track your progress as you build the Financial Transparency Platform.
 - [x] Implement create account form (with auto-generated codes)
 - [x] Implement edit account form
 - [x] Add account activation/deactivation
-- [ ] Create standard account templates
+- [x] Create standard account templates
 - [ ] Test hierarchical relationships
 
 ### Transaction Recording
