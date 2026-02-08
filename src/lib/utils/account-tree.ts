@@ -41,8 +41,8 @@ export function buildAccountTree(accounts: Account[]): AccountTreeNode[] {
 /**
  * Formats currency for display
  */
-export function formatCurrency(amount: number | string): string {
-  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+export function formatCurrency(amount: number | string | { toString(): string }): string {
+  const numAmount = typeof amount === 'string' ? parseFloat(amount) : typeof amount === 'number' ? amount : parseFloat(amount.toString());
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',

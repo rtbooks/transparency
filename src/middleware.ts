@@ -10,10 +10,10 @@ const isPublicRoute = createRouteMatcher([
   '/:slug/donate', // Public donation page
 ]);
 
-export default clerkMiddleware((auth, request) => {
+export default clerkMiddleware(async (auth, request) => {
   // Only protect routes if Clerk keys are configured
   if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && !isPublicRoute(request)) {
-    auth().protect();
+    await auth.protect();
   }
 });
 

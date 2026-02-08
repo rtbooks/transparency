@@ -4,9 +4,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string; id: string } }
+  { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {
+    const { slug, id } = await params;
     const { userId: clerkUserId } = await auth();
 
     if (!clerkUserId) {
@@ -27,7 +28,7 @@ export async function POST(
 
     // Find organization and check access
     const organization = await prisma.organization.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       include: {
         organizationUsers: {
           where: { userId: user.id },
@@ -49,7 +50,7 @@ export async function POST(
 
     // Check if account exists and belongs to organization
     const existingAccount = await prisma.account.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingAccount || existingAccount.organizationId !== organization.id) {
@@ -92,7 +93,7 @@ export async function POST(
 
     // Toggle the isActive status
     const updatedAccount = await prisma.account.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         isActive: !existingAccount.isActive,
       },

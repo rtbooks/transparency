@@ -13,9 +13,10 @@ const updateAccountSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { slug: string; id: string } }
+  { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {
+    const { slug, id } = await params;
     const { userId: clerkUserId } = await auth();
 
     if (!clerkUserId) {
@@ -36,7 +37,7 @@ export async function PATCH(
 
     // Find organization and check access
     const organization = await prisma.organization.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       include: {
         organizationUsers: {
           where: { userId: user.id },
@@ -58,7 +59,7 @@ export async function PATCH(
 
     // Check if account exists and belongs to organization
     const existingAccount = await prisma.account.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingAccount || existingAccount.organizationId !== organization.id) {
@@ -78,7 +79,7 @@ export async function PATCH(
         where: {
           organizationId: organization.id,
           code: validatedData.code,
-          id: { not: params.id },
+          id: { not: id },
         },
       });
 
@@ -114,7 +115,7 @@ export async function PATCH(
       // Check for circular reference
       let currentParent = parentAccount;
       while (currentParent.parentAccountId) {
-        if (currentParent.parentAccountId === params.id) {
+        if (currentParent.parentAccountId === id) {
           return NextResponse.json(
             { error: 'Cannot create circular parent-child relationship' },
             { status: 400 }
@@ -130,7 +131,7 @@ export async function PATCH(
 
     // Update the account
     const updatedAccount = await prisma.account.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(validatedData.code && { code: validatedData.code }),
         ...(validatedData.name && { name: validatedData.name }),

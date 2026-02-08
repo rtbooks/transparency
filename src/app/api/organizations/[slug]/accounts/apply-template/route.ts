@@ -5,9 +5,10 @@ import { getTemplate } from '@/lib/templates/account-templates';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     const { userId: clerkUserId } = await auth();
 
     if (!clerkUserId) {
@@ -26,7 +27,7 @@ export async function POST(
     }
 
     const organization = await prisma.organization.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       include: {
         organizationUsers: {
           where: { userId: user.id },

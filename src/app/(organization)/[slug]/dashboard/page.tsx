@@ -8,12 +8,13 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 interface DashboardPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export default async function OrganizationDashboard({
   params,
 }: DashboardPageProps) {
+  const { slug } = await params;
   const { userId: clerkUserId } = await auth();
 
   if (!clerkUserId) {
@@ -31,7 +32,7 @@ export default async function OrganizationDashboard({
 
   // Now find the organization and check if user has access
   const organization = await prisma.organization.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: {
       organizationUsers: {
         where: { userId: user.id },
@@ -72,11 +73,11 @@ export default async function OrganizationDashboard({
           </div>
           <div className="flex gap-2">
             {userAccess.role === 'ORG_ADMIN' && (
-              <Link href={`/${params.slug}/settings`}>
+              <Link href={`/${slug}/settings`}>
                 <Button variant="outline">Settings</Button>
               </Link>
             )}
-            <RecordTransactionButton organizationSlug={params.slug} />
+            <RecordTransactionButton organizationSlug={slug} />
           </div>
         </div>
         
@@ -85,14 +86,14 @@ export default async function OrganizationDashboard({
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Chart of Accounts
             </h2>
-            <AccountTree organizationSlug={params.slug} />
+            <AccountTree organizationSlug={slug} />
           </div>
 
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Transaction History
             </h2>
-            <TransactionList organizationSlug={params.slug} />
+            <TransactionList organizationSlug={slug} />
           </div>
         </div>
       </div>

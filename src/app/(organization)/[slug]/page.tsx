@@ -2,14 +2,15 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 
 interface OrganizationPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export default async function OrganizationPublicPage({
   params,
 }: OrganizationPageProps) {
+  const { slug } = await params;
   const organization = await prisma.organization.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
   });
 
   if (!organization) {

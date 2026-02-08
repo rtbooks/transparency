@@ -11,8 +11,8 @@ import { AccountType } from '@prisma/client';
  * - EXPENSE accounts: Debits increase, Credits decrease
  */
 export function calculateNewBalance(
-  currentBalance: number,
-  amount: number,
+  currentBalance: number | { toString(): string },
+  amount: number | { toString(): string },
   accountType: AccountType,
   isDebit: boolean
 ): number {

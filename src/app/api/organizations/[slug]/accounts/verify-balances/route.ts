@@ -13,9 +13,10 @@ import {
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     const { userId: clerkUserId } = await auth();
 
     if (!clerkUserId) {
@@ -36,7 +37,7 @@ export async function GET(
 
     // Find organization and check access
     const organization = await prisma.organization.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       include: {
         organizationUsers: {
           where: { userId: user.id },
@@ -127,9 +128,10 @@ export async function GET(
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     const { userId: clerkUserId } = await auth();
 
     if (!clerkUserId) {
@@ -150,7 +152,7 @@ export async function POST(
 
     // Find organization and check access (must be ORG_ADMIN or PLATFORM_ADMIN)
     const organization = await prisma.organization.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       include: {
         organizationUsers: {
           where: { userId: user.id },

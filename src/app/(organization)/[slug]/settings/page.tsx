@@ -4,12 +4,13 @@ import { prisma } from '@/lib/prisma';
 import { OrganizationSettingsForm } from '@/components/forms/OrganizationSettingsForm';
 
 interface OrganizationSettingsPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export default async function OrganizationSettingsPage({
   params,
 }: OrganizationSettingsPageProps) {
+  const { slug } = await params;
   const { userId: clerkUserId } = await auth();
 
   if (!clerkUserId) {
@@ -27,7 +28,7 @@ export default async function OrganizationSettingsPage({
 
   // Find organization and check if user has access
   const organization = await prisma.organization.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: {
       organizationUsers: {
         where: { userId: user.id },

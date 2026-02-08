@@ -10,6 +10,7 @@ import { UserRole } from '@prisma/client';
  * Permission levels in ascending order
  */
 export const ROLE_HIERARCHY: Record<UserRole, number> = {
+  PUBLIC: 0,
   DONOR: 1,
   ORG_ADMIN: 2,
   PLATFORM_ADMIN: 3,
@@ -81,6 +82,7 @@ export function canModifyRole(
  * Role display names
  */
 export const ROLE_LABELS: Record<UserRole, string> = {
+  PUBLIC: 'Public',
   DONOR: 'Donor',
   ORG_ADMIN: 'Organization Administrator',
   PLATFORM_ADMIN: 'Platform Administrator',
@@ -90,6 +92,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
  * Role descriptions
  */
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
+  PUBLIC: 'Can view public financial information only',
   DONOR: 'Can view public financial information and make donations',
   ORG_ADMIN: 'Can manage organization settings, accounts, and transactions',
   PLATFORM_ADMIN: 'Full system access across all organizations',
@@ -194,6 +197,28 @@ export function getRolePermissions(role: UserRole): RolePermissions {
         editUserRoles: false,
         removeUsers: false,
         viewBalances: true,
+        exportData: false,
+        viewPublicDashboard: true,
+      };
+
+    case 'PUBLIC':
+      return {
+        viewOrganization: true,
+        editOrganization: false,
+        deleteOrganization: false,
+        viewAccounts: false,
+        createAccounts: false,
+        editAccounts: false,
+        deleteAccounts: false,
+        viewTransactions: false,
+        createTransactions: false,
+        editTransactions: false,
+        deleteTransactions: false,
+        viewUsers: false,
+        inviteUsers: false,
+        editUserRoles: false,
+        removeUsers: false,
+        viewBalances: false,
         exportData: false,
         viewPublicDashboard: true,
       };

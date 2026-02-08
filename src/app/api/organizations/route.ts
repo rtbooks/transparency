@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { authId: clerkUserId },
       include: {
-        organizationUsers: {
+        organizations: {
           include: {
             organization: true,
           },
@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Return list of organizations the user has access to
-    const organizations = user.organizationUsers.map((ou) => ({
+    const organizations = user.organizations.map((ou) => ({
       ...ou.organization,
       role: ou.role,
     }));
