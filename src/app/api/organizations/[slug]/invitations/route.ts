@@ -89,11 +89,18 @@ export async function POST(
       },
     });
 
-    if (existingInvitation && existingInvitation.status === 'PENDING') {
-      return NextResponse.json(
-        { error: 'An invitation has already been sent to this email' },
-        { status: 400 }
-      );
+    if (existingInvitation) {
+      if (existingInvitation.status === 'PENDING') {
+        return NextResponse.json(
+          { error: 'An invitation has already been sent to this email' },
+          { status: 400 }
+        );
+      }
+      
+      // Delete old invitation (ACCEPTED, REVOKED, or EXPIRED) to allow new one
+      await prisma.invitation.delete({
+        where: { id: existingInvitation.id },
+      });
     }
 
     // Generate a unique token
