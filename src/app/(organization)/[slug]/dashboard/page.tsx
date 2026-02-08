@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { AccountTree } from '@/components/accounts/AccountTree';
+import { RecordTransactionButton } from '@/components/transactions/RecordTransactionButton';
 
 interface DashboardPageProps {
   params: { slug: string };
@@ -57,13 +58,16 @@ export default async function OrganizationDashboard({
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            {organization.name} Dashboard
-          </h1>
-          <p className="mt-2 text-gray-600">
-            Role: {userAccess.role}
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {organization.name} Dashboard
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Role: {userAccess.role}
+            </p>
+          </div>
+          <RecordTransactionButton organizationSlug={params.slug} />
         </div>
         
         <div className="space-y-8">
