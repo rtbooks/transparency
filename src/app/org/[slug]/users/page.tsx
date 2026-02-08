@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { UsersPageClient } from './UsersPageClient';
+import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -45,17 +46,19 @@ export default async function UsersPage({ params }: UsersPageProps) {
   // Only ORG_ADMIN and PLATFORM_ADMIN can access user management
   if (!userAccess || userAccess.role === 'DONOR' || userAccess.role === 'PUBLIC') {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Access Denied</h1>
-          <p className="mt-2 text-gray-600">
-            You don't have permission to manage users in this organization.
-          </p>
-          <Link href={`/org/${slug}/dashboard`} className="mt-4 inline-block">
-            <Button>Back to Dashboard</Button>
-          </Link>
+      <OrganizationLayoutWrapper organizationSlug={slug}>
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900">Access Denied</h1>
+            <p className="mt-2 text-gray-600">
+              You don't have permission to manage users in this organization.
+            </p>
+            <Link href={`/org/${slug}/dashboard`} className="mt-4 inline-block">
+              <Button>Back to Dashboard</Button>
+            </Link>
+          </div>
         </div>
-      </div>
+      </OrganizationLayoutWrapper>
     );
   }
 
@@ -115,14 +118,16 @@ export default async function UsersPage({ params }: UsersPageProps) {
   const canManageUsers = userAccess.role === 'ORG_ADMIN' || userAccess.role === 'PLATFORM_ADMIN';
 
   return (
-    <UsersPageClient
-      slug={slug}
-      organizationName={organization.name}
-      users={serializedUsers}
-      organizationId={organization.id}
-      canManageUsers={canManageUsers}
-      currentUserRole={userAccess.role}
-      pendingInvitations={serializedInvitations}
-    />
+    <OrganizationLayoutWrapper organizationSlug={slug}>
+      <UsersPageClient
+        slug={slug}
+        organizationName={organization.name}
+        users={serializedUsers}
+        organizationId={organization.id}
+        canManageUsers={canManageUsers}
+        currentUserRole={userAccess.role}
+        pendingInvitations={serializedInvitations}
+      />
+    </OrganizationLayoutWrapper>
   );
 }

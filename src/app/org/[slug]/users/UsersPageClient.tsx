@@ -5,8 +5,7 @@ import { UserList } from '@/components/users/UserList';
 import { InviteUserDialog } from '@/components/users/InviteUserDialog';
 import { PendingInvitationsList } from '@/components/users/PendingInvitationsList';
 import { Button } from '@/components/ui/button';
-import { UserPlus, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { UserPlus } from 'lucide-react';
 
 interface PendingInvitation {
   id: string;
@@ -51,15 +50,6 @@ export function UsersPageClient({
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-6">
-          <Link href={`/org/${slug}/dashboard`}>
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Dashboard
-            </Button>
-          </Link>
-        </div>
-
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
