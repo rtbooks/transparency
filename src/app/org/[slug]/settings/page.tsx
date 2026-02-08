@@ -43,8 +43,8 @@ export default async function OrganizationSettingsPage({
 
   const userAccess = organization.organizationUsers[0];
   
-  // Only ORG_ADMIN can access settings
-  if (!userAccess || userAccess.role !== 'ORG_ADMIN') {
+  // Only ORG_ADMIN and PLATFORM_ADMIN can access settings
+  if (!userAccess || (userAccess.role !== 'ORG_ADMIN' && userAccess.role !== 'PLATFORM_ADMIN')) {
     return (
       <OrganizationLayoutWrapper organizationSlug={slug}>
         <div className="flex min-h-screen items-center justify-center">
