@@ -13,6 +13,132 @@ const createTransactionSchema = z.object({
   creditAccountId: z.string().uuid(),
 });
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { slug: string } }
+) {
+  try {
+    const { userId: clerkUserId } = await auth();
+
+    if (!clerkUserId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Find the user in our database
+    const user = await prisma.user.findUnique({
+      where: { authId: clerkUserId },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found in database' },
+        { status: 404 }
+      );
+    }
+
+    // Find organization and check access
+    const organization = await prisma.organization.findUnique({
+      where: { slug: params.slug },
+      include: {
+        organizationUsers: {
+          where: { userId: user.id },
+        },
+      },
+    });
+
+    if (!organization) {
+      return NextResponse.json(
+        { error: 'Organization not found' },
+        { status: 404 }
+      );
+    }
+
+    const orgUser = organization.organizationUsers[0];
+    if (!orgUser) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
+    // Parse query parameters for filtering and pagination
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '25');
+    const type = searchParams.get('type');
+    const accountId = searchParams.get('accountId');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+    const search = searchParams.get('search');
+
+    // Build where clause
+    const where: any = {
+      organizationId: organization.id,
+    };
+
+    if (type) {
+      where.type = type;
+    }
+
+    if (accountId) {
+      where.OR = [
+        { debitAccountId: accountId },
+        { creditAccountId: accountId },
+      ];
+    }
+
+    if (startDate || endDate) {
+      where.transactionDate = {};
+      if (startDate) {
+        where.transactionDate.gte = new Date(startDate);
+      }
+      if (endDate) {
+        where.transactionDate.lte = new Date(endDate);
+      }
+    }
+
+    if (search) {
+      where.OR = [
+        { description: { contains: search, mode: 'insensitive' } },
+        { referenceNumber: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    // Get total count for pagination
+    const totalCount = await prisma.transaction.count({ where });
+
+    // Fetch transactions with related accounts
+    const transactions = await prisma.transaction.findMany({
+      where,
+      include: {
+        debitAccount: {
+          select: { id: true, code: true, name: true, type: true },
+        },
+        creditAccount: {
+          select: { id: true, code: true, name: true, type: true },
+        },
+      },
+      orderBy: { transactionDate: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return NextResponse.json({
+      transactions,
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        hasMore: page * limit < totalCount,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching transactions:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: { slug: string } }
