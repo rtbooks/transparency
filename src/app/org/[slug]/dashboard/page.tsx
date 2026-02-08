@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { AccountTree } from '@/components/accounts/AccountTree';
 import { RecordTransactionButton } from '@/components/transactions/RecordTransactionButton';
 import { TransactionList } from '@/components/transactions/TransactionList';
+import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -60,8 +61,9 @@ export default async function OrganizationDashboard({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <OrganizationLayoutWrapper organizationSlug={slug}>
+      <div className="min-h-screen bg-gray-50">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
@@ -102,6 +104,7 @@ export default async function OrganizationDashboard({
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </OrganizationLayoutWrapper>
   );
 }
