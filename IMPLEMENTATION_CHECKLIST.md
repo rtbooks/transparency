@@ -63,13 +63,13 @@ Track your progress as you build the Financial Transparency Platform.
 
 ### Transaction Recording
 
-- [ ] Design transaction form UI
-- [ ] Create transaction model types
-- [ ] Implement double-entry logic
-- [ ] Build income recording form
-- [ ] Build expense recording form
-- [ ] Add transfer between accounts
-- [ ] Implement transaction validation
+- [x] Design transaction form UI
+- [x] Create transaction model types
+- [x] Implement double-entry logic
+- [x] Build income recording form
+- [x] Build expense recording form
+- [x] Add transfer between accounts
+- [x] Implement transaction validation
 
 ### Balance Calculations
 
