@@ -2,12 +2,12 @@
 // This is your database schema - serves as the single source of truth
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ============================================
@@ -15,29 +15,29 @@ datasource db {
 // ============================================
 
 model Organization {
-  id                String   @id @default(uuid())
-  name              String
-  slug              String   @unique // URL-friendly identifier (e.g., "grit-hoops")
-  ein               String?  // Tax ID / EIN
-  mission           String?  @db.Text
-  logoUrl           String?  @map("logo_url")
-  fiscalYearStart   DateTime @map("fiscal_year_start") @default("2024-01-01T00:00:00Z")
-  
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique // URL-friendly identifier (e.g., "grit-hoops")
+  ein             String? // Tax ID / EIN
+  mission         String?  @db.Text
+  logoUrl         String?  @map("logo_url")
+  fiscalYearStart DateTime @default("2024-01-01T00:00:00Z") @map("fiscal_year_start")
+
   // Subscription & Status
-  status            OrganizationStatus @default(ACTIVE)
-  subscriptionTier  SubscriptionTier   @default(FREE)
-  
+  status           OrganizationStatus @default(ACTIVE)
+  subscriptionTier SubscriptionTier   @default(FREE)
+
   // Metadata
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
-  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   // Relationships
   accounts          Account[]
   transactions      Transaction[]
   plannedPurchases  PlannedPurchase[]
   organizationUsers OrganizationUser[]
   bankAccounts      BankAccount[]
-  
+
   @@map("organizations")
 }
 
@@ -54,25 +54,25 @@ enum SubscriptionTier {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
-  name          String
-  avatarUrl     String?  @map("avatar_url")
-  
+  id        String  @id @default(uuid())
+  email     String  @unique
+  name      String
+  avatarUrl String? @map("avatar_url")
+
   // External auth ID (Clerk or Supabase)
-  authId        String   @unique @map("auth_id")
-  
+  authId String @unique @map("auth_id")
+
   // Metrics
-  totalDonated  Decimal  @default(0) @map("total_donated") @db.Decimal(12, 2)
-  
+  totalDonated Decimal @default(0) @map("total_donated") @db.Decimal(12, 2)
+
   // Metadata
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   // Relationships
   organizations OrganizationUser[]
-  donations     Transaction[] @relation("DonorTransactions")
-  
+  donations     Transaction[]      @relation("DonorTransactions")
+
   @@map("users")
 }
 
@@ -81,18 +81,18 @@ model OrganizationUser {
   userId         String   @map("user_id")
   organizationId String   @map("organization_id")
   role           UserRole @default(DONOR)
-  
+
   // Donor preferences
   anonymousDonor   Boolean @default(false) @map("anonymous_donor")
   showInHighlights Boolean @default(true) @map("show_in_highlights")
-  
+
   // Metadata
-  joinedAt         DateTime @default(now()) @map("joined_at")
-  
+  joinedAt DateTime @default(now()) @map("joined_at")
+
   // Relations
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
+
   @@unique([userId, organizationId])
   @@map("organization_users")
 }
@@ -109,48 +109,48 @@ enum UserRole {
 // ============================================
 
 model Account {
-  id             String      @id @default(uuid())
-  organizationId String      @map("organization_id")
-  
+  id             String @id @default(uuid())
+  organizationId String @map("organization_id")
+
   // Account details
-  code           String      // e.g., "1000", "1100", "4000"
-  name           String      // e.g., "Cash", "Checking Account", "Donation Revenue"
-  type           AccountType
-  description    String?     @db.Text
-  
+  code        String // e.g., "1000", "1100", "4000"
+  name        String // e.g., "Cash", "Checking Account", "Donation Revenue"
+  type        AccountType
+  description String?     @db.Text
+
   // Hierarchy
-  parentAccountId String?    @map("parent_account_id")
-  
+  parentAccountId String? @map("parent_account_id")
+
   // Status
-  isActive       Boolean     @default(true) @map("is_active")
-  
+  isActive Boolean @default(true) @map("is_active")
+
   // Balance (cached, calculated from transactions)
-  currentBalance Decimal     @default(0) @map("current_balance") @db.Decimal(12, 2)
-  
+  currentBalance Decimal @default(0) @map("current_balance") @db.Decimal(12, 2)
+
   // Metadata
-  createdAt      DateTime    @default(now()) @map("created_at")
-  updatedAt      DateTime    @updatedAt @map("updated_at")
-  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   // Relations
-  organization      Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  parentAccount     Account?      @relation("AccountHierarchy", fields: [parentAccountId], references: [id])
-  childAccounts     Account[]     @relation("AccountHierarchy")
-  
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  parentAccount Account?     @relation("AccountHierarchy", fields: [parentAccountId], references: [id])
+  childAccounts Account[]    @relation("AccountHierarchy")
+
   debitTransactions  Transaction[] @relation("DebitAccount")
   creditTransactions Transaction[] @relation("CreditAccount")
-  
-  bankAccount       BankAccount?
-  
+
+  bankAccount BankAccount?
+
   @@unique([organizationId, code])
   @@map("accounts")
 }
 
 enum AccountType {
-  ASSET      // e.g., Cash, Bank Account, Assets
-  LIABILITY  // e.g., Loans, Payables
-  EQUITY     // e.g., Retained Earnings, Fund Balance
-  REVENUE    // e.g., Donations, Grants, Fundraising
-  EXPENSE    // e.g., Programs, Administration, Fundraising costs
+  ASSET // e.g., Cash, Bank Account, Assets
+  LIABILITY // e.g., Loans, Payables
+  EQUITY // e.g., Retained Earnings, Fund Balance
+  REVENUE // e.g., Donations, Grants, Fundraising
+  EXPENSE // e.g., Programs, Administration, Fundraising costs
 }
 
 // ============================================
@@ -158,61 +158,61 @@ enum AccountType {
 // ============================================
 
 model Transaction {
-  id              String          @id @default(uuid())
-  organizationId  String          @map("organization_id")
-  
+  id             String @id @default(uuid())
+  organizationId String @map("organization_id")
+
   // Transaction details
   transactionDate DateTime        @map("transaction_date")
   amount          Decimal         @db.Decimal(12, 2)
   type            TransactionType
-  
+
   // Double-entry bookkeeping
-  debitAccountId  String          @map("debit_account_id")
-  creditAccountId String          @map("credit_account_id")
-  
+  debitAccountId  String @map("debit_account_id")
+  creditAccountId String @map("credit_account_id")
+
   // Metadata
-  description     String          @db.Text
-  category        String?         // e.g., "Donation", "Equipment", "Travel"
-  paymentMethod   PaymentMethod   @map("payment_method")
-  referenceNumber String?         @map("reference_number") // Check #, Venmo ID, etc.
-  
+  description     String        @db.Text
+  category        String? // e.g., "Donation", "Equipment", "Travel"
+  paymentMethod   PaymentMethod @map("payment_method")
+  referenceNumber String?       @map("reference_number") // Check #, Venmo ID, etc.
+
   // Donor information
-  donorUserId     String?         @map("donor_user_id")
-  donorName       String?         @map("donor_name") // For non-user donors
-  isAnonymous     Boolean         @default(false) @map("is_anonymous")
-  
+  donorUserId String? @map("donor_user_id")
+  donorName   String? @map("donor_name") // For non-user donors
+  isAnonymous Boolean @default(false) @map("is_anonymous")
+
   // Attachments
-  receiptUrl      String?         @map("receipt_url")
-  notes           String?         @db.Text
-  
+  receiptUrl String? @map("receipt_url")
+  notes      String? @db.Text
+
   // Reconciliation
-  bankTransactionId String?       @unique @map("bank_transaction_id")
-  reconciled        Boolean       @default(false)
-  reconciledAt      DateTime?     @map("reconciled_at")
-  
+  bankTransactionId String?   @unique @map("bank_transaction_id")
+  reconciled        Boolean   @default(false)
+  reconciledAt      DateTime? @map("reconciled_at")
+
   // Stripe integration
-  stripeSessionId   String?       @unique @map("stripe_session_id")
-  stripePaymentId   String?       @unique @map("stripe_payment_id")
-  
+  stripeSessionId String? @unique @map("stripe_session_id")
+  stripePaymentId String? @unique @map("stripe_payment_id")
+
   // Metadata
-  createdAt       DateTime        @default(now()) @map("created_at")
-  createdBy       String?         @map("created_by") // User ID who created
-  updatedAt       DateTime        @updatedAt @map("updated_at")
-  
+  createdAt DateTime @default(now()) @map("created_at")
+  createdBy String?  @map("created_by") // User ID who created
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   // Relations
-  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  debitAccount   Account          @relation("DebitAccount", fields: [debitAccountId], references: [id])
-  creditAccount  Account          @relation("CreditAccount", fields: [creditAccountId], references: [id])
-  donor          User?            @relation("DonorTransactions", fields: [donorUserId], references: [id])
-  
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  debitAccount  Account      @relation("DebitAccount", fields: [debitAccountId], references: [id])
+  creditAccount Account      @relation("CreditAccount", fields: [creditAccountId], references: [id])
+  donor         User?        @relation("DonorTransactions", fields: [donorUserId], references: [id])
+
   plannedPurchase PlannedPurchase? @relation("CompletedPurchase")
-  
+
   @@map("transactions")
 }
 
 enum TransactionType {
-  INCOME   // Money coming in
-  EXPENSE  // Money going out
+  INCOME // Money coming in
+  EXPENSE // Money going out
   TRANSFER // Between accounts
 }
 
@@ -230,35 +230,35 @@ enum PaymentMethod {
 // ============================================
 
 model PlannedPurchase {
-  id                  String               @id @default(uuid())
-  organizationId      String               @map("organization_id")
-  
+  id             String @id @default(uuid())
+  organizationId String @map("organization_id")
+
   // Purchase details
-  title               String
-  description         String               @db.Text
-  estimatedAmount     Decimal              @map("estimated_amount") @db.Decimal(12, 2)
-  targetDate          DateTime?            @map("target_date")
-  category            String?
-  
+  title           String
+  description     String    @db.Text
+  estimatedAmount Decimal   @map("estimated_amount") @db.Decimal(12, 2)
+  targetDate      DateTime? @map("target_date")
+  category        String?
+
   // Status
-  status              PurchaseStatus       @default(PLANNED)
-  priority            PurchasePriority     @default(MEDIUM)
-  
+  status   PurchaseStatus   @default(PLANNED)
+  priority PurchasePriority @default(MEDIUM)
+
   // Completion
-  actualTransactionId String?              @unique @map("actual_transaction_id")
-  actualAmount        Decimal?             @map("actual_amount") @db.Decimal(12, 2)
-  completedAt         DateTime?            @map("completed_at")
-  
+  actualTransactionId String?   @unique @map("actual_transaction_id")
+  actualAmount        Decimal?  @map("actual_amount") @db.Decimal(12, 2)
+  completedAt         DateTime? @map("completed_at")
+
   // Metadata
-  createdAt           DateTime             @default(now()) @map("created_at")
-  updatedAt           DateTime             @updatedAt @map("updated_at")
-  createdBy           String?              @map("created_by")
-  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdBy String?  @map("created_by")
+
   // Relations
-  organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  actualTransaction   Transaction?         @relation("CompletedPurchase", fields: [actualTransactionId], references: [id])
-  images              PurchaseImage[]
-  
+  organization      Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actualTransaction Transaction?    @relation("CompletedPurchase", fields: [actualTransactionId], references: [id])
+  images            PurchaseImage[]
+
   @@map("planned_purchases")
 }
 
@@ -276,16 +276,16 @@ enum PurchasePriority {
 }
 
 model PurchaseImage {
-  id                String          @id @default(uuid())
-  plannedPurchaseId String          @map("planned_purchase_id")
-  
-  url               String
-  caption           String?         @db.Text
-  uploadedAt        DateTime        @default(now()) @map("uploaded_at")
-  
+  id                String @id @default(uuid())
+  plannedPurchaseId String @map("planned_purchase_id")
+
+  url        String
+  caption    String?  @db.Text
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+
   // Relations
-  plannedPurchase   PlannedPurchase @relation(fields: [plannedPurchaseId], references: [id], onDelete: Cascade)
-  
+  plannedPurchase PlannedPurchase @relation(fields: [plannedPurchaseId], references: [id], onDelete: Cascade)
+
   @@map("purchase_images")
 }
 
@@ -294,31 +294,31 @@ model PurchaseImage {
 // ============================================
 
 model BankAccount {
-  id                String   @id @default(uuid())
-  organizationId    String   @map("organization_id")
-  accountId         String   @unique @map("account_id") // Links to Account (Chart of Accounts)
-  
+  id             String @id @default(uuid())
+  organizationId String @map("organization_id")
+  accountId      String @unique @map("account_id") // Links to Account (Chart of Accounts)
+
   // Bank details
-  bankName          String   @map("bank_name")
+  bankName           String  @map("bank_name")
   accountNumberLast4 String  @map("account_number_last4")
-  accountType       String?  @map("account_type") // checking, savings
-  
+  accountType        String? @map("account_type") // checking, savings
+
   // Plaid integration
-  plaidAccessToken  String?  @map("plaid_access_token") // Should be encrypted
-  plaidItemId       String?  @map("plaid_item_id")
-  
+  plaidAccessToken String? @map("plaid_access_token") // Should be encrypted
+  plaidItemId      String? @map("plaid_item_id")
+
   // Status
-  isActive          Boolean  @default(true) @map("is_active")
-  lastSyncedAt      DateTime? @map("last_synced_at")
-  
+  isActive     Boolean   @default(true) @map("is_active")
+  lastSyncedAt DateTime? @map("last_synced_at")
+
   // Metadata
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
-  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   // Relations
-  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  account           Account      @relation(fields: [accountId], references: [id])
-  
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  account      Account      @relation(fields: [accountId], references: [id])
+
   @@map("bank_accounts")
 }
 
@@ -327,19 +327,19 @@ model BankAccount {
 // ============================================
 
 model AuditLog {
-  id             String   @id @default(uuid())
-  organizationId String?  @map("organization_id")
-  userId         String   @map("user_id")
-  
-  action         String   // e.g., "CREATE_TRANSACTION", "UPDATE_ACCOUNT"
-  entityType     String   @map("entity_type") // e.g., "Transaction", "Account"
-  entityId       String   @map("entity_id")
-  
-  changes        Json?    // Store before/after values
-  ipAddress      String?  @map("ip_address")
-  userAgent      String?  @map("user_agent")
-  
-  createdAt      DateTime @default(now()) @map("created_at")
-  
+  id             String  @id @default(uuid())
+  organizationId String? @map("organization_id")
+  userId         String  @map("user_id")
+
+  action     String // e.g., "CREATE_TRANSACTION", "UPDATE_ACCOUNT"
+  entityType String @map("entity_type") // e.g., "Transaction", "Account"
+  entityId   String @map("entity_id")
+
+  changes   Json? // Store before/after values
+  ipAddress String? @map("ip_address")
+  userAgent String? @map("user_agent")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
   @@map("audit_logs")
 }

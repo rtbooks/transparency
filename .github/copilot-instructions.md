@@ -172,6 +172,22 @@ Fiscal year starts are organization-specific (stored in `Organization.fiscalYear
 - **QUICKSTART.md** - Step-by-step setup from scratch
 - **schema.prisma** - Database schema with relationships
 - **CONTRIBUTING.md** - Coding standards and commit conventions
+- **IMPLEMENTATION_CHECKLIST.md** - Development progress tracking
+
+## Progress Tracking
+
+**CRITICAL**: Keep IMPLEMENTATION_CHECKLIST.md up to date:
+- **After completing any task**, update the corresponding checkbox in `IMPLEMENTATION_CHECKLIST.md`
+- Mark items with `[x]` when completed
+- Update the "Progress Tracking" section with current phase and completion percentage
+- Update the "Last Updated" date
+- When a milestone is reached, update the milestone status (⏳ → ✅)
+
+**When to update**:
+- After implementing new features or components
+- After completing setup/configuration tasks
+- After completing testing or deployment steps
+- When moving between phases
 
 ## Common Pitfalls
 
@@ -179,5 +195,6 @@ Fiscal year starts are organization-specific (stored in `Organization.fiscalYear
 - **Don't** forget to run `npx prisma generate` after schema changes
 - **Don't** create single-sided transactions (always debit AND credit)
 - **Don't** expose raw Prisma errors to API responses (sanitize for security)
+- **Don't** forget to update IMPLEMENTATION_CHECKLIST.md after completing tasks
 - **Always** use Next.js Image component for optimization
 - **Always** disable git pagers when running git commands via CLI: `git --no-pager`
