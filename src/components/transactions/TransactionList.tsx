@@ -1,0 +1,445 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Transaction, Account } from '@prisma/client';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { formatCurrency } from '@/lib/utils/account-tree';
+import { ChevronLeft, ChevronRight, Download, Search } from 'lucide-react';
+
+interface TransactionWithAccounts extends Transaction {
+  debitAccount: Pick<Account, 'id' | 'code' | 'name' | 'type'>;
+  creditAccount: Pick<Account, 'id' | 'code' | 'name' | 'type'>;
+}
+
+interface TransactionListProps {
+  organizationSlug: string;
+}
+
+export function TransactionList({ organizationSlug }: TransactionListProps) {
+  const [transactions, setTransactions] = useState<TransactionWithAccounts[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<TransactionWithAccounts | null>(null);
+  
+  // Filters
+  const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const limit = 25;
+
+  const fetchTransactions = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+
+      if (typeFilter && typeFilter !== 'all') {
+        params.append('type', typeFilter);
+      }
+      if (search) {
+        params.append('search', search);
+      }
+      if (startDate) {
+        params.append('startDate', startDate);
+      }
+      if (endDate) {
+        params.append('endDate', endDate);
+      }
+
+      const response = await fetch(
+        `/api/organizations/${organizationSlug}/transactions?${params.toString()}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch transactions');
+      }
+
+      const data = await response.json();
+      setTransactions(data.transactions);
+      setTotalPages(data.pagination.totalPages);
+      setTotalCount(data.pagination.totalCount);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [page, typeFilter, startDate, endDate]);
+
+  const handleSearch = () => {
+    setPage(1); // Reset to first page
+    fetchTransactions();
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      // Fetch all transactions without pagination
+      const params = new URLSearchParams();
+      if (typeFilter && typeFilter !== 'all') {
+        params.append('type', typeFilter);
+      }
+      if (search) {
+        params.append('search', search);
+      }
+      if (startDate) {
+        params.append('startDate', startDate);
+      }
+      if (endDate) {
+        params.append('endDate', endDate);
+      }
+      params.append('limit', '10000'); // Large limit for export
+
+      const response = await fetch(
+        `/api/organizations/${organizationSlug}/transactions?${params.toString()}`
+      );
+      const data = await response.json();
+
+      // Generate CSV
+      const headers = [
+        'Date',
+        'Type',
+        'Debit Account',
+        'Credit Account',
+        'Amount',
+        'Description',
+        'Reference Number',
+      ];
+
+      const csvRows = [
+        headers.join(','),
+        ...data.transactions.map((t: TransactionWithAccounts) => [
+          new Date(t.transactionDate).toLocaleDateString(),
+          t.type,
+          `"${t.debitAccount.code} - ${t.debitAccount.name}"`,
+          `"${t.creditAccount.code} - ${t.creditAccount.name}"`,
+          t.amount,
+          `"${t.description}"`,
+          t.referenceNumber || '',
+        ].join(',')),
+      ];
+
+      // Download
+      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `transactions-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Export failed:', err);
+    }
+  };
+
+  const getTransactionTypeBadge = (type: string) => {
+    const variants: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'outline'; label: string }> = {
+      INCOME: { variant: 'default', label: 'Income' },
+      EXPENSE: { variant: 'destructive', label: 'Expense' },
+      TRANSFER: { variant: 'secondary', label: 'Transfer' },
+    };
+    const config = variants[type] || { variant: 'outline', label: type };
+    return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  if (loading && transactions.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-gray-500">Loading transactions...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+        <p className="text-sm text-red-600">Error: {error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Filters */}
+      <div className="flex flex-wrap items-end gap-4 rounded-lg border bg-white p-4">
+        <div className="flex-1 min-w-[200px]">
+          <label className="text-sm font-medium text-gray-700 mb-2 block">
+            Search
+          </label>
+          <div className="flex gap-2">
+            <Input
+              placeholder="Description or reference..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <Button onClick={handleSearch} size="sm">
+              <Search className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="min-w-[150px]">
+          <label className="text-sm font-medium text-gray-700 mb-2 block">
+            Type
+          </label>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="INCOME">Income</SelectItem>
+              <SelectItem value="EXPENSE">Expense</SelectItem>
+              <SelectItem value="TRANSFER">Transfer</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="min-w-[150px]">
+          <label className="text-sm font-medium text-gray-700 mb-2 block">
+            Start Date
+          </label>
+          <Input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+
+        <div className="min-w-[150px]">
+          <label className="text-sm font-medium text-gray-700 mb-2 block">
+            End Date
+          </label>
+          <Input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
+
+        <Button onClick={handleExportCSV} variant="outline" size="sm">
+          <Download className="mr-2 h-4 w-4" />
+          Export CSV
+        </Button>
+      </div>
+
+      {/* Transaction Count */}
+      <div className="text-sm text-gray-600">
+        Showing {transactions.length} of {totalCount} transactions
+      </div>
+
+      {/* Table */}
+      <div className="rounded-lg border bg-white">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Debit Account</TableHead>
+              <TableHead>Credit Account</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead>Reference</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {transactions.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                  No transactions found. Record your first transaction to get started.
+                </TableCell>
+              </TableRow>
+            ) : (
+              transactions.map((transaction) => (
+                <TableRow
+                  key={transaction.id}
+                  className="cursor-pointer hover:bg-gray-50"
+                  onClick={() => setSelectedTransaction(transaction)}
+                >
+                  <TableCell className="font-medium">
+                    {new Date(transaction.transactionDate).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>{getTransactionTypeBadge(transaction.type)}</TableCell>
+                  <TableCell>
+                    <div className="text-sm">
+                      <div className="font-medium text-gray-900">
+                        {transaction.debitAccount.code}
+                      </div>
+                      <div className="text-gray-500">{transaction.debitAccount.name}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm">
+                      <div className="font-medium text-gray-900">
+                        {transaction.creditAccount.code}
+                      </div>
+                      <div className="text-gray-500">{transaction.creditAccount.name}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-semibold text-gray-900">
+                    {formatCurrency(transaction.amount)}
+                  </TableCell>
+                  <TableCell className="max-w-xs truncate">
+                    {transaction.description}
+                  </TableCell>
+                  <TableCell className="text-gray-500">
+                    {transaction.referenceNumber || '—'}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-600">
+            Page {page} of {totalPages}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+            >
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages}
+            >
+              Next
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Transaction Detail Dialog */}
+      <Dialog open={!!selectedTransaction} onOpenChange={(open) => !open && setSelectedTransaction(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Transaction Details</DialogTitle>
+            <DialogDescription>
+              {selectedTransaction && new Date(selectedTransaction.transactionDate).toLocaleDateString()}
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedTransaction && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Type</label>
+                  <div className="mt-1">
+                    {getTransactionTypeBadge(selectedTransaction.type)}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Amount</label>
+                  <div className="mt-1 text-lg font-semibold">
+                    {formatCurrency(selectedTransaction.amount)}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700">Debit Account</label>
+                <div className="mt-1 rounded-lg border bg-gray-50 p-3">
+                  <div className="font-mono text-sm font-medium">
+                    {selectedTransaction.debitAccount.code}
+                  </div>
+                  <div className="text-gray-900">{selectedTransaction.debitAccount.name}</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {selectedTransaction.debitAccount.type}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700">Credit Account</label>
+                <div className="mt-1 rounded-lg border bg-gray-50 p-3">
+                  <div className="font-mono text-sm font-medium">
+                    {selectedTransaction.creditAccount.code}
+                  </div>
+                  <div className="text-gray-900">{selectedTransaction.creditAccount.name}</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {selectedTransaction.creditAccount.type}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700">Description</label>
+                <div className="mt-1 rounded-lg border bg-gray-50 p-3">
+                  {selectedTransaction.description}
+                </div>
+              </div>
+
+              {selectedTransaction.referenceNumber && (
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Reference Number</label>
+                  <div className="mt-1 rounded-lg border bg-gray-50 p-3 font-mono text-sm">
+                    {selectedTransaction.referenceNumber}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4 text-xs text-gray-500">
+                <div>
+                  <span className="font-medium">Created:</span>{' '}
+                  {new Date(selectedTransaction.createdAt).toLocaleString()}
+                </div>
+                <div>
+                  <span className="font-medium">ID:</span> {selectedTransaction.id.slice(0, 8)}...
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

@@ -3,6 +3,7 @@ import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { AccountTree } from '@/components/accounts/AccountTree';
 import { RecordTransactionButton } from '@/components/transactions/RecordTransactionButton';
+import { TransactionList } from '@/components/transactions/TransactionList';
 
 interface DashboardPageProps {
   params: { slug: string };
@@ -71,7 +72,19 @@ export default async function OrganizationDashboard({
         </div>
         
         <div className="space-y-8">
-          <AccountTree organizationSlug={params.slug} />
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Chart of Accounts
+            </h2>
+            <AccountTree organizationSlug={params.slug} />
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Transaction History
+            </h2>
+            <TransactionList organizationSlug={params.slug} />
+          </div>
         </div>
       </div>
     </div>

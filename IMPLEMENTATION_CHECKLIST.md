@@ -82,12 +82,12 @@ Track your progress as you build the Financial Transparency Platform.
 
 ### Transaction List
 
-- [ ] Create transaction table component
-- [ ] Add pagination
-- [ ] Implement filters (date, type, account)
-- [ ] Add search functionality
-- [ ] Create transaction detail view
-- [ ] Add export to CSV
+- [x] Create transaction table component
+- [x] Add pagination
+- [x] Implement filters (date, type, account)
+- [x] Add search functionality
+- [x] Create transaction detail view
+- [x] Add export to CSV
 
 **Milestone**: Working general ledger with transaction recording
 
