@@ -59,6 +59,37 @@ export async function POST(
       );
     }
 
+    // Validate deactivation: cannot deactivate if has active children
+    if (existingAccount.isActive) {
+      const activeChildren = await prisma.account.findFirst({
+        where: {
+          parentAccountId: existingAccount.id,
+          isActive: true,
+        },
+      });
+
+      if (activeChildren) {
+        return NextResponse.json(
+          { error: 'Cannot deactivate account with active child accounts. Deactivate children first.' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate activation: cannot activate if parent is inactive
+    if (!existingAccount.isActive && existingAccount.parentAccountId) {
+      const parentAccount = await prisma.account.findUnique({
+        where: { id: existingAccount.parentAccountId },
+      });
+
+      if (parentAccount && !parentAccount.isActive) {
+        return NextResponse.json(
+          { error: 'Cannot activate account because parent account is inactive. Activate parent first.' },
+          { status: 400 }
+        );
+      }
+    }
+
     // Toggle the isActive status
     const updatedAccount = await prisma.account.update({
       where: { id: params.id },
