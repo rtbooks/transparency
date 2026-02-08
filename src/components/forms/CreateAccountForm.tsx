@@ -38,7 +38,7 @@ const formSchema = z.object({
   code: z.string().min(1, 'Account code is required').max(20),
   name: z.string().min(1, 'Account name is required').max(100),
   type: z.enum(['ASSET', 'LIABILITY', 'EQUITY', 'REVENUE', 'EXPENSE']),
-  parentAccountId: z.string().optional(),
+  parentAccountId: z.string().optional().transform(val => val === 'none' ? undefined : val),
   description: z.string().max(500).optional(),
 });
 
@@ -71,7 +71,7 @@ export function CreateAccountForm({
       code: '',
       name: '',
       type: 'ASSET',
-      parentAccountId: '',
+      parentAccountId: 'none',
       description: '',
     },
   });
@@ -91,7 +91,7 @@ export function CreateAccountForm({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             ...values,
-            parentAccountId: values.parentAccountId || null,
+            parentAccountId: values.parentAccountId && values.parentAccountId !== 'none' ? values.parentAccountId : null,
           }),
         }
       );
@@ -188,7 +188,7 @@ export function CreateAccountForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="">None (top-level account)</SelectItem>
+                  <SelectItem value="none">None (top-level account)</SelectItem>
                   {availableParents.map((account) => (
                     <SelectItem key={account.id} value={account.id}>
                       {account.code} - {account.name}
