@@ -1,19 +1,15 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import { DashboardSummary } from '@/components/dashboard/DashboardSummary';
+import { TransactionList } from '@/components/transactions/TransactionList';
 import { RecordTransactionButton } from '@/components/transactions/RecordTransactionButton';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 
-interface DashboardPageProps {
+interface TransactionsPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default async function OrganizationDashboard({
-  params,
-}: DashboardPageProps) {
+export default async function TransactionsPage({ params }: TransactionsPageProps) {
   const { slug } = await params;
   const { userId: clerkUserId } = await auth();
 
@@ -21,16 +17,14 @@ export default async function OrganizationDashboard({
     redirect('/login');
   }
 
-  // First, find the user in our database by their Clerk auth ID
   const user = await prisma.user.findUnique({
     where: { authId: clerkUserId },
   });
 
   if (!user) {
-    redirect('/profile'); // Will create user record
+    redirect('/profile');
   }
 
-  // Now find the organization and check if user has access
   const organization = await prisma.organization.findUnique({
     where: { slug },
     include: {
@@ -44,15 +38,14 @@ export default async function OrganizationDashboard({
     notFound();
   }
 
-  // Check if user has access to this organization
   const userAccess = organization.organizationUsers[0];
-  if (!userAccess) {
+  if (!userAccess || (userAccess.role !== 'ORG_ADMIN' && userAccess.role !== 'PLATFORM_ADMIN')) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900">Access Denied</h1>
           <p className="mt-2 text-gray-600">
-            You don't have permission to access this organization's dashboard.
+            You don&apos;t have permission to view this page.
           </p>
         </div>
       </div>
@@ -63,32 +56,20 @@ export default async function OrganizationDashboard({
     <OrganizationLayoutWrapper organizationSlug={slug}>
       <div className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              {organization.name} Dashboard
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Role: {userAccess.role}
-            </p>
-          </div>
-          <div className="flex gap-2">
-            {userAccess.role === 'ORG_ADMIN' && (
-              <>
-                <Link href={`/org/${slug}/settings`}>
-                  <Button variant="outline">Settings</Button>
-                </Link>
-                <Link href={`/org/${slug}/users`}>
-                  <Button variant="outline">Manage Users</Button>
-                </Link>
-              </>
-            )}
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Transactions
+              </h1>
+              <p className="mt-2 text-gray-600">
+                View, search, and export your organization&apos;s transaction history.
+              </p>
+            </div>
             <RecordTransactionButton organizationSlug={slug} />
           </div>
+
+          <TransactionList organizationSlug={slug} />
         </div>
-        
-        <DashboardSummary organizationSlug={slug} />
-      </div>
       </div>
     </OrganizationLayoutWrapper>
   );

@@ -37,21 +37,25 @@ export async function POST(
     // Find the current user and their role
     const user = await prisma.user.findUnique({
       where: { authId: clerkUserId },
-      include: {
+      select: {
+        id: true,
+        isPlatformAdmin: true,
         organizations: {
           where: { organizationId: organization.id },
         },
       },
     });
 
-    if (!user || user.organizations.length === 0) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const currentUserRole = user.organizations[0].role;
+    const currentUserRole = user.organizations[0]?.role;
 
-    // Only ORG_ADMIN and PLATFORM_ADMIN can invite users
-    if (!hasRole(currentUserRole, 'ORG_ADMIN')) {
+    // Platform admins or ORG_ADMIN can invite users
+    const canInvite = user.isPlatformAdmin || (currentUserRole && hasRole(currentUserRole, 'ORG_ADMIN'));
+    
+    if (!canInvite) {
       return NextResponse.json(
         { error: 'Only organization admins can invite users' },
         { status: 403 }

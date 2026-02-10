@@ -457,10 +457,6 @@ export type EnumUserRoleFieldUpdateOperationsInput = {
   set?: $Enums.UserRole
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type OrganizationUserCreateWithoutOrganizationInput = {
   id?: string
   role?: $Enums.UserRole

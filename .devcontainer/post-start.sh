@@ -13,7 +13,7 @@ done
 echo "✅ PostgreSQL is ready!"
 
 # Change to project directory
-cd /workspace/transparency/transparency-platform 2>/dev/null || cd /workspace/transparency
+cd /workspace
 
 # Check if Prisma schema exists and database needs initialization
 if [ -f "prisma/schema.prisma" ]; then

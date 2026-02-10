@@ -63,6 +63,9 @@ model User {
   // External auth ID (Clerk or Supabase)
   authId String @unique @map("auth_id")
 
+  // Platform admin flag (system-wide, not org-specific)
+  isPlatformAdmin Boolean @default(false) @map("is_platform_admin")
+
   // Metrics
   totalDonated Decimal @default(0) @map("total_donated") @db.Decimal(12, 2)
 

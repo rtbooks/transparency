@@ -40,6 +40,7 @@ export type UserMinAggregateOutputType = {
   name: string | null
   avatarUrl: string | null
   authId: string | null
+  isPlatformAdmin: boolean | null
   totalDonated: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -51,6 +52,7 @@ export type UserMaxAggregateOutputType = {
   name: string | null
   avatarUrl: string | null
   authId: string | null
+  isPlatformAdmin: boolean | null
   totalDonated: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -62,6 +64,7 @@ export type UserCountAggregateOutputType = {
   name: number
   avatarUrl: number
   authId: number
+  isPlatformAdmin: number
   totalDonated: number
   createdAt: number
   updatedAt: number
@@ -83,6 +86,7 @@ export type UserMinAggregateInputType = {
   name?: true
   avatarUrl?: true
   authId?: true
+  isPlatformAdmin?: true
   totalDonated?: true
   createdAt?: true
   updatedAt?: true
@@ -94,6 +98,7 @@ export type UserMaxAggregateInputType = {
   name?: true
   avatarUrl?: true
   authId?: true
+  isPlatformAdmin?: true
   totalDonated?: true
   createdAt?: true
   updatedAt?: true
@@ -105,6 +110,7 @@ export type UserCountAggregateInputType = {
   name?: true
   avatarUrl?: true
   authId?: true
+  isPlatformAdmin?: true
   totalDonated?: true
   createdAt?: true
   updatedAt?: true
@@ -203,6 +209,7 @@ export type UserGroupByOutputType = {
   name: string
   avatarUrl: string | null
   authId: string
+  isPlatformAdmin: boolean
   totalDonated: runtime.Decimal
   createdAt: Date
   updatedAt: Date
@@ -237,6 +244,7 @@ export type UserWhereInput = {
   name?: Prisma.StringFilter<"User"> | string
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
   authId?: Prisma.StringFilter<"User"> | string
+  isPlatformAdmin?: Prisma.BoolFilter<"User"> | boolean
   totalDonated?: Prisma.DecimalFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -251,6 +259,7 @@ export type UserOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   authId?: Prisma.SortOrder
+  isPlatformAdmin?: Prisma.SortOrder
   totalDonated?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -268,6 +277,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   name?: Prisma.StringFilter<"User"> | string
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  isPlatformAdmin?: Prisma.BoolFilter<"User"> | boolean
   totalDonated?: Prisma.DecimalFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -282,6 +292,7 @@ export type UserOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   authId?: Prisma.SortOrder
+  isPlatformAdmin?: Prisma.SortOrder
   totalDonated?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -301,6 +312,7 @@ export type UserScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
   avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   authId?: Prisma.StringWithAggregatesFilter<"User"> | string
+  isPlatformAdmin?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   totalDonated?: Prisma.DecimalWithAggregatesFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -312,6 +324,7 @@ export type UserCreateInput = {
   name: string
   avatarUrl?: string | null
   authId: string
+  isPlatformAdmin?: boolean
   totalDonated?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -326,6 +339,7 @@ export type UserUncheckedCreateInput = {
   name: string
   avatarUrl?: string | null
   authId: string
+  isPlatformAdmin?: boolean
   totalDonated?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -340,6 +354,7 @@ export type UserUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -354,6 +369,7 @@ export type UserUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -368,6 +384,7 @@ export type UserCreateManyInput = {
   name: string
   avatarUrl?: string | null
   authId: string
+  isPlatformAdmin?: boolean
   totalDonated?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -379,6 +396,7 @@ export type UserUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -390,6 +408,7 @@ export type UserUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -401,6 +420,7 @@ export type UserCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   authId?: Prisma.SortOrder
+  isPlatformAdmin?: Prisma.SortOrder
   totalDonated?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -416,6 +436,7 @@ export type UserMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   authId?: Prisma.SortOrder
+  isPlatformAdmin?: Prisma.SortOrder
   totalDonated?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -427,6 +448,7 @@ export type UserMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   authId?: Prisma.SortOrder
+  isPlatformAdmin?: Prisma.SortOrder
   totalDonated?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -444,6 +466,10 @@ export type UserScalarRelationFilter = {
 export type UserNullableScalarRelationFilter = {
   is?: Prisma.UserWhereInput | null
   isNot?: Prisma.UserWhereInput | null
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type DecimalFieldUpdateOperationsInput = {
@@ -504,6 +530,7 @@ export type UserCreateWithoutOrganizationsInput = {
   name: string
   avatarUrl?: string | null
   authId: string
+  isPlatformAdmin?: boolean
   totalDonated?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -517,6 +544,7 @@ export type UserUncheckedCreateWithoutOrganizationsInput = {
   name: string
   avatarUrl?: string | null
   authId: string
+  isPlatformAdmin?: boolean
   totalDonated?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -546,6 +574,7 @@ export type UserUpdateWithoutOrganizationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -559,6 +588,7 @@ export type UserUncheckedUpdateWithoutOrganizationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -572,6 +602,7 @@ export type UserCreateWithoutDonationsInput = {
   name: string
   avatarUrl?: string | null
   authId: string
+  isPlatformAdmin?: boolean
   totalDonated?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -585,6 +616,7 @@ export type UserUncheckedCreateWithoutDonationsInput = {
   name: string
   avatarUrl?: string | null
   authId: string
+  isPlatformAdmin?: boolean
   totalDonated?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -614,6 +646,7 @@ export type UserUpdateWithoutDonationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -627,6 +660,7 @@ export type UserUncheckedUpdateWithoutDonationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -640,6 +674,7 @@ export type UserCreateWithoutInvitationsSentInput = {
   name: string
   avatarUrl?: string | null
   authId: string
+  isPlatformAdmin?: boolean
   totalDonated?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -653,6 +688,7 @@ export type UserUncheckedCreateWithoutInvitationsSentInput = {
   name: string
   avatarUrl?: string | null
   authId: string
+  isPlatformAdmin?: boolean
   totalDonated?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -682,6 +718,7 @@ export type UserUpdateWithoutInvitationsSentInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -695,6 +732,7 @@ export type UserUncheckedUpdateWithoutInvitationsSentInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -757,6 +795,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   name?: boolean
   avatarUrl?: boolean
   authId?: boolean
+  isPlatformAdmin?: boolean
   totalDonated?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -772,6 +811,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   avatarUrl?: boolean
   authId?: boolean
+  isPlatformAdmin?: boolean
   totalDonated?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -783,6 +823,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   avatarUrl?: boolean
   authId?: boolean
+  isPlatformAdmin?: boolean
   totalDonated?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -794,12 +835,13 @@ export type UserSelectScalar = {
   name?: boolean
   avatarUrl?: boolean
   authId?: boolean
+  isPlatformAdmin?: boolean
   totalDonated?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "avatarUrl" | "authId" | "totalDonated" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "avatarUrl" | "authId" | "isPlatformAdmin" | "totalDonated" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organizations?: boolean | Prisma.User$organizationsArgs<ExtArgs>
   donations?: boolean | Prisma.User$donationsArgs<ExtArgs>
@@ -822,6 +864,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     name: string
     avatarUrl: string | null
     authId: string
+    isPlatformAdmin: boolean
     totalDonated: runtime.Decimal
     createdAt: Date
     updatedAt: Date
@@ -1256,6 +1299,7 @@ export interface UserFieldRefs {
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly avatarUrl: Prisma.FieldRef<"User", 'String'>
   readonly authId: Prisma.FieldRef<"User", 'String'>
+  readonly isPlatformAdmin: Prisma.FieldRef<"User", 'Boolean'>
   readonly totalDonated: Prisma.FieldRef<"User", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>

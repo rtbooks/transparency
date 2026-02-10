@@ -22,7 +22,12 @@ export async function TopNavWrapper({
     // Fetch user with their organizations
     const dbUser = await prisma.user.findUnique({
       where: { authId: clerkUserId },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatarUrl: true,
+        isPlatformAdmin: true,
         organizations: {
           include: {
             organization: true,
@@ -32,17 +37,12 @@ export async function TopNavWrapper({
     });
 
     if (dbUser) {
-      // Check if user is platform admin
-      const isPlatformAdmin = dbUser.organizations.some(
-        (org) => org.role === 'PLATFORM_ADMIN'
-      );
-
       user = {
         id: dbUser.id,
         name: dbUser.name,
         email: dbUser.email,
         avatarUrl: dbUser.avatarUrl,
-        isPlatformAdmin,
+        isPlatformAdmin: dbUser.isPlatformAdmin,
       };
 
       // Map user organizations

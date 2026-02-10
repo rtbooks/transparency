@@ -23,6 +23,10 @@ export async function PATCH(
     // Find the current user
     const currentUser = await prisma.user.findUnique({
       where: { authId: clerkUserId },
+      select: {
+        id: true,
+        isPlatformAdmin: true,
+      },
     });
 
     if (!currentUser) {
@@ -50,7 +54,11 @@ export async function PATCH(
     }
 
     const currentUserOrgAccess = organization.organizationUsers[0];
-    if (!currentUserOrgAccess || currentUserOrgAccess.role === 'DONOR') {
+    
+    // Platform admins can modify roles, otherwise need ORG_ADMIN or higher
+    const canManageRoles = currentUser.isPlatformAdmin || (currentUserOrgAccess && currentUserOrgAccess.role !== 'DONOR');
+    
+    if (!canManageRoles) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
@@ -71,8 +79,11 @@ export async function PATCH(
     const body = await request.json();
     const { role: newRole } = updateRoleSchema.parse(body);
 
+    // Determine current user's effective role (PLATFORM_ADMIN if isPlatformAdmin, otherwise org role)
+    const effectiveRole = currentUser.isPlatformAdmin ? 'PLATFORM_ADMIN' : currentUserOrgAccess?.role;
+
     // Check if current user can modify this role
-    if (!canModifyRole(currentUserOrgAccess.role, targetOrgUser.role, newRole)) {
+    if (!effectiveRole || !canModifyRole(effectiveRole, targetOrgUser.role, newRole)) {
       return NextResponse.json(
         { error: 'Insufficient permissions to assign this role' },
         { status: 403 }

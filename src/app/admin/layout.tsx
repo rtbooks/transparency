@@ -18,21 +18,15 @@ export default async function AdminLayout({
   // Find user and check if they're a platform admin
   const user = await prisma.user.findUnique({
     where: { authId: clerkUserId },
-    include: {
-      organizations: {
-        where: {
-          role: 'PLATFORM_ADMIN',
-        },
-      },
+    select: {
+      id: true,
+      name: true,
+      isPlatformAdmin: true,
     },
   });
 
-  // Check if user is a platform admin in at least one organization
-  const isPlatformAdmin = user?.organizations.some(
-    (org) => org.role === 'PLATFORM_ADMIN'
-  );
-
-  if (!user || !isPlatformAdmin) {
+  // Check platform admin status from user field
+  if (!user || !user.isPlatformAdmin) {
     redirect('/');
   }
 

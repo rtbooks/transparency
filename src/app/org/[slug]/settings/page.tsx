@@ -21,6 +21,7 @@ export default async function OrganizationSettingsPage({
   // Find the user in our database
   const user = await prisma.user.findUnique({
     where: { authId: clerkUserId },
+    select: { id: true, isPlatformAdmin: true },
   });
 
   if (!user) {
@@ -43,8 +44,10 @@ export default async function OrganizationSettingsPage({
 
   const userAccess = organization.organizationUsers[0];
   
-  // Only ORG_ADMIN and PLATFORM_ADMIN can access settings
-  if (!userAccess || (userAccess.role !== 'ORG_ADMIN' && userAccess.role !== 'PLATFORM_ADMIN')) {
+  // Platform admins have access, otherwise need ORG_ADMIN role in this org
+  const hasAccess = user.isPlatformAdmin || (userAccess && userAccess.role === 'ORG_ADMIN');
+  
+  if (!hasAccess) {
     return (
       <OrganizationLayoutWrapper organizationSlug={slug}>
         <div className="flex min-h-screen items-center justify-center">

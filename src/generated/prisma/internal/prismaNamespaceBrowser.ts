@@ -102,6 +102,7 @@ export const UserScalarFieldEnum = {
   name: 'name',
   avatarUrl: 'avatarUrl',
   authId: 'authId',
+  isPlatformAdmin: 'isPlatformAdmin',
   totalDonated: 'totalDonated',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

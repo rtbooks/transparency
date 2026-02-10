@@ -114,17 +114,54 @@ export async function isOrgAdminRole(
 
 /**
  * Check if user is PLATFORM_ADMIN
+ * Platform admin is a system-wide flag, not tied to organization membership
  */
 export async function isPlatformAdminRole(clerkUserId: string): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { authId: clerkUserId },
-    include: {
-      organizations: {
-        where: { role: 'PLATFORM_ADMIN' },
-        take: 1,
-      },
-    },
+    select: { isPlatformAdmin: true },
   });
 
-  return user ? user.organizations.length > 0 : false;
+  return user?.isPlatformAdmin ?? false;
+}
+
+/**
+ * Get user's org access or check if platform admin
+ * Platform admins have full access to all organizations
+ */
+export async function getUserOrgAccessOrPlatformAdmin(
+  clerkUserId: string,
+  organizationSlug: string
+): Promise<UserOrgAccess | null> {
+  // Find user in database
+  const user = await prisma.user.findUnique({
+    where: { authId: clerkUserId },
+    select: { id: true, isPlatformAdmin: true },
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  // Platform admins have full access
+  if (user.isPlatformAdmin) {
+    const organization = await prisma.organization.findUnique({
+      where: { slug: organizationSlug },
+      select: { id: true },
+    });
+
+    if (!organization) {
+      return null;
+    }
+
+    return {
+      userId: user.id,
+      organizationId: organization.id,
+      role: 'PLATFORM_ADMIN' as UserRole,
+      permissions: getRolePermissions('PLATFORM_ADMIN'),
+    };
+  }
+
+  // Otherwise check organization membership
+  return getUserOrgAccess(clerkUserId, organizationSlug);
 }

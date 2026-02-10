@@ -25,6 +25,10 @@ export async function DELETE(
     // Find the user in our database
     const user = await prisma.user.findUnique({
       where: { authId: clerkUserId },
+      select: {
+        id: true,
+        isPlatformAdmin: true,
+      },
     });
 
     if (!user) {
@@ -50,11 +54,10 @@ export async function DELETE(
 
     const userAccess = organization.organizationUsers[0];
 
-    // Only ORG_ADMIN and PLATFORM_ADMIN can revoke invitations
-    if (
-      !userAccess ||
-      (userAccess.role !== 'ORG_ADMIN' && userAccess.role !== 'PLATFORM_ADMIN')
-    ) {
+    // Platform admins or ORG_ADMIN can revoke invitations
+    const canRevoke = user.isPlatformAdmin || (userAccess && userAccess.role === 'ORG_ADMIN');
+    
+    if (!canRevoke) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

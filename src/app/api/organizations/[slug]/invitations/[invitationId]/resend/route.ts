@@ -26,6 +26,10 @@ export async function POST(
     // Find the user in our database
     const user = await prisma.user.findUnique({
       where: { authId: clerkUserId },
+      select: {
+        id: true,
+        isPlatformAdmin: true,
+      },
     });
 
     if (!user) {
@@ -51,11 +55,10 @@ export async function POST(
 
     const userAccess = organization.organizationUsers[0];
 
-    // Only ORG_ADMIN and PLATFORM_ADMIN can resend invitations
-    if (
-      !userAccess ||
-      (userAccess.role !== 'ORG_ADMIN' && userAccess.role !== 'PLATFORM_ADMIN')
-    ) {
+    // Platform admins or ORG_ADMIN can resend invitations
+    const canResend = user.isPlatformAdmin || (userAccess && userAccess.role === 'ORG_ADMIN');
+    
+    if (!canResend) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
