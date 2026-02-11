@@ -30,6 +30,7 @@ async function getUserOrganizations(clerkUserId: string) {
           name: true,
           slug: true,
           status: true,
+          verificationStatus: true,
           _count: {
             select: {
               transactions: true,
