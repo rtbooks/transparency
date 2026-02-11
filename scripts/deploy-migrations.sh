@@ -1,46 +1,61 @@
 #!/bin/bash
-set +e  # Don't exit on error initially
+set -e  # Exit on any error
 
-echo "Running database migrations..."
+echo "=================================="
+echo "Database Migration Deployment"
+echo "=================================="
+echo ""
 
-# Try to run migrations and capture output
-output=$(npx prisma migrate deploy 2>&1)
-exit_code=$?
-
-echo "$output"
-
-# Check if the error is about non-empty database (P3005) or failed migrations (P3009)
-if [ $exit_code -ne 0 ]; then
-  if echo "$output" | grep -q "P3005"; then
-    echo ""
-    echo "Database is not empty. Marking baseline migration as applied..."
-    npx prisma migrate resolve --applied 20260211000000_initial
-    
-    echo ""
-    echo "Re-running migrations..."
-    npx prisma migrate deploy
-    
-    exit_code=$?
-  elif echo "$output" | grep -q "P3009"; then
-    echo ""
-    echo "Found failed migrations. Rolling back failed migration..."
-    npx prisma migrate resolve --rolled-back 0_init || true
-    
-    echo ""
-    echo "Marking baseline migration as applied..."
-    npx prisma migrate resolve --applied 20260211000000_initial
-    
-    echo ""
-    echo "Re-running migrations..."
-    npx prisma migrate deploy
-    
-    exit_code=$?
-  fi
-fi
-
-if [ $exit_code -ne 0 ]; then
-  echo "Migration failed!"
+# Check for required environment variables
+if [ -z "$DATABASE_URL" ]; then
+  echo "❌ ERROR: DATABASE_URL environment variable is not set"
   exit 1
 fi
 
-echo "Migrations completed successfully!"
+echo "✓ Environment variables found"
+echo "  DATABASE_URL: ${DATABASE_URL:0:30}..."
+if [ ! -z "$DATABASE_URL_UNPOOLED" ]; then
+  echo "  DATABASE_URL_UNPOOLED: ${DATABASE_URL_UNPOOLED:0:30}..."
+fi
+if [ ! -z "$DIRECT_DATABASE_URL" ]; then
+  echo "  DIRECT_DATABASE_URL: ${DIRECT_DATABASE_URL:0:30}..."
+fi
+echo ""
+
+# Determine which database URL to use for migrations
+# Priority: DATABASE_URL_UNPOOLED > DIRECT_DATABASE_URL > DATABASE_URL
+MIGRATION_URL="${DATABASE_URL_UNPOOLED:-${DIRECT_DATABASE_URL:-$DATABASE_URL}}"
+
+if [ "$MIGRATION_URL" != "$DATABASE_URL" ]; then
+  echo "ℹ️  Using direct/unpooled connection for migrations"
+else
+  echo "⚠️  WARNING: Using pooled connection for migrations (not recommended)"
+  echo "   Add DATABASE_URL_UNPOOLED to Vercel environment variables"
+fi
+echo ""
+
+echo "Running: npx prisma migrate deploy"
+echo "----------------------------------"
+
+# Run migrations with proper error handling
+if ! npx prisma migrate deploy; then
+  echo ""
+  echo "❌ Migration failed!"
+  echo ""
+  echo "Common issues:"
+  echo "  1. Database connection timeout"
+  echo "  2. Missing DATABASE_URL_UNPOOLED variable"
+  echo "  3. Migration conflicts"
+  echo ""
+  echo "Debug info:"
+  npx prisma -v
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo "✅ Migrations completed successfully!"
+echo ""
+echo "Applied migrations:"
+npx prisma migrate status || true
+echo ""
