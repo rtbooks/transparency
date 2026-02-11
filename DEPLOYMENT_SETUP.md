@@ -159,6 +159,14 @@ Vercel should auto-detect these, but verify:
 
 Before deploying, click **"Environment Variables"** and add all of the following:
 
+#### Platform Administration
+```
+PLATFORM_ADMIN_EMAILS=<your email address>
+```
+**Important:** Set this to your email address. When you register with this email, you'll automatically become a platform administrator with full system access.
+
+You can add multiple emails separated by commas: `admin@example.com,owner@example.com`
+
 #### Database
 ```
 DATABASE_URL=<paste Neon POOLED connection string>
@@ -314,14 +322,28 @@ After adding the webhook secret, trigger a redeployment:
 
 ## Step 9: Create Your First Organization
 
-### 9.1 Register Account
+### 9.1 Register Platform Admin Account
 
 1. Visit your production URL: `https://your-app-name.vercel.app`
-2. Click **"Register"** and create an account
+2. Click **"Register"** and create an account **using the email you set in `PLATFORM_ADMIN_EMAILS`**
 3. Verify your email (via Clerk)
 4. Complete profile setup
 
-### 9.2 Create Organization
+**Important:** You'll automatically be granted platform admin privileges because your email matches the `PLATFORM_ADMIN_EMAILS` environment variable.
+
+### 9.2 Verify Admin Access
+
+After registration, you should have access to:
+- `/admin/dashboard` - Platform administration
+- `/admin/organizations` - Manage all organizations
+- `/admin/users` - View all users
+
+If you don't see these admin routes, verify:
+1. Your email in Clerk matches exactly what's in `PLATFORM_ADMIN_EMAILS`
+2. The environment variable is set in Vercel (check Settings → Environment Variables)
+3. You registered a new account (existing users won't be auto-promoted)
+
+### 9.3 Create Organization
 
 1. After login, you'll be redirected to create an organization
 2. Fill in organization details:

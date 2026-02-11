@@ -25,6 +25,11 @@ export default async function ProfilePage() {
 
   // Create user if doesn't exist
   if (!dbUser) {
+    // Check if this user should be a platform admin
+    const adminEmails = process.env.PLATFORM_ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
+    const userEmail = user.emailAddresses[0]?.emailAddress.toLowerCase() || '';
+    const isPlatformAdmin = adminEmails.includes(userEmail);
+
     dbUser = await prisma.user.create({
       data: {
         authId: user.id,
@@ -33,6 +38,7 @@ export default async function ProfilePage() {
           ? `${user.firstName} ${user.lastName}`
           : user.username || 'User',
         avatarUrl: user.imageUrl,
+        isPlatformAdmin,
       },
       include: {
         organizations: {
@@ -42,6 +48,10 @@ export default async function ProfilePage() {
         },
       },
     });
+
+    if (isPlatformAdmin) {
+      console.log(`✅ Platform admin created: ${dbUser.email}`);
+    }
 
     // Check for pending invitations for this email
     const pendingInvitations = await prisma.invitation.findMany({
