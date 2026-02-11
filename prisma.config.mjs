@@ -1,0 +1,30 @@
+import { defineConfig } from "prisma/config";
+import { config } from "dotenv";
+import { resolve } from "path";
+
+// Only load .env files in local development
+// In Vercel, environment variables are injected directly
+if (process.env.NODE_ENV !== "production") {
+  config({ path: resolve(process.cwd(), ".env.local") });
+  config({ path: resolve(process.cwd(), ".env") });
+}
+
+const databaseUrl = process.env.DIRECT_DATABASE_URL || process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error(
+    "Missing database connection string. Set DIRECT_DATABASE_URL or DATABASE_URL environment variable."
+  );
+}
+
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  datasource: {
+    // For Neon: use DIRECT_DATABASE_URL (non-pooler) for migrations.
+    // Falls back to DATABASE_URL for local dev where pooling isn't used.
+    url: databaseUrl,
+  },
+  migrations: {
+    path: "prisma/migrations",
+  },
+});
