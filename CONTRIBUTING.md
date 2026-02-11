@@ -72,12 +72,45 @@ Mockups, examples, etc.
 
 ### Pull Requests
 
-1. **Fork the repository** and create your branch from `main`
+**IMPORTANT: The `main` branch is protected. All changes MUST go through a branch and pull request.**
+
+#### Workflow
+
+1. **Create a feature branch** from `main`:
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b feature/your-feature-name
+   # or: fix/bug-description, docs/update-readme, etc.
+   ```
+
 2. **Make your changes** following our coding standards
 3. **Add tests** if applicable
 4. **Update documentation** if needed
 5. **Ensure tests pass**: `npm test`
-6. **Create a Pull Request**
+6. **Commit your changes** with clear messages (see format below)
+7. **Push to your branch**:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+8. **Create a Pull Request** on GitHub:
+   - Target the `main` branch
+   - Fill out the PR template
+   - Request review from maintainers
+   - Address any review comments
+
+9. **After approval**, a maintainer will merge your PR
+
+#### Branch Naming Convention
+
+Use descriptive branch names with prefixes:
+- `feature/` - New features (e.g., `feature/bulk-transaction-import`)
+- `fix/` - Bug fixes (e.g., `fix/donation-webhook-signature`)
+- `docs/` - Documentation updates (e.g., `docs/update-deployment-guide`)
+- `refactor/` - Code refactoring (e.g., `refactor/account-tree-component`)
+- `test/` - Test additions/updates (e.g., `test/add-accounting-tests`)
+- `chore/` - Maintenance tasks (e.g., `chore/update-dependencies`)
 
 #### Pull Request Guidelines
 
@@ -87,6 +120,7 @@ Mockups, examples, etc.
 - Add tests for new features
 - Ensure all tests pass
 - Follow the existing code style
+- Link related issues in PR description
 
 #### Commit Message Format
 
