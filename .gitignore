@@ -72,6 +72,7 @@ logs
 tmp/
 temp/
 *.tmp
+*.bak
 
 # Editor directories and files
 .project
