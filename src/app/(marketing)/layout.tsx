@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
-import { UserButton } from "@clerk/nextjs";
+import { MarketingNav } from "./MarketingNav";
 
 export default async function MarketingLayout({
   children,
@@ -12,55 +12,7 @@ export default async function MarketingLayout({
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Marketing navigation */}
-      <header className="border-b bg-white">
-        <nav className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="text-xl font-bold">
-              Transparency Platform
-            </Link>
-            <div className="hidden gap-6 md:flex">
-              <Link href="/about" className="text-sm text-gray-600 hover:text-gray-900">
-                About
-              </Link>
-              <Link href="/organizations" className="text-sm text-gray-600 hover:text-gray-900">
-                Organizations
-              </Link>
-              <Link href="/features" className="text-sm text-gray-600 hover:text-gray-900">
-                Features
-              </Link>
-              <Link href="/contact" className="text-sm text-gray-600 hover:text-gray-900">
-                Contact
-              </Link>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            {user ? (
-              <>
-                <Link
-                  href="/profile"
-                  className="text-sm text-gray-600 hover:text-gray-900"
-                >
-                  {user.firstName || "Profile"}
-                </Link>
-                <UserButton afterSignOutUrl="/" />
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900">
-                  Sign In
-                </Link>
-                <Link
-                  href="/register"
-                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                >
-                  Get Started
-                </Link>
-              </>
-            )}
-          </div>
-        </nav>
-      </header>
+      <MarketingNav user={user} />
 
       <main className="flex-1">
         <Suspense fallback={<div>Loading...</div>}>
