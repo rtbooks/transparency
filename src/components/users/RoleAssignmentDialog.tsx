@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@/generated/prisma/client';
 import {
   Dialog,
   DialogContent,

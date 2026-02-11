@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Organization } from '@prisma/client';
+import { Organization } from '@/generated/prisma/client';
 import {
   Form,
   FormControl,

@@ -4,7 +4,7 @@
  * Tracks important actions and changes for security and compliance
  */
 
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@/generated/prisma/client';
 
 export type AuditAction =
   | 'USER_ROLE_CHANGED'

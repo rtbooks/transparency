@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { AccountTreeNode, buildAccountTree } from '@/lib/utils/account-tree';
 import { AccountTreeNodeComponent } from './AccountTreeNode';
-import { Account } from '@prisma/client';
+import { Account } from '@/generated/prisma/client';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Transaction, Account } from '@prisma/client';
+import { Transaction, Account } from '@/generated/prisma/client';
 import {
   Table,
   TableBody,

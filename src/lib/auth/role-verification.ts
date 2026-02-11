@@ -5,7 +5,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@/generated/prisma/client';
 import { hasRole, hasPermission, RolePermissions, getRolePermissions } from './permissions';
 
 export interface UserOrgAccess {

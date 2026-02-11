@@ -4,7 +4,7 @@
  * These utilities help enforce permissions throughout the application.
  */
 
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@/generated/prisma/client';
 
 /**
  * Permission levels in ascending order

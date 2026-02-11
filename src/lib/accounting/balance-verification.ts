@@ -1,4 +1,4 @@
-import { AccountType, Transaction } from '@prisma/client';
+import { AccountType, Transaction } from '@/generated/prisma/client';
 import { calculateNewBalance } from './balance-calculator';
 
 /**

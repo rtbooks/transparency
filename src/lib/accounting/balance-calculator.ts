@@ -1,4 +1,4 @@
-import { AccountType } from '@prisma/client';
+import { AccountType } from '@/generated/prisma/client';
 
 /**
  * Calculate updated balance for an account based on a transaction

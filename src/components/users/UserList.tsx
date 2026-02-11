@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { UserRole, OrganizationUser } from '@prisma/client';
+import { UserRole, OrganizationUser } from '@/generated/prisma/client';
 import {
   Table,
   TableBody,
