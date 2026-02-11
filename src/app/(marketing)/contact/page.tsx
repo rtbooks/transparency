@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Contact | Financial Transparency Platform",
@@ -47,12 +48,12 @@ export default function ContactPage() {
               <p className="mb-4 text-gray-600">
                 Learn about the platform and how it works
               </p>
-              <a
+              <Link
                 href="/about"
                 className="text-blue-600 hover:text-blue-700"
               >
                 Read About Us →
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -146,12 +147,12 @@ export default function ContactPage() {
             <p className="mb-8 text-lg text-gray-600">
               Create your free account and start building trust with your donors today.
             </p>
-            <a
+            <Link
               href="/register"
               className="inline-block rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white hover:bg-blue-700"
             >
               Get Started Free
-            </a>
+            </Link>
           </div>
         </div>
       </section>

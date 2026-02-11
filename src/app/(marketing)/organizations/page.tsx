@@ -92,12 +92,12 @@ export default async function OrganizationsPage() {
               <p className="mb-6 text-gray-600">
                 Be one of the first nonprofits to join our transparency platform!
               </p>
-              <a
+              <Link
                 href="/register"
                 className="inline-block rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
               >
                 Get Started
-              </a>
+              </Link>
             </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -149,18 +149,18 @@ export default async function OrganizationsPage() {
               your donors and community.
             </p>
             <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <a
+              <Link
                 href="/register"
                 className="rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white hover:bg-blue-700"
               >
                 Get Started Free
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/about"
                 className="rounded-lg border-2 border-gray-300 px-8 py-3 font-semibold text-gray-700 hover:border-gray-400"
               >
                 Learn More
-              </a>
+              </Link>
             </div>
           </div>
         </div>

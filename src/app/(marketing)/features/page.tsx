@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Features | Financial Transparency Platform",
@@ -172,18 +173,18 @@ export default function FeaturesPage() {
               See how easy it is to bring complete transparency to your nonprofit.
             </p>
             <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <a
+              <Link
                 href="/register"
                 className="rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white hover:bg-blue-700"
               >
                 Create Free Account
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/organizations"
                 className="rounded-lg border-2 border-gray-300 px-8 py-3 font-semibold text-gray-700 hover:border-gray-400"
               >
                 See Examples
-              </a>
+              </Link>
             </div>
           </div>
         </div>

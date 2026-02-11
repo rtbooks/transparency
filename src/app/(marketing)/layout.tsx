@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 
 export default function MarketingLayout({
   children,
@@ -7,38 +8,38 @@ export default function MarketingLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Marketing navigation will go here */}
+      {/* Marketing navigation */}
       <header className="border-b bg-white">
         <nav className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-8">
-            <a href="/" className="text-xl font-bold">
+            <Link href="/" className="text-xl font-bold">
               Transparency Platform
-            </a>
+            </Link>
             <div className="hidden gap-6 md:flex">
-              <a href="/about" className="text-sm text-gray-600 hover:text-gray-900">
+              <Link href="/about" className="text-sm text-gray-600 hover:text-gray-900">
                 About
-              </a>
-              <a href="/organizations" className="text-sm text-gray-600 hover:text-gray-900">
+              </Link>
+              <Link href="/organizations" className="text-sm text-gray-600 hover:text-gray-900">
                 Organizations
-              </a>
-              <a href="/features" className="text-sm text-gray-600 hover:text-gray-900">
+              </Link>
+              <Link href="/features" className="text-sm text-gray-600 hover:text-gray-900">
                 Features
-              </a>
-              <a href="/contact" className="text-sm text-gray-600 hover:text-gray-900">
+              </Link>
+              <Link href="/contact" className="text-sm text-gray-600 hover:text-gray-900">
                 Contact
-              </a>
+              </Link>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <a href="/login" className="text-sm text-gray-600 hover:text-gray-900">
+            <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900">
               Sign In
-            </a>
-            <a
+            </Link>
+            <Link
               href="/register"
               className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
             >
               Get Started
-            </a>
+            </Link>
           </div>
         </nav>
       </header>
@@ -49,35 +50,63 @@ export default function MarketingLayout({
         </Suspense>
       </main>
 
-      {/* Footer will be enhanced later */}
+      {/* Footer */}
       <footer className="border-t bg-gray-50 py-12">
         <div className="container mx-auto px-4">
           <div className="grid gap-8 md:grid-cols-4">
             <div>
               <h3 className="mb-4 font-semibold">Product</h3>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><a href="/features">Features</a></li>
-                <li><a href="/organizations">Organizations</a></li>
+                <li>
+                  <Link href="/features" className="hover:text-gray-900">
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/organizations" className="hover:text-gray-900">
+                    Organizations
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
               <h3 className="mb-4 font-semibold">Company</h3>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><a href="/about">About</a></li>
-                <li><a href="/contact">Contact</a></li>
+                <li>
+                  <Link href="/about" className="hover:text-gray-900">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-gray-900">
+                    Contact
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
               <h3 className="mb-4 font-semibold">Legal</h3>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><a href="/terms">Terms of Service</a></li>
-                <li><a href="/privacy">Privacy Policy</a></li>
+                <li>
+                  <Link href="/terms" className="hover:text-gray-900">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className="hover:text-gray-900">
+                    Privacy Policy
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
               <h3 className="mb-4 font-semibold">Connect</h3>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><a href="mailto:hello@transparency.org">Email</a></li>
+                <li>
+                  <a href="mailto:hello@transparency.org" className="hover:text-gray-900">
+                    Email
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
