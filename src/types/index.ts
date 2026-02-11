@@ -7,7 +7,7 @@ export type {
   PlannedPurchase,
   OrganizationUser,
   BankAccount,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 
 // Export Prisma enums
 export {
@@ -17,4 +17,4 @@ export {
   AccountType,
   TransactionType,
   PurchaseStatus,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
