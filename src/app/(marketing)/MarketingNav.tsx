@@ -35,11 +35,6 @@ export function MarketingNav({ user }: MarketingNavProps) {
             <Link href="/contact" className="text-sm text-gray-600 hover:text-gray-900">
               Contact
             </Link>
-            {user?.isPlatformAdmin && (
-              <Link href="/admin" className="text-sm font-medium text-blue-600 hover:text-blue-800">
-                Platform Admin
-              </Link>
-            )}
           </div>
         </div>
         
@@ -52,7 +47,51 @@ export function MarketingNav({ user }: MarketingNavProps) {
               >
                 {user.firstName || "Profile"}
               </Link>
-              <UserButton afterSignOutUrl="/" />
+              <UserButton afterSignOutUrl="/">
+                <UserButton.MenuItems>
+                  <UserButton.Link
+                    label="Profile"
+                    labelIcon={
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                    }
+                    href="/profile"
+                  />
+                  {user.isPlatformAdmin && (
+                    <UserButton.Link
+                      label="Platform Admin"
+                      labelIcon={
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                        </svg>
+                      }
+                      href="/admin/dashboard"
+                    />
+                  )}
+                </UserButton.MenuItems>
+              </UserButton>
             </>
           ) : (
             <>
@@ -116,16 +155,6 @@ export function MarketingNav({ user }: MarketingNavProps) {
               >
                 Contact
               </Link>
-              
-              {user?.isPlatformAdmin && (
-                <Link
-                  href="/admin"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50"
-                >
-                  Platform Admin
-                </Link>
-              )}
               
               {!user && (
                 <>
