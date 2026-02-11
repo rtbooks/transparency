@@ -8,7 +8,12 @@ export default async function MarketingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await currentUser();
+  const clerkUser = await currentUser();
+  
+  // Serialize user data for client component
+  const user = clerkUser ? {
+    firstName: clerkUser.firstName,
+  } : null;
 
   return (
     <div className="flex min-h-screen flex-col">
