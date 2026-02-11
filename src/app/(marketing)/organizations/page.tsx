@@ -11,6 +11,7 @@ async function getOrganizations() {
   const organizations = await prisma.organization.findMany({
     where: {
       status: "ACTIVE",
+      verificationStatus: "VERIFIED", // Only show verified organizations
     },
     select: {
       id: true,

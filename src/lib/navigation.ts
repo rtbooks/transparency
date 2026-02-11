@@ -40,6 +40,7 @@ export function getOrganizationNavLinks(
 export function getPlatformAdminNavLinks(): NavLink[] {
   return [
     { label: 'Dashboard', href: '/admin/dashboard' },
+    { label: 'Verifications', href: '/admin/verifications' },
     { label: 'Organizations', href: '/admin/organizations' },
     { label: 'Users', href: '/admin/users' },
     { label: 'Analytics', href: '/admin/analytics' },

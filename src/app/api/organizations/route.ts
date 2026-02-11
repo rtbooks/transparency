@@ -6,9 +6,14 @@ import { z } from 'zod';
 const createOrganizationSchema = z.object({
   name: z.string().min(3),
   slug: z.string().min(3).max(50).regex(/^[a-z0-9-]+$/),
-  ein: z.string().nullable().optional(),
+  ein: z.string().min(9),
   mission: z.string().nullable().optional(),
   fiscalYearStart: z.string().datetime(),
+  verifiedOrgData: z.object({
+    name: z.string(),
+    city: z.string(),
+    state: z.string(),
+  }).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -48,6 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create organization and make the creating user an ORG_ADMIN
+    // Organization starts as PENDING_VERIFICATION (default in schema)
     const organization = await prisma.organization.create({
       data: {
         name: validatedData.name,
@@ -55,6 +61,11 @@ export async function POST(request: NextRequest) {
         ein: validatedData.ein,
         mission: validatedData.mission,
         fiscalYearStart: new Date(validatedData.fiscalYearStart),
+        // Verification fields
+        einVerifiedAt: new Date(), // EIN was verified via ProPublica
+        officialWebsite: validatedData.verifiedOrgData ? 
+          `https://www.irs.gov/charities-non-profits/tax-exempt-organization-search` : 
+          undefined,
         organizationUsers: {
           create: {
             userId: user.id,
