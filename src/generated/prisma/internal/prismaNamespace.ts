@@ -1202,6 +1202,13 @@ export const OrganizationScalarFieldEnum = {
   fiscalYearStart: 'fiscalYearStart',
   status: 'status',
   subscriptionTier: 'subscriptionTier',
+  verificationStatus: 'verificationStatus',
+  einVerifiedAt: 'einVerifiedAt',
+  verifiedAt: 'verifiedAt',
+  verifiedBy: 'verifiedBy',
+  verificationNotes: 'verificationNotes',
+  officialWebsite: 'officialWebsite',
+  determinationLetterUrl: 'determinationLetterUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1467,6 +1474,20 @@ export type EnumSubscriptionTierFieldRefInput<$PrismaModel> = FieldRefInputType<
  * Reference to a field of type 'SubscriptionTier[]'
  */
 export type ListEnumSubscriptionTierFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SubscriptionTier[]'>
+    
+
+
+/**
+ * Reference to a field of type 'VerificationStatus'
+ */
+export type EnumVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'VerificationStatus[]'
+ */
+export type ListEnumVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationStatus[]'>
     
 
 

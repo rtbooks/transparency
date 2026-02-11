@@ -18,6 +18,16 @@ export const OrganizationStatus = {
 export type OrganizationStatus = (typeof OrganizationStatus)[keyof typeof OrganizationStatus]
 
 
+export const VerificationStatus = {
+  PENDING_VERIFICATION: 'PENDING_VERIFICATION',
+  VERIFIED: 'VERIFIED',
+  VERIFICATION_FAILED: 'VERIFICATION_FAILED',
+  SUSPENDED: 'SUSPENDED'
+} as const
+
+export type VerificationStatus = (typeof VerificationStatus)[keyof typeof VerificationStatus]
+
+
 export const SubscriptionTier = {
   FREE: 'FREE',
   PREMIUM: 'PREMIUM',
