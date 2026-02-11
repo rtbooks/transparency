@@ -8,6 +8,7 @@ import { UserButton } from "@clerk/nextjs";
 interface MarketingNavProps {
   user: {
     firstName?: string | null;
+    isPlatformAdmin?: boolean;
   } | null;
 }
 
@@ -34,6 +35,11 @@ export function MarketingNav({ user }: MarketingNavProps) {
             <Link href="/contact" className="text-sm text-gray-600 hover:text-gray-900">
               Contact
             </Link>
+            {user?.isPlatformAdmin && (
+              <Link href="/admin" className="text-sm font-medium text-blue-600 hover:text-blue-800">
+                Platform Admin
+              </Link>
+            )}
           </div>
         </div>
         
@@ -110,6 +116,16 @@ export function MarketingNav({ user }: MarketingNavProps) {
               >
                 Contact
               </Link>
+              
+              {user?.isPlatformAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="rounded-md px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50"
+                >
+                  Platform Admin
+                </Link>
+              )}
               
               {!user && (
                 <>
