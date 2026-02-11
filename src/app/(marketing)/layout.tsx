@@ -1,11 +1,15 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { currentUser } from "@clerk/nextjs/server";
+import { UserButton } from "@clerk/nextjs";
 
-export default function MarketingLayout({
+export default async function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await currentUser();
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* Marketing navigation */}
@@ -31,15 +35,29 @@ export default function MarketingLayout({
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900">
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              Get Started
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  href="/profile"
+                  className="text-sm text-gray-600 hover:text-gray-900"
+                >
+                  {user.firstName || "Profile"}
+                </Link>
+                <UserButton afterSignOutUrl="/" />
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900">
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       </header>
