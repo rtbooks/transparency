@@ -1,5 +1,57 @@
 # Copilot Instructions - Financial Transparency Platform
 
+## 🔒 CRITICAL: Branch Protection Workflow
+
+**The `main` branch is PROTECTED. Direct commits are NOT allowed.**
+
+### REQUIRED WORKFLOW - ALWAYS FOLLOW
+
+1. ✅ **Create a feature branch** before making ANY changes
+2. ✅ **Make all changes on the feature branch**
+3. ✅ **Commit and push the feature branch**
+4. ✅ **Create a Pull Request** targeting `main`
+5. ⏳ Wait for review and approval
+6. ✅ Maintainer merges after approval
+
+### Branch Naming Convention
+
+```bash
+feature/<description>  # New features
+fix/<description>      # Bug fixes
+docs/<description>     # Documentation updates
+refactor/<description> # Code refactoring
+test/<description>     # Test changes
+chore/<description>    # Maintenance tasks
+```
+
+### Example Workflow
+
+```bash
+# Start new work
+git checkout main
+git pull origin main
+git checkout -b feature/add-export-feature
+
+# Make changes and commit
+git add -A
+git commit -m "feat: add transaction export to CSV"
+
+# Push branch and create PR
+git push origin feature/add-export-feature
+# Then create PR via GitHub web interface
+```
+
+### ❌ NEVER Do This
+
+```bash
+# DON'T commit directly to main
+git checkout main
+git commit -m "some change"
+git push origin main  # ❌ This will be REJECTED
+```
+
+---
+
 ## Project Overview
 
 A Next.js 14 SaaS platform providing radical financial transparency for 501(c)(3) charitable organizations. Built with TypeScript, Prisma, PostgreSQL, and Shadcn/ui.
@@ -19,10 +71,10 @@ npm run dev  # Start after container builds
 ### Database Commands
 ```bash
 npx prisma generate          # Generate Prisma Client after schema changes
-npx prisma db push          # Push schema to database (dev)
-npx prisma db seed          # Seed with sample data
+npx prisma migrate dev --name description  # Create migration (production-ready)
+npx prisma migrate deploy    # Apply migrations (production)
+npx prisma db seed          # Seed with sample data (dev only)
 npx prisma studio           # Open database GUI at localhost:5555
-npx prisma migrate dev      # Create migration (production-ready)
 ```
 
 ### Running Tests
@@ -32,6 +84,7 @@ npm test                    # Run all tests
 npm run test:watch         # Run tests in watch mode
 npm run type-check         # TypeScript type checking
 npm run lint              # Run ESLint
+npm run build             # Build for production
 ```
 
 ### Environment Setup
@@ -125,11 +178,52 @@ npx shadcn-ui@latest add [component-name]
 
 ## Key Files & Locations
 
-- `schema.prisma` (workspace root) - Database schema, copied to `prisma/schema.prisma` during setup
+- `prisma/schema.prisma` - Database schema (single source of truth)
+- `prisma.config.mjs` - Prisma configuration (at project root)
 - `src/lib/prisma.ts` - Prisma Client singleton (prevents multiple instances)
 - `src/lib/accounting/` - Double-entry logic and calculations
 - `src/middleware.ts` - Clerk auth middleware with public route configuration
 - `.env.local` - Local environment variables (git-ignored, create from `.env.example`)
+
+## Commit Message Format
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+
+**Examples:**
+```
+feat(transactions): add bulk CSV import functionality
+
+Allows users to import multiple transactions from CSV files.
+Validates against chart of accounts and provides error feedback.
+
+Closes #123
+```
+
+```
+fix(migrations): handle existing ENUMs in deploy script
+
+Updates migration deployment script to detect and skip
+existing database objects when rerunning failed migrations.
+
+Fixes #456
+```
 
 ## Testing Approach
 
@@ -170,7 +264,7 @@ Fiscal year starts are organization-specific (stored in `Organization.fiscalYear
 - **APPROACH.md** - Complete technical architecture and business model
 - **PROJECT_STRUCTURE.md** - Folder structure and routing patterns
 - **QUICKSTART.md** - Step-by-step setup from scratch
-- **schema.prisma** - Database schema with relationships
+- **DEPLOYMENT_SETUP.md** - Production deployment guide
 - **CONTRIBUTING.md** - Coding standards and commit conventions
 - **IMPLEMENTATION_CHECKLIST.md** - Development progress tracking
 
@@ -189,6 +283,17 @@ Fiscal year starts are organization-specific (stored in `Organization.fiscalYear
 - After completing testing or deployment steps
 - When moving between phases
 
+## Deployment
+
+Deployments happen automatically when PRs are merged to `main`:
+1. PR merged → triggers Vercel deployment
+2. Migrations run automatically via `scripts/deploy-migrations.sh`
+3. Prisma Client generated
+4. Next.js app builds
+5. Deployment goes live
+
+**No manual deployment needed!**
+
 ## Common Pitfalls
 
 - **Don't** use `any` types - Prisma generates types, use them
@@ -196,5 +301,41 @@ Fiscal year starts are organization-specific (stored in `Organization.fiscalYear
 - **Don't** create single-sided transactions (always debit AND credit)
 - **Don't** expose raw Prisma errors to API responses (sanitize for security)
 - **Don't** forget to update IMPLEMENTATION_CHECKLIST.md after completing tasks
+- **Don't** commit directly to main (use feature branches)
 - **Always** use Next.js Image component for optimization
 - **Always** disable git pagers when running git commands via CLI: `git --no-pager`
+
+## Quick Reference Commands
+
+**Start new work:**
+```bash
+git checkout main && git pull && git checkout -b feature/my-feature
+```
+
+**After making changes:**
+```bash
+git add -A
+git commit -m "feat: description of changes"
+git push origin feature/my-feature
+# Then create PR via GitHub
+```
+
+**Update branch with latest main:**
+```bash
+git checkout main && git pull
+git checkout feature/my-feature
+git rebase main  # or: git merge main
+```
+
+**Database workflow:**
+```bash
+# After schema changes
+npx prisma generate
+npx prisma migrate dev --name description
+# Test locally, then commit migration files
+```
+
+---
+
+**Remember: ALWAYS work on a feature branch. NEVER push directly to `main`.**
+
