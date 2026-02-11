@@ -179,8 +179,10 @@ You can add multiple emails separated by commas: `admin@example.com,owner@exampl
 #### Database
 ```
 DATABASE_URL=<paste Neon POOLED connection string>
-DIRECT_DATABASE_URL=<paste Neon DIRECT connection string>
+DATABASE_URL_UNPOOLED=<paste Neon DIRECT connection string>
 ```
+
+**Note:** If using Vercel's Neon integration, these are automatically provided. Only set manually if not using the integration.
 
 #### Clerk Authentication
 ```
@@ -547,7 +549,7 @@ When you need to make changes to your database schema in the future:
 
 **Migration fails on Vercel:**
 - Check build logs for the specific error
-- Verify `DIRECT_DATABASE_URL` is set in Vercel env vars
+- Verify `DATABASE_URL_UNPOOLED` is set in Vercel env vars (or `DIRECT_DATABASE_URL` for manual setup)
 - Test the migration locally with the same database state
 
 **Need to rollback a migration:**

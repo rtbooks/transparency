@@ -25,7 +25,7 @@ When you push a feature branch and create a PR, Vercel automatically creates a p
 
 **That's it!** The integration automatically:
 - Creates database branches for preview deployments
-- Injects correct `DATABASE_URL` and `DIRECT_DATABASE_URL`
+- Injects correct `DATABASE_URL` and `DATABASE_URL_UNPOOLED`
 - Deletes branches when PRs are closed
 
 ### Step 2: Verify Configuration
@@ -35,7 +35,7 @@ When you push a feature branch and create a PR, Vercel automatically creates a p
    
 2. **Vercel Dashboard** → Your Project → Settings → Environment Variables
    - `DATABASE_URL` should show "Provided by Neon Integration"
-   - `DIRECT_DATABASE_URL` should show "Provided by Neon Integration"
+   - `DATABASE_URL_UNPOOLED` should show "Provided by Neon Integration"
 
 ### Step 3: Test the Flow
 
@@ -73,13 +73,13 @@ The integration automatically provides different database URLs based on the depl
 **Production (main branch):**
 ```
 DATABASE_URL=postgresql://...@ep-xxx-pooler.aws.neon.tech/neondb
-DIRECT_DATABASE_URL=postgresql://...@ep-xxx.aws.neon.tech/neondb
+DATABASE_URL_UNPOOLED=postgresql://...@ep-xxx.aws.neon.tech/neondb
 ```
 
 **Preview (any other branch):**
 ```
 DATABASE_URL=postgresql://...@ep-yyy-pooler.aws.neon.tech/neondb?options=branch%3Dfeature%2Fexport
-DIRECT_DATABASE_URL=postgresql://...@ep-yyy.aws.neon.tech/neondb?options=branch%3Dfeature%2Fexport
+DATABASE_URL_UNPOOLED=postgresql://...@ep-yyy.aws.neon.tech/neondb?options=branch%3Dfeature%2Fexport
 ```
 
 ### Data Inheritance
