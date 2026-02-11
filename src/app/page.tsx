@@ -1,13 +1,43 @@
-export default function Home() {
+import { Suspense } from "react";
+import { currentUser } from "@clerk/nextjs/server";
+import { Hero } from "@/components/marketing/Hero";
+import { SocialProof } from "@/components/marketing/SocialProof";
+import { HowItWorks } from "@/components/marketing/HowItWorks";
+import { Features } from "@/components/marketing/Features";
+import { FeaturedOrganizations } from "@/components/marketing/FeaturedOrganizations";
+import { ForNonprofits } from "@/components/marketing/ForNonprofits";
+import { UserDashboard } from "@/components/marketing/UserDashboard";
+
+export default async function Home() {
+  const user = await currentUser();
+
+  // If user is logged in, show personalized dashboard
+  if (user) {
+    return (
+      <Suspense fallback={<div className="p-8">Loading...</div>}>
+        <UserDashboard user={user} />
+      </Suspense>
+    );
+  }
+
+  // If not logged in, show marketing landing page
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="text-center">
-        <h1 className="mb-4 text-6xl font-bold">Financial Transparency Platform</h1>
-        <p className="mb-8 text-xl text-gray-600">
-          Bringing radical transparency to charitable organizations
-        </p>
-        <p className="text-sm text-gray-500">Development environment ready! 🎉</p>
-      </div>
-    </main>
+    <div className="bg-white">
+      <Hero />
+      
+      <Suspense fallback={<div className="py-8" />}>
+        <SocialProof />
+      </Suspense>
+
+      <HowItWorks />
+
+      <Features />
+
+      <Suspense fallback={<div className="py-8" />}>
+        <FeaturedOrganizations />
+      </Suspense>
+
+      <ForNonprofits />
+    </div>
   );
 }
