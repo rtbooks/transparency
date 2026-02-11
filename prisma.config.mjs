@@ -1,6 +1,6 @@
-import { defineConfig } from "prisma/config";
 import { config } from "dotenv";
 import { resolve } from "path";
+import { defineConfig } from "prisma/config";
 
 // Only load .env files in local development
 // In Vercel, environment variables are injected directly
@@ -26,6 +26,5 @@ export default defineConfig({
   },
   migrations: {
     path: "prisma/migrations",
-    seed: "tsx prisma/seed.ts",
   },
 });
