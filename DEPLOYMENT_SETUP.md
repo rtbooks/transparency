@@ -9,9 +9,18 @@ This guide will deploy:
 - **PostgreSQL database** → Neon (serverless, auto-suspends after 5 min idle)
 - **Authentication** → Clerk
 - **Payment processing** → Stripe
+- **Preview environments** → Automatic with Neon branch databases (see PREVIEW_DEPLOYMENTS.md)
 
 **Cost when idle:** $0/month  
 **Cost under light use:** $0-5/month
+
+---
+
+## Related Documentation
+
+- **PREVIEW_DEPLOYMENTS.md** - Set up automatic preview environments for PRs
+- **CONTRIBUTING.md** - Development workflow and branch protection
+- **QUICKSTART.md** - Local development setup
 
 ---
 
@@ -549,6 +558,57 @@ npx prisma migrate resolve --rolled-back 20260211_migration_name
 # Create a new migration that reverts the changes
 npx prisma migrate dev --name revert_previous_change
 ```
+
+---
+
+## Preview Deployments & Database Branches
+
+**Want to test changes before merging to production?**
+
+Vercel automatically creates preview deployments for every branch you push. With Neon's branching feature, each preview can have its own isolated database!
+
+### Quick Setup
+
+1. **Install Neon's Vercel Integration**
+   - Go to [Vercel Integrations → Neon](https://vercel.com/integrations/neon)
+   - Click "Add Integration"
+   - Select your Vercel project and Neon database
+   - That's it!
+
+2. **How it works:**
+   ```
+   Push feature branch → Vercel creates preview → Neon creates database branch
+   ```
+   - Database branches are copies of production
+   - Changes are isolated (don't affect production)
+   - Auto-deleted when PR is closed
+
+3. **Benefits:**
+   - ✅ Test database migrations safely in preview
+   - ✅ Preview with realistic production data
+   - ✅ Catch issues before merging to main
+   - ✅ No manual database management
+
+### Example Workflow
+
+```bash
+# Create feature branch
+git checkout -b feature/add-export
+
+# Make changes, create migration
+npx prisma migrate dev --name add_export_feature
+
+# Push branch
+git push origin feature/add-export
+# → Vercel creates preview with isolated Neon database branch
+# → Migrations run against preview database only
+# → Test in preview environment
+
+# If everything works, merge PR
+# → Preview database automatically deleted
+```
+
+**For complete setup instructions and troubleshooting, see: [PREVIEW_DEPLOYMENTS.md](./PREVIEW_DEPLOYMENTS.md)**
 
 ---
 
