@@ -1,8 +1,8 @@
 import { auth } from '@clerk/nextjs/server';
-import { redirect, notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 import { OrganizationSettingsForm } from '@/components/forms/OrganizationSettingsForm';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
+import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
 
 interface OrganizationSettingsPageProps {
   params: Promise<{ slug: string }>;
@@ -18,31 +18,7 @@ export default async function OrganizationSettingsPage({
     redirect('/login');
   }
 
-  // Find the user in our database
-  const user = await prisma.user.findUnique({
-    where: { authId: clerkUserId },
-    select: { id: true, isPlatformAdmin: true },
-  });
-
-  if (!user) {
-    redirect('/profile');
-  }
-
-  // Find organization and check if user has access
-  const organization = await prisma.organization.findUnique({
-    where: { slug },
-    include: {
-      organizationUsers: {
-        where: { userId: user.id },
-      },
-    },
-  });
-
-  if (!organization) {
-    notFound();
-  }
-
-  const userAccess = organization.organizationUsers[0];
+  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId, false);
   
   // Platform admins have access, otherwise need ORG_ADMIN role in this org
   const hasAccess = user.isPlatformAdmin || (userAccess && userAccess.role === 'ORG_ADMIN');
@@ -60,6 +36,16 @@ export default async function OrganizationSettingsPage({
         </div>
       </OrganizationLayoutWrapper>
     );
+  }
+
+  const verificationMessage = VerificationStatusMessage({
+    status: organization.verificationStatus,
+    organizationName: organization.name,
+    notes: organization.verificationNotes,
+  });
+
+  if (verificationMessage) {
+    return verificationMessage;
   }
 
   return (

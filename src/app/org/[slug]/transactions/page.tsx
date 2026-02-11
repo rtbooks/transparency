@@ -1,9 +1,9 @@
 import { auth } from '@clerk/nextjs/server';
-import { redirect, notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 import { TransactionList } from '@/components/transactions/TransactionList';
 import { RecordTransactionButton } from '@/components/transactions/RecordTransactionButton';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
+import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
 
 interface TransactionsPageProps {
   params: Promise<{ slug: string }>;
@@ -17,29 +17,9 @@ export default async function TransactionsPage({ params }: TransactionsPageProps
     redirect('/login');
   }
 
-  const user = await prisma.user.findUnique({
-    where: { authId: clerkUserId },
-  });
+  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId, false);
 
-  if (!user) {
-    redirect('/profile');
-  }
-
-  const organization = await prisma.organization.findUnique({
-    where: { slug },
-    include: {
-      organizationUsers: {
-        where: { userId: user.id },
-      },
-    },
-  });
-
-  if (!organization) {
-    notFound();
-  }
-
-  const userAccess = organization.organizationUsers[0];
-  if (!userAccess || (userAccess.role !== 'ORG_ADMIN' && userAccess.role !== 'PLATFORM_ADMIN')) {
+  if (!userAccess || (userAccess.role !== 'ORG_ADMIN' && !user.isPlatformAdmin)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -50,6 +30,16 @@ export default async function TransactionsPage({ params }: TransactionsPageProps
         </div>
       </div>
     );
+  }
+
+  const verificationMessage = VerificationStatusMessage({
+    status: organization.verificationStatus,
+    organizationName: organization.name,
+    notes: organization.verificationNotes,
+  });
+
+  if (verificationMessage) {
+    return verificationMessage;
   }
 
   return (
