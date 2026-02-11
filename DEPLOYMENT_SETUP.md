@@ -207,63 +207,32 @@ NODE_ENV=production
 
 ---
 
-## Step 6: Initialize Database
+## Step 6: Deploy and Verify
 
-After successful Vercel deployment, you need to push your Prisma schema to the Neon database.
+### 6.1 Monitor Deployment
 
-**Important:** The production database will be empty initially - no seed data is created. The first user to register will need to create the first organization through the application UI.
+1. Vercel will automatically deploy from your latest commit
+2. Watch the build logs for any errors
+3. The deployment process will:
+   - Install dependencies (`npm install`)
+   - Run database migrations (`prisma migrate deploy`)
+   - Generate Prisma Client (`prisma generate`)
+   - Build the Next.js app (`next build`)
 
-### Option A: Via Vercel CLI (Recommended)
+**Database migrations are automatic!** Vercel runs `prisma migrate deploy` during each deployment, which:
+- Applies any pending migrations from `prisma/migrations/`
+- Ensures your database schema matches your code
+- Tracks migration history in the `_prisma_migrations` table
+- Is safe to run multiple times (idempotent)
 
-1. Install Vercel CLI:
-   ```bash
-   npm install -g vercel
-   ```
+### 6.2 Verify Deployment Success
 
-2. Link your local project to Vercel:
-   ```bash
-   vercel link
-   ```
+After deployment completes:
+1. Visit your production URL: `https://your-app-name.vercel.app`
+2. You should see the homepage
+3. The database schema is now deployed and ready
 
-3. Pull environment variables:
-   ```bash
-   vercel env pull .env.local
-   ```
-
-4. Push database schema:
-   ```bash
-   npx prisma db push
-   ```
-
-### Option B: Via Local Environment Variables
-
-1. Create `.env.local` in your project root:
-   ```bash
-   # Copy from .env.example
-   cp .env.example .env.local
-   ```
-
-2. Edit `.env.local` and add your production values:
-   ```
-   DATABASE_URL=<Neon pooled URL>
-   DIRECT_DATABASE_URL=<Neon direct URL>
-   ```
-
-3. Push schema to database:
-   ```bash
-   npx prisma db push
-   ```
-
-### 6.1 Verify Database
-
-Check that tables were created:
-```bash
-npx prisma studio
-```
-
-You should see all tables: `Organization`, `User`, `Account`, `Transaction`, etc.
-
-**Note:** All tables will be empty. This is expected for production - you'll create your first organization through the UI after deployment.
+**Note:** The database starts empty - no seed data is created in production. Organizations and users are created through the application UI.
 
 ---
 
@@ -519,6 +488,67 @@ When your organization grows beyond free tiers:
 - Upgrade when users exceed 10,000
 
 **Total monthly cost at scale:** ~$64/mo for a growing organization with multiple active users.
+
+---
+
+## Database Schema Changes
+
+When you need to make changes to your database schema in the future:
+
+### Development Workflow
+
+1. **Update the Prisma schema** (`prisma/schema.prisma`):
+   ```prisma
+   model Organization {
+     // Add new field
+     description String?
+   }
+   ```
+
+2. **Create a migration**:
+   ```bash
+   npx prisma migrate dev --name add_organization_description
+   ```
+
+   This will:
+   - Generate a new migration file in `prisma/migrations/`
+   - Apply the migration to your local database
+   - Regenerate the Prisma Client
+
+3. **Test locally** to ensure everything works
+
+4. **Commit and push**:
+   ```bash
+   git add prisma/
+   git commit -m "Add organization description field"
+   git push
+   ```
+
+5. **Vercel automatically applies the migration** on deployment!
+
+### Migration Best Practices
+
+- **Always test migrations locally first**
+- **Make small, incremental changes** (easier to rollback if needed)
+- **Never edit existing migration files** (create new ones instead)
+- **Commit migrations with your code changes** (they're part of your app)
+- **Use descriptive migration names**: `add_user_preferences`, not `migration_1`
+
+### Troubleshooting Migrations
+
+**Migration fails on Vercel:**
+- Check build logs for the specific error
+- Verify `DIRECT_DATABASE_URL` is set in Vercel env vars
+- Test the migration locally with the same database state
+
+**Need to rollback a migration:**
+```bash
+# Locally, mark the migration as rolled back
+npx prisma migrate resolve --rolled-back 20260211_migration_name
+
+# Create a new migration that reverts the changes
+npx prisma migrate dev --name revert_previous_change
+```
 
 ---
 
