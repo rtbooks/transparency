@@ -2,10 +2,25 @@ import Link from "next/link";
 import { User } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 
-async function getUserOrganizations(userId: string) {
+async function getUserOrganizations(clerkUserId: string) {
+  // First, find the database user by their Clerk auth ID
+  const dbUser = await prisma.user.findUnique({
+    where: {
+      authId: clerkUserId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!dbUser) {
+    return [];
+  }
+
+  // Then fetch their organizations
   const orgUsers = await prisma.organizationUser.findMany({
     where: {
-      userId,
+      userId: dbUser.id,
     },
     include: {
       organization: {
