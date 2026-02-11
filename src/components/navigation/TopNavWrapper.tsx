@@ -30,7 +30,14 @@ export async function TopNavWrapper({
         isPlatformAdmin: true,
         organizations: {
           include: {
-            organization: true,
+            organization: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                verificationStatus: true,
+              },
+            },
           },
         },
       },
@@ -45,13 +52,15 @@ export async function TopNavWrapper({
         isPlatformAdmin: dbUser.isPlatformAdmin,
       };
 
-      // Map user organizations
-      userOrganizations = dbUser.organizations.map((orgUser) => ({
-        id: orgUser.organization.id,
-        name: orgUser.organization.name,
-        slug: orgUser.organization.slug,
-        role: orgUser.role,
-      }));
+      // Map user organizations - only include VERIFIED organizations
+      userOrganizations = dbUser.organizations
+        .filter((orgUser) => orgUser.organization.verificationStatus === 'VERIFIED')
+        .map((orgUser) => ({
+          id: orgUser.organization.id,
+          name: orgUser.organization.name,
+          slug: orgUser.organization.slug,
+          role: orgUser.role,
+        }));
 
       // If we're in an organization context, find it
       if (organizationSlug) {

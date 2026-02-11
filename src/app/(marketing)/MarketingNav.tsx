@@ -3,11 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
+import { PlatformUserButton } from "@/components/navigation/PlatformUserButton";
 
 interface MarketingNavProps {
   user: {
     firstName?: string | null;
+    isPlatformAdmin?: boolean;
   } | null;
 }
 
@@ -46,7 +47,7 @@ export function MarketingNav({ user }: MarketingNavProps) {
               >
                 {user.firstName || "Profile"}
               </Link>
-              <UserButton afterSignOutUrl="/" />
+              <PlatformUserButton isPlatformAdmin={user.isPlatformAdmin} />
             </>
           ) : (
             <>

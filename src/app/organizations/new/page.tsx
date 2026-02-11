@@ -38,10 +38,10 @@ export default async function NewOrganizationPage() {
         <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
           <h3 className="font-semibold text-blue-900">What happens next?</h3>
           <ul className="mt-2 space-y-1 text-sm text-blue-800">
-            <li>• You'll be set as the organization administrator</li>
-            <li>• A chart of accounts will be ready to customize</li>
-            <li>• You can start recording transactions immediately</li>
-            <li>• Invite team members to collaborate</li>
+            <li>• Your organization will be submitted for verification</li>
+            <li>• Platform admins will review your EIN and information</li>
+            <li>• You'll receive an email when your organization is approved (usually within 24 hours)</li>
+            <li>• Once approved, you can start recording transactions and inviting team members</li>
           </ul>
         </div>
       </div>

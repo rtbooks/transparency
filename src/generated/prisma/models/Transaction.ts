@@ -973,10 +973,6 @@ export type EnumPaymentMethodFieldUpdateOperationsInput = {
   set?: $Enums.PaymentMethod
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type TransactionCreateNestedOneWithoutPlannedPurchaseInput = {
   create?: Prisma.XOR<Prisma.TransactionCreateWithoutPlannedPurchaseInput, Prisma.TransactionUncheckedCreateWithoutPlannedPurchaseInput>
   connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutPlannedPurchaseInput

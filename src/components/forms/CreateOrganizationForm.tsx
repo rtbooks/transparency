@@ -44,7 +44,10 @@ const organizationSchema = z.object({
       /^[a-z0-9-]+$/,
       'Slug can only contain lowercase letters, numbers, and hyphens'
     ),
-  ein: z.string().optional(),
+  ein: z.string().min(9, 'EIN is required and must be 9 digits').regex(
+    /^\d{2}-?\d{7}$/,
+    'EIN must be in format XX-XXXXXXX or XXXXXXXXX'
+  ),
   mission: z.string().optional(),
   fiscalYearStart: z.date(),
 });
@@ -60,6 +63,13 @@ export function CreateOrganizationForm({ onSuccess }: CreateOrganizationFormProp
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [autoGenerateSlug, setAutoGenerateSlug] = useState(true);
+  const [isVerifyingEIN, setIsVerifyingEIN] = useState(false);
+  const [einVerified, setEinVerified] = useState(false);
+  const [verifiedOrgData, setVerifiedOrgData] = useState<{
+    name: string;
+    city: string;
+    state: string;
+  } | null>(null);
 
   const form = useForm<OrganizationFormData>({
     resolver: zodResolver(organizationSchema),
@@ -94,8 +104,78 @@ export function CreateOrganizationForm({ onSuccess }: CreateOrganizationFormProp
     }
   }, [organizationName, autoGenerateSlug, form]);
 
+  // Verify EIN with ProPublica API
+  const handleVerifyEIN = async () => {
+    const ein = form.getValues('ein');
+    
+    if (!ein) {
+      toast({
+        title: 'EIN Required',
+        description: 'Please enter an EIN to verify',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      setIsVerifyingEIN(true);
+      
+      const response = await fetch('/api/organizations/verify-ein', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ein }),
+      });
+
+      const result = await response.json();
+
+      if (!result.verified) {
+        toast({
+          title: 'Verification Failed',
+          description: result.error || 'Could not verify this EIN with the IRS database',
+          variant: 'destructive',
+        });
+        setEinVerified(false);
+        setVerifiedOrgData(null);
+        return;
+      }
+
+      // Success!
+      setEinVerified(true);
+      setVerifiedOrgData(result.organization);
+      
+      toast({
+        title: 'EIN Verified!',
+        description: `Found: ${result.organization.name} (${result.organization.city}, ${result.organization.state})`,
+      });
+
+      // Auto-populate name if empty
+      if (!form.getValues('name')) {
+        form.setValue('name', result.organization.name);
+      }
+    } catch (error) {
+      console.error('EIN verification error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to verify EIN. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsVerifyingEIN(false);
+    }
+  };
+
 
   const onSubmit = async (data: OrganizationFormData) => {
+    // Require EIN verification before submission
+    if (!einVerified) {
+      toast({
+        title: 'EIN Verification Required',
+        description: 'Please verify your EIN before creating the organization',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
       setIsSubmitting(true);
 
@@ -108,6 +188,7 @@ export function CreateOrganizationForm({ onSuccess }: CreateOrganizationFormProp
           ein: data.ein || null,
           mission: data.mission || null,
           fiscalYearStart: data.fiscalYearStart.toISOString(),
+          verifiedOrgData, // Include verified org data
         }),
       });
 
@@ -120,7 +201,7 @@ export function CreateOrganizationForm({ onSuccess }: CreateOrganizationFormProp
 
       toast({
         title: 'Success!',
-        description: `${data.name} has been created successfully.`,
+        description: `${data.name} has been created and is pending verification.`,
       });
 
       if (onSuccess) {
@@ -200,15 +281,39 @@ export function CreateOrganizationForm({ onSuccess }: CreateOrganizationFormProp
           name="ein"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>EIN / Tax ID (Optional)</FormLabel>
+              <FormLabel>EIN / Tax ID (Required)</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="e.g., 12-3456789"
-                  {...field}
-                />
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="e.g., 12-3456789"
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      // Reset verification when EIN changes
+                      setEinVerified(false);
+                      setVerifiedOrgData(null);
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant={einVerified ? "default" : "outline"}
+                    size="sm"
+                    onClick={handleVerifyEIN}
+                    disabled={isVerifyingEIN || !field.value}
+                  >
+                    {isVerifyingEIN && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {einVerified ? '✓ Verified' : 'Verify'}
+                  </Button>
+                </div>
               </FormControl>
+              {verifiedOrgData && (
+                <div className="mt-2 rounded-md bg-green-50 p-3 text-sm text-green-800">
+                  <p className="font-semibold">{verifiedOrgData.name}</p>
+                  <p className="text-green-700">{verifiedOrgData.city}, {verifiedOrgData.state}</p>
+                </div>
+              )}
               <FormDescription>
-                Your organization's Employer Identification Number
+                Your organization's Employer Identification Number (required for verification)
               </FormDescription>
               <FormMessage />
             </FormItem>

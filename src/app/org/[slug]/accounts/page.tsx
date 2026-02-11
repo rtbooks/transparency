@@ -1,8 +1,8 @@
 import { auth } from '@clerk/nextjs/server';
-import { redirect, notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 import { AccountTree } from '@/components/accounts/AccountTree';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
+import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
 
 interface AccountsPageProps {
   params: Promise<{ slug: string }>;
@@ -16,29 +16,9 @@ export default async function AccountsPage({ params }: AccountsPageProps) {
     redirect('/login');
   }
 
-  const user = await prisma.user.findUnique({
-    where: { authId: clerkUserId },
-  });
+  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId, false);
 
-  if (!user) {
-    redirect('/profile');
-  }
-
-  const organization = await prisma.organization.findUnique({
-    where: { slug },
-    include: {
-      organizationUsers: {
-        where: { userId: user.id },
-      },
-    },
-  });
-
-  if (!organization) {
-    notFound();
-  }
-
-  const userAccess = organization.organizationUsers[0];
-  if (!userAccess || (userAccess.role !== 'ORG_ADMIN' && userAccess.role !== 'PLATFORM_ADMIN')) {
+  if (!userAccess || (userAccess.role !== 'ORG_ADMIN' && !user.isPlatformAdmin)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -49,6 +29,16 @@ export default async function AccountsPage({ params }: AccountsPageProps) {
         </div>
       </div>
     );
+  }
+
+  const verificationMessage = VerificationStatusMessage({
+    status: organization.verificationStatus,
+    organizationName: organization.name,
+    notes: organization.verificationNotes,
+  });
+
+  if (verificationMessage) {
+    return verificationMessage;
   }
 
   return (

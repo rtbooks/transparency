@@ -27,6 +27,15 @@ model Organization {
   status           OrganizationStatus @default(ACTIVE)
   subscriptionTier SubscriptionTier   @default(FREE)
 
+  // Verification (Phase 1: Organization Verification)
+  verificationStatus     VerificationStatus @default(PENDING_VERIFICATION) @map("verification_status")
+  einVerifiedAt          DateTime?          @map("ein_verified_at")
+  verifiedAt             DateTime?          @map("verified_at")
+  verifiedBy             String?            @map("verified_by") // User ID of platform admin who verified
+  verificationNotes      String?            @db.Text @map("verification_notes")
+  officialWebsite        String?            @map("official_website")
+  determinationLetterUrl String?            @map("determination_letter_url")
+
   // Metadata
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -46,6 +55,13 @@ enum OrganizationStatus {
   ACTIVE
   SUSPENDED
   INACTIVE
+}
+
+enum VerificationStatus {
+  PENDING_VERIFICATION
+  VERIFIED
+  VERIFICATION_FAILED
+  SUSPENDED
 }
 
 enum SubscriptionTier {

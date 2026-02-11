@@ -15,7 +15,7 @@ export default async function OrganizationPublicPage({
     where: { slug },
   });
 
-  if (!organization) {
+  if (!organization || organization.verificationStatus !== 'VERIFIED') {
     notFound();
   }
 

@@ -12,10 +12,8 @@ if (process.env.NODE_ENV !== "production") {
 // Vercel's Neon integration provides DATABASE_URL_UNPOOLED for direct (non-pooled) connections
 // Fall back to DIRECT_DATABASE_URL for backwards compatibility or manual setup
 // Finally fall back to DATABASE_URL for local dev
-const databaseUrl = 
-  process.env.DATABASE_URL_UNPOOLED || 
-  process.env.DIRECT_DATABASE_URL || 
-  process.env.DATABASE_URL;
+const databaseUrl =
+  process.env.DATABASE_URL_UNPOOLED || process.env.DIRECT_DATABASE_URL || process.env.DATABASE_URL;
 
 if (!databaseUrl) {
   throw new Error(
@@ -33,6 +31,5 @@ export default defineConfig({
   },
   migrations: {
     path: "prisma/migrations",
-    seed: "tsx prisma/seed.ts",
   },
 });

@@ -1,9 +1,9 @@
 import { auth } from '@clerk/nextjs/server';
-import { redirect, notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 import { DashboardSummary } from '@/components/dashboard/DashboardSummary';
 import { RecordTransactionButton } from '@/components/transactions/RecordTransactionButton';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
+import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -21,31 +21,9 @@ export default async function OrganizationDashboard({
     redirect('/login');
   }
 
-  // First, find the user in our database by their Clerk auth ID
-  const user = await prisma.user.findUnique({
-    where: { authId: clerkUserId },
-  });
-
-  if (!user) {
-    redirect('/profile'); // Will create user record
-  }
-
-  // Now find the organization and check if user has access
-  const organization = await prisma.organization.findUnique({
-    where: { slug },
-    include: {
-      organizationUsers: {
-        where: { userId: user.id },
-      },
-    },
-  });
-
-  if (!organization) {
-    notFound();
-  }
+  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId, false);
 
   // Check if user has access to this organization
-  const userAccess = organization.organizationUsers[0];
   if (!userAccess) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -57,6 +35,17 @@ export default async function OrganizationDashboard({
         </div>
       </div>
     );
+  }
+
+  // Show verification status messages for non-verified organizations
+  const verificationMessage = VerificationStatusMessage({
+    status: organization.verificationStatus,
+    organizationName: organization.name,
+    notes: organization.verificationNotes,
+  });
+
+  if (verificationMessage) {
+    return verificationMessage;
   }
 
   return (

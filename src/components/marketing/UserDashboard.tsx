@@ -2,6 +2,7 @@ import Link from "next/link";
 import { User } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { OrganizationCard } from "./OrganizationCard";
+import { MarketingNav } from "@/app/(marketing)/MarketingNav";
 
 async function getUserOrganizations(clerkUserId: string) {
   // First, find the database user by their Clerk auth ID
@@ -11,11 +12,12 @@ async function getUserOrganizations(clerkUserId: string) {
     },
     select: {
       id: true,
+      isPlatformAdmin: true,
     },
   });
 
   if (!dbUser) {
-    return [];
+    return { organizations: [], isPlatformAdmin: false };
   }
 
   // Then fetch their organizations
@@ -30,6 +32,7 @@ async function getUserOrganizations(clerkUserId: string) {
           name: true,
           slug: true,
           status: true,
+          verificationStatus: true,
           _count: {
             select: {
               transactions: true,
@@ -43,7 +46,10 @@ async function getUserOrganizations(clerkUserId: string) {
     },
   });
 
-  return orgUsers.map((ou) => ou.organization);
+  return { 
+    organizations: orgUsers.map((ou) => ou.organization),
+    isPlatformAdmin: dbUser.isPlatformAdmin,
+  };
 }
 
 interface UserDashboardProps {
@@ -51,10 +57,18 @@ interface UserDashboardProps {
 }
 
 export async function UserDashboard({ user }: UserDashboardProps) {
-  const organizations = await getUserOrganizations(user.id);
+  const { organizations, isPlatformAdmin } = await getUserOrganizations(user.id);
+
+  // Serialize user for client component
+  const serializedUser = {
+    firstName: user.firstName,
+    isPlatformAdmin,
+  };
 
   return (
-    <div className="bg-white">
+    <>
+      <MarketingNav user={serializedUser} />
+      <div className="bg-white">
       {/* Welcome Header */}
       <section className="border-b bg-gradient-to-b from-blue-50 to-white py-12">
         <div className="container mx-auto px-4">
@@ -131,6 +145,7 @@ export async function UserDashboard({ user }: UserDashboardProps) {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

@@ -34,6 +34,13 @@ export type OrganizationMinAggregateOutputType = {
   fiscalYearStart: Date | null
   status: $Enums.OrganizationStatus | null
   subscriptionTier: $Enums.SubscriptionTier | null
+  verificationStatus: $Enums.VerificationStatus | null
+  einVerifiedAt: Date | null
+  verifiedAt: Date | null
+  verifiedBy: string | null
+  verificationNotes: string | null
+  officialWebsite: string | null
+  determinationLetterUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -48,6 +55,13 @@ export type OrganizationMaxAggregateOutputType = {
   fiscalYearStart: Date | null
   status: $Enums.OrganizationStatus | null
   subscriptionTier: $Enums.SubscriptionTier | null
+  verificationStatus: $Enums.VerificationStatus | null
+  einVerifiedAt: Date | null
+  verifiedAt: Date | null
+  verifiedBy: string | null
+  verificationNotes: string | null
+  officialWebsite: string | null
+  determinationLetterUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +76,13 @@ export type OrganizationCountAggregateOutputType = {
   fiscalYearStart: number
   status: number
   subscriptionTier: number
+  verificationStatus: number
+  einVerifiedAt: number
+  verifiedAt: number
+  verifiedBy: number
+  verificationNotes: number
+  officialWebsite: number
+  determinationLetterUrl: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -78,6 +99,13 @@ export type OrganizationMinAggregateInputType = {
   fiscalYearStart?: true
   status?: true
   subscriptionTier?: true
+  verificationStatus?: true
+  einVerifiedAt?: true
+  verifiedAt?: true
+  verifiedBy?: true
+  verificationNotes?: true
+  officialWebsite?: true
+  determinationLetterUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -92,6 +120,13 @@ export type OrganizationMaxAggregateInputType = {
   fiscalYearStart?: true
   status?: true
   subscriptionTier?: true
+  verificationStatus?: true
+  einVerifiedAt?: true
+  verifiedAt?: true
+  verifiedBy?: true
+  verificationNotes?: true
+  officialWebsite?: true
+  determinationLetterUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -106,6 +141,13 @@ export type OrganizationCountAggregateInputType = {
   fiscalYearStart?: true
   status?: true
   subscriptionTier?: true
+  verificationStatus?: true
+  einVerifiedAt?: true
+  verifiedAt?: true
+  verifiedBy?: true
+  verificationNotes?: true
+  officialWebsite?: true
+  determinationLetterUrl?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -193,6 +235,13 @@ export type OrganizationGroupByOutputType = {
   fiscalYearStart: Date
   status: $Enums.OrganizationStatus
   subscriptionTier: $Enums.SubscriptionTier
+  verificationStatus: $Enums.VerificationStatus
+  einVerifiedAt: Date | null
+  verifiedAt: Date | null
+  verifiedBy: string | null
+  verificationNotes: string | null
+  officialWebsite: string | null
+  determinationLetterUrl: string | null
   createdAt: Date
   updatedAt: Date
   _count: OrganizationCountAggregateOutputType | null
@@ -228,6 +277,13 @@ export type OrganizationWhereInput = {
   fiscalYearStart?: Prisma.DateTimeFilter<"Organization"> | Date | string
   status?: Prisma.EnumOrganizationStatusFilter<"Organization"> | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFilter<"Organization"> | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFilter<"Organization"> | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
+  verifiedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
+  verifiedBy?: Prisma.StringNullableFilter<"Organization"> | string | null
+  verificationNotes?: Prisma.StringNullableFilter<"Organization"> | string | null
+  officialWebsite?: Prisma.StringNullableFilter<"Organization"> | string | null
+  determinationLetterUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   accounts?: Prisma.AccountListRelationFilter
@@ -248,6 +304,13 @@ export type OrganizationOrderByWithRelationInput = {
   fiscalYearStart?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
+  verificationStatus?: Prisma.SortOrder
+  einVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  verificationNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  officialWebsite?: Prisma.SortOrderInput | Prisma.SortOrder
+  determinationLetterUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   accounts?: Prisma.AccountOrderByRelationAggregateInput
@@ -271,6 +334,13 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   fiscalYearStart?: Prisma.DateTimeFilter<"Organization"> | Date | string
   status?: Prisma.EnumOrganizationStatusFilter<"Organization"> | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFilter<"Organization"> | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFilter<"Organization"> | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
+  verifiedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
+  verifiedBy?: Prisma.StringNullableFilter<"Organization"> | string | null
+  verificationNotes?: Prisma.StringNullableFilter<"Organization"> | string | null
+  officialWebsite?: Prisma.StringNullableFilter<"Organization"> | string | null
+  determinationLetterUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   accounts?: Prisma.AccountListRelationFilter
@@ -291,6 +361,13 @@ export type OrganizationOrderByWithAggregationInput = {
   fiscalYearStart?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
+  verificationStatus?: Prisma.SortOrder
+  einVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  verificationNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  officialWebsite?: Prisma.SortOrderInput | Prisma.SortOrder
+  determinationLetterUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.OrganizationCountOrderByAggregateInput
@@ -311,6 +388,13 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   fiscalYearStart?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
   status?: Prisma.EnumOrganizationStatusWithAggregatesFilter<"Organization"> | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierWithAggregatesFilter<"Organization"> | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusWithAggregatesFilter<"Organization"> | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+  verifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+  verifiedBy?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  verificationNotes?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  officialWebsite?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  determinationLetterUrl?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
 }
@@ -325,6 +409,13 @@ export type OrganizationCreateInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -345,6 +436,13 @@ export type OrganizationUncheckedCreateInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -365,6 +463,13 @@ export type OrganizationUpdateInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -385,6 +490,13 @@ export type OrganizationUncheckedUpdateInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -405,6 +517,13 @@ export type OrganizationCreateManyInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -419,6 +538,13 @@ export type OrganizationUpdateManyMutationInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -433,6 +559,13 @@ export type OrganizationUncheckedUpdateManyInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -447,6 +580,13 @@ export type OrganizationCountOrderByAggregateInput = {
   fiscalYearStart?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
+  verificationStatus?: Prisma.SortOrder
+  einVerifiedAt?: Prisma.SortOrder
+  verifiedAt?: Prisma.SortOrder
+  verifiedBy?: Prisma.SortOrder
+  verificationNotes?: Prisma.SortOrder
+  officialWebsite?: Prisma.SortOrder
+  determinationLetterUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -461,6 +601,13 @@ export type OrganizationMaxOrderByAggregateInput = {
   fiscalYearStart?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
+  verificationStatus?: Prisma.SortOrder
+  einVerifiedAt?: Prisma.SortOrder
+  verifiedAt?: Prisma.SortOrder
+  verifiedBy?: Prisma.SortOrder
+  verificationNotes?: Prisma.SortOrder
+  officialWebsite?: Prisma.SortOrder
+  determinationLetterUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -475,6 +622,13 @@ export type OrganizationMinOrderByAggregateInput = {
   fiscalYearStart?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
+  verificationStatus?: Prisma.SortOrder
+  einVerifiedAt?: Prisma.SortOrder
+  verifiedAt?: Prisma.SortOrder
+  verifiedBy?: Prisma.SortOrder
+  verificationNotes?: Prisma.SortOrder
+  officialWebsite?: Prisma.SortOrder
+  determinationLetterUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -502,6 +656,14 @@ export type EnumOrganizationStatusFieldUpdateOperationsInput = {
 
 export type EnumSubscriptionTierFieldUpdateOperationsInput = {
   set?: $Enums.SubscriptionTier
+}
+
+export type EnumVerificationStatusFieldUpdateOperationsInput = {
+  set?: $Enums.VerificationStatus
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type OrganizationCreateNestedOneWithoutOrganizationUsersInput = {
@@ -598,6 +760,13 @@ export type OrganizationCreateWithoutOrganizationUsersInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -617,6 +786,13 @@ export type OrganizationUncheckedCreateWithoutOrganizationUsersInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -652,6 +828,13 @@ export type OrganizationUpdateWithoutOrganizationUsersInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -671,6 +854,13 @@ export type OrganizationUncheckedUpdateWithoutOrganizationUsersInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -690,6 +880,13 @@ export type OrganizationCreateWithoutAccountsInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
@@ -709,6 +906,13 @@ export type OrganizationUncheckedCreateWithoutAccountsInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
@@ -744,6 +948,13 @@ export type OrganizationUpdateWithoutAccountsInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
@@ -763,6 +974,13 @@ export type OrganizationUncheckedUpdateWithoutAccountsInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -782,6 +1000,13 @@ export type OrganizationCreateWithoutTransactionsInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -801,6 +1026,13 @@ export type OrganizationUncheckedCreateWithoutTransactionsInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -836,6 +1068,13 @@ export type OrganizationUpdateWithoutTransactionsInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -855,6 +1094,13 @@ export type OrganizationUncheckedUpdateWithoutTransactionsInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -874,6 +1120,13 @@ export type OrganizationCreateWithoutPlannedPurchasesInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -893,6 +1146,13 @@ export type OrganizationUncheckedCreateWithoutPlannedPurchasesInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -928,6 +1188,13 @@ export type OrganizationUpdateWithoutPlannedPurchasesInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -947,6 +1214,13 @@ export type OrganizationUncheckedUpdateWithoutPlannedPurchasesInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -966,6 +1240,13 @@ export type OrganizationCreateWithoutBankAccountsInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -985,6 +1266,13 @@ export type OrganizationUncheckedCreateWithoutBankAccountsInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1020,6 +1308,13 @@ export type OrganizationUpdateWithoutBankAccountsInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -1039,6 +1334,13 @@ export type OrganizationUncheckedUpdateWithoutBankAccountsInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1058,6 +1360,13 @@ export type OrganizationCreateWithoutInvitationsInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -1077,6 +1386,13 @@ export type OrganizationUncheckedCreateWithoutInvitationsInput = {
   fiscalYearStart?: Date | string
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1112,6 +1428,13 @@ export type OrganizationUpdateWithoutInvitationsInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -1131,6 +1454,13 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1226,6 +1556,13 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   fiscalYearStart?: boolean
   status?: boolean
   subscriptionTier?: boolean
+  verificationStatus?: boolean
+  einVerifiedAt?: boolean
+  verifiedAt?: boolean
+  verifiedBy?: boolean
+  verificationNotes?: boolean
+  officialWebsite?: boolean
+  determinationLetterUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   accounts?: boolean | Prisma.Organization$accountsArgs<ExtArgs>
@@ -1247,6 +1584,13 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   fiscalYearStart?: boolean
   status?: boolean
   subscriptionTier?: boolean
+  verificationStatus?: boolean
+  einVerifiedAt?: boolean
+  verifiedAt?: boolean
+  verifiedBy?: boolean
+  verificationNotes?: boolean
+  officialWebsite?: boolean
+  determinationLetterUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["organization"]>
@@ -1261,6 +1605,13 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   fiscalYearStart?: boolean
   status?: boolean
   subscriptionTier?: boolean
+  verificationStatus?: boolean
+  einVerifiedAt?: boolean
+  verifiedAt?: boolean
+  verifiedBy?: boolean
+  verificationNotes?: boolean
+  officialWebsite?: boolean
+  determinationLetterUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["organization"]>
@@ -1275,11 +1626,18 @@ export type OrganizationSelectScalar = {
   fiscalYearStart?: boolean
   status?: boolean
   subscriptionTier?: boolean
+  verificationStatus?: boolean
+  einVerifiedAt?: boolean
+  verifiedAt?: boolean
+  verifiedBy?: boolean
+  verificationNotes?: boolean
+  officialWebsite?: boolean
+  determinationLetterUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "fiscalYearStart" | "status" | "subscriptionTier" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "fiscalYearStart" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   accounts?: boolean | Prisma.Organization$accountsArgs<ExtArgs>
   transactions?: boolean | Prisma.Organization$transactionsArgs<ExtArgs>
@@ -1312,6 +1670,13 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     fiscalYearStart: Date
     status: $Enums.OrganizationStatus
     subscriptionTier: $Enums.SubscriptionTier
+    verificationStatus: $Enums.VerificationStatus
+    einVerifiedAt: Date | null
+    verifiedAt: Date | null
+    verifiedBy: string | null
+    verificationNotes: string | null
+    officialWebsite: string | null
+    determinationLetterUrl: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["organization"]>
@@ -1752,6 +2117,13 @@ export interface OrganizationFieldRefs {
   readonly fiscalYearStart: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly status: Prisma.FieldRef<"Organization", 'OrganizationStatus'>
   readonly subscriptionTier: Prisma.FieldRef<"Organization", 'SubscriptionTier'>
+  readonly verificationStatus: Prisma.FieldRef<"Organization", 'VerificationStatus'>
+  readonly einVerifiedAt: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly verifiedAt: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly verifiedBy: Prisma.FieldRef<"Organization", 'String'>
+  readonly verificationNotes: Prisma.FieldRef<"Organization", 'String'>
+  readonly officialWebsite: Prisma.FieldRef<"Organization", 'String'>
+  readonly determinationLetterUrl: Prisma.FieldRef<"Organization", 'String'>
   readonly createdAt: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Organization", 'DateTime'>
 }
