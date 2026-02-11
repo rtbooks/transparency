@@ -104,7 +104,7 @@ export default async function OrganizationsPage() {
               {organizations.map((org) => (
                 <Link
                   key={org.id}
-                  href={`/${org.slug}`}
+                  href={`/org/${org.slug}`}
                   className="group rounded-lg border border-gray-200 p-6 transition-shadow hover:shadow-lg"
                 >
                   <div className="mb-4">

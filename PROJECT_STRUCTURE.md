@@ -26,7 +26,7 @@ transparency-platform/
 │   │   │   │   ├── analytics/
 │   │   │   │   └── page.tsx
 │   │   │   └── layout.tsx
-│   │   ├── (organization)/     # Organization-specific routes
+│   │   ├── org/                # Organization routes (uses /org prefix)
 │   │   │   └── [slug]/         # Dynamic org slug
 │   │   │       ├── page.tsx    # Public dashboard
 │   │   │       ├── dashboard/  # Org admin dashboard
@@ -141,7 +141,7 @@ transparency-platform/
 Next.js 14 App Router structure with route groups for organization:
 - `(auth)`: Authentication pages
 - `(platform)`: Platform admin (super admin) pages
-- `(organization)/[slug]`: Organization-specific pages (both public and admin)
+- `org/[slug]`: Organization-specific pages (both public and admin) - **Note: Uses `/org/` prefix**
 - `(donor)`: Donor profile pages
 - `api/`: API routes
 
@@ -173,10 +173,12 @@ Test files organized by type (unit, integration, e2e)
 
 ## Route Structure Examples
 
+**IMPORTANT: All organization routes use the `/org/` prefix**
+
 ### Public Routes
 - `/` - Landing page
-- `/grit-hoops` - GRIT org public dashboard
-- `/grit-hoops/donate` - Donation page for GRIT
+- `/org/grit-hoops` - GRIT org public dashboard
+- `/org/grit-hoops/donate` - Donation page for GRIT
 - `/login` - Login page
 - `/register` - Registration page
 
@@ -186,13 +188,13 @@ Test files organized by type (unit, integration, e2e)
 - `/profile/settings` - Donor settings
 
 ### Organization Admin Routes (Authenticated + Org Admin Role)
-- `/grit-hoops/dashboard` - Admin dashboard
-- `/grit-hoops/dashboard/transactions` - Transaction management
-- `/grit-hoops/dashboard/transactions/new` - Record new transaction
-- `/grit-hoops/dashboard/accounts` - Chart of accounts
-- `/grit-hoops/dashboard/planned-purchases` - Planned purchases
-- `/grit-hoops/dashboard/reports` - Financial reports
-- `/grit-hoops/dashboard/settings` - Organization settings
+- `/org/grit-hoops/dashboard` - Admin dashboard
+- `/org/grit-hoops/dashboard/transactions` - Transaction management
+- `/org/grit-hoops/dashboard/transactions/new` - Record new transaction
+- `/org/grit-hoops/dashboard/accounts` - Chart of accounts
+- `/org/grit-hoops/dashboard/planned-purchases` - Planned purchases
+- `/org/grit-hoops/dashboard/reports` - Financial reports
+- `/org/grit-hoops/dashboard/settings` - Organization settings
 
 ### Platform Admin Routes (Authenticated + Platform Admin Role)
 - `/admin` - Platform admin dashboard

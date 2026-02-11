@@ -23,12 +23,12 @@ export function OrganizationCard({ organization: org }: OrganizationCardProps) {
   const handlePublicPageClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    router.push(`/${org.slug}`);
+    router.push(`/org/${org.slug}`);
   };
 
   return (
     <Link
-      href={`/${org.slug}/dashboard`}
+      href={`/org/${org.slug}/dashboard`}
       className="group rounded-lg border border-gray-200 p-6 transition-shadow hover:shadow-lg"
     >
       <div className="flex items-start justify-between">

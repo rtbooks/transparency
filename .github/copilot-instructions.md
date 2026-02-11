@@ -97,7 +97,27 @@ For Clerk and Stripe, add keys to `.env.local` (create if not exists):
 ## Architecture Patterns
 
 ### Multi-Tenant Organization Routing
-Organizations use slug-based routing: `/:slug` for public dashboard, `/:slug/dashboard` for admin.
+
+**IMPORTANT: All organization routes use the `/org/` prefix**
+
+Organizations use slug-based routing:
+- `/org/[slug]` - Public dashboard (anyone can view)
+- `/org/[slug]/dashboard` - Admin dashboard (org admins only)
+- `/org/[slug]/accounts` - Chart of accounts
+- `/org/[slug]/transactions` - Transaction management
+- `/org/[slug]/users` - User management
+- `/org/[slug]/settings` - Organization settings
+
+Example:
+```typescript
+// Correct links to organizations:
+<Link href="/org/grit-hoops">Public Dashboard</Link>
+<Link href="/org/grit-hoops/dashboard">Admin Dashboard</Link>
+
+// WRONG - missing /org/ prefix:
+<Link href="/grit-hoops">❌ Wrong</Link>
+<Link href={`/${slug}/dashboard`}>❌ Wrong</Link>
+```
 
 ```typescript
 // Public route: app/(organization)/[slug]/page.tsx
