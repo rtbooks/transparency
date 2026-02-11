@@ -203,6 +203,8 @@ NODE_ENV=production
 
 After successful Vercel deployment, you need to push your Prisma schema to the Neon database.
 
+**Important:** The production database will be empty initially - no seed data is created. The first user to register will need to create the first organization through the application UI.
+
 ### Option A: Via Vercel CLI (Recommended)
 
 1. Install Vercel CLI:
@@ -252,6 +254,8 @@ npx prisma studio
 ```
 
 You should see all tables: `Organization`, `User`, `Account`, `Transaction`, etc.
+
+**Note:** All tables will be empty. This is expected for production - you'll create your first organization through the UI after deployment.
 
 ---
 

@@ -8,7 +8,14 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log("🌱 Seeding database...");
+  // Skip seeding in production environments
+  if (process.env.NODE_ENV === "production") {
+    console.log("⚠️  Skipping database seeding in production environment");
+    console.log("💡 Organizations and users should be created through the application UI");
+    return;
+  }
+
+  console.log("🌱 Seeding database (development only)...");
 
   // Create GRIT Hoops organization
   const grit = await prisma.organization.upsert({

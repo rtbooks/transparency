@@ -126,11 +126,13 @@ cp .env.example .env.local
 # Set up database
 npx prisma generate
 npx prisma db push
-npx prisma db seed
+npx prisma db seed  # Seeds sample data for GRIT Hoops (development only)
 
 # Start development
 npm run dev
 ```
+
+**Note:** Database seeding is automatically skipped in production environments. The production database starts empty and organizations are created through the application UI.
 
 Visit [http://localhost:3000](http://localhost:3000)
 
