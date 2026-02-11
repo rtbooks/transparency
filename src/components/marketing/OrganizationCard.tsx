@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface Organization {
   id: string;
@@ -17,6 +18,14 @@ interface OrganizationCardProps {
 }
 
 export function OrganizationCard({ organization: org }: OrganizationCardProps) {
+  const router = useRouter();
+
+  const handlePublicPageClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/${org.slug}`);
+  };
+
   return (
     <Link
       href={`/${org.slug}/dashboard`}
@@ -47,13 +56,12 @@ export function OrganizationCard({ organization: org }: OrganizationCardProps) {
         <span className="text-sm font-medium text-blue-600 group-hover:text-blue-700">
           Open Dashboard →
         </span>
-        <Link
-          href={`/${org.slug}`}
-          className="text-sm text-gray-500 hover:text-gray-700"
-          onClick={(e) => e.stopPropagation()}
+        <button
+          onClick={handlePublicPageClick}
+          className="text-sm text-gray-500 hover:text-gray-700 hover:underline"
         >
           View Public Page
-        </Link>
+        </button>
       </div>
     </Link>
   );
