@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
 import { MarketingNav } from "./MarketingNav";
+import { prisma } from "@/lib/prisma";
 
 export default async function MarketingLayout({
   children,
@@ -11,9 +12,19 @@ export default async function MarketingLayout({
   const clerkUser = await currentUser();
   
   // Serialize user data for client component
-  const user = clerkUser ? {
-    firstName: clerkUser.firstName,
-  } : null;
+  let user = null;
+  if (clerkUser) {
+    // Fetch isPlatformAdmin from database
+    const dbUser = await prisma.user.findUnique({
+      where: { authId: clerkUser.id },
+      select: { isPlatformAdmin: true },
+    });
+
+    user = {
+      firstName: clerkUser.firstName,
+      isPlatformAdmin: dbUser?.isPlatformAdmin || false,
+    };
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
