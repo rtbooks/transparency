@@ -10,7 +10,7 @@ import { AccountService } from '@/services/account.service';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -18,7 +18,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const slug = params.slug;
+    const { slug } = await params;
     const { searchParams } = new URL(request.url);
     const fromStr = searchParams.get('from');
     const toStr = searchParams.get('to');

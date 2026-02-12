@@ -11,7 +11,7 @@ import { PlannedPurchaseService } from '@/services/planned-purchase.service';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string; date: string } }
+  { params }: { params: Promise<{ slug: string; date: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -19,8 +19,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const slug = params.slug;
-    const dateStr = params.date;
+    const { slug, date: dateStr } = await params;
 
     // Parse and validate date
     const asOfDate = new Date(dateStr);

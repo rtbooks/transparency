@@ -10,20 +10,21 @@ import { AccountService } from '@/services/account.service';
 import { AuditTrailClient } from './AuditTrailClient';
 
 interface AuditTrailPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default async function AuditTrailPage({ params }: AuditTrailPageProps) {
-  const organization = await OrganizationService.findBySlug(params.slug);
+  const { slug } = await params;
+  const organization = await OrganizationService.findBySlug(slug);
 
   if (!organization) {
     notFound();
   }
 
   // Fetch history for organization
-  const orgHistory = await OrganizationService.findHistory(params.slug);
+  const orgHistory = await OrganizationService.findHistory(slug);
   const accountsHistory = await AccountService.findChangesInRange(
     organization.id,
     new Date('2020-01-01'), // Far back start date

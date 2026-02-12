@@ -9,7 +9,7 @@ import { AccountService } from '@/services/account.service';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string; id: string } }
+  { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -17,7 +17,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const accountId = params.id;
+    const { id: accountId } = await params;
     const history = await AccountService.findHistory(accountId);
 
     if (!history || history.length === 0) {
