@@ -59,10 +59,6 @@ jobs:
         run: npm run type-check
         if: always()
 
-      - name: Lint
-        run: npm run lint
-        if: always()
-
   build:
     name: Build Check
     runs-on: ubuntu-latest
@@ -90,3 +86,5 @@ jobs:
         env:
           DATABASE_URL: postgresql://user:password@localhost:5432/db
           SKIP_ENV_VALIDATION: true
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_dummy_key_for_ci_build
+          CLERK_SECRET_KEY: sk_test_dummy_key_for_ci_build

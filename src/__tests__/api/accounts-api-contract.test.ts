@@ -82,7 +82,7 @@ describe('Accounts API Contract Tests', () => {
     jest.clearAllMocks();
     
     // Default auth mock
-    (auth as jest.Mock).mockResolvedValue({ userId: 'clerk-user-123' });
+    (auth as unknown as jest.Mock).mockResolvedValue({ userId: 'clerk-user-123' });
     
     // Default user mock
     (prisma.user.findUnique as jest.Mock).mockResolvedValue({
@@ -473,7 +473,7 @@ describe('Accounts API Contract Tests', () => {
     });
 
     it('should return 401 if user not authenticated', async () => {
-      (auth as jest.Mock).mockResolvedValue({ userId: null });
+      (auth as unknown as jest.Mock).mockResolvedValue({ userId: null });
 
       const request = new NextRequest('http://localhost:3000/api/organizations/test-org/accounts');
       const params = Promise.resolve({ slug: 'test-org' });
