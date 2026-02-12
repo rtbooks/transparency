@@ -202,3 +202,23 @@ export async function getActiveDonors(
     },
   });
 }
+
+export const OrganizationUserService = {
+  create: createOrganizationUser,
+  findById: findOrganizationUserById,
+  findByUserAndOrg: findOrganizationUserByUserAndOrg,
+  findByOrganization: findUsersForOrganization,
+  findByUser: findOrganizationsForUser,
+  update: updateOrganizationUser,
+  updateRole: updateUserRole,
+  remove: removeUserFromOrganization,
+  
+  // Temporal queries
+  findHistory: getOrganizationUserHistory,
+  findAsOf: getOrganizationUserAsOf,
+  
+  // Utility methods
+  hasRole,
+  isOrgAdmin,
+  getActiveDonors,
+};

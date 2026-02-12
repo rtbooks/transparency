@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { canModifyRole } from '@/lib/auth/permissions';
+import { OrganizationUserService } from '@/services/organization-user.service';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 const updateRoleSchema = z.object({
   role: z.enum(['DONOR', 'ORG_ADMIN', 'PLATFORM_ADMIN', 'PUBLIC']),
@@ -32,14 +34,9 @@ export async function PATCH(
       );
     }
 
-    // Find organization and check current user's access
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: currentUser.id },
-        },
-      },
+    // Find organization (current version)
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -49,15 +46,21 @@ export async function PATCH(
       );
     }
 
-    const currentUserOrgAccess = organization.organizationUsers[0];
-    if (!currentUserOrgAccess || currentUserOrgAccess.role === 'DONOR') {
+    // Check current user's access
+    const currentUserAccess = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({
+        organizationId: organization.id,
+        userId: currentUser.id,
+      }),
+    });
+
+    if (!currentUserAccess || currentUserAccess.role === 'DONOR') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // Find the organization user to update
-    const targetOrgUser = await prisma.organizationUser.findUnique({
-      where: { id: organizationUserId },
-      include: { organization: true },
+    // Find the organization user to update (current version)
+    const targetOrgUser = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({ id: organizationUserId }),
     });
 
     if (!targetOrgUser || targetOrgUser.organizationId !== organization.id) {
@@ -72,21 +75,20 @@ export async function PATCH(
     const { role: newRole } = updateRoleSchema.parse(body);
 
     // Check if current user can modify this role
-    if (!canModifyRole(currentUserOrgAccess.role, targetOrgUser.role, newRole)) {
+    if (!canModifyRole(currentUserAccess.role, targetOrgUser.role, newRole)) {
       return NextResponse.json(
         { error: 'Insufficient permissions to assign this role' },
         { status: 403 }
       );
     }
 
-    // Update the role
-    const updatedOrgUser = await prisma.organizationUser.update({
-      where: { id: organizationUserId },
-      data: { role: newRole },
-      include: {
-        user: true,
-      },
-    });
+    // Update the role (creates new version)
+    const updatedOrgUser = await OrganizationUserService.updateRole(
+      targetOrgUser.userId,
+      organization.id,
+      newRole,
+      currentUser.id
+    );
 
     return NextResponse.json(updatedOrgUser);
   } catch (error) {
@@ -130,14 +132,9 @@ export async function DELETE(
       );
     }
 
-    // Find organization and check current user's access
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: currentUser.id },
-        },
-      },
+    // Find organization (current version)
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -147,14 +144,21 @@ export async function DELETE(
       );
     }
 
-    const currentUserOrgAccess = organization.organizationUsers[0];
-    if (!currentUserOrgAccess || currentUserOrgAccess.role === 'DONOR') {
+    // Check current user's access
+    const currentUserAccess = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({
+        organizationId: organization.id,
+        userId: currentUser.id,
+      }),
+    });
+
+    if (!currentUserAccess || currentUserAccess.role === 'DONOR') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // Find the organization user to remove
-    const targetOrgUser = await prisma.organizationUser.findUnique({
-      where: { id: organizationUserId },
+    // Find the organization user to remove (current version)
+    const targetOrgUser = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({ id: organizationUserId }),
     });
 
     if (!targetOrgUser || targetOrgUser.organizationId !== organization.id) {
@@ -174,7 +178,7 @@ export async function DELETE(
 
     // Check if current user can remove this user
     if (
-      currentUserOrgAccess.role === 'ORG_ADMIN' &&
+      currentUserAccess.role === 'ORG_ADMIN' &&
       targetOrgUser.role === 'PLATFORM_ADMIN'
     ) {
       return NextResponse.json(
@@ -183,10 +187,12 @@ export async function DELETE(
       );
     }
 
-    // Remove the user from the organization
-    await prisma.organizationUser.delete({
-      where: { id: organizationUserId },
-    });
+    // Remove the user (soft delete)
+    await OrganizationUserService.remove(
+      targetOrgUser.userId,
+      organization.id,
+      currentUser.id
+    );
 
     return NextResponse.json({ success: true });
   } catch (error) {

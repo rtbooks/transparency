@@ -233,3 +233,33 @@ export async function getPurchaseStatistics(organizationId: string) {
       .reduce((sum, p) => sum + Number(p.actualAmount), 0),
   };
 }
+
+export const PlannedPurchaseService = {
+  create: createPlannedPurchase,
+  findById: findPlannedPurchaseById,
+  findByOrganization: findPlannedPurchasesByOrganization,
+  findByStatus: findPlannedPurchasesByStatus,
+  update: updatePlannedPurchase,
+  updateStatus: updatePurchaseStatus,
+  complete: completePlannedPurchase,
+  cancel: cancelPlannedPurchase,
+  delete: deletePlannedPurchase,
+  
+  // Temporal queries
+  findHistory: getPlannedPurchaseHistory,
+  
+  findAsOf: async (organizationId: string, asOfDate: Date): Promise<PlannedPurchase[]> => {
+    return await prisma.plannedPurchase.findMany({
+      where: {
+        organizationId,
+        validFrom: { lte: asOfDate },
+        validTo: { gt: asOfDate },
+        isDeleted: false,
+      },
+      orderBy: { targetDate: 'asc' },
+    });
+  },
+  
+  // Utility methods
+  getStatistics: getPurchaseStatistics,
+};

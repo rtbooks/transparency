@@ -173,3 +173,51 @@ export async function getOrganizationsForUser(userId: string) {
       role: ou.role,
     }));
 }
+
+export const OrganizationService = {
+  create: createOrganization,
+  findBySlug: findOrganizationBySlug,
+  findById: findOrganizationById,
+  findAll: findAllOrganizations,
+  update: updateOrganization,
+  delete: deleteOrganization,
+  
+  // Temporal queries
+  findHistory: async (slug: string): Promise<Organization[]> => {
+    return await prisma.organization.findMany({
+      where: { slug },
+      orderBy: { validFrom: 'desc' },
+    });
+  },
+  
+  findAsOf: async (slug: string, asOfDate: Date): Promise<Organization | null> => {
+    return await prisma.organization.findFirst({
+      where: {
+        slug,
+        validFrom: { lte: asOfDate },
+        validTo: { gt: asOfDate },
+      },
+    });
+  },
+  
+  findChangesInRange: async (
+    slug: string,
+    fromDate: Date,
+    toDate: Date
+  ): Promise<Organization[]> => {
+    return await prisma.organization.findMany({
+      where: {
+        slug,
+        systemFrom: {
+          gte: fromDate,
+          lte: toDate,
+        },
+      },
+      orderBy: { systemFrom: 'desc' },
+    });
+  },
+  
+  // Utility methods
+  isSlugAvailable,
+  getOrganizationsForUser,
+};

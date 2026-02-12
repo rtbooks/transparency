@@ -226,3 +226,53 @@ export async function getAccountsByType(
     orderBy: { code: 'asc' },
   });
 }
+
+export const AccountService = {
+  create: createAccount,
+  findById: findAccountById,
+  findByOrganization: findAccountsByOrganization,
+  findActive: findActiveAccounts,
+  update: updateAccount,
+  toggleActive: toggleAccountActive,
+  delete: deleteAccount,
+  
+  // Temporal queries
+  findHistory: async (accountId: string): Promise<Account[]> => {
+    return await accountRepo.findHistory(accountId);
+  },
+  
+  findAsOf: async (organizationId: string, asOfDate: Date): Promise<Account[]> => {
+    return await prisma.account.findMany({
+      where: {
+        organizationId,
+        validFrom: { lte: asOfDate },
+        validTo: { gt: asOfDate },
+        isDeleted: false,
+      },
+      orderBy: { code: 'asc' },
+    });
+  },
+  
+  findChangesInRange: async (
+    organizationId: string,
+    fromDate: Date,
+    toDate: Date
+  ): Promise<Account[]> => {
+    return await prisma.account.findMany({
+      where: {
+        organizationId,
+        systemFrom: {
+          gte: fromDate,
+          lte: toDate,
+        },
+      },
+      orderBy: { systemFrom: 'desc' },
+    });
+  },
+  
+  // Utility methods
+  isCodeAvailable: isAccountCodeAvailable,
+  getHierarchy: getAccountHierarchy,
+  updateBalance: updateAccountBalance,
+  getByType: getAccountsByType,
+};
