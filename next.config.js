@@ -8,8 +8,15 @@ const nextConfig = {
       },
     ],
   },
-  // Skip static page generation during CI builds when Clerk keys are dummy values
-  output: process.env.CI === 'true' ? 'standalone' : undefined,
+  // Disable static optimization during CI builds to avoid Clerk key validation
+  ...(process.env.CI === 'true' && {
+    experimental: {
+      isrMemoryCacheSize: 0,
+    },
+    generateBuildId: async () => {
+      return 'ci-build'
+    },
+  }),
 }
 
 module.exports = nextConfig
