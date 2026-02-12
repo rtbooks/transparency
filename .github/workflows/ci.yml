@@ -86,5 +86,5 @@ jobs:
         env:
           DATABASE_URL: postgresql://user:password@localhost:5432/db
           SKIP_ENV_VALIDATION: true
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_dummy_key_for_ci_build
-          CLERK_SECRET_KEY: sk_test_dummy_key_for_ci_build
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsuaW5jbHVkZWQuZWxlY3RyaWMtNDIuaWNs
+          CLERK_SECRET_KEY: sk_test_Y2xlcmsuaW5jbHVkZWQuZWxlY3RyaWMtNDIuaWNs
