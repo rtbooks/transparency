@@ -2,6 +2,9 @@
 
 Track your progress as you build the Financial Transparency Platform.
 
+**Last Updated**: February 12, 2026
+**Current Phase**: Temporal Data Architecture Implementation (In Progress)
+
 ## Phase 1: Foundation ✅ (Complete!)
 
 ### Project Setup
@@ -629,3 +632,50 @@ Refer back to:
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Development guidelines
 
 Good luck building! 🚀
+
+---
+
+## Phase 11: Temporal Data Architecture (In Progress)
+
+### Phase 1: Schema Design & Migration ✅
+- [x] Design bi-temporal versioning pattern
+- [x] Add temporal fields to Organization model
+- [x] Add temporal fields to Account model
+- [x] Add temporal fields to OrganizationUser model
+- [x] Add temporal fields to PlannedPurchase model
+- [x] Create migration with data backfill
+- [x] Apply migration successfully
+- [x] Verify data integrity
+
+### Phase 2: Utility Functions & Patterns ✅
+- [x] Create temporal utility functions
+- [x] Create TemporalRepository class
+- [x] Add TypeScript types for temporal operations
+- [x] Document temporal schema design
+
+### Phase 3: Business Logic Updates (Next)
+- [ ] Update Organization CRUD operations
+- [ ] Update Account CRUD operations
+- [ ] Update OrganizationUser CRUD operations
+- [ ] Update PlannedPurchase CRUD operations
+- [ ] Add tests for temporal operations
+
+### Phase 4: API Layer Updates
+- [ ] Update Organization API routes
+- [ ] Update Account API routes
+- [ ] Update OrganizationUser API routes
+- [ ] Update PlannedPurchase API routes
+- [ ] Add temporal query parameters (asOf, includeHistory)
+- [ ] Create history/audit trail endpoints
+
+### Phase 5: UI Updates
+- [ ] Add version history components
+- [ ] Add "view as of date" functionality
+- [ ] Create audit trail page
+- [ ] Add change indicators
+- [ ] Update forms for versioning
+
+**Milestone**: Complete temporal data architecture with full audit trail capability
+
+---
+
