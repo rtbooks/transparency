@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import {
+  findAccountsByOrganization,
+  findActiveAccounts,
+  createAccount,
+  isAccountCodeAvailable,
+  findAccountById,
+} from '@/services/account.service';
+import { findOrganizationBySlug } from '@/services/organization.service';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 const accountSchema = z.object({
   code: z.string().min(1).max(20),
@@ -23,7 +32,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // First, find the user in our database by their Clerk auth ID
+    // Find the user in our database
     const user = await prisma.user.findUnique({
       where: { authId: clerkUserId },
     });
@@ -35,15 +44,8 @@ export async function GET(
       );
     }
 
-    // Find organization by slug
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
-    });
+    // Find organization (current version)
+    const organization = await findOrganizationBySlug(slug);
 
     if (!organization) {
       return NextResponse.json(
@@ -52,8 +54,15 @@ export async function GET(
       );
     }
 
-    // Check if user has access
-    if (organization.organizationUsers.length === 0) {
+    // Check user access (current version)
+    const userAccess = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({
+        userId: user.id,
+        organizationId: organization.id,
+      }),
+    });
+
+    if (!userAccess) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
@@ -61,14 +70,10 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const includeInactive = searchParams.get('includeInactive') === 'true';
 
-    // Fetch accounts for the organization
-    const accounts = await prisma.account.findMany({
-      where: {
-        organizationId: organization.id,
-        ...(includeInactive ? {} : { isActive: true }),
-      },
-      orderBy: [{ code: 'asc' }],
-    });
+    // Fetch accounts (current versions only)
+    const accounts = includeInactive
+      ? await findAccountsByOrganization(organization.id)
+      : await findActiveAccounts(organization.id);
 
     return NextResponse.json(accounts);
   } catch (error) {
@@ -104,15 +109,8 @@ export async function POST(
       );
     }
 
-    // Find organization and check access
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
-    });
+    // Find organization (current version)
+    const organization = await findOrganizationBySlug(slug);
 
     if (!organization) {
       return NextResponse.json(
@@ -121,7 +119,14 @@ export async function POST(
       );
     }
 
-    const orgUser = organization.organizationUsers[0];
+    // Check user access and role (current version)
+    const orgUser = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({
+        userId: user.id,
+        organizationId: organization.id,
+      }),
+    });
+
     if (!orgUser || orgUser.role === 'DONOR') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
@@ -130,15 +135,13 @@ export async function POST(
     const body = await request.json();
     const validatedData = accountSchema.parse(body);
 
-    // Check if account code already exists
-    const existingAccount = await prisma.account.findFirst({
-      where: {
-        organizationId: organization.id,
-        code: validatedData.code,
-      },
-    });
+    // Check if account code already exists (current versions)
+    const codeAvailable = await isAccountCodeAvailable(
+      organization.id,
+      validatedData.code
+    );
 
-    if (existingAccount) {
+    if (!codeAvailable) {
       return NextResponse.json(
         { error: 'Account code already exists' },
         { status: 400 }
@@ -147,9 +150,7 @@ export async function POST(
 
     // If parent account is specified, verify it exists and is same type
     if (validatedData.parentAccountId) {
-      const parentAccount = await prisma.account.findUnique({
-        where: { id: validatedData.parentAccountId },
-      });
+      const parentAccount = await findAccountById(validatedData.parentAccountId);
 
       if (!parentAccount) {
         return NextResponse.json(
@@ -166,18 +167,15 @@ export async function POST(
       }
     }
 
-    // Create the account
-    const account = await prisma.account.create({
-      data: {
-        code: validatedData.code,
-        name: validatedData.name,
-        type: validatedData.type,
-        parentAccountId: validatedData.parentAccountId || null,
-        description: validatedData.description || null,
-        organizationId: organization.id,
-        currentBalance: 0,
-        isActive: true,
-      },
+    // Create the account (initial version with audit trail)
+    const account = await createAccount({
+      organizationId: organization.id,
+      code: validatedData.code,
+      name: validatedData.name,
+      type: validatedData.type,
+      parentAccountId: validatedData.parentAccountId || null,
+      description: validatedData.description || null,
+      createdByUserId: user.id,
     });
 
     return NextResponse.json(account, { status: 201 });
