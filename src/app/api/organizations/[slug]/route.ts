@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import {
+  findOrganizationBySlug,
+  updateOrganization,
+} from '@/services/organization.service';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 const updateOrganizationSchema = z.object({
   name: z.string().min(3).optional(),
@@ -35,15 +40,8 @@ export async function GET(
       );
     }
 
-    // Find organization and check access
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
-    });
+    // Find organization (current version only)
+    const organization = await findOrganizationBySlug(slug);
 
     if (!organization) {
       return NextResponse.json(
@@ -52,7 +50,15 @@ export async function GET(
       );
     }
 
-    if (organization.organizationUsers.length === 0) {
+    // Check user access (current version of OrganizationUser)
+    const userAccess = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({
+        userId: user.id,
+        organizationId: organization.id,
+      }),
+    });
+
+    if (!userAccess) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
@@ -90,15 +96,8 @@ export async function PATCH(
       );
     }
 
-    // Find organization and check if user is ORG_ADMIN
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
-    });
+    // Find organization (current version)
+    const organization = await findOrganizationBySlug(slug);
 
     if (!organization) {
       return NextResponse.json(
@@ -107,7 +106,14 @@ export async function PATCH(
       );
     }
 
-    const userAccess = organization.organizationUsers[0];
+    // Check if user is ORG_ADMIN (current version)
+    const userAccess = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({
+        userId: user.id,
+        organizationId: organization.id,
+      }),
+    });
+
     if (!userAccess || userAccess.role !== 'ORG_ADMIN') {
       return NextResponse.json(
         { error: 'Only organization administrators can update settings' },
@@ -119,23 +125,22 @@ export async function PATCH(
     const body = await request.json();
     const validatedData = updateOrganizationSchema.parse(body);
 
-    // Update organization
-    const updatedOrganization = await prisma.organization.update({
-      where: { id: organization.id },
-      data: {
-        ...(validatedData.name && { name: validatedData.name }),
-        ...(validatedData.ein !== undefined && { ein: validatedData.ein }),
-        ...(validatedData.mission !== undefined && {
-          mission: validatedData.mission,
-        }),
-        ...(validatedData.fiscalYearStart && {
-          fiscalYearStart: new Date(validatedData.fiscalYearStart),
-        }),
-        ...(validatedData.logoUrl !== undefined && {
-          logoUrl: validatedData.logoUrl,
-        }),
-      },
-    });
+    // Prepare updates
+    const updates: any = {};
+    if (validatedData.name) updates.name = validatedData.name;
+    if (validatedData.ein !== undefined) updates.ein = validatedData.ein;
+    if (validatedData.mission !== undefined) updates.mission = validatedData.mission;
+    if (validatedData.fiscalYearStart) {
+      updates.fiscalYearStart = new Date(validatedData.fiscalYearStart);
+    }
+    if (validatedData.logoUrl !== undefined) updates.logoUrl = validatedData.logoUrl;
+
+    // Update organization (creates new version with audit trail)
+    const updatedOrganization = await updateOrganization(
+      organization.id,
+      updates,
+      user.id
+    );
 
     return NextResponse.json(updatedOrganization);
   } catch (error) {

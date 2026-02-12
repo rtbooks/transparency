@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import {
+  createOrganization,
+  getOrganizationsForUser,
+  isSlugAvailable,
+} from '@/services/organization.service';
 
 const createOrganizationSchema = z.object({
   name: z.string().min(3),
@@ -41,41 +46,25 @@ export async function POST(request: NextRequest) {
     const validatedData = createOrganizationSchema.parse(body);
 
     // Check if slug is already taken
-    const existingOrg = await prisma.organization.findUnique({
-      where: { slug: validatedData.slug },
-    });
-
-    if (existingOrg) {
+    const slugAvailable = await isSlugAvailable(validatedData.slug);
+    if (!slugAvailable) {
       return NextResponse.json(
         { error: 'This URL slug is already taken. Please choose another.' },
         { status: 400 }
       );
     }
 
-    // Create organization and make the creating user an ORG_ADMIN
-    // Organization starts as PENDING_VERIFICATION (default in schema)
-    const organization = await prisma.organization.create({
-      data: {
-        name: validatedData.name,
-        slug: validatedData.slug,
-        ein: validatedData.ein,
-        mission: validatedData.mission,
-        fiscalYearStart: new Date(validatedData.fiscalYearStart),
-        // Verification fields
-        einVerifiedAt: new Date(), // EIN was verified via ProPublica
-        officialWebsite: validatedData.verifiedOrgData ? 
-          `https://www.irs.gov/charities-non-profits/tax-exempt-organization-search` : 
-          undefined,
-        organizationUsers: {
-          create: {
-            userId: user.id,
-            role: 'ORG_ADMIN',
-          },
-        },
-      },
-      include: {
-        organizationUsers: true,
-      },
+    // Create organization using service (handles temporal versioning)
+    const organization = await createOrganization({
+      name: validatedData.name,
+      slug: validatedData.slug,
+      ein: validatedData.ein,
+      mission: validatedData.mission,
+      fiscalYearStart: new Date(validatedData.fiscalYearStart),
+      officialWebsite: validatedData.verifiedOrgData ? 
+        `https://www.irs.gov/charities-non-profits/tax-exempt-organization-search` : 
+        undefined,
+      createdByUserId: user.id,
     });
 
     return NextResponse.json(organization, { status: 201 });
@@ -107,13 +96,6 @@ export async function GET(request: NextRequest) {
     // Find the user in our database
     const user = await prisma.user.findUnique({
       where: { authId: clerkUserId },
-      include: {
-        organizations: {
-          include: {
-            organization: true,
-          },
-        },
-      },
     });
 
     if (!user) {
@@ -123,11 +105,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Return list of organizations the user has access to
-    const organizations = user.organizations.map((ou) => ({
-      ...ou.organization,
-      role: ou.role,
-    }));
+    // Get organizations using service (returns current versions only)
+    const organizations = await getOrganizationsForUser(user.id);
 
     return NextResponse.json(organizations);
   } catch (error) {
