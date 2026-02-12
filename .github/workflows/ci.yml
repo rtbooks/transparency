@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: transparency
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: transparency_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://transparency:testpassword@localhost:5432/transparency_test
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://transparency:testpassword@localhost:5432/transparency_test
+
+      - name: Run tests
+        run: npm test -- --ci --coverage --maxWorkers=2
+        env:
+          DATABASE_URL: postgresql://transparency:testpassword@localhost:5432/transparency_test
+          NODE_ENV: test
+
+      - name: Type check
+        run: npm run type-check
+        if: always()
+
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/db
+
+      - name: Build project
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/db
+          SKIP_ENV_VALIDATION: true
+          # Use dummy Clerk key - layout will skip ClerkProvider when it detects test keys
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsuaW5jbHVkZWQuZWxlY3RyaWMtNDIuaWNs

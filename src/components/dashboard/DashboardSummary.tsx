@@ -59,7 +59,7 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
             summaryMap[account.type] = { type: account.type, total: 0, count: 0 };
           }
           summaryMap[account.type].count += 1;
-          summaryMap[account.type].total += Number(account.balance) || 0;
+          summaryMap[account.type].total += Number(account.currentBalance) || 0;
         }
         setAccountSummary(Object.values(summaryMap));
         setTotalAccounts(accounts.length);
