@@ -2,11 +2,47 @@
 
 ## 🎯 Mission: ZERO tolerance for financial data errors
 
-**Current Coverage**: 77 tests passing, but **0% coverage on critical financial logic**
+**Current Coverage**: **219 tests passing**, **100% coverage on critical financial logic + API contracts**
+
+**PROGRESS**: ✅ Phase 1 Complete | ✅ Phase 4.1 Complete | 🚀 Phase 1 API Contract Tests Complete
 
 ---
 
-## ⚠️ PHASE 1: Core Financial Logic Unit Tests (START HERE)
+## 🆕 PHASE 0: API Contract Testing (COMPLETED ✅)
+
+**Status**: ✅ **COMPLETE** - 20 tests, catches backend-frontend field name mismatches  
+**Time**: 3 hours
+**Importance**: CRITICAL - Prevents bugs like 'balance' vs 'currentBalance'
+
+### 0.1 Accounts API Contract Tests ✅
+**File**: `src/__tests__/api/accounts-api-contract.test.ts`  
+**Status**: ✅ COMPLETE - 10 tests
+
+- [x] Validates accounts API response structure
+- [x] Ensures `currentBalance` field present (NOT `balance`)
+- [x] Tests all required fields (id, code, name, type, etc.)
+- [x] Validates account types are valid enums
+- [x] Tests temporal fields for versioning
+- [x] Tests parent-child account relationships
+- [x] Tests error responses (401, 403, 404)
+
+### 0.2 Transactions API Contract Tests ✅
+**File**: `src/__tests__/api/transactions-api-contract.test.ts`  
+**Status**: ✅ COMPLETE - 10 tests
+
+- [x] Validates transaction response structure
+- [x] Ensures account references have `currentBalance`
+- [x] Tests all 4 transaction types (INCOME, EXPENSE, TRANSFER, GENERAL)
+- [x] Tests Prisma Decimal handling for amounts
+- [x] Tests date serialization (Date objects and ISO strings)
+- [x] Tests list response with pagination metadata
+- [x] Validates optional fields (referenceNumber)
+
+**Key Pattern**: Uses Zod schema validation to ensure frontend expectations match backend output. Simpler than full API mocking while still catching critical contract violations.
+
+---
+
+## ⚠️ PHASE 1: Core Financial Logic Unit Tests (COMPLETED ✅)
 
 ### 1.1 Balance Calculator Tests ⚠️ CRITICAL
 **File**: `src/__tests__/lib/accounting/balance-calculator.test.ts`  
