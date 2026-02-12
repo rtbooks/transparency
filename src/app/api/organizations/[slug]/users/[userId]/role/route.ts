@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { canModifyRole } from '@/lib/auth/permissions';
+import { OrganizationUserService } from '@/services/organization-user.service';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 const updateRoleSchema = z.object({
   role: z.enum(['DONOR', 'ORG_ADMIN', 'PLATFORM_ADMIN', 'PUBLIC']),
@@ -36,14 +38,9 @@ export async function PATCH(
       );
     }
 
-    // Find organization and check current user's access
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: currentUser.id },
-        },
-      },
+    // Find organization (current version)
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -53,19 +50,24 @@ export async function PATCH(
       );
     }
 
-    const currentUserOrgAccess = organization.organizationUsers[0];
+    // Check current user's access
+    const currentUserAccess = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({
+        organizationId: organization.id,
+        userId: currentUser.id,
+      }),
+    });
     
     // Platform admins can modify roles, otherwise need ORG_ADMIN or higher
-    const canManageRoles = currentUser.isPlatformAdmin || (currentUserOrgAccess && currentUserOrgAccess.role !== 'DONOR');
+    const canManageRoles = currentUser.isPlatformAdmin || (currentUserAccess && currentUserAccess.role !== 'DONOR');
     
     if (!canManageRoles) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // Find the organization user to update
-    const targetOrgUser = await prisma.organizationUser.findUnique({
-      where: { id: organizationUserId },
-      include: { organization: true },
+    // Find the organization user to update (current version)
+    const targetOrgUser = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({ id: organizationUserId }),
     });
 
     if (!targetOrgUser || targetOrgUser.organizationId !== organization.id) {
@@ -80,7 +82,7 @@ export async function PATCH(
     const { role: newRole } = updateRoleSchema.parse(body);
 
     // Determine current user's effective role (PLATFORM_ADMIN if isPlatformAdmin, otherwise org role)
-    const effectiveRole = currentUser.isPlatformAdmin ? 'PLATFORM_ADMIN' : currentUserOrgAccess?.role;
+    const effectiveRole = currentUser.isPlatformAdmin ? 'PLATFORM_ADMIN' : currentUserAccess?.role;
 
     // Check if current user can modify this role
     if (!effectiveRole || !canModifyRole(effectiveRole, targetOrgUser.role, newRole)) {
@@ -90,14 +92,13 @@ export async function PATCH(
       );
     }
 
-    // Update the role
-    const updatedOrgUser = await prisma.organizationUser.update({
-      where: { id: organizationUserId },
-      data: { role: newRole },
-      include: {
-        user: true,
-      },
-    });
+    // Update the role (creates new version)
+    const updatedOrgUser = await OrganizationUserService.updateRole(
+      targetOrgUser.userId,
+      organization.id,
+      newRole,
+      currentUser.id
+    );
 
     return NextResponse.json(updatedOrgUser);
   } catch (error) {

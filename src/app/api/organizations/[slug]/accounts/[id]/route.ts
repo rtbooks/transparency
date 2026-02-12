@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import {
+  findAccountById,
+  updateAccount,
+  isAccountCodeAvailable,
+} from '@/services/account.service';
+import { findOrganizationBySlug } from '@/services/organization.service';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 const updateAccountSchema = z.object({
   code: z.string().min(1).max(20).optional(),
@@ -35,15 +42,8 @@ export async function PATCH(
       );
     }
 
-    // Find organization and check access
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
-    });
+    // Find organization (current version)
+    const organization = await findOrganizationBySlug(slug);
 
     if (!organization) {
       return NextResponse.json(
@@ -52,15 +52,20 @@ export async function PATCH(
       );
     }
 
-    const orgUser = organization.organizationUsers[0];
+    // Check user access and role (current version)
+    const orgUser = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({
+        userId: user.id,
+        organizationId: organization.id,
+      }),
+    });
+
     if (!orgUser || orgUser.role === 'DONOR') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // Check if account exists and belongs to organization
-    const existingAccount = await prisma.account.findUnique({
-      where: { id },
-    });
+    // Check if account exists and belongs to organization (current version)
+    const existingAccount = await findAccountById(id);
 
     if (!existingAccount || existingAccount.organizationId !== organization.id) {
       return NextResponse.json(
@@ -75,15 +80,13 @@ export async function PATCH(
 
     // If updating code, check for duplicates (excluding current account)
     if (validatedData.code && validatedData.code !== existingAccount.code) {
-      const duplicateCode = await prisma.account.findFirst({
-        where: {
-          organizationId: organization.id,
-          code: validatedData.code,
-          id: { not: id },
-        },
-      });
+      const codeAvailable = await isAccountCodeAvailable(
+        organization.id,
+        validatedData.code,
+        id
+      );
 
-      if (duplicateCode) {
+      if (!codeAvailable) {
         return NextResponse.json(
           { error: 'Account code already exists' },
           { status: 400 }
@@ -93,9 +96,7 @@ export async function PATCH(
 
     // If parent account is specified, verify it exists and is same type
     if (validatedData.parentAccountId) {
-      const parentAccount = await prisma.account.findUnique({
-        where: { id: validatedData.parentAccountId },
-      });
+      const parentAccount = await findAccountById(validatedData.parentAccountId);
 
       if (!parentAccount) {
         return NextResponse.json(
@@ -112,38 +113,35 @@ export async function PATCH(
         );
       }
 
-      // Check for circular reference
-      let currentParent = parentAccount;
-      while (currentParent.parentAccountId) {
-        if (currentParent.parentAccountId === id) {
+      // Check for circular reference (walk up the parent chain)
+      let currentParentId = parentAccount.parentAccountId;
+      while (currentParentId) {
+        if (currentParentId === id) {
           return NextResponse.json(
             { error: 'Cannot create circular parent-child relationship' },
             { status: 400 }
           );
         }
-        const nextParent = await prisma.account.findUnique({
-          where: { id: currentParent.parentAccountId },
-        });
+        const nextParent = await findAccountById(currentParentId);
         if (!nextParent) break;
-        currentParent = nextParent;
+        currentParentId = nextParent.parentAccountId;
       }
     }
 
-    // Update the account
-    const updatedAccount = await prisma.account.update({
-      where: { id },
-      data: {
-        ...(validatedData.code && { code: validatedData.code }),
-        ...(validatedData.name && { name: validatedData.name }),
-        ...(validatedData.type && { type: validatedData.type }),
-        ...(validatedData.parentAccountId !== undefined && {
-          parentAccountId: validatedData.parentAccountId,
-        }),
-        ...(validatedData.description !== undefined && {
-          description: validatedData.description,
-        }),
-      },
-    });
+    // Prepare updates
+    const updates: any = {};
+    if (validatedData.code) updates.code = validatedData.code;
+    if (validatedData.name) updates.name = validatedData.name;
+    if (validatedData.type) updates.type = validatedData.type;
+    if (validatedData.parentAccountId !== undefined) {
+      updates.parentAccountId = validatedData.parentAccountId;
+    }
+    if (validatedData.description !== undefined) {
+      updates.description = validatedData.description;
+    }
+
+    // Update the account (creates new version with audit trail)
+    const updatedAccount = await updateAccount(id, updates, user.id);
 
     return NextResponse.json(updatedAccount);
   } catch (error) {

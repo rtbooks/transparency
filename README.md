@@ -12,6 +12,8 @@ Make financial transparency the norm for charitable organizations, enabling dono
 
 ### For the Public
 - **Real-time Financial Dashboard** - View all income and expenses
+- **Historical Data Access** - View financial state as of any past date
+- **Complete Audit Trail** - See all changes with full transparency
 - **Donor Highlights** - Recognize supporters (with opt-in)
 - **Planned Purchases** - See what organizations plan to buy
 - **Completed Purchases Gallery** - Photos of impact
@@ -28,8 +30,11 @@ Make financial transparency the norm for charitable organizations, enabling dono
 - **General Ledger** - Full double-entry bookkeeping
 - **Transaction Recording** - Income and expenses
 - **Chart of Accounts** - Hierarchical account structure
+- **Version History** - Track all changes to accounts and settings
+- **Audit Trail** - Complete change log with timestamps
 - **Planned Purchase Management** - Track future needs
-- **Financial Reports** - Comprehensive reporting
+- **Financial Reports** - Comprehensive reporting with historical accuracy
+- **Time Machine** - View organization state as of any past date
 - **Bank Reconciliation** - Match transactions (future)
 
 ### For Platform Admins
@@ -60,10 +65,22 @@ Make financial transparency the norm for charitable organizations, enabling dono
 
 ## 📚 Documentation
 
+### Essential Guides
+- **[QUICKSTART.md](./QUICKSTART.md)** - Step-by-step setup guide (start here!)
+- **[COPILOT_GUIDELINES.md](./COPILOT_GUIDELINES.md)** - Critical development patterns and conventions
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - How to contribute code
+
+### Architecture & Design
 - **[APPROACH.md](./APPROACH.md)** - Complete technical approach and architecture
 - **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Folder structure and organization
-- **[QUICKSTART.md](./QUICKSTART.md)** - Step-by-step setup guide
-- **[schema.prisma](./schema.prisma)** - Database schema
+- **[TEMPORAL_SCHEMA_DESIGN.md](./TEMPORAL_SCHEMA_DESIGN.md)** - Bi-temporal versioning patterns
+- **[TEMPORAL_IMPLEMENTATION_STATUS.md](./TEMPORAL_IMPLEMENTATION_STATUS.md)** - Temporal architecture status
+
+### Operations
+- **[DEPLOYMENT_SETUP.md](./DEPLOYMENT_SETUP.md)** - Production deployment guide
+- **[IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)** - Development progress tracking
+- **[API_REFERENCE.md](./API_REFERENCE.md)** - API documentation for temporal endpoints
+- **[schema.prisma](./prisma/schema.prisma)** - Database schema (single source of truth)
 
 ## 🚀 Quick Start
 
@@ -160,7 +177,10 @@ See [APPROACH.md](./APPROACH.md) for the complete implementation roadmap.
 ## 💡 Core Principles
 
 ### Radical Transparency
-Every financial transaction is visible to the public (except anonymous donor names). No hidden fees, no obscured expenses.
+Every financial transaction is visible to the public (except anonymous donor names). No hidden fees, no obscured expenses. Complete audit trail of all changes.
+
+### Temporal Data Architecture
+All financial data is versioned with complete history. Query the state of any account or organization as of any past date. Never lose information - all changes are tracked and reversible.
 
 ### Double-Entry Bookkeeping
 Professional accounting standards ensure accuracy and audit-ability. Every transaction affects two accounts.

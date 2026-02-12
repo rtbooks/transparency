@@ -36,6 +36,18 @@ model Organization {
   officialWebsite        String?            @map("official_website")
   determinationLetterUrl String?            @map("determination_letter_url")
 
+  // Temporal versioning (bi-temporal pattern)
+  versionId         String   @unique @default(uuid()) @map("version_id")
+  previousVersionId String?  @map("previous_version_id")
+  validFrom         DateTime @default(now()) @map("valid_from")
+  validTo           DateTime @default("9999-12-31T23:59:59.999Z") @map("valid_to")
+  systemFrom        DateTime @default(now()) @map("system_from")
+  systemTo          DateTime @default("9999-12-31T23:59:59.999Z") @map("system_to")
+  isDeleted         Boolean  @default(false) @map("is_deleted")
+  deletedAt         DateTime? @map("deleted_at")
+  deletedBy         String?  @map("deleted_by")
+  changedBy         String?  @map("changed_by")
+
   // Metadata
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -48,6 +60,11 @@ model Organization {
   bankAccounts      BankAccount[]
   invitations       Invitation[]
 
+  // Temporal indexes
+  @@index([id, validTo], name: "idx_org_current")
+  @@index([id, validFrom, validTo], name: "idx_org_valid_time")
+  @@index([systemFrom, systemTo], name: "idx_org_system_time")
+  @@index([isDeleted], name: "idx_org_deleted")
   @@map("organizations")
 }
 
@@ -107,14 +124,33 @@ model OrganizationUser {
   anonymousDonor   Boolean @default(false) @map("anonymous_donor")
   showInHighlights Boolean @default(true) @map("show_in_highlights")
 
+  // Temporal versioning (bi-temporal pattern)
+  versionId         String   @unique @default(uuid()) @map("version_id")
+  previousVersionId String?  @map("previous_version_id")
+  validFrom         DateTime @default(now()) @map("valid_from")
+  validTo           DateTime @default("9999-12-31T23:59:59.999Z") @map("valid_to")
+  systemFrom        DateTime @default(now()) @map("system_from")
+  systemTo          DateTime @default("9999-12-31T23:59:59.999Z") @map("system_to")
+  isDeleted         Boolean  @default(false) @map("is_deleted")
+  deletedAt         DateTime? @map("deleted_at")
+  deletedBy         String?  @map("deleted_by")
+  changedBy         String?  @map("changed_by")
+
   // Metadata
-  joinedAt DateTime @default(now()) @map("joined_at")
+  joinedAt  DateTime @default(now()) @map("joined_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  // Temporal indexes
   @@unique([userId, organizationId])
+  @@index([id, validTo], name: "idx_orguser_current")
+  @@index([id, validFrom, validTo], name: "idx_orguser_valid_time")
+  @@index([systemFrom, systemTo], name: "idx_orguser_system_time")
+  @@index([isDeleted], name: "idx_orguser_deleted")
   @@map("organization_users")
 }
 
@@ -148,6 +184,18 @@ model Account {
   // Balance (cached, calculated from transactions)
   currentBalance Decimal @default(0) @map("current_balance") @db.Decimal(12, 2)
 
+  // Temporal versioning (bi-temporal pattern)
+  versionId         String   @unique @default(uuid()) @map("version_id")
+  previousVersionId String?  @map("previous_version_id")
+  validFrom         DateTime @default(now()) @map("valid_from")
+  validTo           DateTime @default("9999-12-31T23:59:59.999Z") @map("valid_to")
+  systemFrom        DateTime @default(now()) @map("system_from")
+  systemTo          DateTime @default("9999-12-31T23:59:59.999Z") @map("system_to")
+  isDeleted         Boolean  @default(false) @map("is_deleted")
+  deletedAt         DateTime? @map("deleted_at")
+  deletedBy         String?  @map("deleted_by")
+  changedBy         String?  @map("changed_by")
+
   // Metadata
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -162,7 +210,12 @@ model Account {
 
   bankAccount BankAccount?
 
+  // Temporal indexes
   @@unique([organizationId, code])
+  @@index([id, validTo], name: "idx_account_current")
+  @@index([id, validFrom, validTo], name: "idx_account_valid_time")
+  @@index([systemFrom, systemTo], name: "idx_account_system_time")
+  @@index([isDeleted], name: "idx_account_deleted")
   @@map("accounts")
 }
 
@@ -270,6 +323,18 @@ model PlannedPurchase {
   actualAmount        Decimal?  @map("actual_amount") @db.Decimal(12, 2)
   completedAt         DateTime? @map("completed_at")
 
+  // Temporal versioning (bi-temporal pattern)
+  versionId         String   @unique @default(uuid()) @map("version_id")
+  previousVersionId String?  @map("previous_version_id")
+  validFrom         DateTime @default(now()) @map("valid_from")
+  validTo           DateTime @default("9999-12-31T23:59:59.999Z") @map("valid_to")
+  systemFrom        DateTime @default(now()) @map("system_from")
+  systemTo          DateTime @default("9999-12-31T23:59:59.999Z") @map("system_to")
+  isDeleted         Boolean  @default(false) @map("is_deleted")
+  deletedAt         DateTime? @map("deleted_at")
+  deletedBy         String?  @map("deleted_by")
+  changedBy         String?  @map("changed_by")
+
   // Metadata
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -280,6 +345,11 @@ model PlannedPurchase {
   actualTransaction Transaction?    @relation("CompletedPurchase", fields: [actualTransactionId], references: [id])
   images            PurchaseImage[]
 
+  // Temporal indexes
+  @@index([id, validTo], name: "idx_purchase_current")
+  @@index([id, validFrom, validTo], name: "idx_purchase_valid_time")
+  @@index([systemFrom, systemTo], name: "idx_purchase_system_time")
+  @@index([isDeleted], name: "idx_purchase_deleted")
   @@map("planned_purchases")
 }
 

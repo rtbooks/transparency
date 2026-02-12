@@ -44,6 +44,16 @@ export type AccountMinAggregateOutputType = {
   parentAccountId: string | null
   isActive: boolean | null
   currentBalance: runtime.Decimal | null
+  versionId: string | null
+  previousVersionId: string | null
+  validFrom: Date | null
+  validTo: Date | null
+  systemFrom: Date | null
+  systemTo: Date | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +68,16 @@ export type AccountMaxAggregateOutputType = {
   parentAccountId: string | null
   isActive: boolean | null
   currentBalance: runtime.Decimal | null
+  versionId: string | null
+  previousVersionId: string | null
+  validFrom: Date | null
+  validTo: Date | null
+  systemFrom: Date | null
+  systemTo: Date | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +92,16 @@ export type AccountCountAggregateOutputType = {
   parentAccountId: number
   isActive: number
   currentBalance: number
+  versionId: number
+  previousVersionId: number
+  validFrom: number
+  validTo: number
+  systemFrom: number
+  systemTo: number
+  isDeleted: number
+  deletedAt: number
+  deletedBy: number
+  changedBy: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -96,6 +126,16 @@ export type AccountMinAggregateInputType = {
   parentAccountId?: true
   isActive?: true
   currentBalance?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +150,16 @@ export type AccountMaxAggregateInputType = {
   parentAccountId?: true
   isActive?: true
   currentBalance?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +174,16 @@ export type AccountCountAggregateInputType = {
   parentAccountId?: true
   isActive?: true
   currentBalance?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -225,6 +285,16 @@ export type AccountGroupByOutputType = {
   parentAccountId: string | null
   isActive: boolean
   currentBalance: runtime.Decimal
+  versionId: string
+  previousVersionId: string | null
+  validFrom: Date
+  validTo: Date
+  systemFrom: Date
+  systemTo: Date
+  isDeleted: boolean
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   createdAt: Date
   updatedAt: Date
   _count: AccountCountAggregateOutputType | null
@@ -262,6 +332,16 @@ export type AccountWhereInput = {
   parentAccountId?: Prisma.StringNullableFilter<"Account"> | string | null
   isActive?: Prisma.BoolFilter<"Account"> | boolean
   currentBalance?: Prisma.DecimalFilter<"Account"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFilter<"Account"> | string
+  previousVersionId?: Prisma.StringNullableFilter<"Account"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"Account"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"Account"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"Account"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"Account"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"Account"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Account"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Account"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"Account"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -282,6 +362,16 @@ export type AccountOrderByWithRelationInput = {
   parentAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   currentBalance?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  changedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -294,6 +384,7 @@ export type AccountOrderByWithRelationInput = {
 
 export type AccountWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  versionId?: string
   organizationId_code?: Prisma.AccountOrganizationIdCodeCompoundUniqueInput
   AND?: Prisma.AccountWhereInput | Prisma.AccountWhereInput[]
   OR?: Prisma.AccountWhereInput[]
@@ -306,6 +397,15 @@ export type AccountWhereUniqueInput = Prisma.AtLeast<{
   parentAccountId?: Prisma.StringNullableFilter<"Account"> | string | null
   isActive?: Prisma.BoolFilter<"Account"> | boolean
   currentBalance?: Prisma.DecimalFilter<"Account"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  previousVersionId?: Prisma.StringNullableFilter<"Account"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"Account"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"Account"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"Account"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"Account"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"Account"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Account"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Account"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"Account"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -314,7 +414,7 @@ export type AccountWhereUniqueInput = Prisma.AtLeast<{
   debitTransactions?: Prisma.TransactionListRelationFilter
   creditTransactions?: Prisma.TransactionListRelationFilter
   bankAccount?: Prisma.XOR<Prisma.BankAccountNullableScalarRelationFilter, Prisma.BankAccountWhereInput> | null
-}, "id" | "organizationId_code">
+}, "id" | "versionId" | "organizationId_code">
 
 export type AccountOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -326,6 +426,16 @@ export type AccountOrderByWithAggregationInput = {
   parentAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   currentBalance?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  changedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AccountCountOrderByAggregateInput
@@ -348,6 +458,16 @@ export type AccountScalarWhereWithAggregatesInput = {
   parentAccountId?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Account"> | boolean
   currentBalance?: Prisma.DecimalWithAggregatesFilter<"Account"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringWithAggregatesFilter<"Account"> | string
+  previousVersionId?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null
+  validFrom?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string
+  validTo?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string
+  systemFrom?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string
+  systemTo?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string
+  isDeleted?: Prisma.BoolWithAggregatesFilter<"Account"> | boolean
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Account"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null
+  changedBy?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string
 }
@@ -360,6 +480,16 @@ export type AccountCreateInput = {
   description?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutAccountsInput
@@ -380,6 +510,16 @@ export type AccountUncheckedCreateInput = {
   parentAccountId?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   childAccounts?: Prisma.AccountUncheckedCreateNestedManyWithoutParentAccountInput
@@ -396,6 +536,16 @@ export type AccountUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutAccountsNestedInput
@@ -416,6 +566,16 @@ export type AccountUncheckedUpdateInput = {
   parentAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   childAccounts?: Prisma.AccountUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -434,6 +594,16 @@ export type AccountCreateManyInput = {
   parentAccountId?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -446,6 +616,16 @@ export type AccountUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -460,6 +640,16 @@ export type AccountUncheckedUpdateManyInput = {
   parentAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -494,6 +684,16 @@ export type AccountCountOrderByAggregateInput = {
   parentAccountId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   currentBalance?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -512,6 +712,16 @@ export type AccountMaxOrderByAggregateInput = {
   parentAccountId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   currentBalance?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -526,6 +736,16 @@ export type AccountMinOrderByAggregateInput = {
   parentAccountId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   currentBalance?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -693,6 +913,16 @@ export type AccountCreateWithoutOrganizationInput = {
   description?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   parentAccount?: Prisma.AccountCreateNestedOneWithoutChildAccountsInput
@@ -711,6 +941,16 @@ export type AccountUncheckedCreateWithoutOrganizationInput = {
   parentAccountId?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   childAccounts?: Prisma.AccountUncheckedCreateNestedManyWithoutParentAccountInput
@@ -758,6 +998,16 @@ export type AccountScalarWhereInput = {
   parentAccountId?: Prisma.StringNullableFilter<"Account"> | string | null
   isActive?: Prisma.BoolFilter<"Account"> | boolean
   currentBalance?: Prisma.DecimalFilter<"Account"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFilter<"Account"> | string
+  previousVersionId?: Prisma.StringNullableFilter<"Account"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"Account"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"Account"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"Account"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"Account"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"Account"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Account"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Account"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"Account"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Account"> | Date | string
 }
@@ -770,6 +1020,16 @@ export type AccountCreateWithoutChildAccountsInput = {
   description?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutAccountsInput
@@ -789,6 +1049,16 @@ export type AccountUncheckedCreateWithoutChildAccountsInput = {
   parentAccountId?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   debitTransactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutDebitAccountInput
@@ -809,6 +1079,16 @@ export type AccountCreateWithoutParentAccountInput = {
   description?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutAccountsInput
@@ -827,6 +1107,16 @@ export type AccountUncheckedCreateWithoutParentAccountInput = {
   description?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   childAccounts?: Prisma.AccountUncheckedCreateNestedManyWithoutParentAccountInput
@@ -864,6 +1154,16 @@ export type AccountUpdateWithoutChildAccountsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutAccountsNestedInput
@@ -883,6 +1183,16 @@ export type AccountUncheckedUpdateWithoutChildAccountsInput = {
   parentAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   debitTransactions?: Prisma.TransactionUncheckedUpdateManyWithoutDebitAccountNestedInput
@@ -914,6 +1224,16 @@ export type AccountCreateWithoutDebitTransactionsInput = {
   description?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutAccountsInput
@@ -933,6 +1253,16 @@ export type AccountUncheckedCreateWithoutDebitTransactionsInput = {
   parentAccountId?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   childAccounts?: Prisma.AccountUncheckedCreateNestedManyWithoutParentAccountInput
@@ -953,6 +1283,16 @@ export type AccountCreateWithoutCreditTransactionsInput = {
   description?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutAccountsInput
@@ -972,6 +1312,16 @@ export type AccountUncheckedCreateWithoutCreditTransactionsInput = {
   parentAccountId?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   childAccounts?: Prisma.AccountUncheckedCreateNestedManyWithoutParentAccountInput
@@ -1003,6 +1353,16 @@ export type AccountUpdateWithoutDebitTransactionsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutAccountsNestedInput
@@ -1022,6 +1382,16 @@ export type AccountUncheckedUpdateWithoutDebitTransactionsInput = {
   parentAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   childAccounts?: Prisma.AccountUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -1048,6 +1418,16 @@ export type AccountUpdateWithoutCreditTransactionsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutAccountsNestedInput
@@ -1067,6 +1447,16 @@ export type AccountUncheckedUpdateWithoutCreditTransactionsInput = {
   parentAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   childAccounts?: Prisma.AccountUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -1082,6 +1472,16 @@ export type AccountCreateWithoutBankAccountInput = {
   description?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutAccountsInput
@@ -1101,6 +1501,16 @@ export type AccountUncheckedCreateWithoutBankAccountInput = {
   parentAccountId?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   childAccounts?: Prisma.AccountUncheckedCreateNestedManyWithoutParentAccountInput
@@ -1132,6 +1542,16 @@ export type AccountUpdateWithoutBankAccountInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutAccountsNestedInput
@@ -1151,6 +1571,16 @@ export type AccountUncheckedUpdateWithoutBankAccountInput = {
   parentAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   childAccounts?: Prisma.AccountUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -1167,6 +1597,16 @@ export type AccountCreateManyOrganizationInput = {
   parentAccountId?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1179,6 +1619,16 @@ export type AccountUpdateWithoutOrganizationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   parentAccount?: Prisma.AccountUpdateOneWithoutChildAccountsNestedInput
@@ -1197,6 +1647,16 @@ export type AccountUncheckedUpdateWithoutOrganizationInput = {
   parentAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   childAccounts?: Prisma.AccountUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -1214,6 +1674,16 @@ export type AccountUncheckedUpdateManyWithoutOrganizationInput = {
   parentAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1227,6 +1697,16 @@ export type AccountCreateManyParentAccountInput = {
   description?: string | null
   isActive?: boolean
   currentBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1239,6 +1719,16 @@ export type AccountUpdateWithoutParentAccountInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutAccountsNestedInput
@@ -1257,6 +1747,16 @@ export type AccountUncheckedUpdateWithoutParentAccountInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   childAccounts?: Prisma.AccountUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -1274,6 +1774,16 @@ export type AccountUncheckedUpdateManyWithoutParentAccountInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currentBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1337,6 +1847,16 @@ export type AccountSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   parentAccountId?: boolean
   isActive?: boolean
   currentBalance?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -1358,6 +1878,16 @@ export type AccountSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   parentAccountId?: boolean
   isActive?: boolean
   currentBalance?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -1374,6 +1904,16 @@ export type AccountSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   parentAccountId?: boolean
   isActive?: boolean
   currentBalance?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -1390,11 +1930,21 @@ export type AccountSelectScalar = {
   parentAccountId?: boolean
   isActive?: boolean
   currentBalance?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "code" | "name" | "type" | "description" | "parentAccountId" | "isActive" | "currentBalance" | "createdAt" | "updatedAt", ExtArgs["result"]["account"]>
+export type AccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "code" | "name" | "type" | "description" | "parentAccountId" | "isActive" | "currentBalance" | "versionId" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["account"]>
 export type AccountInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   parentAccount?: boolean | Prisma.Account$parentAccountArgs<ExtArgs>
@@ -1433,6 +1983,16 @@ export type $AccountPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     parentAccountId: string | null
     isActive: boolean
     currentBalance: runtime.Decimal
+    versionId: string
+    previousVersionId: string | null
+    validFrom: Date
+    validTo: Date
+    systemFrom: Date
+    systemTo: Date
+    isDeleted: boolean
+    deletedAt: Date | null
+    deletedBy: string | null
+    changedBy: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["account"]>
@@ -1873,6 +2433,16 @@ export interface AccountFieldRefs {
   readonly parentAccountId: Prisma.FieldRef<"Account", 'String'>
   readonly isActive: Prisma.FieldRef<"Account", 'Boolean'>
   readonly currentBalance: Prisma.FieldRef<"Account", 'Decimal'>
+  readonly versionId: Prisma.FieldRef<"Account", 'String'>
+  readonly previousVersionId: Prisma.FieldRef<"Account", 'String'>
+  readonly validFrom: Prisma.FieldRef<"Account", 'DateTime'>
+  readonly validTo: Prisma.FieldRef<"Account", 'DateTime'>
+  readonly systemFrom: Prisma.FieldRef<"Account", 'DateTime'>
+  readonly systemTo: Prisma.FieldRef<"Account", 'DateTime'>
+  readonly isDeleted: Prisma.FieldRef<"Account", 'Boolean'>
+  readonly deletedAt: Prisma.FieldRef<"Account", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"Account", 'String'>
+  readonly changedBy: Prisma.FieldRef<"Account", 'String'>
   readonly createdAt: Prisma.FieldRef<"Account", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Account", 'DateTime'>
 }

@@ -230,6 +230,31 @@ function createTransaction(data: any): any {
 }
 ```
 
+### ⚠️ CRITICAL: Prisma Client Imports
+
+**ALWAYS use the correct import path for PrismaClient:**
+
+```typescript
+// ✅ CORRECT - Use this
+import { PrismaClient } from '@/generated/prisma/client';
+import { Organization, Account, UserRole } from '@/generated/prisma/client';
+import { prisma } from '@/lib/prisma';
+
+// ❌ WRONG - Will break Vercel builds
+import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from '@prisma/client';
+```
+
+**Why:** Our Prisma schema uses a custom output directory (`output = "../src/generated/prisma"`), so imports must include the `/client` suffix. Using the wrong path will cause TypeScript compilation errors in Vercel deployments.
+
+**Before committing Prisma-related changes:**
+1. Verify the import path is correct
+2. Run `npm run type-check` 
+3. Run `npm run build` to ensure it compiles
+4. Check existing code for the correct pattern
+
+See `COPILOT_GUIDELINES.md` for more details.
+
 ### React Components
 
 - Use functional components with hooks
