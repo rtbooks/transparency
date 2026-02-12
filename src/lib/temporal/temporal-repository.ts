@@ -4,7 +4,7 @@
  * Generic repository for performing CRUD operations on temporal entities
  */
 
-import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from '@/generated/prisma/client';
 import {
   MAX_DATE,
   TemporalFields,
