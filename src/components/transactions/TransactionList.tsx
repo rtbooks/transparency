@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Transaction, Account } from '@/generated/prisma/client';
+import { AsOfDatePicker } from '@/components/temporal';
 import {
   Table,
   TableBody,
@@ -20,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Dialog,
   DialogContent,
@@ -28,7 +30,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { formatCurrency } from '@/lib/utils/account-tree';
-import { ChevronLeft, ChevronRight, Download, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Search, Info } from 'lucide-react';
+import { format } from 'date-fns';
 
 interface TransactionWithAccounts extends Transaction {
   debitAccount: Pick<Account, 'id' | 'code' | 'name' | 'type'>;
@@ -50,12 +53,19 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [asOfDate, setAsOfDate] = useState<Date | undefined>(undefined);
   
   // Pagination
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const limit = 25;
+
+  // Temporal context from API
+  const [temporalContext, setTemporalContext] = useState<{
+    asOfDate: string;
+    isHistoricalView: boolean;
+  } | null>(null);
 
   const fetchTransactions = async () => {
     try {
@@ -79,6 +89,9 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
       if (endDate) {
         params.append('endDate', endDate);
       }
+      if (asOfDate) {
+        params.append('asOfDate', asOfDate.toISOString());
+      }
 
       const response = await fetch(
         `/api/organizations/${organizationSlug}/transactions?${params.toString()}`
@@ -92,6 +105,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
       setTransactions(data.transactions);
       setTotalPages(data.pagination.totalPages);
       setTotalCount(data.pagination.totalCount);
+      setTemporalContext(data.temporalContext);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -101,7 +115,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
 
   useEffect(() => {
     fetchTransactions();
-  }, [page, typeFilter, startDate, endDate]);
+  }, [page, typeFilter, startDate, endDate, asOfDate]); // Added asOfDate to dependencies
 
   const handleSearch = () => {
     setPage(1); // Reset to first page
@@ -254,11 +268,51 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
           />
         </div>
 
-        <Button onClick={handleExportCSV} variant="outline" size="sm">
+        <div className="min-w-[200px]">
+          <label className="text-sm font-medium text-gray-700 mb-2 block">
+            As Of Date
+          </label>
+          <AsOfDatePicker
+            date={asOfDate}
+            onDateChange={setAsOfDate}
+            maxDate={new Date()}
+            className="w-full"
+          />
+        </div>
+
+        <Button
+          onClick={handleExportCSV}
+          variant="outline"
+          size="sm"
+          className="ml-auto"
+        >
           <Download className="mr-2 h-4 w-4" />
           Export CSV
         </Button>
       </div>
+
+      {/* Temporal Context Banner */}
+      {temporalContext && temporalContext.isHistoricalView && (
+        <Alert className="bg-blue-50 border-blue-200">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-blue-900">
+            <div className="flex items-center justify-between">
+              <span>
+                <strong>Viewing transactions as of {format(new Date(temporalContext.asOfDate), 'PPP')}.</strong>
+                {' '}Account names are shown as they were at that time.
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setAsOfDate(undefined)}
+                className="ml-4"
+              >
+                View Current State
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Transaction Count */}
       <div className="text-sm text-gray-600">

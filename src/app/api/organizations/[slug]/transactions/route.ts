@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
+import { AccountService } from '@/services/account.service';
 import { z } from 'zod';
 
 const createTransactionSchema = z.object({
@@ -68,6 +69,9 @@ export async function GET(
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
     const search = searchParams.get('search');
+    const asOfDate = searchParams.get('asOfDate')
+      ? new Date(searchParams.get('asOfDate')!)
+      : undefined;
 
     // Build where clause
     const where: any = {
@@ -105,24 +109,56 @@ export async function GET(
     // Get total count for pagination
     const totalCount = await prisma.transaction.count({ where });
 
-    // Fetch transactions with related accounts
+    // Fetch transactions (without account includes for now)
     const transactions = await prisma.transaction.findMany({
       where,
-      include: {
-        debitAccount: {
-          select: { id: true, code: true, name: true, type: true },
-        },
-        creditAccount: {
-          select: { id: true, code: true, name: true, type: true },
-        },
-      },
       orderBy: { transactionDate: 'desc' },
       skip: (page - 1) * limit,
       take: limit,
     });
 
+    // Get unique account IDs from transactions
+    const accountIds = [
+      ...new Set([
+        ...transactions.map(t => t.debitAccountId),
+        ...transactions.map(t => t.creditAccountId),
+      ])
+    ];
+
+    // Fetch accounts - either current or as of date
+    const accounts = accountIds.length > 0 
+      ? (asOfDate
+          ? await AccountService.findManyAsOf(organization.id, accountIds, asOfDate)
+          : await AccountService.findManyCurrent(organization.id, accountIds))
+      : [];
+
+    // Create account lookup map
+    const accountMap = new Map(accounts.map(a => [a.id, {
+      id: a.id,
+      code: a.code,
+      name: a.name,
+      type: a.type,
+    }]));
+
+    // Enrich transactions with account data
+    const enrichedTransactions = transactions.map(tx => ({
+      ...tx,
+      debitAccount: accountMap.get(tx.debitAccountId) || {
+        id: tx.debitAccountId,
+        code: '???',
+        name: '(Account not found)',
+        type: 'ASSET',
+      },
+      creditAccount: accountMap.get(tx.creditAccountId) || {
+        id: tx.creditAccountId,
+        code: '???',
+        name: '(Account not found)',
+        type: 'ASSET',
+      },
+    }));
+
     return NextResponse.json({
-      transactions,
+      transactions: enrichedTransactions,
       pagination: {
         page,
         limit,
@@ -130,6 +166,10 @@ export async function GET(
         totalPages: Math.ceil(totalCount / limit),
         hasMore: page * limit < totalCount,
       },
+      temporalContext: asOfDate ? {
+        asOfDate: asOfDate.toISOString(),
+        isHistoricalView: true,
+      } : null,
     });
   } catch (error) {
     console.error('Error fetching transactions:', error);
