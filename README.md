@@ -60,10 +60,20 @@ Make financial transparency the norm for charitable organizations, enabling dono
 
 ## 📚 Documentation
 
+### Essential Guides
+- **[QUICKSTART.md](./QUICKSTART.md)** - Step-by-step setup guide (start here!)
+- **[COPILOT_GUIDELINES.md](./COPILOT_GUIDELINES.md)** - Critical development patterns and conventions
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - How to contribute code
+
+### Architecture & Design
 - **[APPROACH.md](./APPROACH.md)** - Complete technical approach and architecture
 - **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Folder structure and organization
-- **[QUICKSTART.md](./QUICKSTART.md)** - Step-by-step setup guide
-- **[schema.prisma](./schema.prisma)** - Database schema
+- **[TEMPORAL_SCHEMA_DESIGN.md](./TEMPORAL_SCHEMA_DESIGN.md)** - Bi-temporal versioning patterns
+
+### Operations
+- **[DEPLOYMENT_SETUP.md](./DEPLOYMENT_SETUP.md)** - Production deployment guide
+- **[IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)** - Development progress tracking
+- **[schema.prisma](./prisma/schema.prisma)** - Database schema (single source of truth)
 
 ## 🚀 Quick Start
 

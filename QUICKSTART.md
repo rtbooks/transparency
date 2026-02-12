@@ -204,15 +204,38 @@ sudo mv stripe /usr/local/bin/
 **Create Prisma client singleton:**
 ```typescript
 // src/lib/prisma.ts
-import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
+import { PrismaClient } from "@/generated/prisma/client";
+
+const { Pool } = pg;
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
+  prisma: PrismaClient | undefined;
+};
+
+let prismaInstance: PrismaClient;
+
+if (!globalForPrisma.prisma) {
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const adapter = new PrismaPg(pool);
+  prismaInstance = new PrismaClient({ adapter });
+} else {
+  prismaInstance = globalForPrisma.prisma;
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+export const prisma = prismaInstance;
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+```
+
+**⚠️ IMPORTANT: Prisma Import Path**
+Always use `@/generated/prisma/client` for PrismaClient imports. This matches our custom Prisma output configuration in `schema.prisma`:
+```prisma
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
 ```
 
 **Create Stripe client:**
@@ -228,7 +251,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 **Create basic types:**
 ```typescript
 // src/types/index.ts
-export type { Organization, User, Transaction, Account } from '@prisma/client';
+export type { Organization, User, Transaction, Account } from '@/generated/prisma/client';
 
 // Additional helper types
 export interface TransactionWithDetails extends Transaction {
@@ -242,7 +265,7 @@ export interface TransactionWithDetails extends Transaction {
 
 ```typescript
 // prisma/seed.ts
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/generated/prisma/client';
 
 const prisma = new PrismaClient();
 
