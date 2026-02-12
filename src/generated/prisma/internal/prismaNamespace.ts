@@ -1209,6 +1209,16 @@ export const OrganizationScalarFieldEnum = {
   verificationNotes: 'verificationNotes',
   officialWebsite: 'officialWebsite',
   determinationLetterUrl: 'determinationLetterUrl',
+  versionId: 'versionId',
+  previousVersionId: 'previousVersionId',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  systemFrom: 'systemFrom',
+  systemTo: 'systemTo',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  changedBy: 'changedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1238,7 +1248,19 @@ export const OrganizationUserScalarFieldEnum = {
   role: 'role',
   anonymousDonor: 'anonymousDonor',
   showInHighlights: 'showInHighlights',
-  joinedAt: 'joinedAt'
+  versionId: 'versionId',
+  previousVersionId: 'previousVersionId',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  systemFrom: 'systemFrom',
+  systemTo: 'systemTo',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  changedBy: 'changedBy',
+  joinedAt: 'joinedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type OrganizationUserScalarFieldEnum = (typeof OrganizationUserScalarFieldEnum)[keyof typeof OrganizationUserScalarFieldEnum]
@@ -1254,6 +1276,16 @@ export const AccountScalarFieldEnum = {
   parentAccountId: 'parentAccountId',
   isActive: 'isActive',
   currentBalance: 'currentBalance',
+  versionId: 'versionId',
+  previousVersionId: 'previousVersionId',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  systemFrom: 'systemFrom',
+  systemTo: 'systemTo',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  changedBy: 'changedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1304,6 +1336,16 @@ export const PlannedPurchaseScalarFieldEnum = {
   actualTransactionId: 'actualTransactionId',
   actualAmount: 'actualAmount',
   completedAt: 'completedAt',
+  versionId: 'versionId',
+  previousVersionId: 'previousVersionId',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  systemFrom: 'systemFrom',
+  systemTo: 'systemTo',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  changedBy: 'changedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdBy: 'createdBy'

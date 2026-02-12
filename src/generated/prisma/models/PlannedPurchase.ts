@@ -49,6 +49,16 @@ export type PlannedPurchaseMinAggregateOutputType = {
   actualTransactionId: string | null
   actualAmount: runtime.Decimal | null
   completedAt: Date | null
+  versionId: string | null
+  previousVersionId: string | null
+  validFrom: Date | null
+  validTo: Date | null
+  systemFrom: Date | null
+  systemTo: Date | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
   createdBy: string | null
@@ -67,6 +77,16 @@ export type PlannedPurchaseMaxAggregateOutputType = {
   actualTransactionId: string | null
   actualAmount: runtime.Decimal | null
   completedAt: Date | null
+  versionId: string | null
+  previousVersionId: string | null
+  validFrom: Date | null
+  validTo: Date | null
+  systemFrom: Date | null
+  systemTo: Date | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
   createdBy: string | null
@@ -85,6 +105,16 @@ export type PlannedPurchaseCountAggregateOutputType = {
   actualTransactionId: number
   actualAmount: number
   completedAt: number
+  versionId: number
+  previousVersionId: number
+  validFrom: number
+  validTo: number
+  systemFrom: number
+  systemTo: number
+  isDeleted: number
+  deletedAt: number
+  deletedBy: number
+  changedBy: number
   createdAt: number
   updatedAt: number
   createdBy: number
@@ -115,6 +145,16 @@ export type PlannedPurchaseMinAggregateInputType = {
   actualTransactionId?: true
   actualAmount?: true
   completedAt?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   createdAt?: true
   updatedAt?: true
   createdBy?: true
@@ -133,6 +173,16 @@ export type PlannedPurchaseMaxAggregateInputType = {
   actualTransactionId?: true
   actualAmount?: true
   completedAt?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   createdAt?: true
   updatedAt?: true
   createdBy?: true
@@ -151,6 +201,16 @@ export type PlannedPurchaseCountAggregateInputType = {
   actualTransactionId?: true
   actualAmount?: true
   completedAt?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   createdAt?: true
   updatedAt?: true
   createdBy?: true
@@ -256,6 +316,16 @@ export type PlannedPurchaseGroupByOutputType = {
   actualTransactionId: string | null
   actualAmount: runtime.Decimal | null
   completedAt: Date | null
+  versionId: string
+  previousVersionId: string | null
+  validFrom: Date
+  validTo: Date
+  systemFrom: Date
+  systemTo: Date
+  isDeleted: boolean
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   createdAt: Date
   updatedAt: Date
   createdBy: string | null
@@ -297,6 +367,16 @@ export type PlannedPurchaseWhereInput = {
   actualTransactionId?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
   actualAmount?: Prisma.DecimalNullableFilter<"PlannedPurchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"PlannedPurchase"> | Date | string | null
+  versionId?: Prisma.StringFilter<"PlannedPurchase"> | string
+  previousVersionId?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"PlannedPurchase"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"PlannedPurchase"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
@@ -318,6 +398,16 @@ export type PlannedPurchaseOrderByWithRelationInput = {
   actualTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   actualAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  changedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -329,6 +419,7 @@ export type PlannedPurchaseOrderByWithRelationInput = {
 export type PlannedPurchaseWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   actualTransactionId?: string
+  versionId?: string
   AND?: Prisma.PlannedPurchaseWhereInput | Prisma.PlannedPurchaseWhereInput[]
   OR?: Prisma.PlannedPurchaseWhereInput[]
   NOT?: Prisma.PlannedPurchaseWhereInput | Prisma.PlannedPurchaseWhereInput[]
@@ -342,13 +433,22 @@ export type PlannedPurchaseWhereUniqueInput = Prisma.AtLeast<{
   priority?: Prisma.EnumPurchasePriorityFilter<"PlannedPurchase"> | $Enums.PurchasePriority
   actualAmount?: Prisma.DecimalNullableFilter<"PlannedPurchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"PlannedPurchase"> | Date | string | null
+  previousVersionId?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"PlannedPurchase"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"PlannedPurchase"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   actualTransaction?: Prisma.XOR<Prisma.TransactionNullableScalarRelationFilter, Prisma.TransactionWhereInput> | null
   images?: Prisma.PurchaseImageListRelationFilter
-}, "id" | "actualTransactionId">
+}, "id" | "actualTransactionId" | "versionId">
 
 export type PlannedPurchaseOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -363,6 +463,16 @@ export type PlannedPurchaseOrderByWithAggregationInput = {
   actualTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   actualAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  changedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -389,6 +499,16 @@ export type PlannedPurchaseScalarWhereWithAggregatesInput = {
   actualTransactionId?: Prisma.StringNullableWithAggregatesFilter<"PlannedPurchase"> | string | null
   actualAmount?: Prisma.DecimalNullableWithAggregatesFilter<"PlannedPurchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PlannedPurchase"> | Date | string | null
+  versionId?: Prisma.StringWithAggregatesFilter<"PlannedPurchase"> | string
+  previousVersionId?: Prisma.StringNullableWithAggregatesFilter<"PlannedPurchase"> | string | null
+  validFrom?: Prisma.DateTimeWithAggregatesFilter<"PlannedPurchase"> | Date | string
+  validTo?: Prisma.DateTimeWithAggregatesFilter<"PlannedPurchase"> | Date | string
+  systemFrom?: Prisma.DateTimeWithAggregatesFilter<"PlannedPurchase"> | Date | string
+  systemTo?: Prisma.DateTimeWithAggregatesFilter<"PlannedPurchase"> | Date | string
+  isDeleted?: Prisma.BoolWithAggregatesFilter<"PlannedPurchase"> | boolean
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PlannedPurchase"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"PlannedPurchase"> | string | null
+  changedBy?: Prisma.StringNullableWithAggregatesFilter<"PlannedPurchase"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PlannedPurchase"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PlannedPurchase"> | Date | string
   createdBy?: Prisma.StringNullableWithAggregatesFilter<"PlannedPurchase"> | string | null
@@ -405,6 +525,16 @@ export type PlannedPurchaseCreateInput = {
   priority?: $Enums.PurchasePriority
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: string | null
@@ -426,6 +556,16 @@ export type PlannedPurchaseUncheckedCreateInput = {
   actualTransactionId?: string | null
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: string | null
@@ -443,6 +583,16 @@ export type PlannedPurchaseUpdateInput = {
   priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -464,6 +614,16 @@ export type PlannedPurchaseUncheckedUpdateInput = {
   actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -483,6 +643,16 @@ export type PlannedPurchaseCreateManyInput = {
   actualTransactionId?: string | null
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: string | null
@@ -499,6 +669,16 @@ export type PlannedPurchaseUpdateManyMutationInput = {
   priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -517,6 +697,16 @@ export type PlannedPurchaseUncheckedUpdateManyInput = {
   actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -550,6 +740,16 @@ export type PlannedPurchaseCountOrderByAggregateInput = {
   actualTransactionId?: Prisma.SortOrder
   actualAmount?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
@@ -573,6 +773,16 @@ export type PlannedPurchaseMaxOrderByAggregateInput = {
   actualTransactionId?: Prisma.SortOrder
   actualAmount?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
@@ -591,6 +801,16 @@ export type PlannedPurchaseMinOrderByAggregateInput = {
   actualTransactionId?: Prisma.SortOrder
   actualAmount?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
@@ -721,6 +941,16 @@ export type PlannedPurchaseCreateWithoutOrganizationInput = {
   priority?: $Enums.PurchasePriority
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: string | null
@@ -740,6 +970,16 @@ export type PlannedPurchaseUncheckedCreateWithoutOrganizationInput = {
   actualTransactionId?: string | null
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: string | null
@@ -788,6 +1028,16 @@ export type PlannedPurchaseScalarWhereInput = {
   actualTransactionId?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
   actualAmount?: Prisma.DecimalNullableFilter<"PlannedPurchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"PlannedPurchase"> | Date | string | null
+  versionId?: Prisma.StringFilter<"PlannedPurchase"> | string
+  previousVersionId?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"PlannedPurchase"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"PlannedPurchase"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
@@ -804,6 +1054,16 @@ export type PlannedPurchaseCreateWithoutActualTransactionInput = {
   priority?: $Enums.PurchasePriority
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: string | null
@@ -823,6 +1083,16 @@ export type PlannedPurchaseUncheckedCreateWithoutActualTransactionInput = {
   priority?: $Enums.PurchasePriority
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: string | null
@@ -856,6 +1126,16 @@ export type PlannedPurchaseUpdateWithoutActualTransactionInput = {
   priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -875,6 +1155,16 @@ export type PlannedPurchaseUncheckedUpdateWithoutActualTransactionInput = {
   priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -892,6 +1182,16 @@ export type PlannedPurchaseCreateWithoutImagesInput = {
   priority?: $Enums.PurchasePriority
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: string | null
@@ -912,6 +1212,16 @@ export type PlannedPurchaseUncheckedCreateWithoutImagesInput = {
   actualTransactionId?: string | null
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: string | null
@@ -944,6 +1254,16 @@ export type PlannedPurchaseUpdateWithoutImagesInput = {
   priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -964,6 +1284,16 @@ export type PlannedPurchaseUncheckedUpdateWithoutImagesInput = {
   actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -981,6 +1311,16 @@ export type PlannedPurchaseCreateManyOrganizationInput = {
   actualTransactionId?: string | null
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: string | null
@@ -997,6 +1337,16 @@ export type PlannedPurchaseUpdateWithoutOrganizationInput = {
   priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1016,6 +1366,16 @@ export type PlannedPurchaseUncheckedUpdateWithoutOrganizationInput = {
   actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1034,6 +1394,16 @@ export type PlannedPurchaseUncheckedUpdateManyWithoutOrganizationInput = {
   actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1083,6 +1453,16 @@ export type PlannedPurchaseSelect<ExtArgs extends runtime.Types.Extensions.Inter
   actualTransactionId?: boolean
   actualAmount?: boolean
   completedAt?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean
@@ -1105,6 +1485,16 @@ export type PlannedPurchaseSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   actualTransactionId?: boolean
   actualAmount?: boolean
   completedAt?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean
@@ -1125,6 +1515,16 @@ export type PlannedPurchaseSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   actualTransactionId?: boolean
   actualAmount?: boolean
   completedAt?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean
@@ -1145,12 +1545,22 @@ export type PlannedPurchaseSelectScalar = {
   actualTransactionId?: boolean
   actualAmount?: boolean
   completedAt?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean
 }
 
-export type PlannedPurchaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "title" | "description" | "estimatedAmount" | "targetDate" | "category" | "status" | "priority" | "actualTransactionId" | "actualAmount" | "completedAt" | "createdAt" | "updatedAt" | "createdBy", ExtArgs["result"]["plannedPurchase"]>
+export type PlannedPurchaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "title" | "description" | "estimatedAmount" | "targetDate" | "category" | "status" | "priority" | "actualTransactionId" | "actualAmount" | "completedAt" | "versionId" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt" | "createdBy", ExtArgs["result"]["plannedPurchase"]>
 export type PlannedPurchaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   actualTransaction?: boolean | Prisma.PlannedPurchase$actualTransactionArgs<ExtArgs>
@@ -1186,6 +1596,16 @@ export type $PlannedPurchasePayload<ExtArgs extends runtime.Types.Extensions.Int
     actualTransactionId: string | null
     actualAmount: runtime.Decimal | null
     completedAt: Date | null
+    versionId: string
+    previousVersionId: string | null
+    validFrom: Date
+    validTo: Date
+    systemFrom: Date
+    systemTo: Date
+    isDeleted: boolean
+    deletedAt: Date | null
+    deletedBy: string | null
+    changedBy: string | null
     createdAt: Date
     updatedAt: Date
     createdBy: string | null
@@ -1627,6 +2047,16 @@ export interface PlannedPurchaseFieldRefs {
   readonly actualTransactionId: Prisma.FieldRef<"PlannedPurchase", 'String'>
   readonly actualAmount: Prisma.FieldRef<"PlannedPurchase", 'Decimal'>
   readonly completedAt: Prisma.FieldRef<"PlannedPurchase", 'DateTime'>
+  readonly versionId: Prisma.FieldRef<"PlannedPurchase", 'String'>
+  readonly previousVersionId: Prisma.FieldRef<"PlannedPurchase", 'String'>
+  readonly validFrom: Prisma.FieldRef<"PlannedPurchase", 'DateTime'>
+  readonly validTo: Prisma.FieldRef<"PlannedPurchase", 'DateTime'>
+  readonly systemFrom: Prisma.FieldRef<"PlannedPurchase", 'DateTime'>
+  readonly systemTo: Prisma.FieldRef<"PlannedPurchase", 'DateTime'>
+  readonly isDeleted: Prisma.FieldRef<"PlannedPurchase", 'Boolean'>
+  readonly deletedAt: Prisma.FieldRef<"PlannedPurchase", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"PlannedPurchase", 'String'>
+  readonly changedBy: Prisma.FieldRef<"PlannedPurchase", 'String'>
   readonly createdAt: Prisma.FieldRef<"PlannedPurchase", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PlannedPurchase", 'DateTime'>
   readonly createdBy: Prisma.FieldRef<"PlannedPurchase", 'String'>

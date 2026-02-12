@@ -31,7 +31,19 @@ export type OrganizationUserMinAggregateOutputType = {
   role: $Enums.UserRole | null
   anonymousDonor: boolean | null
   showInHighlights: boolean | null
+  versionId: string | null
+  previousVersionId: string | null
+  validFrom: Date | null
+  validTo: Date | null
+  systemFrom: Date | null
+  systemTo: Date | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   joinedAt: Date | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type OrganizationUserMaxAggregateOutputType = {
@@ -41,7 +53,19 @@ export type OrganizationUserMaxAggregateOutputType = {
   role: $Enums.UserRole | null
   anonymousDonor: boolean | null
   showInHighlights: boolean | null
+  versionId: string | null
+  previousVersionId: string | null
+  validFrom: Date | null
+  validTo: Date | null
+  systemFrom: Date | null
+  systemTo: Date | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   joinedAt: Date | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type OrganizationUserCountAggregateOutputType = {
@@ -51,7 +75,19 @@ export type OrganizationUserCountAggregateOutputType = {
   role: number
   anonymousDonor: number
   showInHighlights: number
+  versionId: number
+  previousVersionId: number
+  validFrom: number
+  validTo: number
+  systemFrom: number
+  systemTo: number
+  isDeleted: number
+  deletedAt: number
+  deletedBy: number
+  changedBy: number
   joinedAt: number
+  createdAt: number
+  updatedAt: number
   _all: number
 }
 
@@ -63,7 +99,19 @@ export type OrganizationUserMinAggregateInputType = {
   role?: true
   anonymousDonor?: true
   showInHighlights?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   joinedAt?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type OrganizationUserMaxAggregateInputType = {
@@ -73,7 +121,19 @@ export type OrganizationUserMaxAggregateInputType = {
   role?: true
   anonymousDonor?: true
   showInHighlights?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   joinedAt?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type OrganizationUserCountAggregateInputType = {
@@ -83,7 +143,19 @@ export type OrganizationUserCountAggregateInputType = {
   role?: true
   anonymousDonor?: true
   showInHighlights?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   joinedAt?: true
+  createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -166,7 +238,19 @@ export type OrganizationUserGroupByOutputType = {
   role: $Enums.UserRole
   anonymousDonor: boolean
   showInHighlights: boolean
+  versionId: string
+  previousVersionId: string | null
+  validFrom: Date
+  validTo: Date
+  systemFrom: Date
+  systemTo: Date
+  isDeleted: boolean
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   joinedAt: Date
+  createdAt: Date
+  updatedAt: Date
   _count: OrganizationUserCountAggregateOutputType | null
   _min: OrganizationUserMinAggregateOutputType | null
   _max: OrganizationUserMaxAggregateOutputType | null
@@ -197,7 +281,19 @@ export type OrganizationUserWhereInput = {
   role?: Prisma.EnumUserRoleFilter<"OrganizationUser"> | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFilter<"OrganizationUser"> | boolean
   showInHighlights?: Prisma.BoolFilter<"OrganizationUser"> | boolean
+  versionId?: Prisma.StringFilter<"OrganizationUser"> | string
+  previousVersionId?: Prisma.StringNullableFilter<"OrganizationUser"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"OrganizationUser"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"OrganizationUser"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"OrganizationUser"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"OrganizationUser"> | string | null
   joinedAt?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
 }
@@ -209,13 +305,26 @@ export type OrganizationUserOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   anonymousDonor?: Prisma.SortOrder
   showInHighlights?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  changedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   organization?: Prisma.OrganizationOrderByWithRelationInput
 }
 
 export type OrganizationUserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  versionId?: string
   userId_organizationId?: Prisma.OrganizationUserUserIdOrganizationIdCompoundUniqueInput
   AND?: Prisma.OrganizationUserWhereInput | Prisma.OrganizationUserWhereInput[]
   OR?: Prisma.OrganizationUserWhereInput[]
@@ -225,10 +334,21 @@ export type OrganizationUserWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.EnumUserRoleFilter<"OrganizationUser"> | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFilter<"OrganizationUser"> | boolean
   showInHighlights?: Prisma.BoolFilter<"OrganizationUser"> | boolean
+  previousVersionId?: Prisma.StringNullableFilter<"OrganizationUser"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"OrganizationUser"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"OrganizationUser"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"OrganizationUser"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"OrganizationUser"> | string | null
   joinedAt?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
-}, "id" | "userId_organizationId">
+}, "id" | "versionId" | "userId_organizationId">
 
 export type OrganizationUserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -237,7 +357,19 @@ export type OrganizationUserOrderByWithAggregationInput = {
   role?: Prisma.SortOrder
   anonymousDonor?: Prisma.SortOrder
   showInHighlights?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  changedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.OrganizationUserCountOrderByAggregateInput
   _max?: Prisma.OrganizationUserMaxOrderByAggregateInput
   _min?: Prisma.OrganizationUserMinOrderByAggregateInput
@@ -253,7 +385,19 @@ export type OrganizationUserScalarWhereWithAggregatesInput = {
   role?: Prisma.EnumUserRoleWithAggregatesFilter<"OrganizationUser"> | $Enums.UserRole
   anonymousDonor?: Prisma.BoolWithAggregatesFilter<"OrganizationUser"> | boolean
   showInHighlights?: Prisma.BoolWithAggregatesFilter<"OrganizationUser"> | boolean
+  versionId?: Prisma.StringWithAggregatesFilter<"OrganizationUser"> | string
+  previousVersionId?: Prisma.StringNullableWithAggregatesFilter<"OrganizationUser"> | string | null
+  validFrom?: Prisma.DateTimeWithAggregatesFilter<"OrganizationUser"> | Date | string
+  validTo?: Prisma.DateTimeWithAggregatesFilter<"OrganizationUser"> | Date | string
+  systemFrom?: Prisma.DateTimeWithAggregatesFilter<"OrganizationUser"> | Date | string
+  systemTo?: Prisma.DateTimeWithAggregatesFilter<"OrganizationUser"> | Date | string
+  isDeleted?: Prisma.BoolWithAggregatesFilter<"OrganizationUser"> | boolean
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"OrganizationUser"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"OrganizationUser"> | string | null
+  changedBy?: Prisma.StringNullableWithAggregatesFilter<"OrganizationUser"> | string | null
   joinedAt?: Prisma.DateTimeWithAggregatesFilter<"OrganizationUser"> | Date | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"OrganizationUser"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"OrganizationUser"> | Date | string
 }
 
 export type OrganizationUserCreateInput = {
@@ -261,7 +405,19 @@ export type OrganizationUserCreateInput = {
   role?: $Enums.UserRole
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutOrganizationsInput
   organization: Prisma.OrganizationCreateNestedOneWithoutOrganizationUsersInput
 }
@@ -273,7 +429,19 @@ export type OrganizationUserUncheckedCreateInput = {
   role?: $Enums.UserRole
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type OrganizationUserUpdateInput = {
@@ -281,7 +449,19 @@ export type OrganizationUserUpdateInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showInHighlights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutOrganizationsNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutOrganizationUsersNestedInput
 }
@@ -293,7 +473,19 @@ export type OrganizationUserUncheckedUpdateInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showInHighlights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type OrganizationUserCreateManyInput = {
@@ -303,7 +495,19 @@ export type OrganizationUserCreateManyInput = {
   role?: $Enums.UserRole
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type OrganizationUserUpdateManyMutationInput = {
@@ -311,7 +515,19 @@ export type OrganizationUserUpdateManyMutationInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showInHighlights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type OrganizationUserUncheckedUpdateManyInput = {
@@ -321,7 +537,19 @@ export type OrganizationUserUncheckedUpdateManyInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showInHighlights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type OrganizationUserListRelationFilter = {
@@ -346,7 +574,19 @@ export type OrganizationUserCountOrderByAggregateInput = {
   role?: Prisma.SortOrder
   anonymousDonor?: Prisma.SortOrder
   showInHighlights?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type OrganizationUserMaxOrderByAggregateInput = {
@@ -356,7 +596,19 @@ export type OrganizationUserMaxOrderByAggregateInput = {
   role?: Prisma.SortOrder
   anonymousDonor?: Prisma.SortOrder
   showInHighlights?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type OrganizationUserMinOrderByAggregateInput = {
@@ -366,7 +618,19 @@ export type OrganizationUserMinOrderByAggregateInput = {
   role?: Prisma.SortOrder
   anonymousDonor?: Prisma.SortOrder
   showInHighlights?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type OrganizationUserCreateNestedManyWithoutOrganizationInput = {
@@ -462,7 +726,19 @@ export type OrganizationUserCreateWithoutOrganizationInput = {
   role?: $Enums.UserRole
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutOrganizationsInput
 }
 
@@ -472,7 +748,19 @@ export type OrganizationUserUncheckedCreateWithoutOrganizationInput = {
   role?: $Enums.UserRole
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type OrganizationUserCreateOrConnectWithoutOrganizationInput = {
@@ -511,7 +799,19 @@ export type OrganizationUserScalarWhereInput = {
   role?: Prisma.EnumUserRoleFilter<"OrganizationUser"> | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFilter<"OrganizationUser"> | boolean
   showInHighlights?: Prisma.BoolFilter<"OrganizationUser"> | boolean
+  versionId?: Prisma.StringFilter<"OrganizationUser"> | string
+  previousVersionId?: Prisma.StringNullableFilter<"OrganizationUser"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"OrganizationUser"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"OrganizationUser"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"OrganizationUser"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"OrganizationUser"> | string | null
   joinedAt?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"OrganizationUser"> | Date | string
 }
 
 export type OrganizationUserCreateWithoutUserInput = {
@@ -519,7 +819,19 @@ export type OrganizationUserCreateWithoutUserInput = {
   role?: $Enums.UserRole
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutOrganizationUsersInput
 }
 
@@ -529,7 +841,19 @@ export type OrganizationUserUncheckedCreateWithoutUserInput = {
   role?: $Enums.UserRole
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type OrganizationUserCreateOrConnectWithoutUserInput = {
@@ -564,7 +888,19 @@ export type OrganizationUserCreateManyOrganizationInput = {
   role?: $Enums.UserRole
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type OrganizationUserUpdateWithoutOrganizationInput = {
@@ -572,7 +908,19 @@ export type OrganizationUserUpdateWithoutOrganizationInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showInHighlights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutOrganizationsNestedInput
 }
 
@@ -582,7 +930,19 @@ export type OrganizationUserUncheckedUpdateWithoutOrganizationInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showInHighlights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type OrganizationUserUncheckedUpdateManyWithoutOrganizationInput = {
@@ -591,7 +951,19 @@ export type OrganizationUserUncheckedUpdateManyWithoutOrganizationInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showInHighlights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type OrganizationUserCreateManyUserInput = {
@@ -600,7 +972,19 @@ export type OrganizationUserCreateManyUserInput = {
   role?: $Enums.UserRole
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type OrganizationUserUpdateWithoutUserInput = {
@@ -608,7 +992,19 @@ export type OrganizationUserUpdateWithoutUserInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showInHighlights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutOrganizationUsersNestedInput
 }
 
@@ -618,7 +1014,19 @@ export type OrganizationUserUncheckedUpdateWithoutUserInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showInHighlights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type OrganizationUserUncheckedUpdateManyWithoutUserInput = {
@@ -627,7 +1035,19 @@ export type OrganizationUserUncheckedUpdateManyWithoutUserInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   anonymousDonor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   showInHighlights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -639,7 +1059,19 @@ export type OrganizationUserSelect<ExtArgs extends runtime.Types.Extensions.Inte
   role?: boolean
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   joinedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organizationUser"]>
@@ -651,7 +1083,19 @@ export type OrganizationUserSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   role?: boolean
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   joinedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organizationUser"]>
@@ -663,7 +1107,19 @@ export type OrganizationUserSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   role?: boolean
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   joinedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organizationUser"]>
@@ -675,10 +1131,22 @@ export type OrganizationUserSelectScalar = {
   role?: boolean
   anonymousDonor?: boolean
   showInHighlights?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   joinedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type OrganizationUserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "organizationId" | "role" | "anonymousDonor" | "showInHighlights" | "joinedAt", ExtArgs["result"]["organizationUser"]>
+export type OrganizationUserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "organizationId" | "role" | "anonymousDonor" | "showInHighlights" | "versionId" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "joinedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["organizationUser"]>
 export type OrganizationUserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -705,7 +1173,19 @@ export type $OrganizationUserPayload<ExtArgs extends runtime.Types.Extensions.In
     role: $Enums.UserRole
     anonymousDonor: boolean
     showInHighlights: boolean
+    versionId: string
+    previousVersionId: string | null
+    validFrom: Date
+    validTo: Date
+    systemFrom: Date
+    systemTo: Date
+    isDeleted: boolean
+    deletedAt: Date | null
+    deletedBy: string | null
+    changedBy: string | null
     joinedAt: Date
+    createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["organizationUser"]>
   composites: {}
 }
@@ -1137,7 +1617,19 @@ export interface OrganizationUserFieldRefs {
   readonly role: Prisma.FieldRef<"OrganizationUser", 'UserRole'>
   readonly anonymousDonor: Prisma.FieldRef<"OrganizationUser", 'Boolean'>
   readonly showInHighlights: Prisma.FieldRef<"OrganizationUser", 'Boolean'>
+  readonly versionId: Prisma.FieldRef<"OrganizationUser", 'String'>
+  readonly previousVersionId: Prisma.FieldRef<"OrganizationUser", 'String'>
+  readonly validFrom: Prisma.FieldRef<"OrganizationUser", 'DateTime'>
+  readonly validTo: Prisma.FieldRef<"OrganizationUser", 'DateTime'>
+  readonly systemFrom: Prisma.FieldRef<"OrganizationUser", 'DateTime'>
+  readonly systemTo: Prisma.FieldRef<"OrganizationUser", 'DateTime'>
+  readonly isDeleted: Prisma.FieldRef<"OrganizationUser", 'Boolean'>
+  readonly deletedAt: Prisma.FieldRef<"OrganizationUser", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"OrganizationUser", 'String'>
+  readonly changedBy: Prisma.FieldRef<"OrganizationUser", 'String'>
   readonly joinedAt: Prisma.FieldRef<"OrganizationUser", 'DateTime'>
+  readonly createdAt: Prisma.FieldRef<"OrganizationUser", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"OrganizationUser", 'DateTime'>
 }
     
 

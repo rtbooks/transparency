@@ -41,6 +41,16 @@ export type OrganizationMinAggregateOutputType = {
   verificationNotes: string | null
   officialWebsite: string | null
   determinationLetterUrl: string | null
+  versionId: string | null
+  previousVersionId: string | null
+  validFrom: Date | null
+  validTo: Date | null
+  systemFrom: Date | null
+  systemTo: Date | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +72,16 @@ export type OrganizationMaxAggregateOutputType = {
   verificationNotes: string | null
   officialWebsite: string | null
   determinationLetterUrl: string | null
+  versionId: string | null
+  previousVersionId: string | null
+  validFrom: Date | null
+  validTo: Date | null
+  systemFrom: Date | null
+  systemTo: Date | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -83,6 +103,16 @@ export type OrganizationCountAggregateOutputType = {
   verificationNotes: number
   officialWebsite: number
   determinationLetterUrl: number
+  versionId: number
+  previousVersionId: number
+  validFrom: number
+  validTo: number
+  systemFrom: number
+  systemTo: number
+  isDeleted: number
+  deletedAt: number
+  deletedBy: number
+  changedBy: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -106,6 +136,16 @@ export type OrganizationMinAggregateInputType = {
   verificationNotes?: true
   officialWebsite?: true
   determinationLetterUrl?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -127,6 +167,16 @@ export type OrganizationMaxAggregateInputType = {
   verificationNotes?: true
   officialWebsite?: true
   determinationLetterUrl?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -148,6 +198,16 @@ export type OrganizationCountAggregateInputType = {
   verificationNotes?: true
   officialWebsite?: true
   determinationLetterUrl?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -242,6 +302,16 @@ export type OrganizationGroupByOutputType = {
   verificationNotes: string | null
   officialWebsite: string | null
   determinationLetterUrl: string | null
+  versionId: string
+  previousVersionId: string | null
+  validFrom: Date
+  validTo: Date
+  systemFrom: Date
+  systemTo: Date
+  isDeleted: boolean
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
   createdAt: Date
   updatedAt: Date
   _count: OrganizationCountAggregateOutputType | null
@@ -284,6 +354,16 @@ export type OrganizationWhereInput = {
   verificationNotes?: Prisma.StringNullableFilter<"Organization"> | string | null
   officialWebsite?: Prisma.StringNullableFilter<"Organization"> | string | null
   determinationLetterUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
+  versionId?: Prisma.StringFilter<"Organization"> | string
+  previousVersionId?: Prisma.StringNullableFilter<"Organization"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"Organization"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Organization"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   accounts?: Prisma.AccountListRelationFilter
@@ -311,6 +391,16 @@ export type OrganizationOrderByWithRelationInput = {
   verificationNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   officialWebsite?: Prisma.SortOrderInput | Prisma.SortOrder
   determinationLetterUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  changedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   accounts?: Prisma.AccountOrderByRelationAggregateInput
@@ -324,6 +414,7 @@ export type OrganizationOrderByWithRelationInput = {
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   slug?: string
+  versionId?: string
   AND?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
   OR?: Prisma.OrganizationWhereInput[]
   NOT?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
@@ -341,6 +432,15 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   verificationNotes?: Prisma.StringNullableFilter<"Organization"> | string | null
   officialWebsite?: Prisma.StringNullableFilter<"Organization"> | string | null
   determinationLetterUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
+  previousVersionId?: Prisma.StringNullableFilter<"Organization"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"Organization"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Organization"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   accounts?: Prisma.AccountListRelationFilter
@@ -349,7 +449,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   organizationUsers?: Prisma.OrganizationUserListRelationFilter
   bankAccounts?: Prisma.BankAccountListRelationFilter
   invitations?: Prisma.InvitationListRelationFilter
-}, "id" | "slug">
+}, "id" | "slug" | "versionId">
 
 export type OrganizationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -368,6 +468,16 @@ export type OrganizationOrderByWithAggregationInput = {
   verificationNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   officialWebsite?: Prisma.SortOrderInput | Prisma.SortOrder
   determinationLetterUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  changedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.OrganizationCountOrderByAggregateInput
@@ -395,6 +505,16 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   verificationNotes?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   officialWebsite?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   determinationLetterUrl?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  versionId?: Prisma.StringWithAggregatesFilter<"Organization"> | string
+  previousVersionId?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  validFrom?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
+  validTo?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
+  systemFrom?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
+  systemTo?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
+  isDeleted?: Prisma.BoolWithAggregatesFilter<"Organization"> | boolean
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  changedBy?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
 }
@@ -416,6 +536,16 @@ export type OrganizationCreateInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -443,6 +573,16 @@ export type OrganizationUncheckedCreateInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -470,6 +610,16 @@ export type OrganizationUpdateInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -497,6 +647,16 @@ export type OrganizationUncheckedUpdateInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -524,6 +684,16 @@ export type OrganizationCreateManyInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -545,6 +715,16 @@ export type OrganizationUpdateManyMutationInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -566,6 +746,16 @@ export type OrganizationUncheckedUpdateManyInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -587,6 +777,16 @@ export type OrganizationCountOrderByAggregateInput = {
   verificationNotes?: Prisma.SortOrder
   officialWebsite?: Prisma.SortOrder
   determinationLetterUrl?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -608,6 +808,16 @@ export type OrganizationMaxOrderByAggregateInput = {
   verificationNotes?: Prisma.SortOrder
   officialWebsite?: Prisma.SortOrder
   determinationLetterUrl?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -629,6 +839,16 @@ export type OrganizationMinOrderByAggregateInput = {
   verificationNotes?: Prisma.SortOrder
   officialWebsite?: Prisma.SortOrder
   determinationLetterUrl?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -664,6 +884,10 @@ export type EnumVerificationStatusFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type OrganizationCreateNestedOneWithoutOrganizationUsersInput = {
@@ -767,6 +991,16 @@ export type OrganizationCreateWithoutOrganizationUsersInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -793,6 +1027,16 @@ export type OrganizationUncheckedCreateWithoutOrganizationUsersInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -835,6 +1079,16 @@ export type OrganizationUpdateWithoutOrganizationUsersInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -861,6 +1115,16 @@ export type OrganizationUncheckedUpdateWithoutOrganizationUsersInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -887,6 +1151,16 @@ export type OrganizationCreateWithoutAccountsInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
@@ -913,6 +1187,16 @@ export type OrganizationUncheckedCreateWithoutAccountsInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
@@ -955,6 +1239,16 @@ export type OrganizationUpdateWithoutAccountsInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
@@ -981,6 +1275,16 @@ export type OrganizationUncheckedUpdateWithoutAccountsInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1007,6 +1311,16 @@ export type OrganizationCreateWithoutTransactionsInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -1033,6 +1347,16 @@ export type OrganizationUncheckedCreateWithoutTransactionsInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1075,6 +1399,16 @@ export type OrganizationUpdateWithoutTransactionsInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -1101,6 +1435,16 @@ export type OrganizationUncheckedUpdateWithoutTransactionsInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1127,6 +1471,16 @@ export type OrganizationCreateWithoutPlannedPurchasesInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -1153,6 +1507,16 @@ export type OrganizationUncheckedCreateWithoutPlannedPurchasesInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1195,6 +1559,16 @@ export type OrganizationUpdateWithoutPlannedPurchasesInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -1221,6 +1595,16 @@ export type OrganizationUncheckedUpdateWithoutPlannedPurchasesInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1247,6 +1631,16 @@ export type OrganizationCreateWithoutBankAccountsInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -1273,6 +1667,16 @@ export type OrganizationUncheckedCreateWithoutBankAccountsInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1315,6 +1719,16 @@ export type OrganizationUpdateWithoutBankAccountsInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -1341,6 +1755,16 @@ export type OrganizationUncheckedUpdateWithoutBankAccountsInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1367,6 +1791,16 @@ export type OrganizationCreateWithoutInvitationsInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
@@ -1393,6 +1827,16 @@ export type OrganizationUncheckedCreateWithoutInvitationsInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1435,6 +1879,16 @@ export type OrganizationUpdateWithoutInvitationsInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
@@ -1461,6 +1915,16 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1563,6 +2027,16 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   verificationNotes?: boolean
   officialWebsite?: boolean
   determinationLetterUrl?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   accounts?: boolean | Prisma.Organization$accountsArgs<ExtArgs>
@@ -1591,6 +2065,16 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   verificationNotes?: boolean
   officialWebsite?: boolean
   determinationLetterUrl?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["organization"]>
@@ -1612,6 +2096,16 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   verificationNotes?: boolean
   officialWebsite?: boolean
   determinationLetterUrl?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["organization"]>
@@ -1633,11 +2127,21 @@ export type OrganizationSelectScalar = {
   verificationNotes?: boolean
   officialWebsite?: boolean
   determinationLetterUrl?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "fiscalYearStart" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "fiscalYearStart" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "versionId" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   accounts?: boolean | Prisma.Organization$accountsArgs<ExtArgs>
   transactions?: boolean | Prisma.Organization$transactionsArgs<ExtArgs>
@@ -1677,6 +2181,16 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     verificationNotes: string | null
     officialWebsite: string | null
     determinationLetterUrl: string | null
+    versionId: string
+    previousVersionId: string | null
+    validFrom: Date
+    validTo: Date
+    systemFrom: Date
+    systemTo: Date
+    isDeleted: boolean
+    deletedAt: Date | null
+    deletedBy: string | null
+    changedBy: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["organization"]>
@@ -2124,6 +2638,16 @@ export interface OrganizationFieldRefs {
   readonly verificationNotes: Prisma.FieldRef<"Organization", 'String'>
   readonly officialWebsite: Prisma.FieldRef<"Organization", 'String'>
   readonly determinationLetterUrl: Prisma.FieldRef<"Organization", 'String'>
+  readonly versionId: Prisma.FieldRef<"Organization", 'String'>
+  readonly previousVersionId: Prisma.FieldRef<"Organization", 'String'>
+  readonly validFrom: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly validTo: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly systemFrom: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly systemTo: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly isDeleted: Prisma.FieldRef<"Organization", 'Boolean'>
+  readonly deletedAt: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"Organization", 'String'>
+  readonly changedBy: Prisma.FieldRef<"Organization", 'String'>
   readonly createdAt: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Organization", 'DateTime'>
 }

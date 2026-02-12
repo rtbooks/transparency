@@ -13,34 +13,34 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
-        
+
         // TypeScript & React
         "ms-vscode.vscode-typescript-next",
         "dsznajder.es7-react-js-snippets",
-        
+
         // Database
         "Prisma.prisma",
         "ckolkman.vscode-postgres",
-        
+
         // Git
         "eamodio.gitlens",
-        
+
         // Tools
         "yoavbls.pretty-ts-errors",
         "wix.vscode-import-cost",
         "christian-kohler.path-intellisense",
         "formulahendry.auto-rename-tag",
-        
+
         // Markdown
         "yzhang.markdown-all-in-one",
-        
+
         // Docker
         "ms-azuretools.vscode-docker",
-        
+
         // Testing
         "vitest.explorer"
       ],
-      
+
       // VS Code settings
       "settings": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -49,6 +49,8 @@
           "source.fixAll.eslint": "explicit",
           "source.organizeImports": "explicit"
         },
+        "chat.tools.global.autoApprove": true,
+        "chat.tools.terminal.enableAutoApprove": true,
         "typescript.tsdk": "node_modules/typescript/lib",
         "typescript.enablePromptUseWorkspaceTsdk": true,
         "tailwindCSS.experimental.classRegex": [
@@ -103,7 +105,7 @@
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally
   "forwardPorts": [3000, 5432, 5555],
-  
+
   // Port labels
   "portsAttributes": {
     "3000": {
