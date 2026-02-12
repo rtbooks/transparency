@@ -253,6 +253,38 @@ export const AccountService = {
     });
   },
   
+  // Find multiple accounts by IDs as of a specific date
+  findManyAsOf: async (
+    organizationId: string,
+    accountIds: string[],
+    asOfDate: Date
+  ): Promise<Account[]> => {
+    return await prisma.account.findMany({
+      where: {
+        organizationId,
+        id: { in: accountIds },
+        validFrom: { lte: asOfDate },
+        validTo: { gt: asOfDate },
+        isDeleted: false,
+      },
+    });
+  },
+  
+  // Find multiple current accounts by IDs
+  findManyCurrent: async (
+    organizationId: string,
+    accountIds: string[]
+  ): Promise<Account[]> => {
+    return await prisma.account.findMany({
+      where: {
+        organizationId,
+        id: { in: accountIds },
+        validTo: MAX_DATE,
+        isDeleted: false,
+      },
+    });
+  },
+  
   findChangesInRange: async (
     organizationId: string,
     fromDate: Date,
