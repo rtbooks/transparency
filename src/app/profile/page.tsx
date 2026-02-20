@@ -11,42 +11,58 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
+  const userEmail = user.emailAddresses[0]?.emailAddress || '';
+  const adminEmails = process.env.PLATFORM_ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
+  const isPlatformAdmin = adminEmails.includes(userEmail.toLowerCase());
+
+  const orgInclude = {
+    organizations: {
+      include: {
+        organization: true,
+      },
+    },
+  };
+
   // Try to find or create user in our database
   let dbUser = await prisma.user.findUnique({
     where: { authId: user.id },
-    include: {
-      organizations: {
-        include: {
-          organization: true,
-        },
-      },
-    },
+    include: orgInclude,
   });
+
+  // Clerk instance migration: authId changed but email already exists in DB
+  if (!dbUser) {
+    const existingByEmail = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (existingByEmail) {
+      // Migrate the authId to the new Clerk user ID and sync admin status
+      dbUser = await prisma.user.update({
+        where: { email: userEmail },
+        data: {
+          authId: user.id,
+          avatarUrl: user.imageUrl,
+          isPlatformAdmin,
+        },
+        include: orgInclude,
+      });
+      console.log(`✅ Migrated authId for existing user: ${dbUser.email}`);
+    }
+  }
 
   // Create user if doesn't exist
   if (!dbUser) {
-    // Check if this user should be a platform admin
-    const adminEmails = process.env.PLATFORM_ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
-    const userEmail = user.emailAddresses[0]?.emailAddress.toLowerCase() || '';
-    const isPlatformAdmin = adminEmails.includes(userEmail);
-
     dbUser = await prisma.user.create({
       data: {
         authId: user.id,
-        email: user.emailAddresses[0]?.emailAddress || '',
+        email: userEmail,
         name: user.firstName && user.lastName 
           ? `${user.firstName} ${user.lastName}`
           : user.username || 'User',
         avatarUrl: user.imageUrl,
         isPlatformAdmin,
       },
-      include: {
-        organizations: {
-          include: {
-            organization: true,
-          },
-        },
-      },
+      include: orgInclude,
     });
 
     if (isPlatformAdmin) {
