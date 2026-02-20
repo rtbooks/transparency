@@ -1,6 +1,6 @@
 # Database Migrations
 
-This directory contains the migration history for the Financial Transparency Platform database.
+This directory contains the migration history for the RadBooks database.
 
 ## Future Migrations
 

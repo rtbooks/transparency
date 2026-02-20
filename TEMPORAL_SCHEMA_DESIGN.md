@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines the bi-temporal versioning pattern used for all mutable financial entities in the Financial Transparency Platform.
+This document defines the bi-temporal versioning pattern used for all mutable financial entities in RadBooks.
 
 ## Temporal Pattern
 

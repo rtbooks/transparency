@@ -1,4 +1,4 @@
-# Contributing to Financial Transparency Platform
+# Contributing to RadBooks
 
 Thank you for your interest in contributing! This document provides guidelines and instructions for contributing to the project.
 
@@ -174,8 +174,8 @@ Fixes #456
 
 1. **Clone your fork:**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/transparency-platform.git
-   cd transparency-platform
+   git clone https://github.com/YOUR_USERNAME/transparency.git
+   cd transparency
    ```
 
 2. **Install dependencies:**
@@ -461,7 +461,7 @@ function calculateBalance(account: Account): number {
 
 ### Reporting Security Issues
 
-**DO NOT** create public issues for security vulnerabilities. Email security@transparency-platform.com instead.
+**DO NOT** create public issues for security vulnerabilities. Email security@radbooks.org instead.
 
 ### Security Guidelines
 
@@ -506,7 +506,7 @@ npm run analyze
 
 - **Discord**: [Join our community](https://discord.gg/transparency)
 - **GitHub Discussions**: Ask questions
-- **Email**: dev@transparency-platform.com
+- **Email**: dev@radbooks.org
 
 ## Recognition
 

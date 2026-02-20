@@ -1,8 +1,10 @@
-# Financial Transparency Platform
+# RadBooks
 
 > Bringing radical transparency to charitable organizations' finances
 
 A modern SaaS platform that enables 501(c)(3) charitable organizations to provide complete financial transparency to donors and the public. Starting with GRIT Hoops Westwood Basketball, Inc.
+
+**Production**: [radbooks.org](https://radbooks.org) — Hosted on Vercel with Neon PostgreSQL
 
 ## 🎯 Mission
 
@@ -54,11 +56,12 @@ Make financial transparency the norm for charitable organizations, enabling dono
 ### Backend
 - **Next.js API Routes** - Serverless functions
 - **Prisma** - Type-safe ORM
-- **PostgreSQL** - Primary database
+- **PostgreSQL** - Primary database (Neon serverless in production)
 - **Zod** - Runtime validation
 
 ### Infrastructure
 - **Vercel** - Hosting and deployment
+- **Neon** - Serverless PostgreSQL with branch databases
 - **Stripe** - Payment processing
 - **Clerk** - Authentication
 - **Cloudflare R2** - File storage
@@ -94,7 +97,7 @@ Prerequisites:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/transparency-platform.git
+git clone https://github.com/rtbooks/transparency.git
 cd transparency
 
 # 2. Test your setup (optional)
@@ -130,7 +133,7 @@ Prerequisites:
 
 ```bash
 # Clone and navigate
-git clone https://github.com/yourusername/transparency-platform.git
+git clone https://github.com/rtbooks/transparency.git
 cd transparency
 
 # Install dependencies
@@ -157,19 +160,21 @@ For detailed manual setup instructions, see [DEV_SETUP.md](./DEV_SETUP.md).
 
 ## 🏗️ Project Status
 
-**Current Phase**: Foundation Planning ✅
+**Current Phase**: Production ✅ — Live at [radbooks.org](https://radbooks.org)
 
 ### Roadmap
 
 - [x] Technical architecture design
 - [x] Database schema design
-- [ ] Project setup and configuration
-- [ ] Core ledger implementation
-- [ ] Public transparency dashboard
-- [ ] Donation processing
-- [ ] Organization admin features
+- [x] Project setup and configuration
+- [x] Core ledger implementation (double-entry bookkeeping)
+- [x] Public transparency dashboard
+- [x] Organization admin features
+- [x] Temporal data architecture (bi-temporal versioning)
+- [x] Financial reports (Income Statement, Balance Sheet, Dashboard)
+- [x] Production deployment (Vercel + Neon)
+- [ ] Donation processing (Stripe)
 - [ ] Donor profile and tracking
-- [ ] Reporting and analytics
 - [ ] Beta launch with GRIT Hoops
 
 See [APPROACH.md](./APPROACH.md) for the complete implementation roadmap.
@@ -254,9 +259,9 @@ This project is licensed under the MIT License - see [LICENSE](./LICENSE) for de
 
 ## 📧 Contact
 
-- **Website**: [transparency-platform.com](https://transparency-platform.com) (coming soon)
-- **Email**: info@transparency-platform.com
-- **Twitter**: [@transparency_app](https://twitter.com/transparency_app)
+- **Website**: [radbooks.org](https://radbooks.org)
+- **Email**: info@radbooks.org
+- **GitHub**: [github.com/rtbooks/transparency](https://github.com/rtbooks/transparency)
 
 ## 🎯 For GRIT Hoops
 
@@ -273,4 +278,4 @@ This platform was designed with GRIT Hoops Westwood Basketball as the inaugural 
 
 **Built with ❤️ for charitable organizations everywhere**
 
-*Making financial transparency the norm, not the exception.*
+*RadBooks — Making financial transparency the norm, not the exception.*
