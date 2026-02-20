@@ -92,6 +92,20 @@ Track your progress as you build the RadBooks platform.
 - [x] Create transaction detail view
 - [x] Add export to CSV
 
+### Transaction Editing & Voiding
+
+- [x] Add bi-temporal versioning fields to Transaction model
+- [x] Create balance reversal utility (reverseAccountBalances)
+- [x] Create editTransaction service (atomic: close old version → reverse balances → create new version → apply new balances)
+- [x] Create voidTransaction service (atomic: close version → mark voided → reverse balances)
+- [x] Add PATCH API endpoint for editing transactions
+- [x] Add POST API endpoint for voiding transactions
+- [x] Update GET API to filter voided/temporal versions
+- [x] Create EditTransactionForm component (pre-populated, requires change reason)
+- [x] Create VoidTransactionDialog component (confirmation with required reason)
+- [x] Update TransactionList with Edit/Void buttons, voided styling, show-voided toggle
+- [x] Write comprehensive tests (10 service tests, balance integrity)
+
 **Milestone**: Working general ledger with transaction recording
 
 ---
@@ -582,6 +596,12 @@ Track your progress as you build the RadBooks platform.
 - **Phase 11 (Temporal Architecture)**: ✅ 100% Complete
 
 ### Recent Achievements
+- ✅ **Transaction Editing & Voiding** - Full edit/void with audit trail
+  - Bi-temporal versioning on Transaction model (version chain, valid/system time)
+  - Edit transactions with automatic balance reversal and reapplication
+  - Void transactions with required reason and balance reversal
+  - Show voided toggle, Edited/Voided badges in transaction list
+  - 10 service tests covering edit, void, and history operations
 - ✅ **Production Deployment** - Live at [radbooks.org](https://radbooks.org)
   - Vercel hosting with custom domain
   - Neon serverless PostgreSQL

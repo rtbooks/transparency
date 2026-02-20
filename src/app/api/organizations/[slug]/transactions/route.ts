@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
 import { AccountService } from '@/services/account.service';
+import { MAX_DATE } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
 
 const createTransactionSchema = z.object({
@@ -72,11 +73,26 @@ export async function GET(
     const asOfDate = searchParams.get('asOfDate')
       ? new Date(searchParams.get('asOfDate')!)
       : undefined;
+    const includeVoided = searchParams.get('includeVoided') === 'true';
+    const includeHistory = searchParams.get('includeHistory') === 'true';
 
     // Build where clause
     const where: any = {
       organizationId: organization.id,
     };
+
+    // Only show current versions by default
+    if (!includeHistory) {
+      where.validTo = MAX_DATE;
+    }
+
+    // Filter out deleted
+    where.isDeleted = false;
+
+    // Filter voided unless explicitly requested
+    if (!includeVoided) {
+      where.isVoided = false;
+    }
 
     if (type) {
       where.type = type;

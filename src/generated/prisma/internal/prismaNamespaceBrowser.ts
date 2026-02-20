@@ -204,7 +204,22 @@ export const TransactionScalarFieldEnum = {
   stripePaymentId: 'stripePaymentId',
   createdAt: 'createdAt',
   createdBy: 'createdBy',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  versionId: 'versionId',
+  previousVersionId: 'previousVersionId',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  systemFrom: 'systemFrom',
+  systemTo: 'systemTo',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  changedBy: 'changedBy',
+  isVoided: 'isVoided',
+  voidedAt: 'voidedAt',
+  voidedBy: 'voidedBy',
+  voidReason: 'voidReason',
+  changeReason: 'changeReason'
 } as const
 
 export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]

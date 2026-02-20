@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Transaction, Account } from "@/generated/prisma/client";
 import { AsOfDatePicker } from "@/components/temporal";
 import {
@@ -29,9 +29,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/lib/utils/account-tree";
-import { ChevronLeft, ChevronRight, Download, Search, Info } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Search, Info, Pencil, Ban } from "lucide-react";
 import { format } from "date-fns";
+import { EditTransactionForm } from "./EditTransactionForm";
+import { VoidTransactionDialog } from "./VoidTransactionDialog";
 
 interface TransactionWithAccounts extends Transaction {
   debitAccount: Pick<Account, "id" | "code" | "name" | "type">;
@@ -51,12 +54,18 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
     null
   );
 
+  // Edit/Void state
+  const [editingTransaction, setEditingTransaction] = useState<TransactionWithAccounts | null>(null);
+  const [voidingTransaction, setVoidingTransaction] = useState<TransactionWithAccounts | null>(null);
+  const [accounts, setAccounts] = useState<Array<{ id: string; code: string; name: string; type: string }>>([]);
+
   // Filters
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [asOfDate, setAsOfDate] = useState<Date | undefined>(undefined);
+  const [showVoided, setShowVoided] = useState(false);
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -95,6 +104,9 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
       if (asOfDate) {
         params.append("asOfDate", asOfDate.toISOString());
       }
+      if (showVoided) {
+        params.append("includeVoided", "true");
+      }
 
       const response = await fetch(
         `/api/organizations/${organizationSlug}/transactions?${params.toString()}`
@@ -118,7 +130,7 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
 
   useEffect(() => {
     fetchTransactions();
-  }, [page, typeFilter, startDate, endDate, asOfDate, refreshKey]); // refreshKey triggers re-fetch after a new transaction is recorded
+  }, [page, typeFilter, startDate, endDate, asOfDate, showVoided, refreshKey]); // refreshKey triggers re-fetch after a new transaction is recorded
 
   const handleSearch = () => {
     setPage(1); // Reset to first page
@@ -185,6 +197,41 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
     } catch (err) {
       console.error("Export failed:", err);
     }
+  };
+
+  const fetchAccounts = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/organizations/${organizationSlug}/accounts`);
+      if (response.ok) {
+        const data = await response.json();
+        setAccounts(data.accounts || data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch accounts:", err);
+    }
+  }, [organizationSlug]);
+
+  const handleEditClick = async (transaction: TransactionWithAccounts) => {
+    setSelectedTransaction(null);
+    if (accounts.length === 0) {
+      await fetchAccounts();
+    }
+    setEditingTransaction(transaction);
+  };
+
+  const handleVoidClick = (transaction: TransactionWithAccounts) => {
+    setSelectedTransaction(null);
+    setVoidingTransaction(transaction);
+  };
+
+  const handleEditSuccess = () => {
+    setEditingTransaction(null);
+    fetchTransactions();
+  };
+
+  const handleVoidSuccess = () => {
+    setVoidingTransaction(null);
+    fetchTransactions();
   };
 
   const getTransactionTypeBadge = (type: string) => {
@@ -270,6 +317,17 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
           />
         </div>
 
+        <div className="flex items-center gap-2">
+          <Switch
+            id="show-voided"
+            checked={showVoided}
+            onCheckedChange={setShowVoided}
+          />
+          <label htmlFor="show-voided" className="text-sm text-gray-700">
+            Show voided
+          </label>
+        </div>
+
         <Button onClick={handleExportCSV} variant="outline" size="sm" className="ml-auto">
           <Download className="mr-2 h-4 w-4" />
           Export CSV
@@ -313,6 +371,7 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
             <TableRow>
               <TableHead>Date</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Debit Account</TableHead>
               <TableHead>Credit Account</TableHead>
               <TableHead className="text-right">Amount</TableHead>
@@ -323,21 +382,34 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
           <TableBody>
             {transactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="py-8 text-center text-gray-500">
+                <TableCell colSpan={8} className="py-8 text-center text-gray-500">
                   No transactions found. Record your first transaction to get started.
                 </TableCell>
               </TableRow>
             ) : (
               transactions.map((transaction) => (
                 <TableRow
-                  key={transaction.id}
-                  className="cursor-pointer hover:bg-gray-50"
+                  key={transaction.versionId || transaction.id}
+                  className={`cursor-pointer hover:bg-gray-50 ${transaction.isVoided ? 'opacity-50' : ''}`}
                   onClick={() => setSelectedTransaction(transaction)}
                 >
-                  <TableCell className="font-medium">
+                  <TableCell className={`font-medium ${transaction.isVoided ? 'line-through' : ''}`}>
                     {new Date(transaction.transactionDate).toLocaleDateString()}
                   </TableCell>
                   <TableCell>{getTransactionTypeBadge(transaction.type)}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      {transaction.isVoided && (
+                        <Badge variant="destructive" className="text-xs">Voided</Badge>
+                      )}
+                      {!transaction.isVoided && transaction.previousVersionId && (
+                        <Badge variant="outline" className="text-xs">Edited</Badge>
+                      )}
+                      {!transaction.isVoided && !transaction.previousVersionId && (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="text-sm">
                       <div className="font-medium text-gray-900">
@@ -416,15 +488,37 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-gray-700">Type</label>
-                  <div className="mt-1">{getTransactionTypeBadge(selectedTransaction.type)}</div>
+                  <div className="mt-1 flex items-center gap-2">
+                    {getTransactionTypeBadge(selectedTransaction.type)}
+                    {selectedTransaction.isVoided && (
+                      <Badge variant="destructive">Voided</Badge>
+                    )}
+                    {!selectedTransaction.isVoided && selectedTransaction.previousVersionId && (
+                      <Badge variant="outline">Edited</Badge>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-700">Amount</label>
-                  <div className="mt-1 text-lg font-semibold">
+                  <div className={`mt-1 text-lg font-semibold ${selectedTransaction.isVoided ? 'line-through text-gray-400' : ''}`}>
                     {formatCurrency(selectedTransaction.amount)}
                   </div>
                 </div>
               </div>
+
+              {selectedTransaction.isVoided && selectedTransaction.voidReason && (
+                <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                  <label className="text-sm font-medium text-red-700">Void Reason</label>
+                  <div className="mt-1 text-sm text-red-900">{selectedTransaction.voidReason}</div>
+                </div>
+              )}
+
+              {selectedTransaction.changeReason && (
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
+                  <label className="text-sm font-medium text-blue-700">Edit Reason</label>
+                  <div className="mt-1 text-sm text-blue-900">{selectedTransaction.changeReason}</div>
+                </div>
+              )}
 
               <div>
                 <label className="text-sm font-medium text-gray-700">Debit Account</label>
@@ -477,10 +571,67 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
                   <span className="font-medium">ID:</span> {selectedTransaction.id.slice(0, 8)}...
                 </div>
               </div>
+
+              {/* Edit/Void action buttons - only for non-voided transactions */}
+              {!selectedTransaction.isVoided && (
+                <div className="flex gap-2 border-t pt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditClick(selectedTransaction)}
+                  >
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit Transaction
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleVoidClick(selectedTransaction)}
+                  >
+                    <Ban className="mr-2 h-4 w-4" />
+                    Void Transaction
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Edit Transaction Dialog */}
+      <Dialog
+        open={!!editingTransaction}
+        onOpenChange={(open) => !open && setEditingTransaction(null)}
+      >
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Transaction</DialogTitle>
+            <DialogDescription>
+              Update the transaction details. All changes are tracked with full audit history.
+            </DialogDescription>
+          </DialogHeader>
+          {editingTransaction && (
+            <EditTransactionForm
+              organizationSlug={organizationSlug}
+              transaction={editingTransaction}
+              accounts={accounts}
+              onSuccess={handleEditSuccess}
+              onCancel={() => setEditingTransaction(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Void Transaction Dialog */}
+      {voidingTransaction && (
+        <VoidTransactionDialog
+          open={!!voidingTransaction}
+          onOpenChange={(open) => !open && setVoidingTransaction(null)}
+          organizationSlug={organizationSlug}
+          transaction={voidingTransaction}
+          onSuccess={handleVoidSuccess}
+        />
+      )}
     </div>
   );
 }
