@@ -146,8 +146,8 @@ describe('Transaction Utilities', () => {
           date: new Date(),
           amount: 100,
           description: 'General entry',
-          debitAccountId: 'same-account',
-          creditAccountId: 'same-account',
+          fromAccountId: 'same-account',
+          toAccountId: 'same-account',
         };
         const result = validateTransaction(data);
         expect(result).toBe('Debit and credit accounts must be different');
@@ -159,8 +159,8 @@ describe('Transaction Utilities', () => {
           date: new Date(),
           amount: 100,
           description: 'General entry',
-          debitAccountId: 'debit-account',
-          creditAccountId: 'credit-account',
+          fromAccountId: 'credit-account',
+          toAccountId: 'debit-account',
         };
         const result = validateTransaction(data);
         expect(result).toBeNull();
@@ -299,8 +299,8 @@ describe('Transaction Utilities', () => {
           amount: 1500,
           description: 'Adjusting entry',
           referenceNumber: 'ADJ-2024-01',
-          debitAccountId: 'debit-account-id',
-          creditAccountId: 'credit-account-id',
+          fromAccountId: 'credit-account-id', // Credit Account (Source)
+          toAccountId: 'debit-account-id',    // Debit Account (Destination)
         };
         
         const result = prepareTransactionPayload(data);

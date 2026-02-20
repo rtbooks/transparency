@@ -73,7 +73,7 @@ export function validateTransaction(data: TransactionFormData): string | null {
     return 'Cannot transfer to the same account';
   }
 
-  if (data.type === 'GENERAL' && data.debitAccountId === data.creditAccountId) {
+  if (data.type === 'GENERAL' && data.fromAccountId === data.toAccountId) {
     return 'Debit and credit accounts must be different';
   }
 
@@ -101,8 +101,8 @@ export function prepareTransactionPayload(data: TransactionFormData) {
       creditAccountId = data.fromAccountId!; // Source asset decreases (credit)
       break;
     case 'GENERAL':
-      debitAccountId = data.debitAccountId!;
-      creditAccountId = data.creditAccountId!;
+      debitAccountId = data.toAccountId!;   // "Debit Account (Destination)"
+      creditAccountId = data.fromAccountId!; // "Credit Account (Source)"
       break;
   }
 
