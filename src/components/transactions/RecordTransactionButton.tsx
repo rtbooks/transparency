@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,16 +9,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { RecordTransactionForm } from './RecordTransactionForm';
-import { Plus } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { RecordTransactionForm } from "./RecordTransactionForm";
+import { Plus } from "lucide-react";
 
 interface RecordTransactionButtonProps {
   organizationSlug: string;
+  onTransactionCreated?: () => void;
 }
 
 export function RecordTransactionButton({
   organizationSlug,
+  onTransactionCreated,
 }: RecordTransactionButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -33,15 +35,13 @@ export function RecordTransactionButton({
   const fetchAccounts = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `/api/organizations/${organizationSlug}/accounts`
-      );
+      const response = await fetch(`/api/organizations/${organizationSlug}/accounts`);
       if (response.ok) {
         const data = await response.json();
         setAccounts(data);
       }
     } catch (error) {
-      console.error('Error fetching accounts:', error);
+      console.error("Error fetching accounts:", error);
     } finally {
       setLoading(false);
     }
@@ -49,6 +49,9 @@ export function RecordTransactionButton({
 
   const handleSuccess = () => {
     setIsOpen(false);
+    if (onTransactionCreated) {
+      onTransactionCreated();
+    }
   };
 
   return (
@@ -59,7 +62,7 @@ export function RecordTransactionButton({
           Record Transaction
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Record Transaction</DialogTitle>
           <DialogDescription>
@@ -67,9 +70,7 @@ export function RecordTransactionButton({
           </DialogDescription>
         </DialogHeader>
         {loading ? (
-          <div className="py-8 text-center text-gray-500">
-            Loading accounts...
-          </div>
+          <div className="py-8 text-center text-gray-500">Loading accounts...</div>
         ) : (
           <RecordTransactionForm
             organizationSlug={organizationSlug}

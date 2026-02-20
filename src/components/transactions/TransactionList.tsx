@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Transaction, Account } from '@/generated/prisma/client';
-import { AsOfDatePicker } from '@/components/temporal';
+import { useEffect, useState } from "react";
+import { Transaction, Account } from "@/generated/prisma/client";
+import { AsOfDatePicker } from "@/components/temporal";
 import {
   Table,
   TableBody,
@@ -10,51 +10,54 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { formatCurrency } from '@/lib/utils/account-tree';
-import { ChevronLeft, ChevronRight, Download, Search, Info } from 'lucide-react';
-import { format } from 'date-fns';
+} from "@/components/ui/dialog";
+import { formatCurrency } from "@/lib/utils/account-tree";
+import { ChevronLeft, ChevronRight, Download, Search, Info } from "lucide-react";
+import { format } from "date-fns";
 
 interface TransactionWithAccounts extends Transaction {
-  debitAccount: Pick<Account, 'id' | 'code' | 'name' | 'type'>;
-  creditAccount: Pick<Account, 'id' | 'code' | 'name' | 'type'>;
+  debitAccount: Pick<Account, "id" | "code" | "name" | "type">;
+  creditAccount: Pick<Account, "id" | "code" | "name" | "type">;
 }
 
 interface TransactionListProps {
   organizationSlug: string;
+  refreshKey?: number;
 }
 
-export function TransactionList({ organizationSlug }: TransactionListProps) {
+export function TransactionList({ organizationSlug, refreshKey }: TransactionListProps) {
   const [transactions, setTransactions] = useState<TransactionWithAccounts[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTransaction, setSelectedTransaction] = useState<TransactionWithAccounts | null>(null);
-  
+  const [selectedTransaction, setSelectedTransaction] = useState<TransactionWithAccounts | null>(
+    null
+  );
+
   // Filters
-  const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [asOfDate, setAsOfDate] = useState<Date | undefined>(undefined);
-  
+
   // Pagination
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -77,20 +80,20 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
         limit: limit.toString(),
       });
 
-      if (typeFilter && typeFilter !== 'all') {
-        params.append('type', typeFilter);
+      if (typeFilter && typeFilter !== "all") {
+        params.append("type", typeFilter);
       }
       if (search) {
-        params.append('search', search);
+        params.append("search", search);
       }
       if (startDate) {
-        params.append('startDate', startDate);
+        params.append("startDate", startDate);
       }
       if (endDate) {
-        params.append('endDate', endDate);
+        params.append("endDate", endDate);
       }
       if (asOfDate) {
-        params.append('asOfDate', asOfDate.toISOString());
+        params.append("asOfDate", asOfDate.toISOString());
       }
 
       const response = await fetch(
@@ -98,7 +101,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
       );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch transactions');
+        throw new Error("Failed to fetch transactions");
       }
 
       const data = await response.json();
@@ -107,7 +110,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
       setTotalCount(data.pagination.totalCount);
       setTemporalContext(data.temporalContext);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -115,7 +118,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
 
   useEffect(() => {
     fetchTransactions();
-  }, [page, typeFilter, startDate, endDate, asOfDate]); // Added asOfDate to dependencies
+  }, [page, typeFilter, startDate, endDate, asOfDate, refreshKey]); // refreshKey triggers re-fetch after a new transaction is recorded
 
   const handleSearch = () => {
     setPage(1); // Reset to first page
@@ -126,19 +129,19 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
     try {
       // Fetch all transactions without pagination
       const params = new URLSearchParams();
-      if (typeFilter && typeFilter !== 'all') {
-        params.append('type', typeFilter);
+      if (typeFilter && typeFilter !== "all") {
+        params.append("type", typeFilter);
       }
       if (search) {
-        params.append('search', search);
+        params.append("search", search);
       }
       if (startDate) {
-        params.append('startDate', startDate);
+        params.append("startDate", startDate);
       }
       if (endDate) {
-        params.append('endDate', endDate);
+        params.append("endDate", endDate);
       }
-      params.append('limit', '10000'); // Large limit for export
+      params.append("limit", "10000"); // Large limit for export
 
       const response = await fetch(
         `/api/organizations/${organizationSlug}/transactions?${params.toString()}`
@@ -147,48 +150,53 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
 
       // Generate CSV
       const headers = [
-        'Date',
-        'Type',
-        'Debit Account',
-        'Credit Account',
-        'Amount',
-        'Description',
-        'Reference Number',
+        "Date",
+        "Type",
+        "Debit Account",
+        "Credit Account",
+        "Amount",
+        "Description",
+        "Reference Number",
       ];
 
       const csvRows = [
-        headers.join(','),
-        ...data.transactions.map((t: TransactionWithAccounts) => [
-          new Date(t.transactionDate).toLocaleDateString(),
-          t.type,
-          `"${t.debitAccount.code} - ${t.debitAccount.name}"`,
-          `"${t.creditAccount.code} - ${t.creditAccount.name}"`,
-          t.amount,
-          `"${t.description}"`,
-          t.referenceNumber || '',
-        ].join(',')),
+        headers.join(","),
+        ...data.transactions.map((t: TransactionWithAccounts) =>
+          [
+            new Date(t.transactionDate).toLocaleDateString(),
+            t.type,
+            `"${t.debitAccount.code} - ${t.debitAccount.name}"`,
+            `"${t.creditAccount.code} - ${t.creditAccount.name}"`,
+            t.amount,
+            `"${t.description}"`,
+            t.referenceNumber || "",
+          ].join(",")
+        ),
       ];
 
       // Download
-      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+      const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = `transactions-${new Date().toISOString().split('T')[0]}.csv`;
+      a.download = `transactions-${new Date().toISOString().split("T")[0]}.csv`;
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error('Export failed:', err);
+      console.error("Export failed:", err);
     }
   };
 
   const getTransactionTypeBadge = (type: string) => {
-    const variants: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'outline'; label: string }> = {
-      INCOME: { variant: 'default', label: 'Income' },
-      EXPENSE: { variant: 'destructive', label: 'Expense' },
-      TRANSFER: { variant: 'secondary', label: 'Transfer' },
+    const variants: Record<
+      string,
+      { variant: "default" | "secondary" | "destructive" | "outline"; label: string }
+    > = {
+      INCOME: { variant: "default", label: "Income" },
+      EXPENSE: { variant: "destructive", label: "Expense" },
+      TRANSFER: { variant: "secondary", label: "Transfer" },
     };
-    const config = variants[type] || { variant: 'outline', label: type };
+    const config = variants[type] || { variant: "outline", label: type };
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
@@ -212,16 +220,14 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
     <div className="space-y-4">
       {/* Filters */}
       <div className="flex flex-wrap items-end gap-4 rounded-lg border bg-white p-4">
-        <div className="flex-1 min-w-[200px]">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">
-            Search
-          </label>
+        <div className="min-w-[200px] flex-1">
+          <label className="mb-2 block text-sm font-medium text-gray-700">Search</label>
           <div className="flex gap-2">
             <Input
               placeholder="Description or reference..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
             <Button onClick={handleSearch} size="sm">
               <Search className="h-4 w-4" />
@@ -230,9 +236,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
         </div>
 
         <div className="min-w-[150px]">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">
-            Type
-          </label>
+          <label className="mb-2 block text-sm font-medium text-gray-700">Type</label>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger>
               <SelectValue />
@@ -247,31 +251,17 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
         </div>
 
         <div className="min-w-[150px]">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">
-            Start Date
-          </label>
-          <Input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+          <label className="mb-2 block text-sm font-medium text-gray-700">Start Date</label>
+          <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         </div>
 
         <div className="min-w-[150px]">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">
-            End Date
-          </label>
-          <Input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
+          <label className="mb-2 block text-sm font-medium text-gray-700">End Date</label>
+          <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
 
         <div className="min-w-[200px]">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">
-            As Of Date
-          </label>
+          <label className="mb-2 block text-sm font-medium text-gray-700">As Of Date</label>
           <AsOfDatePicker
             date={asOfDate}
             onDateChange={setAsOfDate}
@@ -280,12 +270,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
           />
         </div>
 
-        <Button
-          onClick={handleExportCSV}
-          variant="outline"
-          size="sm"
-          className="ml-auto"
-        >
+        <Button onClick={handleExportCSV} variant="outline" size="sm" className="ml-auto">
           <Download className="mr-2 h-4 w-4" />
           Export CSV
         </Button>
@@ -293,13 +278,15 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
 
       {/* Temporal Context Banner */}
       {temporalContext && temporalContext.isHistoricalView && (
-        <Alert className="bg-blue-50 border-blue-200">
+        <Alert className="border-blue-200 bg-blue-50">
           <Info className="h-4 w-4 text-blue-600" />
           <AlertDescription className="text-blue-900">
             <div className="flex items-center justify-between">
               <span>
-                <strong>Viewing transactions as of {format(new Date(temporalContext.asOfDate), 'PPP')}.</strong>
-                {' '}Account names are shown as they were at that time.
+                <strong>
+                  Viewing transactions as of {format(new Date(temporalContext.asOfDate), "PPP")}.
+                </strong>{" "}
+                Account names are shown as they were at that time.
               </span>
               <Button
                 variant="outline"
@@ -336,7 +323,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
           <TableBody>
             {transactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={7} className="py-8 text-center text-gray-500">
                   No transactions found. Record your first transaction to get started.
                 </TableCell>
               </TableRow>
@@ -370,11 +357,9 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
                   <TableCell className="text-right font-semibold text-gray-900">
                     {formatCurrency(transaction.amount)}
                   </TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {transaction.description}
-                  </TableCell>
+                  <TableCell className="max-w-xs truncate">{transaction.description}</TableCell>
                   <TableCell className="text-gray-500">
-                    {transaction.referenceNumber || '—'}
+                    {transaction.referenceNumber || "—"}
                   </TableCell>
                 </TableRow>
               ))
@@ -396,7 +381,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
             >
-              <ChevronLeft className="h-4 w-4 mr-1" />
+              <ChevronLeft className="mr-1 h-4 w-4" />
               Previous
             </Button>
             <Button
@@ -406,19 +391,23 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
               disabled={page === totalPages}
             >
               Next
-              <ChevronRight className="h-4 w-4 ml-1" />
+              <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           </div>
         </div>
       )}
 
       {/* Transaction Detail Dialog */}
-      <Dialog open={!!selectedTransaction} onOpenChange={(open) => !open && setSelectedTransaction(null)}>
+      <Dialog
+        open={!!selectedTransaction}
+        onOpenChange={(open) => !open && setSelectedTransaction(null)}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Transaction Details</DialogTitle>
             <DialogDescription>
-              {selectedTransaction && new Date(selectedTransaction.transactionDate).toLocaleDateString()}
+              {selectedTransaction &&
+                new Date(selectedTransaction.transactionDate).toLocaleDateString()}
             </DialogDescription>
           </DialogHeader>
 
@@ -427,9 +416,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-gray-700">Type</label>
-                  <div className="mt-1">
-                    {getTransactionTypeBadge(selectedTransaction.type)}
-                  </div>
+                  <div className="mt-1">{getTransactionTypeBadge(selectedTransaction.type)}</div>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-700">Amount</label>
@@ -446,7 +433,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
                     {selectedTransaction.debitAccount.code}
                   </div>
                   <div className="text-gray-900">{selectedTransaction.debitAccount.name}</div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="mt-1 text-xs text-gray-500">
                     {selectedTransaction.debitAccount.type}
                   </div>
                 </div>
@@ -459,7 +446,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
                     {selectedTransaction.creditAccount.code}
                   </div>
                   <div className="text-gray-900">{selectedTransaction.creditAccount.name}</div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="mt-1 text-xs text-gray-500">
                     {selectedTransaction.creditAccount.type}
                   </div>
                 </div>
@@ -483,7 +470,7 @@ export function TransactionList({ organizationSlug }: TransactionListProps) {
 
               <div className="grid grid-cols-2 gap-4 text-xs text-gray-500">
                 <div>
-                  <span className="font-medium">Created:</span>{' '}
+                  <span className="font-medium">Created:</span>{" "}
                   {new Date(selectedTransaction.createdAt).toLocaleString()}
                 </div>
                 <div>
