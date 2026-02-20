@@ -13,10 +13,14 @@ export function getOrganizationNavLinks(
     { label: 'Dashboard', href: `/org/${slug}/dashboard` },
   ];
 
+  // Reports link is available to all roles (transparency-first)
+  const reportsLink: NavLink = { label: 'Reports', href: `/org/${slug}/reports` };
+
   // DONOR role gets limited nav
   if (role === 'DONOR') {
     return [
       ...baseLinks,
+      reportsLink,
       { label: 'My Donations', href: `/org/${slug}/donations` },
     ];
   }
@@ -27,6 +31,7 @@ export function getOrganizationNavLinks(
       ...baseLinks,
       { label: 'Accounts', href: `/org/${slug}/accounts` },
       { label: 'Transactions', href: `/org/${slug}/transactions` },
+      reportsLink,
       { label: 'Planned Purchases', href: `/org/${slug}/planned-purchases` },
       { label: 'Users', href: `/org/${slug}/users` },
       { label: 'Settings', href: `/org/${slug}/settings` },
@@ -34,7 +39,7 @@ export function getOrganizationNavLinks(
   }
 
   // PUBLIC or unknown role
-  return baseLinks;
+  return [...baseLinks, reportsLink];
 }
 
 export function getPlatformAdminNavLinks(): NavLink[] {

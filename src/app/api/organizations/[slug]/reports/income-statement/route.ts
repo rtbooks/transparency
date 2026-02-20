@@ -17,6 +17,9 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const startDateStr = searchParams.get('startDate');
     const endDateStr = searchParams.get('endDate');
+    const comparePrior = searchParams.get('comparePrior') === 'true';
+    const priorStartDateStr = searchParams.get('priorStartDate');
+    const priorEndDateStr = searchParams.get('priorEndDate');
 
     if (!startDateStr || !endDateStr) {
       return NextResponse.json(
@@ -47,13 +50,27 @@ export async function GET(
       );
     }
 
-    const incomeStatement = await generateIncomeStatement(
+    const current = await generateIncomeStatement(
       organization.id,
       startDate,
       endDate
     );
 
-    return NextResponse.json(incomeStatement);
+    if (comparePrior && priorStartDateStr && priorEndDateStr) {
+      const priorStartDate = new Date(priorStartDateStr);
+      const priorEndDate = new Date(priorEndDateStr);
+
+      if (!isNaN(priorStartDate.getTime()) && !isNaN(priorEndDate.getTime())) {
+        const prior = await generateIncomeStatement(
+          organization.id,
+          priorStartDate,
+          priorEndDate
+        );
+        return NextResponse.json({ current, prior });
+      }
+    }
+
+    return NextResponse.json(comparePrior ? { current, prior: null } : current);
   } catch (error) {
     console.error('Error generating income statement:', error);
     return NextResponse.json(

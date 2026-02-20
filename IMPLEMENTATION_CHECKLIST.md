@@ -176,11 +176,20 @@ Track your progress as you build the Financial Transparency Platform.
 
 ### Export & Reports
 
-- [ ] Implement CSV export
-- [ ] Create PDF report generation
-- [ ] Build fiscal year summary report
-- [ ] Add expense detail report
-- [ ] Generate revenue report
+- [x] Implement CSV export
+- [x] Create PDF report generation (via browser print)
+- [x] Build fiscal year summary report
+- [x] Add expense detail report (Income Statement)
+- [x] Generate revenue report (Income Statement)
+- [x] Build Income Statement page with comparative periods
+- [x] Build Balance Sheet page with comparative periods
+- [x] Create Reports landing page
+- [x] Create Financial Dashboard with charts (recharts)
+- [x] Add fiscal period utilities (year/quarter/month)
+- [x] Add period selector component (Year/Quarter/Month granularity)
+- [x] Add Reports link to navigation (all roles - transparency-first)
+- [x] Add comparative prior-period support to report APIs
+- [x] Write fiscal period unit tests (18 tests)
 
 **Milestone**: Public transparency dashboard live
 
