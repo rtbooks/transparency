@@ -124,11 +124,12 @@ describe('Transaction Service', () => {
         100
       );
 
-      // New version created
+      // New version created — must NOT include id (auto-generated to avoid PK conflict)
+      const createCallData = mockPrisma.transaction.create.mock.calls[0][0].data;
+      expect(createCallData).not.toHaveProperty('id');
       expect(mockPrisma.transaction.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
-            id: 'tx-1',
             description: 'Updated',
             changeReason: 'Correction',
             changedBy: 'user-2',
@@ -266,6 +267,26 @@ describe('Transaction Service', () => {
         })
       );
     });
+
+    it('should not reuse the original id to avoid PK unique constraint violation (P2002 regression)', async () => {
+      const current = makeMockTransaction({ id: 'original-tx-id' });
+      mockPrisma.transaction.findFirst.mockResolvedValue(current);
+      mockPrisma.transaction.update.mockResolvedValue({});
+      mockPrisma.transaction.create.mockResolvedValue({ ...current, id: 'new-auto-id' });
+      (reverseAccountBalances as jest.Mock).mockResolvedValue({});
+      (updateAccountBalances as jest.Mock).mockResolvedValue({});
+
+      await editTransaction('original-tx-id', 'org-1', {
+        description: 'Fixed',
+        changeReason: 'Correction',
+      }, 'user-2');
+
+      // The create call must NOT set id — Prisma auto-generates a new UUID
+      const createData = mockPrisma.transaction.create.mock.calls[0][0].data;
+      expect(createData).not.toHaveProperty('id');
+      // But the version chain must link back to the old version
+      expect(createData.previousVersionId).toBe('version-1');
+    });
   });
 
   describe('voidTransaction()', () => {
@@ -292,11 +313,12 @@ describe('Transaction Service', () => {
         })
       );
 
-      // New voided version created
+      // New voided version created — must NOT include id (auto-generated to avoid PK conflict)
+      const createCallData = mockPrisma.transaction.create.mock.calls[0][0].data;
+      expect(createCallData).not.toHaveProperty('id');
       expect(mockPrisma.transaction.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
-            id: 'tx-1',
             isVoided: true,
             voidedAt: expect.any(Date),
             voidedBy: 'user-2',
@@ -339,27 +361,50 @@ describe('Transaction Service', () => {
   });
 
   describe('getTransactionHistory()', () => {
-    it('should return all versions ordered by systemFrom desc', async () => {
-      const versions = [
-        makeMockTransaction({ versionId: 'v3', systemFrom: new Date('2024-06-17') }),
-        makeMockTransaction({ versionId: 'v2', systemFrom: new Date('2024-06-16') }),
-        makeMockTransaction({ versionId: 'v1', systemFrom: new Date('2024-06-15') }),
-      ];
-      mockPrisma.transaction.findMany.mockResolvedValue(versions);
+    it('should follow previousVersionId chain to build history', async () => {
+      const v3 = makeMockTransaction({ id: 'tx-3', versionId: 'v3', previousVersionId: 'v2', systemFrom: new Date('2024-06-17') });
+      const v2 = makeMockTransaction({ id: 'tx-2', versionId: 'v2', previousVersionId: 'v1', systemFrom: new Date('2024-06-16') });
+      const v1 = makeMockTransaction({ id: 'tx-1', versionId: 'v1', previousVersionId: null, systemFrom: new Date('2024-06-15') });
 
-      const result = await getTransactionHistory('tx-1', 'org-1');
+      // First call: find the starting transaction by id
+      mockPrisma.transaction.findFirst
+        .mockResolvedValueOnce(v3)  // start: find by id
+        .mockResolvedValueOnce(v2)  // follow chain: versionId = v2
+        .mockResolvedValueOnce(v1); // follow chain: versionId = v1
 
-      expect(mockPrisma.transaction.findMany).toHaveBeenCalledWith({
-        where: {
-          id: 'tx-1',
-          organizationId: 'org-1',
-        },
-        orderBy: { systemFrom: 'desc' },
-      });
+      const result = await getTransactionHistory('tx-3', 'org-1');
 
       expect(result).toHaveLength(3);
       expect(result[0].versionId).toBe('v3');
+      expect(result[1].versionId).toBe('v2');
       expect(result[2].versionId).toBe('v1');
+
+      // Verify the chain-following queries
+      expect(mockPrisma.transaction.findFirst).toHaveBeenCalledWith({
+        where: { id: 'tx-3', organizationId: 'org-1' },
+      });
+      expect(mockPrisma.transaction.findFirst).toHaveBeenCalledWith({
+        where: { versionId: 'v2', organizationId: 'org-1' },
+      });
+      expect(mockPrisma.transaction.findFirst).toHaveBeenCalledWith({
+        where: { versionId: 'v1', organizationId: 'org-1' },
+      });
+    });
+
+    it('should return empty array if transaction not found', async () => {
+      mockPrisma.transaction.findFirst.mockResolvedValue(null);
+
+      const result = await getTransactionHistory('tx-missing', 'org-1');
+      expect(result).toHaveLength(0);
+    });
+
+    it('should return single version if no previous versions', async () => {
+      const v1 = makeMockTransaction({ id: 'tx-1', versionId: 'v1', previousVersionId: null });
+      mockPrisma.transaction.findFirst.mockResolvedValue(v1);
+
+      const result = await getTransactionHistory('tx-1', 'org-1');
+      expect(result).toHaveLength(1);
+      expect(result[0].versionId).toBe('v1');
     });
   });
 });
