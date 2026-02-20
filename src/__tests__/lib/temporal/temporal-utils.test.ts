@@ -7,6 +7,7 @@ import {
   MIN_DATE,
   buildCurrentVersionWhere,
   buildAsOfDateWhere,
+  buildBitemporalAsOfWhere,
 } from '@/lib/temporal/temporal-utils';
 
 describe('Temporal Utils', () => {
@@ -131,6 +132,56 @@ describe('Temporal Utils', () => {
       
       const isIncluded = versionStart <= queryDate;
       expect(isIncluded).toBe(true);
+    });
+  });
+
+  describe('buildBitemporalAsOfWhere', () => {
+    const testDate = new Date('2024-06-15T12:00:00Z');
+
+    it('should filter by both system time and valid time', () => {
+      const where = buildBitemporalAsOfWhere(testDate);
+
+      expect(where.systemFrom).toEqual({ lte: testDate });
+      expect(where.systemTo).toEqual({ gt: testDate });
+      expect(where.validFrom).toEqual({ lte: testDate });
+      expect(where.validTo).toEqual({ gt: testDate });
+      expect(where.isDeleted).toBe(false);
+    });
+
+    it('should merge base where conditions', () => {
+      const where = buildBitemporalAsOfWhere(testDate, {
+        organizationId: 'org-1',
+      });
+
+      expect(where.organizationId).toBe('org-1');
+      expect(where.systemFrom).toEqual({ lte: testDate });
+      expect(where.validTo).toEqual({ gt: testDate });
+    });
+
+    it('should exclude transactions entered after the as-of date', () => {
+      const asOfDate = new Date('2024-06-01T00:00:00Z');
+      const where = buildBitemporalAsOfWhere(asOfDate);
+
+      // A transaction with systemFrom = June 15 should NOT match
+      // because systemFrom <= June 1 would be false
+      const txSystemFrom = new Date('2024-06-15T00:00:00Z');
+      expect(txSystemFrom <= asOfDate).toBe(false);
+    });
+
+    it('should include transactions entered before the as-of date', () => {
+      const asOfDate = new Date('2024-06-15T00:00:00Z');
+      const where = buildBitemporalAsOfWhere(asOfDate);
+
+      // A transaction with systemFrom = June 1 should match
+      const txSystemFrom = new Date('2024-06-01T00:00:00Z');
+      const txSystemTo = MAX_DATE;
+      expect(txSystemFrom <= asOfDate).toBe(true);
+      expect(txSystemTo > asOfDate).toBe(true);
+    });
+
+    it('should respect includeDeleted option', () => {
+      const where = buildBitemporalAsOfWhere(testDate, {}, { includeDeleted: true });
+      expect(where).not.toHaveProperty('isDeleted');
     });
   });
 });

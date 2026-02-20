@@ -59,6 +59,21 @@ export type TransactionMinAggregateOutputType = {
   createdAt: Date | null
   createdBy: string | null
   updatedAt: Date | null
+  versionId: string | null
+  previousVersionId: string | null
+  validFrom: Date | null
+  validTo: Date | null
+  systemFrom: Date | null
+  systemTo: Date | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
+  isVoided: boolean | null
+  voidedAt: Date | null
+  voidedBy: string | null
+  voidReason: string | null
+  changeReason: string | null
 }
 
 export type TransactionMaxAggregateOutputType = {
@@ -86,6 +101,21 @@ export type TransactionMaxAggregateOutputType = {
   createdAt: Date | null
   createdBy: string | null
   updatedAt: Date | null
+  versionId: string | null
+  previousVersionId: string | null
+  validFrom: Date | null
+  validTo: Date | null
+  systemFrom: Date | null
+  systemTo: Date | null
+  isDeleted: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
+  isVoided: boolean | null
+  voidedAt: Date | null
+  voidedBy: string | null
+  voidReason: string | null
+  changeReason: string | null
 }
 
 export type TransactionCountAggregateOutputType = {
@@ -113,6 +143,21 @@ export type TransactionCountAggregateOutputType = {
   createdAt: number
   createdBy: number
   updatedAt: number
+  versionId: number
+  previousVersionId: number
+  validFrom: number
+  validTo: number
+  systemFrom: number
+  systemTo: number
+  isDeleted: number
+  deletedAt: number
+  deletedBy: number
+  changedBy: number
+  isVoided: number
+  voidedAt: number
+  voidedBy: number
+  voidReason: number
+  changeReason: number
   _all: number
 }
 
@@ -150,6 +195,21 @@ export type TransactionMinAggregateInputType = {
   createdAt?: true
   createdBy?: true
   updatedAt?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
+  isVoided?: true
+  voidedAt?: true
+  voidedBy?: true
+  voidReason?: true
+  changeReason?: true
 }
 
 export type TransactionMaxAggregateInputType = {
@@ -177,6 +237,21 @@ export type TransactionMaxAggregateInputType = {
   createdAt?: true
   createdBy?: true
   updatedAt?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
+  isVoided?: true
+  voidedAt?: true
+  voidedBy?: true
+  voidReason?: true
+  changeReason?: true
 }
 
 export type TransactionCountAggregateInputType = {
@@ -204,6 +279,21 @@ export type TransactionCountAggregateInputType = {
   createdAt?: true
   createdBy?: true
   updatedAt?: true
+  versionId?: true
+  previousVersionId?: true
+  validFrom?: true
+  validTo?: true
+  systemFrom?: true
+  systemTo?: true
+  isDeleted?: true
+  deletedAt?: true
+  deletedBy?: true
+  changedBy?: true
+  isVoided?: true
+  voidedAt?: true
+  voidedBy?: true
+  voidReason?: true
+  changeReason?: true
   _all?: true
 }
 
@@ -318,6 +408,21 @@ export type TransactionGroupByOutputType = {
   createdAt: Date
   createdBy: string | null
   updatedAt: Date
+  versionId: string
+  previousVersionId: string | null
+  validFrom: Date
+  validTo: Date
+  systemFrom: Date
+  systemTo: Date
+  isDeleted: boolean
+  deletedAt: Date | null
+  deletedBy: string | null
+  changedBy: string | null
+  isVoided: boolean
+  voidedAt: Date | null
+  voidedBy: string | null
+  voidReason: string | null
+  changeReason: string | null
   _count: TransactionCountAggregateOutputType | null
   _avg: TransactionAvgAggregateOutputType | null
   _sum: TransactionSumAggregateOutputType | null
@@ -368,6 +473,21 @@ export type TransactionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  versionId?: Prisma.StringFilter<"Transaction"> | string
+  previousVersionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"Transaction"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  isVoided?: Prisma.BoolFilter<"Transaction"> | boolean
+  voidedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  voidedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  changeReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   debitAccount?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
   creditAccount?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
@@ -400,6 +520,21 @@ export type TransactionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  changedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  isVoided?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  changeReason?: Prisma.SortOrderInput | Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
   debitAccount?: Prisma.AccountOrderByWithRelationInput
   creditAccount?: Prisma.AccountOrderByWithRelationInput
@@ -412,6 +547,7 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   bankTransactionId?: string
   stripeSessionId?: string
   stripePaymentId?: string
+  versionId?: string
   AND?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
   OR?: Prisma.TransactionWhereInput[]
   NOT?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
@@ -435,12 +571,26 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  previousVersionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"Transaction"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  isVoided?: Prisma.BoolFilter<"Transaction"> | boolean
+  voidedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  voidedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  changeReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   debitAccount?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
   creditAccount?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
   donor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   plannedPurchase?: Prisma.XOR<Prisma.PlannedPurchaseNullableScalarRelationFilter, Prisma.PlannedPurchaseWhereInput> | null
-}, "id" | "bankTransactionId" | "stripeSessionId" | "stripePaymentId">
+}, "id" | "bankTransactionId" | "stripeSessionId" | "stripePaymentId" | "versionId">
 
 export type TransactionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -467,6 +617,21 @@ export type TransactionOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  changedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  isVoided?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  changeReason?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TransactionCountOrderByAggregateInput
   _avg?: Prisma.TransactionAvgOrderByAggregateInput
   _max?: Prisma.TransactionMaxOrderByAggregateInput
@@ -502,6 +667,21 @@ export type TransactionScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
   createdBy?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
+  versionId?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
+  previousVersionId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
+  validFrom?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
+  validTo?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
+  systemFrom?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
+  systemTo?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
+  isDeleted?: Prisma.BoolWithAggregatesFilter<"Transaction"> | boolean
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Transaction"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
+  changedBy?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
+  isVoided?: Prisma.BoolWithAggregatesFilter<"Transaction"> | boolean
+  voidedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Transaction"> | Date | string | null
+  voidedBy?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
+  voidReason?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
+  changeReason?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
 }
 
 export type TransactionCreateInput = {
@@ -525,6 +705,21 @@ export type TransactionCreateInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
   organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
   debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
   creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
@@ -557,6 +752,21 @@ export type TransactionUncheckedCreateInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -581,6 +791,21 @@ export type TransactionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
   debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
   creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
@@ -613,6 +838,21 @@ export type TransactionUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -641,6 +881,21 @@ export type TransactionCreateManyInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
 }
 
 export type TransactionUpdateManyMutationInput = {
@@ -664,6 +919,21 @@ export type TransactionUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TransactionUncheckedUpdateManyInput = {
@@ -691,6 +961,21 @@ export type TransactionUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TransactionListRelationFilter = {
@@ -728,6 +1013,21 @@ export type TransactionCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
+  isVoided?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedBy?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
+  changeReason?: Prisma.SortOrder
 }
 
 export type TransactionAvgOrderByAggregateInput = {
@@ -759,6 +1059,21 @@ export type TransactionMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
+  isVoided?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedBy?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
+  changeReason?: Prisma.SortOrder
 }
 
 export type TransactionMinOrderByAggregateInput = {
@@ -786,6 +1101,21 @@ export type TransactionMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  versionId?: Prisma.SortOrder
+  previousVersionId?: Prisma.SortOrder
+  validFrom?: Prisma.SortOrder
+  validTo?: Prisma.SortOrder
+  systemFrom?: Prisma.SortOrder
+  systemTo?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  changedBy?: Prisma.SortOrder
+  isVoided?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedBy?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
+  changeReason?: Prisma.SortOrder
 }
 
 export type TransactionSumOrderByAggregateInput = {
@@ -1010,6 +1340,21 @@ export type TransactionCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
   debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
   creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
@@ -1040,6 +1385,21 @@ export type TransactionUncheckedCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1097,6 +1457,21 @@ export type TransactionScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  versionId?: Prisma.StringFilter<"Transaction"> | string
+  previousVersionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"Transaction"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  isVoided?: Prisma.BoolFilter<"Transaction"> | boolean
+  voidedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  voidedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  changeReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
 }
 
 export type TransactionCreateWithoutDonorInput = {
@@ -1120,6 +1495,21 @@ export type TransactionCreateWithoutDonorInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
   organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
   debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
   creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
@@ -1150,6 +1540,21 @@ export type TransactionUncheckedCreateWithoutDonorInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1200,6 +1605,21 @@ export type TransactionCreateWithoutDebitAccountInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
   organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
   creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
@@ -1230,6 +1650,21 @@ export type TransactionUncheckedCreateWithoutDebitAccountInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1264,6 +1699,21 @@ export type TransactionCreateWithoutCreditAccountInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
   organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
   debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
@@ -1294,6 +1744,21 @@ export type TransactionUncheckedCreateWithoutCreditAccountInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1360,6 +1825,21 @@ export type TransactionCreateWithoutPlannedPurchaseInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
   organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
   debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
   creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
@@ -1391,6 +1871,21 @@ export type TransactionUncheckedCreateWithoutPlannedPurchaseInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
 }
 
 export type TransactionCreateOrConnectWithoutPlannedPurchaseInput = {
@@ -1430,6 +1925,21 @@ export type TransactionUpdateWithoutPlannedPurchaseInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
   debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
   creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
@@ -1461,6 +1971,21 @@ export type TransactionUncheckedUpdateWithoutPlannedPurchaseInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TransactionCreateManyOrganizationInput = {
@@ -1487,6 +2012,21 @@ export type TransactionCreateManyOrganizationInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
 }
 
 export type TransactionUpdateWithoutOrganizationInput = {
@@ -1510,6 +2050,21 @@ export type TransactionUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
   creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
@@ -1540,6 +2095,21 @@ export type TransactionUncheckedUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -1567,6 +2137,21 @@ export type TransactionUncheckedUpdateManyWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TransactionCreateManyDonorInput = {
@@ -1593,6 +2178,21 @@ export type TransactionCreateManyDonorInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
 }
 
 export type TransactionUpdateWithoutDonorInput = {
@@ -1616,6 +2216,21 @@ export type TransactionUpdateWithoutDonorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
   debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
   creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
@@ -1646,6 +2261,21 @@ export type TransactionUncheckedUpdateWithoutDonorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -1673,6 +2303,21 @@ export type TransactionUncheckedUpdateManyWithoutDonorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TransactionCreateManyDebitAccountInput = {
@@ -1699,6 +2344,21 @@ export type TransactionCreateManyDebitAccountInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
 }
 
 export type TransactionCreateManyCreditAccountInput = {
@@ -1725,6 +2385,21 @@ export type TransactionCreateManyCreditAccountInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
 }
 
 export type TransactionUpdateWithoutDebitAccountInput = {
@@ -1748,6 +2423,21 @@ export type TransactionUpdateWithoutDebitAccountInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
   creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
@@ -1778,6 +2468,21 @@ export type TransactionUncheckedUpdateWithoutDebitAccountInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -1805,6 +2510,21 @@ export type TransactionUncheckedUpdateManyWithoutDebitAccountInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TransactionUpdateWithoutCreditAccountInput = {
@@ -1828,6 +2548,21 @@ export type TransactionUpdateWithoutCreditAccountInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
   debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
@@ -1858,6 +2593,21 @@ export type TransactionUncheckedUpdateWithoutCreditAccountInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -1885,6 +2635,21 @@ export type TransactionUncheckedUpdateManyWithoutCreditAccountInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1914,6 +2679,21 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
+  isVoided?: boolean
+  voidedAt?: boolean
+  voidedBy?: boolean
+  voidReason?: boolean
+  changeReason?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   debitAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
   creditAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
@@ -1946,6 +2726,21 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
+  isVoided?: boolean
+  voidedAt?: boolean
+  voidedBy?: boolean
+  voidReason?: boolean
+  changeReason?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   debitAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
   creditAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
@@ -1977,6 +2772,21 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
+  isVoided?: boolean
+  voidedAt?: boolean
+  voidedBy?: boolean
+  voidReason?: boolean
+  changeReason?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   debitAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
   creditAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
@@ -2008,9 +2818,24 @@ export type TransactionSelectScalar = {
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
+  versionId?: boolean
+  previousVersionId?: boolean
+  validFrom?: boolean
+  validTo?: boolean
+  systemFrom?: boolean
+  systemTo?: boolean
+  isDeleted?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  changedBy?: boolean
+  isVoided?: boolean
+  voidedAt?: boolean
+  voidedBy?: boolean
+  voidReason?: boolean
+  changeReason?: boolean
 }
 
-export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "transactionDate" | "amount" | "type" | "debitAccountId" | "creditAccountId" | "description" | "category" | "paymentMethod" | "referenceNumber" | "donorUserId" | "donorName" | "isAnonymous" | "receiptUrl" | "notes" | "bankTransactionId" | "reconciled" | "reconciledAt" | "stripeSessionId" | "stripePaymentId" | "createdAt" | "createdBy" | "updatedAt", ExtArgs["result"]["transaction"]>
+export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "transactionDate" | "amount" | "type" | "debitAccountId" | "creditAccountId" | "description" | "category" | "paymentMethod" | "referenceNumber" | "donorUserId" | "donorName" | "isAnonymous" | "receiptUrl" | "notes" | "bankTransactionId" | "reconciled" | "reconciledAt" | "stripeSessionId" | "stripePaymentId" | "createdAt" | "createdBy" | "updatedAt" | "versionId" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "isVoided" | "voidedAt" | "voidedBy" | "voidReason" | "changeReason", ExtArgs["result"]["transaction"]>
 export type TransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   debitAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
@@ -2065,6 +2890,21 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     createdAt: Date
     createdBy: string | null
     updatedAt: Date
+    versionId: string
+    previousVersionId: string | null
+    validFrom: Date
+    validTo: Date
+    systemFrom: Date
+    systemTo: Date
+    isDeleted: boolean
+    deletedAt: Date | null
+    deletedBy: string | null
+    changedBy: string | null
+    isVoided: boolean
+    voidedAt: Date | null
+    voidedBy: string | null
+    voidReason: string | null
+    changeReason: string | null
   }, ExtArgs["result"]["transaction"]>
   composites: {}
 }
@@ -2517,6 +3357,21 @@ export interface TransactionFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly createdBy: Prisma.FieldRef<"Transaction", 'String'>
   readonly updatedAt: Prisma.FieldRef<"Transaction", 'DateTime'>
+  readonly versionId: Prisma.FieldRef<"Transaction", 'String'>
+  readonly previousVersionId: Prisma.FieldRef<"Transaction", 'String'>
+  readonly validFrom: Prisma.FieldRef<"Transaction", 'DateTime'>
+  readonly validTo: Prisma.FieldRef<"Transaction", 'DateTime'>
+  readonly systemFrom: Prisma.FieldRef<"Transaction", 'DateTime'>
+  readonly systemTo: Prisma.FieldRef<"Transaction", 'DateTime'>
+  readonly isDeleted: Prisma.FieldRef<"Transaction", 'Boolean'>
+  readonly deletedAt: Prisma.FieldRef<"Transaction", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"Transaction", 'String'>
+  readonly changedBy: Prisma.FieldRef<"Transaction", 'String'>
+  readonly isVoided: Prisma.FieldRef<"Transaction", 'Boolean'>
+  readonly voidedAt: Prisma.FieldRef<"Transaction", 'DateTime'>
+  readonly voidedBy: Prisma.FieldRef<"Transaction", 'String'>
+  readonly voidReason: Prisma.FieldRef<"Transaction", 'String'>
+  readonly changeReason: Prisma.FieldRef<"Transaction", 'String'>
 }
     
 

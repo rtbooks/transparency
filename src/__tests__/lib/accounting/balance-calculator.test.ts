@@ -6,7 +6,7 @@
  */
 
 import { AccountType } from '@/generated/prisma/client';
-import { calculateNewBalance, updateAccountBalances } from '@/lib/accounting/balance-calculator';
+import { calculateNewBalance, updateAccountBalances, reverseAccountBalances } from '@/lib/accounting/balance-calculator';
 
 describe('Balance Calculator', () => {
   describe('calculateNewBalance()', () => {
@@ -354,6 +354,199 @@ describe('Balance Calculator', () => {
       expect(mockPrisma.account.update).toHaveBeenCalledWith({
         where: { id: 'cash-id' },
         data: { currentBalance: 4700 },
+      });
+    });
+  });
+
+  describe('reverseAccountBalances()', () => {
+    // Mock Prisma client
+    let mockPrisma: any;
+
+    beforeEach(() => {
+      mockPrisma = {
+        account: {
+          findUnique: jest.fn(),
+          update: jest.fn(),
+        },
+      };
+    });
+
+    it('should reverse a basic transaction (asset debit + revenue credit)', async () => {
+      // Setup: Reverse transaction that debited asset account and credited revenue account
+      const debitAccount = {
+        id: 'debit-account-id',
+        currentBalance: 1500, // After the forward transaction (1000 + 500)
+        type: 'ASSET' as AccountType,
+      };
+      const creditAccount = {
+        id: 'credit-account-id',
+        currentBalance: 5500, // After the forward transaction (5000 + 500)
+        type: 'REVENUE' as AccountType,
+      };
+
+      mockPrisma.account.findUnique
+        .mockResolvedValueOnce(debitAccount)
+        .mockResolvedValueOnce(creditAccount);
+
+      mockPrisma.account.update
+        .mockResolvedValueOnce({ ...debitAccount, currentBalance: 1000 })
+        .mockResolvedValueOnce({ ...creditAccount, currentBalance: 5000 });
+
+      const result = await reverseAccountBalances(
+        mockPrisma,
+        'debit-account-id',
+        'credit-account-id',
+        500
+      );
+
+      // Verify both accounts were fetched
+      expect(mockPrisma.account.findUnique).toHaveBeenCalledTimes(2);
+
+      // Verify both accounts were updated with reversed values
+      expect(mockPrisma.account.update).toHaveBeenCalledTimes(2);
+      expect(mockPrisma.account.update).toHaveBeenCalledWith({
+        where: { id: 'debit-account-id' },
+        data: { currentBalance: 1000 }, // 1500 - 500 (asset credit reverses debit)
+      });
+      expect(mockPrisma.account.update).toHaveBeenCalledWith({
+        where: { id: 'credit-account-id' },
+        data: { currentBalance: 5000 }, // 5500 - 500 (revenue debit reverses credit)
+      });
+
+      // Verify return values
+      expect(result.newDebitBalance).toBe(1000);
+      expect(result.newCreditBalance).toBe(5000);
+    });
+
+    it('should reverse an expense transaction (expense debit + asset credit)', async () => {
+      // Setup: Reverse transaction that debited expense account and credited asset account
+      const expenseAccount = {
+        id: 'expense-id',
+        currentBalance: 1300, // After the forward transaction (1000 + 300)
+        type: 'EXPENSE' as AccountType,
+      };
+      const assetAccount = {
+        id: 'asset-id',
+        currentBalance: 4700, // After the forward transaction (5000 - 300)
+        type: 'ASSET' as AccountType,
+      };
+
+      mockPrisma.account.findUnique
+        .mockResolvedValueOnce(expenseAccount)
+        .mockResolvedValueOnce(assetAccount);
+
+      mockPrisma.account.update.mockResolvedValue({});
+
+      const result = await reverseAccountBalances(
+        mockPrisma,
+        'expense-id',
+        'asset-id',
+        300
+      );
+
+      // Expense balance should decrease (credit reverses debit): 1300 - 300 = 1000
+      // Asset balance should increase (debit reverses credit): 4700 + 300 = 5000
+      expect(mockPrisma.account.update).toHaveBeenCalledWith({
+        where: { id: 'expense-id' },
+        data: { currentBalance: 1000 },
+      });
+      expect(mockPrisma.account.update).toHaveBeenCalledWith({
+        where: { id: 'asset-id' },
+        data: { currentBalance: 5000 },
+      });
+
+      expect(result.newDebitBalance).toBe(1000);
+      expect(result.newCreditBalance).toBe(5000);
+    });
+
+    it('should throw error if accounts not found', async () => {
+      mockPrisma.account.findUnique
+        .mockResolvedValueOnce(null) // Debit account not found
+        .mockResolvedValueOnce({ id: 'credit-id', currentBalance: 1000, type: 'REVENUE' });
+
+      await expect(
+        reverseAccountBalances(mockPrisma, 'invalid-id', 'credit-id', 500)
+      ).rejects.toThrow('One or both accounts not found');
+    });
+
+    it('should handle Prisma Decimal types', async () => {
+      // Simulate Prisma Decimal objects after forward transaction
+      const debitAccount = {
+        id: 'debit-id',
+        currentBalance: { toString: () => '1250.75' }, // 1000.50 + 250.25
+        type: 'ASSET' as AccountType,
+      };
+      const creditAccount = {
+        id: 'credit-id',
+        currentBalance: { toString: () => '2251.0' }, // 2000.75 + 250.25
+        type: 'LIABILITY' as AccountType,
+      };
+
+      mockPrisma.account.findUnique
+        .mockResolvedValueOnce(debitAccount)
+        .mockResolvedValueOnce(creditAccount);
+
+      mockPrisma.account.update.mockResolvedValue({});
+
+      await reverseAccountBalances(mockPrisma, 'debit-id', 'credit-id', 250.25);
+
+      // Verify calculations were correct (reversing the forward transaction)
+      expect(mockPrisma.account.update).toHaveBeenCalledWith({
+        where: { id: 'debit-id' },
+        data: { currentBalance: 1000.5 }, // 1250.75 - 250.25 (asset credit)
+      });
+      expect(mockPrisma.account.update).toHaveBeenCalledWith({
+        where: { id: 'credit-id' },
+        data: { currentBalance: 2000.75 }, // 2251.0 - 250.25 (liability debit)
+      });
+    });
+
+    it('should correctly reverse when combined with updateAccountBalances (apply then reverse = original balances)', async () => {
+      // This test verifies that reverseAccountBalances is truly the inverse of updateAccountBalances
+      // Scenario: Start with original balances, apply a transaction, then reverse it
+      
+      const originalDebitBalance = 1000;
+      const originalCreditBalance = 5000;
+      const transactionAmount = 500;
+
+      // First: simulate applying a transaction with updateAccountBalances
+      const debitAccountAfterForward = {
+        id: 'debit-id',
+        currentBalance: 1500, // 1000 + 500 (asset debit)
+        type: 'ASSET' as AccountType,
+      };
+      const creditAccountAfterForward = {
+        id: 'credit-id',
+        currentBalance: 5500, // 5000 + 500 (revenue credit)
+        type: 'REVENUE' as AccountType,
+      };
+
+      mockPrisma.account.findUnique
+        .mockResolvedValueOnce(debitAccountAfterForward)
+        .mockResolvedValueOnce(creditAccountAfterForward);
+
+      mockPrisma.account.update.mockResolvedValue({});
+
+      // Reverse the transaction
+      const result = await reverseAccountBalances(
+        mockPrisma,
+        'debit-id',
+        'credit-id',
+        transactionAmount
+      );
+
+      // After reversal, balances should return to original values
+      expect(result.newDebitBalance).toBe(originalDebitBalance);
+      expect(result.newCreditBalance).toBe(originalCreditBalance);
+
+      // Verify the update calls restored original balances
+      expect(mockPrisma.account.update).toHaveBeenCalledWith({
+        where: { id: 'debit-id' },
+        data: { currentBalance: originalDebitBalance },
+      });
+      expect(mockPrisma.account.update).toHaveBeenCalledWith({
+        where: { id: 'credit-id' },
+        data: { currentBalance: originalCreditBalance },
       });
     });
   });

@@ -273,6 +273,25 @@ model Transaction {
   createdBy String?  @map("created_by") // User ID who created
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  // Temporal versioning (bi-temporal pattern)
+  versionId         String    @unique @default(uuid()) @map("version_id")
+  previousVersionId String?   @map("previous_version_id")
+  validFrom         DateTime  @default(now()) @map("valid_from")
+  validTo           DateTime  @default("9999-12-31T23:59:59.999Z") @map("valid_to")
+  systemFrom        DateTime  @default(now()) @map("system_from")
+  systemTo          DateTime  @default("9999-12-31T23:59:59.999Z") @map("system_to")
+  isDeleted         Boolean   @default(false) @map("is_deleted")
+  deletedAt         DateTime? @map("deleted_at")
+  deletedBy         String?   @map("deleted_by")
+  changedBy         String?   @map("changed_by")
+
+  // Void-specific fields
+  isVoided   Boolean    @default(false) @map("is_voided")
+  voidedAt   DateTime?  @map("voided_at")
+  voidedBy   String?    @map("voided_by")
+  voidReason String?    @map("void_reason") @db.Text
+  changeReason String?  @map("change_reason") @db.Text
+
   // Relations
   organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   debitAccount  Account      @relation("DebitAccount", fields: [debitAccountId], references: [id])
@@ -281,6 +300,12 @@ model Transaction {
 
   plannedPurchase PlannedPurchase? @relation("CompletedPurchase")
 
+  // Temporal indexes
+  @@index([id, validTo], name: "idx_transaction_current")
+  @@index([id, validFrom, validTo], name: "idx_transaction_valid_time")
+  @@index([systemFrom, systemTo], name: "idx_transaction_system_time")
+  @@index([isVoided], name: "idx_transaction_voided")
+  @@index([isDeleted], name: "idx_transaction_deleted")
   @@map("transactions")
 }
 

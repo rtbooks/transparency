@@ -76,3 +76,58 @@ export async function updateAccountBalances(
 
   return { newDebitBalance, newCreditBalance };
 }
+
+/**
+ * Reverse the balance effects of a transaction on both accounts.
+ * Used when editing or voiding a transaction.
+ * 
+ * This is the inverse of updateAccountBalances:
+ * - Reverses the debit on the debit account (applies a credit)
+ * - Reverses the credit on the credit account (applies a debit)
+ */
+export async function reverseAccountBalances(
+  prisma: any,
+  debitAccountId: string,
+  creditAccountId: string,
+  amount: number
+) {
+  // Fetch both accounts
+  const [debitAccount, creditAccount] = await Promise.all([
+    prisma.account.findUnique({ where: { id: debitAccountId } }),
+    prisma.account.findUnique({ where: { id: creditAccountId } }),
+  ]);
+
+  if (!debitAccount || !creditAccount) {
+    throw new Error('One or both accounts not found');
+  }
+
+  // Reverse the debit (apply credit to the debit account)
+  const newDebitBalance = calculateNewBalance(
+    debitAccount.currentBalance,
+    amount,
+    debitAccount.type,
+    false // Credit to reverse the original debit
+  );
+
+  // Reverse the credit (apply debit to the credit account)
+  const newCreditBalance = calculateNewBalance(
+    creditAccount.currentBalance,
+    amount,
+    creditAccount.type,
+    true // Debit to reverse the original credit
+  );
+
+  // Update both accounts
+  await Promise.all([
+    prisma.account.update({
+      where: { id: debitAccountId },
+      data: { currentBalance: newDebitBalance },
+    }),
+    prisma.account.update({
+      where: { id: creditAccountId },
+      data: { currentBalance: newCreditBalance },
+    }),
+  ]);
+
+  return { newDebitBalance, newCreditBalance };
+}
