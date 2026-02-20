@@ -1,4 +1,4 @@
-# Quick Start Guide - Financial Transparency Platform
+# Quick Start Guide — RadBooks
 
 This guide will help you set up the project from scratch and get it running locally in under 30 minutes.
 

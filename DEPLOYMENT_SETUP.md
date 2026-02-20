@@ -1,6 +1,6 @@
 # Deployment Setup Guide
 
-Complete step-by-step instructions for deploying the Financial Transparency Platform to production.
+Complete step-by-step instructions for deploying RadBooks to production.
 
 ## Overview
 
@@ -10,6 +10,7 @@ This guide will deploy:
 - **Authentication** → Clerk
 - **Payment processing** → Stripe
 - **Preview environments** → Automatic with Neon branch databases (see PREVIEW_DEPLOYMENTS.md)
+- **Custom domain** → radbooks.org
 
 **Cost when idle:** $0/month  
 **Cost under light use:** $0-5/month
@@ -204,7 +205,7 @@ STRIPE_WEBHOOK_SECRET=<leave blank for now, will add after webhook setup>
 #### Application Config
 ```
 NEXT_PUBLIC_APP_URL=<will be https://your-app.vercel.app>
-NEXT_PUBLIC_APP_NAME=Financial Transparency Platform
+NEXT_PUBLIC_APP_NAME=RadBooks
 NODE_ENV=production
 ```
 

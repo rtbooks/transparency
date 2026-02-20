@@ -1,4 +1,4 @@
-# Financial Transparency SaaS Platform - Technical Approach
+# RadBooks — Technical Approach
 
 ## Executive Summary
 

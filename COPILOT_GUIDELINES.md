@@ -1,6 +1,6 @@
 # Copilot Development Guidelines
 
-This document contains critical information for GitHub Copilot and developers working on the Financial Transparency Platform.
+This document contains critical information for GitHub Copilot and developers working on RadBooks.
 
 ## Critical: Prisma Client Import Path
 

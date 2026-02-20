@@ -1,4 +1,4 @@
-# Project Structure for Financial Transparency Platform
+# Project Structure for RadBooks
 
 This document outlines the recommended folder structure for the Next.js application.
 

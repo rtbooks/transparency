@@ -6,7 +6,7 @@
 
 ## Overview
 
-Successfully implemented bi-temporal versioning for all mutable financial entities in the Financial Transparency Platform. This enables complete audit trails and the ability to query historical states of financial data.
+Successfully implemented bi-temporal versioning for all mutable financial entities in RadBooks. This enables complete audit trails and the ability to query historical states of financial data.
 
 ## Implementation Summary
 
