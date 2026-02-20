@@ -81,9 +81,18 @@ export async function GET(
       organizationId: organization.id,
     };
 
-    // Only show current versions by default
-    if (!includeHistory) {
+    // Temporal filtering based on as-of date
+    if (asOfDate) {
+      // System time: only show transactions that existed in the system at this date
+      where.systemFrom = { lte: asOfDate };
+      where.systemTo = { gt: asOfDate };
+      // Valid time: show the version that was valid at this date
+      where.validFrom = { lte: asOfDate };
+      where.validTo = { gt: asOfDate };
+    } else if (!includeHistory) {
+      // Default: only show current versions
       where.validTo = MAX_DATE;
+      where.systemTo = MAX_DATE;
     }
 
     // Filter out deleted

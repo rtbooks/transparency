@@ -68,3 +68,22 @@ export function isCurrentVersion(record: TemporalFields): boolean {
 export function wasValidAt(record: TemporalFields, date: Date): boolean {
   return record.validFrom <= date && record.validTo > date;
 }
+
+/**
+ * Build a where clause for bi-temporal "as of" queries.
+ * Returns records that existed in the system AND were valid at the given date.
+ */
+export function buildBitemporalAsOfWhere(
+  asOfDate: Date,
+  baseWhere: Record<string, any> = {},
+  options: { includeDeleted?: boolean } = {}
+): any {
+  return {
+    ...baseWhere,
+    systemFrom: { lte: asOfDate },
+    systemTo: { gt: asOfDate },
+    validFrom: { lte: asOfDate },
+    validTo: { gt: asOfDate },
+    ...(options.includeDeleted ? {} : { isDeleted: false }),
+  };
+}
