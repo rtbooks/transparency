@@ -1,15 +1,15 @@
+import { Toaster } from "@/components/ui/toaster";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
-import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "Financial Transparency Platform for Nonprofits",
-    template: "%s | Transparency Platform",
+    default: "RadBooks Platform for Nonprofits",
+    template: "%s | RadBooks Platform",
   },
   description:
     "See where every dollar goes. Nonprofits publish real-time financial data. Donors give with complete confidence. Verified 501(c)(3) organizations showing radical transparency.",
@@ -22,13 +22,13 @@ export const metadata: Metadata = {
     "nonprofit accountability",
     "real-time nonprofit finances",
   ],
-  authors: [{ name: "Financial Transparency Platform" }],
+  authors: [{ name: "Peter Hayes" }],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://transparency.org",
-    siteName: "Financial Transparency Platform",
-    title: "Financial Transparency Platform for Nonprofits",
+    url: "https://radbooks.org",
+    siteName: "RadBooks",
+    title: "RadBooks Platform for Nonprofits",
     description:
       "See where every dollar goes. Build unprecedented trust through complete financial transparency for 501(c)(3) organizations.",
     images: [
@@ -36,13 +36,13 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Financial Transparency Platform",
+        alt: "RadBooks Platform",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Financial Transparency Platform for Nonprofits",
+    title: "RadBooks Platform for Nonprofits",
     description:
       "See where every dollar goes. Build unprecedented trust through complete financial transparency.",
     images: ["/og-image.jpg"],
@@ -59,9 +59,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   // In CI builds without valid Clerk keys, skip ClerkProvider to allow static generation
-  const hasValidClerkKeys = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
-    !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.includes('test_Y2xlcms');
-  
+  const hasValidClerkKeys =
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+    !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.includes("test_Y2xlcms");
+
   const content = (
     <html lang="en">
       <body className={inter.className}>
@@ -71,9 +72,5 @@ export default function RootLayout({
     </html>
   );
 
-  return hasValidClerkKeys ? (
-    <ClerkProvider>{content}</ClerkProvider>
-  ) : (
-    content
-  );
+  return hasValidClerkKeys ? <ClerkProvider>{content}</ClerkProvider> : content;
 }

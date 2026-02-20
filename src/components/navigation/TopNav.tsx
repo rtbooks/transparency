@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { UserMenu } from './UserMenu';
-import { OrganizationSwitcher } from './OrganizationSwitcher';
-import { cn } from '@/lib/utils';
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Menu, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { OrganizationSwitcher } from "./OrganizationSwitcher";
+import { UserMenu } from "./UserMenu";
 
 interface NavLink {
   label: string;
@@ -47,19 +47,17 @@ export function TopNav({
   const pathname = usePathname();
 
   return (
-    <nav className="sticky top-0 z-100 border-b bg-white">
+    <nav className="z-100 sticky top-0 border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Left: Logo and Org Switcher */}
           <div className="flex items-center gap-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
                 FT
               </div>
-              <span className="hidden sm:block font-semibold text-gray-900">
-                Financial Transparency
-              </span>
+              <span className="hidden font-semibold text-gray-900 sm:block">RadBooks</span>
             </Link>
 
             {/* Organization Context or Switcher */}
@@ -82,16 +80,16 @@ export function TopNav({
           </div>
 
           {/* Center: Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden items-center gap-1 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  "rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   pathname === link.href || link.active
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 )}
               >
                 {link.label}
@@ -104,7 +102,7 @@ export function TopNav({
             {user ? (
               <UserMenu user={user} />
             ) : (
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden items-center gap-2 md:flex">
                 <Link href="/login">
                   <Button variant="ghost" size="sm">
                     Login
@@ -123,11 +121,7 @@ export function TopNav({
               className="md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
@@ -155,10 +149,10 @@ export function TopNav({
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  'block rounded-md px-3 py-2 text-base font-medium',
+                  "block rounded-md px-3 py-2 text-base font-medium",
                   pathname === link.href || link.active
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 )}
               >
                 {link.label}
@@ -167,7 +161,7 @@ export function TopNav({
 
             {/* User section on mobile */}
             {!user && (
-              <div className="flex flex-col gap-2 pt-4 border-t mt-4">
+              <div className="mt-4 flex flex-col gap-2 border-t pt-4">
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" className="w-full">
                     Login

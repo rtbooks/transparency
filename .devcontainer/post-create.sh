@@ -3,7 +3,7 @@
 # Post-create script - runs once after container is created
 set -e
 
-echo "🚀 Setting up Financial Transparency Platform development environment..."
+echo "🚀 Setting up RadBooks Platform development environment..."
 
 # Change to workspace directory (it's mounted at /workspace)
 cd /workspace

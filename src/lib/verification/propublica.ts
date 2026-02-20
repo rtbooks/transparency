@@ -1,7 +1,7 @@
 /**
  * ProPublica Nonprofit Explorer API Integration
  * Used for verifying 501(c)(3) organizations via EIN lookup
- * 
+ *
  * API Docs: https://projects.propublica.org/nonprofits/api
  * Rate Limit: Unknown - be conservative
  */
@@ -44,29 +44,29 @@ export interface EINVerificationResult {
   error?: string;
 }
 
-const PROPUBLICA_API_BASE = 'https://projects.propublica.org/nonprofits/api/v2';
+const PROPUBLICA_API_BASE = "https://projects.propublica.org/nonprofits/api/v2";
 
 /**
  * Verify an EIN with the ProPublica Nonprofit Explorer API
- * 
+ *
  * @param ein - The 9-digit EIN (with or without hyphen)
  * @returns Verification result with organization data
  */
 export async function verifyEIN(ein: string): Promise<EINVerificationResult> {
   // Clean EIN: remove hyphens and validate format
-  const cleanEIN = ein.replace(/-/g, '');
-  
+  const cleanEIN = ein.replace(/-/g, "");
+
   if (!/^\d{9}$/.test(cleanEIN)) {
     return {
       verified: false,
-      error: 'Invalid EIN format. Must be 9 digits.',
+      error: "Invalid EIN format. Must be 9 digits.",
     };
   }
 
   try {
     const response = await fetch(`${PROPUBLICA_API_BASE}/organizations/${cleanEIN}.json`, {
       headers: {
-        'User-Agent': 'FinancialTransparencyPlatform/1.0',
+        "User-Agent": "RadBooksPlatform/1.0",
       },
       // Add timeout
       signal: AbortSignal.timeout(10000), // 10 second timeout
@@ -76,14 +76,14 @@ export async function verifyEIN(ein: string): Promise<EINVerificationResult> {
       if (response.status === 404) {
         return {
           verified: false,
-          error: 'Organization not found in IRS database. Please verify the EIN is correct.',
+          error: "Organization not found in IRS database. Please verify the EIN is correct.",
         };
       }
 
       if (response.status === 429) {
         return {
           verified: false,
-          error: 'Rate limit exceeded. Please try again in a few moments.',
+          error: "Rate limit exceeded. Please try again in a few moments.",
         };
       }
 
@@ -99,7 +99,7 @@ export async function verifyEIN(ein: string): Promise<EINVerificationResult> {
     if (!org) {
       return {
         verified: false,
-        error: 'Unexpected API response format.',
+        error: "Unexpected API response format.",
       };
     }
 
@@ -111,7 +111,7 @@ export async function verifyEIN(ein: string): Promise<EINVerificationResult> {
         state: org.state,
         nteeCode: org.ntee_code,
         pub78Verified: org.pub78_verified || false,
-        filingHistory: org.filings_with_data?.slice(0, 5).map(filing => ({
+        filingHistory: org.filings_with_data?.slice(0, 5).map((filing) => ({
           year: filing.tax_prd_yr,
           formType: filing.formtype,
         })),
@@ -119,10 +119,10 @@ export async function verifyEIN(ein: string): Promise<EINVerificationResult> {
     };
   } catch (error) {
     if (error instanceof Error) {
-      if (error.name === 'AbortError') {
+      if (error.name === "AbortError") {
         return {
           verified: false,
-          error: 'Request timed out. Please try again.',
+          error: "Request timed out. Please try again.",
         };
       }
 
@@ -134,7 +134,7 @@ export async function verifyEIN(ein: string): Promise<EINVerificationResult> {
 
     return {
       verified: false,
-      error: 'An unknown error occurred during verification.',
+      error: "An unknown error occurred during verification.",
     };
   }
 }
@@ -143,7 +143,7 @@ export async function verifyEIN(ein: string): Promise<EINVerificationResult> {
  * Format EIN with hyphen (XX-XXXXXXX)
  */
 export function formatEIN(ein: string): string {
-  const cleanEIN = ein.replace(/-/g, '');
+  const cleanEIN = ein.replace(/-/g, "");
   if (cleanEIN.length === 9) {
     return `${cleanEIN.slice(0, 2)}-${cleanEIN.slice(2)}`;
   }
@@ -154,6 +154,6 @@ export function formatEIN(ein: string): string {
  * Validate EIN format
  */
 export function isValidEINFormat(ein: string): boolean {
-  const cleanEIN = ein.replace(/-/g, '');
+  const cleanEIN = ein.replace(/-/g, "");
   return /^\d{9}$/.test(cleanEIN);
 }

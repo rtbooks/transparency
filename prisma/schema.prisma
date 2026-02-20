@@ -1,4 +1,4 @@
-// Prisma Schema for Financial Transparency Platform
+// Prisma Schema for RadBooks Platform
 // This is your database schema - serves as the single source of truth
 
 generator client {
@@ -32,21 +32,21 @@ model Organization {
   einVerifiedAt          DateTime?          @map("ein_verified_at")
   verifiedAt             DateTime?          @map("verified_at")
   verifiedBy             String?            @map("verified_by") // User ID of platform admin who verified
-  verificationNotes      String?            @db.Text @map("verification_notes")
+  verificationNotes      String?            @map("verification_notes") @db.Text
   officialWebsite        String?            @map("official_website")
   determinationLetterUrl String?            @map("determination_letter_url")
 
   // Temporal versioning (bi-temporal pattern)
-  versionId         String   @unique @default(uuid()) @map("version_id")
-  previousVersionId String?  @map("previous_version_id")
-  validFrom         DateTime @default(now()) @map("valid_from")
-  validTo           DateTime @default("9999-12-31T23:59:59.999Z") @map("valid_to")
-  systemFrom        DateTime @default(now()) @map("system_from")
-  systemTo          DateTime @default("9999-12-31T23:59:59.999Z") @map("system_to")
-  isDeleted         Boolean  @default(false) @map("is_deleted")
+  versionId         String    @unique @default(uuid()) @map("version_id")
+  previousVersionId String?   @map("previous_version_id")
+  validFrom         DateTime  @default(now()) @map("valid_from")
+  validTo           DateTime  @default("9999-12-31T23:59:59.999Z") @map("valid_to")
+  systemFrom        DateTime  @default(now()) @map("system_from")
+  systemTo          DateTime  @default("9999-12-31T23:59:59.999Z") @map("system_to")
+  isDeleted         Boolean   @default(false) @map("is_deleted")
   deletedAt         DateTime? @map("deleted_at")
-  deletedBy         String?  @map("deleted_by")
-  changedBy         String?  @map("changed_by")
+  deletedBy         String?   @map("deleted_by")
+  changedBy         String?   @map("changed_by")
 
   // Metadata
   createdAt DateTime @default(now()) @map("created_at")
@@ -125,16 +125,16 @@ model OrganizationUser {
   showInHighlights Boolean @default(true) @map("show_in_highlights")
 
   // Temporal versioning (bi-temporal pattern)
-  versionId         String   @unique @default(uuid()) @map("version_id")
-  previousVersionId String?  @map("previous_version_id")
-  validFrom         DateTime @default(now()) @map("valid_from")
-  validTo           DateTime @default("9999-12-31T23:59:59.999Z") @map("valid_to")
-  systemFrom        DateTime @default(now()) @map("system_from")
-  systemTo          DateTime @default("9999-12-31T23:59:59.999Z") @map("system_to")
-  isDeleted         Boolean  @default(false) @map("is_deleted")
+  versionId         String    @unique @default(uuid()) @map("version_id")
+  previousVersionId String?   @map("previous_version_id")
+  validFrom         DateTime  @default(now()) @map("valid_from")
+  validTo           DateTime  @default("9999-12-31T23:59:59.999Z") @map("valid_to")
+  systemFrom        DateTime  @default(now()) @map("system_from")
+  systemTo          DateTime  @default("9999-12-31T23:59:59.999Z") @map("system_to")
+  isDeleted         Boolean   @default(false) @map("is_deleted")
   deletedAt         DateTime? @map("deleted_at")
-  deletedBy         String?  @map("deleted_by")
-  changedBy         String?  @map("changed_by")
+  deletedBy         String?   @map("deleted_by")
+  changedBy         String?   @map("changed_by")
 
   // Metadata
   joinedAt  DateTime @default(now()) @map("joined_at")
@@ -185,16 +185,16 @@ model Account {
   currentBalance Decimal @default(0) @map("current_balance") @db.Decimal(12, 2)
 
   // Temporal versioning (bi-temporal pattern)
-  versionId         String   @unique @default(uuid()) @map("version_id")
-  previousVersionId String?  @map("previous_version_id")
-  validFrom         DateTime @default(now()) @map("valid_from")
-  validTo           DateTime @default("9999-12-31T23:59:59.999Z") @map("valid_to")
-  systemFrom        DateTime @default(now()) @map("system_from")
-  systemTo          DateTime @default("9999-12-31T23:59:59.999Z") @map("system_to")
-  isDeleted         Boolean  @default(false) @map("is_deleted")
+  versionId         String    @unique @default(uuid()) @map("version_id")
+  previousVersionId String?   @map("previous_version_id")
+  validFrom         DateTime  @default(now()) @map("valid_from")
+  validTo           DateTime  @default("9999-12-31T23:59:59.999Z") @map("valid_to")
+  systemFrom        DateTime  @default(now()) @map("system_from")
+  systemTo          DateTime  @default("9999-12-31T23:59:59.999Z") @map("system_to")
+  isDeleted         Boolean   @default(false) @map("is_deleted")
   deletedAt         DateTime? @map("deleted_at")
-  deletedBy         String?  @map("deleted_by")
-  changedBy         String?  @map("changed_by")
+  deletedBy         String?   @map("deleted_by")
+  changedBy         String?   @map("changed_by")
 
   // Metadata
   createdAt DateTime @default(now()) @map("created_at")
@@ -324,16 +324,16 @@ model PlannedPurchase {
   completedAt         DateTime? @map("completed_at")
 
   // Temporal versioning (bi-temporal pattern)
-  versionId         String   @unique @default(uuid()) @map("version_id")
-  previousVersionId String?  @map("previous_version_id")
-  validFrom         DateTime @default(now()) @map("valid_from")
-  validTo           DateTime @default("9999-12-31T23:59:59.999Z") @map("valid_to")
-  systemFrom        DateTime @default(now()) @map("system_from")
-  systemTo          DateTime @default("9999-12-31T23:59:59.999Z") @map("system_to")
-  isDeleted         Boolean  @default(false) @map("is_deleted")
+  versionId         String    @unique @default(uuid()) @map("version_id")
+  previousVersionId String?   @map("previous_version_id")
+  validFrom         DateTime  @default(now()) @map("valid_from")
+  validTo           DateTime  @default("9999-12-31T23:59:59.999Z") @map("valid_to")
+  systemFrom        DateTime  @default(now()) @map("system_from")
+  systemTo          DateTime  @default("9999-12-31T23:59:59.999Z") @map("system_to")
+  isDeleted         Boolean   @default(false) @map("is_deleted")
   deletedAt         DateTime? @map("deleted_at")
-  deletedBy         String?  @map("deleted_by")
-  changedBy         String?  @map("changed_by")
+  deletedBy         String?   @map("deleted_by")
+  changedBy         String?   @map("changed_by")
 
   // Metadata
   createdAt DateTime @default(now()) @map("created_at")
@@ -445,18 +445,18 @@ model Invitation {
   email          String
   role           UserRole @default(DONOR)
   token          String   @unique
-  
-  invitedById    String   @map("invited_by_id")
-  invitedBy      User     @relation("InvitationsSent", fields: [invitedById], references: [id], onDelete: Cascade)
-  
-  status         InvitationStatus @default(PENDING)
-  expiresAt      DateTime  @map("expires_at")
-  acceptedAt     DateTime? @map("accepted_at")
-  
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
 
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedById String @map("invited_by_id")
+  invitedBy   User   @relation("InvitationsSent", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  status     InvitationStatus @default(PENDING)
+  expiresAt  DateTime         @map("expires_at")
+  acceptedAt DateTime?        @map("accepted_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, email])
   @@map("invitations")

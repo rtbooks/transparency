@@ -1,10 +1,11 @@
+import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Browse Organizations | Financial Transparency Platform",
-  description: "Discover verified 501(c)(3) nonprofits committed to complete financial transparency.",
+  title: "Browse Organizations | RadBooks Platform",
+  description:
+    "Discover verified 501(c)(3) nonprofits committed to complete financial transparency.",
 };
 
 async function getOrganizations() {
@@ -43,12 +44,10 @@ export default async function OrganizationsPage() {
       <section className="border-b bg-gradient-to-b from-green-50 to-white py-16">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <h1 className="mb-4 text-5xl font-bold tracking-tight">
-              Transparent Organizations
-            </h1>
+            <h1 className="mb-4 text-5xl font-bold tracking-tight">Transparent Organizations</h1>
             <p className="text-xl text-gray-600">
-              Explore verified 501(c)(3) nonprofits committed to showing exactly 
-              where every dollar goes.
+              Explore verified 501(c)(3) nonprofits committed to showing exactly where every dollar
+              goes.
             </p>
           </div>
         </div>
@@ -59,20 +58,14 @@ export default async function OrganizationsPage() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-center gap-8 md:flex-row md:gap-16">
             <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600">
-                {organizations.length}
-              </div>
-              <div className="text-sm text-gray-600">
-                Transparent Organizations
-              </div>
+              <div className="text-4xl font-bold text-blue-600">{organizations.length}</div>
+              <div className="text-sm text-gray-600">Transparent Organizations</div>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-green-600">
                 {organizations.reduce((sum, org) => sum + org._count.transactions, 0)}
               </div>
-              <div className="text-sm text-gray-600">
-                Published Transactions
-              </div>
+              <div className="text-sm text-gray-600">Published Transactions</div>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-purple-600">100%</div>
@@ -87,9 +80,7 @@ export default async function OrganizationsPage() {
         <div className="container mx-auto px-4">
           {organizations.length === 0 ? (
             <div className="mx-auto max-w-2xl rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
-              <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                No Organizations Yet
-              </h3>
+              <h3 className="mb-2 text-xl font-semibold text-gray-900">No Organizations Yet</h3>
               <p className="mb-6 text-gray-600">
                 Be one of the first nonprofits to join our transparency platform!
               </p>
@@ -118,9 +109,7 @@ export default async function OrganizationsPage() {
                   </div>
 
                   {org.mission && (
-                    <p className="mb-4 line-clamp-3 text-sm text-gray-600">
-                      {org.mission}
-                    </p>
+                    <p className="mb-4 line-clamp-3 text-sm text-gray-600">{org.mission}</p>
                   )}
 
                   <div className="flex items-center justify-between border-t pt-4">
@@ -146,8 +135,8 @@ export default async function OrganizationsPage() {
               Is Your Organization Ready for Transparency?
             </h2>
             <p className="mb-8 text-lg text-gray-600">
-              Join these pioneering nonprofits in building unprecedented trust with 
-              your donors and community.
+              Join these pioneering nonprofits in building unprecedented trust with your donors and
+              community.
             </p>
             <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Link
