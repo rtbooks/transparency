@@ -1,4 +1,4 @@
-# Copilot Instructions - Financial Transparency Platform
+# Copilot Instructions - RadBooks Platform
 
 ## 🔒 CRITICAL: Branch Protection Workflow
 
@@ -61,6 +61,7 @@ A Next.js 14 SaaS platform providing radical financial transparency for 501(c)(3
 ## Development Setup
 
 ### Using Devcontainer (Recommended)
+
 ```bash
 # Open in VS Code and click "Reopen in Container"
 # Everything auto-configures (~5-10 mins first time)
@@ -69,6 +70,7 @@ npm run dev  # Start after container builds
 ```
 
 ### Database Commands
+
 ```bash
 npx prisma generate          # Generate Prisma Client after schema changes
 npx prisma migrate dev --name description  # Create migration (production-ready)
@@ -78,6 +80,7 @@ npx prisma studio           # Open database GUI at localhost:5555
 ```
 
 ### Running Tests
+
 ```bash
 # Once project has tests configured:
 npm test                    # Run all tests
@@ -88,9 +91,11 @@ npm run build             # Build for production
 ```
 
 ### Environment Setup
+
 Database URL is pre-configured in devcontainer to `postgresql://transparency:devpassword@db:5432/transparency_dev`.
 
 For Clerk and Stripe, add keys to `.env.local` (create if not exists):
+
 - Clerk: https://clerk.com (auth)
 - Stripe: https://dashboard.stripe.com/test/apikeys (donations)
 
@@ -101,6 +106,7 @@ For Clerk and Stripe, add keys to `.env.local` (create if not exists):
 **IMPORTANT: All organization routes use the `/org/` prefix**
 
 Organizations use slug-based routing:
+
 - `/org/[slug]` - Public dashboard (anyone can view)
 - `/org/[slug]/dashboard` - Admin dashboard (org admins only)
 - `/org/[slug]/accounts` - Chart of accounts
@@ -109,6 +115,7 @@ Organizations use slug-based routing:
 - `/org/[slug]/settings` - Organization settings
 
 Example:
+
 ```typescript
 // Correct links to organizations:
 <Link href="/org/grit-hoops">Public Dashboard</Link>
@@ -126,7 +133,9 @@ Example:
 ```
 
 ### Double-Entry Bookkeeping
+
 Every transaction affects exactly two accounts. Balance calculation rules:
+
 - **Asset/Expense accounts**: Debits increase, credits decrease
 - **Liability/Equity/Revenue accounts**: Credits increase, debits decrease
 
@@ -140,6 +149,7 @@ Every transaction affects exactly two accounts. Balance calculation rules:
 ```
 
 ### Database Schema Hierarchy
+
 - Organization → Accounts (Chart of Accounts with parent/child relationships)
 - Organization → Transactions (double-entry records)
 - Organization → PlannedPurchases
@@ -148,13 +158,14 @@ Every transaction affects exactly two accounts. Balance calculation rules:
 **Key Enum**: `UserRole` defines access levels (DONOR, ORG_ADMIN, PLATFORM_ADMIN)
 
 ### API Route Patterns
+
 ```typescript
 // Use Zod for validation
-import { z } from 'zod';
+import { z } from "zod";
 
 const schema = z.object({
   amount: z.number().positive(),
-  description: z.string().min(1)
+  description: z.string().min(1),
 });
 
 // Return consistent error formats
@@ -164,10 +175,7 @@ try {
   return NextResponse.json(result);
 } catch (error) {
   if (error instanceof z.ZodError) {
-    return NextResponse.json(
-      { error: 'Invalid input', details: error.errors },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid input", details: error.errors }, { status: 400 });
   }
   // Handle other errors...
 }
@@ -176,12 +184,15 @@ try {
 ## Component Organization
 
 ### UI Components (src/components/ui/)
+
 Shadcn/ui base components. Install new ones with:
+
 ```bash
 npx shadcn-ui@latest add [component-name]
 ```
 
 ### Business Components Structure
+
 - `components/org/` - Organization-specific (TransactionList, AccountTree, DonorHighlights)
 - `components/dashboard/` - Charts and visualizations (RevenueChart, ExpenseChart)
 - `components/forms/` - Form components with validation
@@ -218,6 +229,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -227,6 +239,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 - `chore`: Maintenance tasks
 
 **Examples:**
+
 ```
 feat(transactions): add bulk CSV import functionality
 
@@ -248,6 +261,7 @@ Fixes #456
 ## Testing Approach
 
 Write tests for:
+
 - Double-entry bookkeeping calculations (critical financial logic)
 - Balance calculation functions
 - Account hierarchy operations
@@ -269,7 +283,7 @@ Donations flow: User → Stripe Checkout → Webhook → Record Transaction
 
 ```typescript
 // Webhook handler must verify signature
-const signature = headers.get('stripe-signature');
+const signature = headers.get("stripe-signature");
 const event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
 
 // On successful payment, create Transaction with donor link
@@ -291,6 +305,7 @@ Fiscal year starts are organization-specific (stored in `Organization.fiscalYear
 ## Progress Tracking
 
 **CRITICAL**: Keep IMPLEMENTATION_CHECKLIST.md up to date:
+
 - **After completing any task**, update the corresponding checkbox in `IMPLEMENTATION_CHECKLIST.md`
 - Mark items with `[x]` when completed
 - Update the "Progress Tracking" section with current phase and completion percentage
@@ -298,6 +313,7 @@ Fiscal year starts are organization-specific (stored in `Organization.fiscalYear
 - When a milestone is reached, update the milestone status (⏳ → ✅)
 
 **When to update**:
+
 - After implementing new features or components
 - After completing setup/configuration tasks
 - After completing testing or deployment steps
@@ -306,6 +322,7 @@ Fiscal year starts are organization-specific (stored in `Organization.fiscalYear
 ## Deployment
 
 Deployments happen automatically when PRs are merged to `main`:
+
 1. PR merged → triggers Vercel deployment
 2. Migrations run automatically via `scripts/deploy-migrations.sh`
 3. Prisma Client generated
@@ -328,11 +345,13 @@ Deployments happen automatically when PRs are merged to `main`:
 ## Quick Reference Commands
 
 **Start new work:**
+
 ```bash
 git checkout main && git pull && git checkout -b feature/my-feature
 ```
 
 **After making changes:**
+
 ```bash
 git add -A
 git commit -m "feat: description of changes"
@@ -341,6 +360,7 @@ git push origin feature/my-feature
 ```
 
 **Update branch with latest main:**
+
 ```bash
 git checkout main && git pull
 git checkout feature/my-feature
@@ -348,6 +368,7 @@ git rebase main  # or: git merge main
 ```
 
 **Database workflow:**
+
 ```bash
 # After schema changes
 npx prisma generate
@@ -358,4 +379,3 @@ npx prisma migrate dev --name description
 ---
 
 **Remember: ALWAYS work on a feature branch. NEVER push directly to `main`.**
-

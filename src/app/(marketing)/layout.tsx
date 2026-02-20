@@ -1,16 +1,12 @@
-import { Suspense } from "react";
-import Link from "next/link";
-import { currentUser } from "@clerk/nextjs/server";
-import { MarketingNav } from "./MarketingNav";
 import { prisma } from "@/lib/prisma";
+import { currentUser } from "@clerk/nextjs/server";
+import Link from "next/link";
+import { Suspense } from "react";
+import { MarketingNav } from "./MarketingNav";
 
-export default async function MarketingLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const clerkUser = await currentUser();
-  
+
   // Serialize user data for client component
   let user = null;
   if (clerkUser) {
@@ -31,9 +27,7 @@ export default async function MarketingLayout({
       <MarketingNav user={user} />
 
       <main className="flex-1">
-        <Suspense fallback={<div>Loading...</div>}>
-          {children}
-        </Suspense>
+        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
       </main>
 
       {/* Footer */}
@@ -89,7 +83,7 @@ export default async function MarketingLayout({
               <h3 className="mb-4 font-semibold">Connect</h3>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>
-                  <a href="mailto:hello@transparency.org" className="hover:text-gray-900">
+                  <a href="mailto:hello@radbooks.org" className="hover:text-gray-900">
                     Email
                   </a>
                 </li>
@@ -97,7 +91,7 @@ export default async function MarketingLayout({
             </div>
           </div>
           <div className="mt-8 border-t pt-8 text-center text-sm text-gray-500">
-            © 2026 Financial Transparency Platform. All rights reserved.
+            © 2026 RadBooks. All rights reserved.
           </div>
         </div>
       </footer>

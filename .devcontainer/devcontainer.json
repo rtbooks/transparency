@@ -1,5 +1,5 @@
 {
-  "name": "Financial Transparency Platform",
+  "name": "RadBooks",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",
@@ -136,7 +136,7 @@
 
   // Environment variables
   "remoteEnv": {
-    "DATABASE_URL": "postgresql://transparency:devpassword@db:5432/transparency_dev",
+    "DATABASE_URL": "postgresql://transparency:devpassword@localhost:5432/transparency_dev",
     "NODE_ENV": "development"
   }
 }

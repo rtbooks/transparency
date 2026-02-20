@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { Menu, X } from "lucide-react";
 import { PlatformUserButton } from "@/components/navigation/PlatformUserButton";
+import { Menu, X } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 interface MarketingNavProps {
   user: {
@@ -20,7 +20,7 @@ export function MarketingNav({ user }: MarketingNavProps) {
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-8">
           <Link href="/" className="text-xl font-bold">
-            Transparency Platform
+            RadBooks
           </Link>
           <div className="hidden gap-6 md:flex">
             <Link href="/about" className="text-sm text-gray-600 hover:text-gray-900">
@@ -37,7 +37,7 @@ export function MarketingNav({ user }: MarketingNavProps) {
             </Link>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-4">
           {user ? (
             <>
@@ -51,7 +51,10 @@ export function MarketingNav({ user }: MarketingNavProps) {
             </>
           ) : (
             <>
-              <Link href="/login" className="hidden text-sm text-gray-600 hover:text-gray-900 md:block">
+              <Link
+                href="/login"
+                className="hidden text-sm text-gray-600 hover:text-gray-900 md:block"
+              >
                 Sign In
               </Link>
               <Link
@@ -62,18 +65,14 @@ export function MarketingNav({ user }: MarketingNavProps) {
               </Link>
             </>
           )}
-          
+
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="rounded-md p-2 text-gray-600 hover:bg-gray-100 md:hidden"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </nav>
@@ -111,7 +110,7 @@ export function MarketingNav({ user }: MarketingNavProps) {
               >
                 Contact
               </Link>
-              
+
               {!user && (
                 <>
                   <div className="border-t pt-3">
