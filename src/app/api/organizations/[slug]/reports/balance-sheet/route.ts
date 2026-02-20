@@ -1,6 +1,7 @@
 /**
  * GET /api/organizations/[slug]/reports/balance-sheet?asOfDate=<date>
  * Generate balance sheet as of a specific date
+ * Optional: comparePrior=true&priorAsOfDate=<date> for comparative period
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -21,6 +22,8 @@ export async function GET(
     const { slug } = await params;
     const { searchParams } = new URL(request.url);
     const asOfDateStr = searchParams.get('asOfDate');
+    const comparePrior = searchParams.get('comparePrior') === 'true';
+    const priorAsOfDateStr = searchParams.get('priorAsOfDate');
 
     if (!asOfDateStr) {
       return NextResponse.json(
@@ -44,9 +47,17 @@ export async function GET(
     }
 
     // Generate report
-    const balanceSheet = await generateBalanceSheet(organization.id, asOfDate);
+    const current = await generateBalanceSheet(organization.id, asOfDate);
 
-    return NextResponse.json(balanceSheet);
+    if (comparePrior && priorAsOfDateStr) {
+      const priorAsOfDate = new Date(priorAsOfDateStr);
+      if (!isNaN(priorAsOfDate.getTime())) {
+        const prior = await generateBalanceSheet(organization.id, priorAsOfDate);
+        return NextResponse.json({ current, prior });
+      }
+    }
+
+    return NextResponse.json(comparePrior ? { current, prior: null } : current);
   } catch (error) {
     console.error('Error generating balance sheet:', error);
     return NextResponse.json(
