@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { ContactSelector } from '@/components/contacts/ContactSelector';
 
 const editFormSchema = z.object({
   transactionDate: z.date(),
@@ -58,6 +59,7 @@ interface EditTransactionFormProps {
     creditAccountId: string;
     referenceNumber?: string | null;
     notes?: string | null;
+    contactId?: string | null;
     debitAccount?: { code: string; name: string };
     creditAccount?: { code: string; name: string };
   };
@@ -81,6 +83,7 @@ export function EditTransactionForm({
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contactId, setContactId] = useState<string | null>(transaction.contactId || null);
 
   const amount = typeof transaction.amount === 'number'
     ? transaction.amount
@@ -121,6 +124,7 @@ export function EditTransactionForm({
             creditAccountId: values.creditAccountId,
             referenceNumber: values.referenceNumber || null,
             notes: values.notes || null,
+            contactId,
             changeReason: values.changeReason,
           }),
         }
@@ -272,6 +276,16 @@ export function EditTransactionForm({
             </FormItem>
           )}
         />
+
+        <div>
+          <label className="text-sm font-medium">Contact (Optional)</label>
+          <p className="text-sm text-muted-foreground mb-2">Link this transaction to a payee or donor</p>
+          <ContactSelector
+            organizationSlug={organizationSlug}
+            value={contactId}
+            onChange={setContactId}
+          />
+        </div>
 
         <FormField
           control={form.control}

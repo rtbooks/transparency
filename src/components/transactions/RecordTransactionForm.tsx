@@ -34,6 +34,8 @@ import {
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { ContactSelector } from '@/components/contacts/ContactSelector';
+import { formatCurrency } from '@/lib/utils/account-tree';
 import {
   TransactionType,
   getAccountTypesForTransaction,
@@ -74,6 +76,17 @@ export function RecordTransactionForm({
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contactId, setContactId] = useState<string | null>(null);
+  const [outstandingBills, setOutstandingBills] = useState<Array<{
+    id: string;
+    description: string | null;
+    direction: string;
+    amount: number;
+    amountPaid: number;
+    dueDate: string | null;
+  }>>([]);
+  const [selectedBillId, setSelectedBillId] = useState<string | null>(null);
+  const [loadingBills, setLoadingBills] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -97,6 +110,36 @@ export function RecordTransactionForm({
   const toAccounts = accounts.filter((a) =>
     accountConfig.toTypes.includes(a.type)
   );
+
+  // Fetch outstanding bills when contact changes
+  const handleContactChange = async (newContactId: string | null) => {
+    setContactId(newContactId);
+    setSelectedBillId(null);
+    setOutstandingBills([]);
+
+    if (!newContactId) return;
+
+    try {
+      setLoadingBills(true);
+      const res = await fetch(
+        `/api/organizations/${organizationSlug}/bills?contactId=${newContactId}&limit=50`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        // Filter to only outstanding (non-PAID, non-CANCELLED) bills
+        const outstanding = (data.bills || []).filter(
+          (b: { status: string; amount: number; amountPaid: number }) =>
+            !['PAID', 'CANCELLED'].includes(b.status) &&
+            parseFloat(String(b.amount)) - parseFloat(String(b.amountPaid)) > 0
+        );
+        setOutstandingBills(outstanding);
+      }
+    } catch {
+      // Silently fail — bill linking is optional
+    } finally {
+      setLoadingBills(false);
+    }
+  };
 
   async function onSubmit(values: FormValues) {
     const error = validateTransaction({
@@ -131,13 +174,41 @@ export function RecordTransactionForm({
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ ...payload, contactId }),
         }
       );
 
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || 'Failed to record transaction');
+      }
+
+      const transaction = await response.json();
+
+      // Link to bill if one was selected
+      if (selectedBillId && transaction.id) {
+        try {
+          await fetch(
+            `/api/organizations/${organizationSlug}/bills/${selectedBillId}/payments`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                transactionId: transaction.id,
+              }),
+            }
+          );
+        } catch {
+          // Payment link failed but transaction was created — notify user
+          toast({
+            title: 'Transaction Recorded',
+            description: 'Transaction created but could not be linked to the bill. You can link it manually from the bill detail.',
+            variant: 'destructive',
+          });
+          router.refresh();
+          if (onSuccess) onSuccess();
+          return;
+        }
       }
 
       toast({
@@ -318,6 +389,47 @@ export function RecordTransactionForm({
             </FormItem>
           )}
         />
+
+        <div>
+          <label className="text-sm font-medium">Contact (Optional)</label>
+          <p className="text-sm text-muted-foreground mb-2">Link this transaction to a payee or donor</p>
+          <ContactSelector
+            organizationSlug={organizationSlug}
+            value={contactId}
+            onChange={handleContactChange}
+          />
+        </div>
+
+        {/* Outstanding Bills for selected contact */}
+        {contactId && outstandingBills.length > 0 && (
+          <div>
+            <label className="text-sm font-medium">Link to Bill (Optional)</label>
+            <p className="text-sm text-muted-foreground mb-2">Apply this transaction as payment against an outstanding bill</p>
+            <Select
+              value={selectedBillId ?? "__none__"}
+              onValueChange={(v) => setSelectedBillId(v === "__none__" ? null : v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a bill..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">No bill — standalone transaction</SelectItem>
+                {outstandingBills.map((bill) => {
+                  const remaining = (parseFloat(String(bill.amount)) || 0) - (parseFloat(String(bill.amountPaid)) || 0);
+                  return (
+                    <SelectItem key={bill.id} value={bill.id}>
+                      {bill.description || 'Unnamed'} — {formatCurrency(remaining)} remaining
+                      {bill.dueDate ? ` (due ${new Date(bill.dueDate).toLocaleDateString()})` : ''}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        {contactId && loadingBills && (
+          <p className="text-xs text-muted-foreground">Checking for outstanding bills...</p>
+        )}
 
         <FormField
           control={form.control}

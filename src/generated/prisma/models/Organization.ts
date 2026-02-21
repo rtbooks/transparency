@@ -368,6 +368,8 @@ export type OrganizationWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   accounts?: Prisma.AccountListRelationFilter
   transactions?: Prisma.TransactionListRelationFilter
+  contacts?: Prisma.ContactListRelationFilter
+  bills?: Prisma.BillListRelationFilter
   plannedPurchases?: Prisma.PlannedPurchaseListRelationFilter
   organizationUsers?: Prisma.OrganizationUserListRelationFilter
   bankAccounts?: Prisma.BankAccountListRelationFilter
@@ -405,6 +407,8 @@ export type OrganizationOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
+  contacts?: Prisma.ContactOrderByRelationAggregateInput
+  bills?: Prisma.BillOrderByRelationAggregateInput
   plannedPurchases?: Prisma.PlannedPurchaseOrderByRelationAggregateInput
   organizationUsers?: Prisma.OrganizationUserOrderByRelationAggregateInput
   bankAccounts?: Prisma.BankAccountOrderByRelationAggregateInput
@@ -445,6 +449,8 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   accounts?: Prisma.AccountListRelationFilter
   transactions?: Prisma.TransactionListRelationFilter
+  contacts?: Prisma.ContactListRelationFilter
+  bills?: Prisma.BillListRelationFilter
   plannedPurchases?: Prisma.PlannedPurchaseListRelationFilter
   organizationUsers?: Prisma.OrganizationUserListRelationFilter
   bankAccounts?: Prisma.BankAccountListRelationFilter
@@ -550,6 +556,8 @@ export type OrganizationCreateInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
@@ -587,6 +595,8 @@ export type OrganizationUncheckedCreateInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -624,6 +634,8 @@ export type OrganizationUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
@@ -661,6 +673,8 @@ export type OrganizationUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -974,6 +988,34 @@ export type OrganizationUpdateOneRequiredWithoutInvitationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutInvitationsInput, Prisma.OrganizationUpdateWithoutInvitationsInput>, Prisma.OrganizationUncheckedUpdateWithoutInvitationsInput>
 }
 
+export type OrganizationCreateNestedOneWithoutContactsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutContactsInput, Prisma.OrganizationUncheckedCreateWithoutContactsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutContactsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutContactsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutContactsInput, Prisma.OrganizationUncheckedCreateWithoutContactsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutContactsInput
+  upsert?: Prisma.OrganizationUpsertWithoutContactsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutContactsInput, Prisma.OrganizationUpdateWithoutContactsInput>, Prisma.OrganizationUncheckedUpdateWithoutContactsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutBillsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBillsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutBillsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBillsInput
+  upsert?: Prisma.OrganizationUpsertWithoutBillsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutBillsInput, Prisma.OrganizationUpdateWithoutBillsInput>, Prisma.OrganizationUncheckedUpdateWithoutBillsInput>
+}
+
 export type OrganizationCreateWithoutOrganizationUsersInput = {
   id?: string
   name: string
@@ -1005,6 +1047,8 @@ export type OrganizationCreateWithoutOrganizationUsersInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
@@ -1041,6 +1085,8 @@ export type OrganizationUncheckedCreateWithoutOrganizationUsersInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1093,6 +1139,8 @@ export type OrganizationUpdateWithoutOrganizationUsersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
@@ -1129,6 +1177,8 @@ export type OrganizationUncheckedUpdateWithoutOrganizationUsersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1164,6 +1214,8 @@ export type OrganizationCreateWithoutAccountsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
@@ -1200,6 +1252,8 @@ export type OrganizationUncheckedCreateWithoutAccountsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1252,6 +1306,8 @@ export type OrganizationUpdateWithoutAccountsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
@@ -1288,6 +1344,8 @@ export type OrganizationUncheckedUpdateWithoutAccountsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1324,6 +1382,8 @@ export type OrganizationCreateWithoutTransactionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
@@ -1360,6 +1420,8 @@ export type OrganizationUncheckedCreateWithoutTransactionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1412,6 +1474,8 @@ export type OrganizationUpdateWithoutTransactionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
@@ -1448,6 +1512,8 @@ export type OrganizationUncheckedUpdateWithoutTransactionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1485,6 +1551,8 @@ export type OrganizationCreateWithoutPlannedPurchasesInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
@@ -1521,6 +1589,8 @@ export type OrganizationUncheckedCreateWithoutPlannedPurchasesInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1573,6 +1643,8 @@ export type OrganizationUpdateWithoutPlannedPurchasesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
@@ -1609,6 +1681,8 @@ export type OrganizationUncheckedUpdateWithoutPlannedPurchasesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1645,6 +1719,8 @@ export type OrganizationCreateWithoutBankAccountsInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
@@ -1681,6 +1757,8 @@ export type OrganizationUncheckedCreateWithoutBankAccountsInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1733,6 +1811,8 @@ export type OrganizationUpdateWithoutBankAccountsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
@@ -1769,6 +1849,8 @@ export type OrganizationUncheckedUpdateWithoutBankAccountsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -1805,6 +1887,8 @@ export type OrganizationCreateWithoutInvitationsInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
@@ -1841,6 +1925,8 @@ export type OrganizationUncheckedCreateWithoutInvitationsInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
   organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
   bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
@@ -1893,6 +1979,8 @@ export type OrganizationUpdateWithoutInvitationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
@@ -1929,9 +2017,347 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
   plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
   organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
   bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutContactsInput = {
+  id?: string
+  name: string
+  slug: string
+  ein?: string | null
+  mission?: string | null
+  logoUrl?: string | null
+  fiscalYearStart?: Date | string
+  status?: $Enums.OrganizationStatus
+  subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
+  plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
+  organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutContactsInput = {
+  id?: string
+  name: string
+  slug: string
+  ein?: string | null
+  mission?: string | null
+  logoUrl?: string | null
+  fiscalYearStart?: Date | string
+  status?: $Enums.OrganizationStatus
+  subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
+  plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutContactsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutContactsInput, Prisma.OrganizationUncheckedCreateWithoutContactsInput>
+}
+
+export type OrganizationUpsertWithoutContactsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutContactsInput, Prisma.OrganizationUncheckedUpdateWithoutContactsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutContactsInput, Prisma.OrganizationUncheckedCreateWithoutContactsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutContactsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutContactsInput, Prisma.OrganizationUncheckedUpdateWithoutContactsInput>
+}
+
+export type OrganizationUpdateWithoutContactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
+  plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
+  organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutContactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
+  plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutBillsInput = {
+  id?: string
+  name: string
+  slug: string
+  ein?: string | null
+  mission?: string | null
+  logoUrl?: string | null
+  fiscalYearStart?: Date | string
+  status?: $Enums.OrganizationStatus
+  subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
+  plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
+  organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutBillsInput = {
+  id?: string
+  name: string
+  slug: string
+  ein?: string | null
+  mission?: string | null
+  logoUrl?: string | null
+  fiscalYearStart?: Date | string
+  status?: $Enums.OrganizationStatus
+  subscriptionTier?: $Enums.SubscriptionTier
+  verificationStatus?: $Enums.VerificationStatus
+  einVerifiedAt?: Date | string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  officialWebsite?: string | null
+  determinationLetterUrl?: string | null
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
+  plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
+  organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutBillsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
+}
+
+export type OrganizationUpsertWithoutBillsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutBillsInput, Prisma.OrganizationUncheckedUpdateWithoutBillsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutBillsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutBillsInput, Prisma.OrganizationUncheckedUpdateWithoutBillsInput>
+}
+
+export type OrganizationUpdateWithoutBillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
+  plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
+  organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutBillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
+  plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
+  organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 
@@ -1942,6 +2368,8 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
 export type OrganizationCountOutputType = {
   accounts: number
   transactions: number
+  contacts: number
+  bills: number
   plannedPurchases: number
   organizationUsers: number
   bankAccounts: number
@@ -1951,6 +2379,8 @@ export type OrganizationCountOutputType = {
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   accounts?: boolean | OrganizationCountOutputTypeCountAccountsArgs
   transactions?: boolean | OrganizationCountOutputTypeCountTransactionsArgs
+  contacts?: boolean | OrganizationCountOutputTypeCountContactsArgs
+  bills?: boolean | OrganizationCountOutputTypeCountBillsArgs
   plannedPurchases?: boolean | OrganizationCountOutputTypeCountPlannedPurchasesArgs
   organizationUsers?: boolean | OrganizationCountOutputTypeCountOrganizationUsersArgs
   bankAccounts?: boolean | OrganizationCountOutputTypeCountBankAccountsArgs
@@ -1979,6 +2409,20 @@ export type OrganizationCountOutputTypeCountAccountsArgs<ExtArgs extends runtime
  */
 export type OrganizationCountOutputTypeCountTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.TransactionWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountContactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContactWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountBillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BillWhereInput
 }
 
 /**
@@ -2041,6 +2485,8 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   updatedAt?: boolean
   accounts?: boolean | Prisma.Organization$accountsArgs<ExtArgs>
   transactions?: boolean | Prisma.Organization$transactionsArgs<ExtArgs>
+  contacts?: boolean | Prisma.Organization$contactsArgs<ExtArgs>
+  bills?: boolean | Prisma.Organization$billsArgs<ExtArgs>
   plannedPurchases?: boolean | Prisma.Organization$plannedPurchasesArgs<ExtArgs>
   organizationUsers?: boolean | Prisma.Organization$organizationUsersArgs<ExtArgs>
   bankAccounts?: boolean | Prisma.Organization$bankAccountsArgs<ExtArgs>
@@ -2145,6 +2591,8 @@ export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   accounts?: boolean | Prisma.Organization$accountsArgs<ExtArgs>
   transactions?: boolean | Prisma.Organization$transactionsArgs<ExtArgs>
+  contacts?: boolean | Prisma.Organization$contactsArgs<ExtArgs>
+  bills?: boolean | Prisma.Organization$billsArgs<ExtArgs>
   plannedPurchases?: boolean | Prisma.Organization$plannedPurchasesArgs<ExtArgs>
   organizationUsers?: boolean | Prisma.Organization$organizationUsersArgs<ExtArgs>
   bankAccounts?: boolean | Prisma.Organization$bankAccountsArgs<ExtArgs>
@@ -2159,6 +2607,8 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     transactions: Prisma.$TransactionPayload<ExtArgs>[]
+    contacts: Prisma.$ContactPayload<ExtArgs>[]
+    bills: Prisma.$BillPayload<ExtArgs>[]
     plannedPurchases: Prisma.$PlannedPurchasePayload<ExtArgs>[]
     organizationUsers: Prisma.$OrganizationUserPayload<ExtArgs>[]
     bankAccounts: Prisma.$BankAccountPayload<ExtArgs>[]
@@ -2589,6 +3039,8 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   accounts<T extends Prisma.Organization$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transactions<T extends Prisma.Organization$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contacts<T extends Prisma.Organization$contactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$contactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bills<T extends Prisma.Organization$billsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$billsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   plannedPurchases<T extends Prisma.Organization$plannedPurchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$plannedPurchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlannedPurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   organizationUsers<T extends Prisma.Organization$organizationUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$organizationUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bankAccounts<T extends Prisma.Organization$bankAccountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$bankAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3083,6 +3535,54 @@ export type Organization$transactionsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.TransactionScalarFieldEnum | Prisma.TransactionScalarFieldEnum[]
+}
+
+/**
+ * Organization.contacts
+ */
+export type Organization$contactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Contact
+   */
+  select?: Prisma.ContactSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Contact
+   */
+  omit?: Prisma.ContactOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContactInclude<ExtArgs> | null
+  where?: Prisma.ContactWhereInput
+  orderBy?: Prisma.ContactOrderByWithRelationInput | Prisma.ContactOrderByWithRelationInput[]
+  cursor?: Prisma.ContactWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContactScalarFieldEnum | Prisma.ContactScalarFieldEnum[]
+}
+
+/**
+ * Organization.bills
+ */
+export type Organization$billsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Bill
+   */
+  select?: Prisma.BillSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Bill
+   */
+  omit?: Prisma.BillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BillInclude<ExtArgs> | null
+  where?: Prisma.BillWhereInput
+  orderBy?: Prisma.BillOrderByWithRelationInput | Prisma.BillOrderByWithRelationInput[]
+  cursor?: Prisma.BillWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BillScalarFieldEnum | Prisma.BillScalarFieldEnum[]
 }
 
 /**

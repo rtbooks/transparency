@@ -31,6 +31,8 @@ export function getOrganizationNavLinks(
       ...baseLinks,
       { label: 'Accounts', href: `/org/${slug}/accounts` },
       { label: 'Transactions', href: `/org/${slug}/transactions` },
+      { label: 'Contacts', href: `/org/${slug}/contacts` },
+      { label: 'Bills', href: `/org/${slug}/bills` },
       reportsLink,
       { label: 'Planned Purchases', href: `/org/${slug}/planned-purchases` },
       { label: 'Users', href: `/org/${slug}/users` },

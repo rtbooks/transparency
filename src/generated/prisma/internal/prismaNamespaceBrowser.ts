@@ -60,7 +60,10 @@ export const ModelName = {
   PurchaseImage: 'PurchaseImage',
   BankAccount: 'BankAccount',
   AuditLog: 'AuditLog',
-  Invitation: 'Invitation'
+  Invitation: 'Invitation',
+  Contact: 'Contact',
+  Bill: 'Bill',
+  BillPayment: 'BillPayment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -195,6 +198,7 @@ export const TransactionScalarFieldEnum = {
   donorUserId: 'donorUserId',
   donorName: 'donorName',
   isAnonymous: 'isAnonymous',
+  contactId: 'contactId',
   receiptUrl: 'receiptUrl',
   notes: 'notes',
   bankTransactionId: 'bankTransactionId',
@@ -316,6 +320,69 @@ export const InvitationScalarFieldEnum = {
 } as const
 
 export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
+
+
+export const ContactScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  type: 'type',
+  roles: 'roles',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  notes: 'notes',
+  userId: 'userId',
+  isActive: 'isActive',
+  versionId: 'versionId',
+  previousVersionId: 'previousVersionId',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  systemFrom: 'systemFrom',
+  systemTo: 'systemTo',
+  isDeleted: 'isDeleted',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  changedBy: 'changedBy',
+  changeReason: 'changeReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ContactScalarFieldEnum = (typeof ContactScalarFieldEnum)[keyof typeof ContactScalarFieldEnum]
+
+
+export const BillScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  contactId: 'contactId',
+  direction: 'direction',
+  status: 'status',
+  amount: 'amount',
+  amountPaid: 'amountPaid',
+  description: 'description',
+  issueDate: 'issueDate',
+  dueDate: 'dueDate',
+  paidInFullDate: 'paidInFullDate',
+  notes: 'notes',
+  accrualTransactionId: 'accrualTransactionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+} as const
+
+export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
+
+
+export const BillPaymentScalarFieldEnum = {
+  id: 'id',
+  billId: 'billId',
+  transactionId: 'transactionId',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type BillPaymentScalarFieldEnum = (typeof BillPaymentScalarFieldEnum)[keyof typeof BillPaymentScalarFieldEnum]
 
 
 export const SortOrder = {

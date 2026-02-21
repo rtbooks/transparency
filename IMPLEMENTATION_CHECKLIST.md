@@ -2,8 +2,8 @@
 
 Track your progress as you build the RadBooks platform.
 
-**Last Updated**: February 20, 2026
-**Current Phase**: Production ✅ — Live at [radbooks.org](https://radbooks.org)
+**Last Updated**: February 21, 2026
+**Current Phase**: Phase 14 — Contacts, Bills & Pledges ✅
 
 ## Phase 1: Foundation ✅ (Complete!)
 
@@ -756,6 +756,109 @@ Track your progress as you build the RadBooks platform.
 - [ ] Production deployment
 
 **Status**: ✅ All phases complete - Production ready!
+
+## Phase 12: Financial Reports UI ✅ (Complete!)
+
+### Report Infrastructure
+- [x] Create fiscal period utilities (year/quarter/month)
+- [x] Build PeriodSelector component
+- [x] Build ReportTable component
+- [x] Build ExportButtons component (CSV/JSON)
+
+### Income Statement
+- [x] Create Income Statement API with period filtering
+- [x] Build Income Statement page with revenue/expense breakdown
+- [x] Support year, quarter, and month granularity
+
+### Balance Sheet
+- [x] Create Balance Sheet API with period filtering
+- [x] Build Balance Sheet page with assets/liabilities/equity sections
+- [x] Support year, quarter, and month granularity
+
+### Financial Dashboard
+- [x] Build Reports landing page with navigation cards
+- [x] Create Financial Dashboard with recharts visualizations
+- [x] Add revenue vs expense trends chart
+- [x] Add navigation to reports from sidebar
+
+## Phase 13: Transaction Editing ✅ (Complete!)
+
+### Bi-Temporal Versioning
+- [x] Add temporal versioning fields to Transaction model
+- [x] Add void/edit support fields (isVoided, voidedAt, voidReason)
+- [x] Create migration scripts
+
+### Transaction Service
+- [x] Create editTransaction with version chain (previousVersionId → versionId)
+- [x] Create voidTransaction with balance reversal
+- [x] Create getTransactionHistory to follow version chain
+- [x] Fix P2002 unique constraint bug (don't set id on new versions)
+
+### Transaction Editing UI
+- [x] Build EditTransactionForm component
+- [x] Build VoidTransactionDialog component
+- [x] Update TransactionList with edit/void actions
+- [x] Show version status badges (Edited/Voided)
+
+### Bi-Temporal Filtering
+- [x] Fix as-of-date filter to use system time (systemFrom/systemTo)
+- [x] Add buildBitemporalAsOfWhere() helper to temporal-utils
+- [x] Add default current-version filter (systemTo = MAX_DATE)
+- [x] Add temporal context banner for historical views
+
+### Testing
+- [x] Add P2002 regression test
+- [x] Add version chain history tests
+- [x] Add bi-temporal as-of-date filtering tests
+- [x] All 288 tests passing
+
+## Phase 14: Contacts, Bills & Pledges ✅ (Complete!)
+
+### Schema & Database
+- [x] Add Contact model with bi-temporal versioning
+- [x] Add Bill model with status lifecycle
+- [x] Add BillPayment join model (Bill ↔ Transaction)
+- [x] Add ContactType, ContactRole, BillDirection, BillStatus enums
+- [x] Add optional contactId to Transaction model
+- [x] Create migration script
+
+### Contact Management
+- [x] Create contact.service.ts with CRUD + temporal versioning
+- [x] Implement findOrCreateForUser() for User ↔ Contact linking
+- [x] Create contact API routes (GET list, POST, GET single, PATCH, DELETE)
+- [x] Build ContactList component with search/filter
+- [x] Build ContactForm component (create/edit)
+- [x] Build ContactSelector autocomplete component
+- [x] Add Contacts to org sidebar navigation
+
+### Bill Management
+- [x] Create bill.service.ts with status lifecycle management
+- [x] Implement status transitions (DRAFT→PENDING→PARTIAL→PAID, CANCELLED)
+- [x] Create bill API routes (GET list, POST, GET single, PATCH)
+- [x] Build BillList component with direction tabs and status filters
+- [x] Build BillForm component with contact selector
+- [x] Build BillDetail component with payment history and progress bar
+- [x] Add Bills to org sidebar navigation
+
+### Payment Linking
+- [x] Create bill-payment.service.ts (record, link, unlink, reverse)
+- [x] Create payment API route (POST payment on bill → creates Transaction + BillPayment atomically)
+- [x] Handle void: reverse BillPayments and recalculate bill status
+
+### Contact on Transactions
+- [x] Add ContactSelector to RecordTransactionForm
+- [x] Add ContactSelector to EditTransactionForm
+- [x] Accept contactId in POST/PATCH transaction APIs
+- [x] Show Contact column in TransactionList
+- [x] Include contact data in transaction list API response
+
+### Dashboard & Reporting
+- [x] Create aging summary API (Current/1-30/31-60/61-90/90+ buckets)
+- [x] Build AgingSummary component (payables + receivables)
+- [x] Build OutstandingBillsWidget dashboard component
+- [x] Create contact transaction history API
+- [x] Build ContactTransactionHistory component
+- [x] Add transaction history to contact detail dialog
 
 ---
 

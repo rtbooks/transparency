@@ -13,6 +13,7 @@ const createTransactionSchema = z.object({
   referenceNumber: z.string().nullable().optional(),
   debitAccountId: z.string().uuid(),
   creditAccountId: z.string().uuid(),
+  contactId: z.string().uuid().nullable().optional(),
 });
 
 export async function GET(
@@ -165,7 +166,17 @@ export async function GET(
       type: a.type,
     }]));
 
-    // Enrich transactions with account data
+    // Fetch contacts for transactions that have contactId
+    const contactIds = [...new Set(transactions.map(t => t.contactId).filter(Boolean))] as string[];
+    const contacts = contactIds.length > 0
+      ? await prisma.contact.findMany({
+          where: { id: { in: contactIds } },
+          select: { id: true, name: true, type: true, roles: true },
+        })
+      : [];
+    const contactMap = new Map(contacts.map(c => [c.id, c]));
+
+    // Enrich transactions with account and contact data
     const enrichedTransactions = transactions.map(tx => ({
       ...tx,
       debitAccount: accountMap.get(tx.debitAccountId) || {
@@ -180,6 +191,7 @@ export async function GET(
         name: '(Account not found)',
         type: 'ASSET',
       },
+      contact: tx.contactId ? contactMap.get(tx.contactId) || null : null,
     }));
 
     return NextResponse.json({
@@ -319,6 +331,7 @@ export async function POST(
           creditAccountId: validatedData.creditAccountId,
           description: validatedData.description,
           referenceNumber: validatedData.referenceNumber || null,
+          contactId: validatedData.contactId || null,
           paymentMethod: 'OTHER', // Default, can be enhanced later
         },
       });

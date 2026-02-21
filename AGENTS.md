@@ -7,21 +7,23 @@ This document contains critical information for GitHub Copilot and developers wo
 **⚠️ ALWAYS use this import path for PrismaClient:**
 
 ```typescript
-import { PrismaClient } from '@/generated/prisma/client';
+import { PrismaClient } from "@/generated/prisma/client";
 ```
 
 **❌ DO NOT use these paths:**
+
 ```typescript
 // WRONG - Will fail in Vercel builds
-import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from "@/generated/prisma";
 
 // WRONG - Not the custom output path
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 ```
 
 ### Why This Matters
 
 1. **Custom Output Path**: Our Prisma schema specifies a custom output directory:
+
    ```prisma
    generator client {
      provider = "prisma-client"
@@ -36,6 +38,7 @@ import { PrismaClient } from '@prisma/client';
 ### Verification Checklist
 
 When adding or modifying Prisma imports:
+
 - [ ] Import uses full path: `@/generated/prisma/client`
 - [ ] Run `npm run type-check` to verify TypeScript compilation
 - [ ] Run `npm run build` to verify Next.js build succeeds
@@ -47,11 +50,11 @@ For Prisma types and enums, also use the full path:
 
 ```typescript
 // Correct
-import { Organization, Account, UserRole } from '@/generated/prisma/client';
-import type { Prisma } from '@/generated/prisma/client';
+import { Organization, Account, UserRole } from "@/generated/prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 
 // Also correct - importing from internal namespace
-import type * as Prisma from '@/generated/prisma/internal/prismaNamespace';
+import type * as Prisma from "@/generated/prisma/internal/prismaNamespace";
 ```
 
 ### Using the Prisma Singleton
@@ -59,11 +62,11 @@ import type * as Prisma from '@/generated/prisma/internal/prismaNamespace';
 Always import the configured singleton from `@/lib/prisma`:
 
 ```typescript
-import { prisma } from '@/lib/prisma';
+import { prisma } from "@/lib/prisma";
 
 // Use it in your code
 const org = await prisma.organization.findUnique({
-  where: { slug: 'grit-hoops' }
+  where: { slug: "grit-hoops" },
 });
 ```
 
@@ -77,25 +80,25 @@ const org = await prisma.organization.findUnique({
 
 ```typescript
 // API Routes
-import { prisma } from '@/lib/prisma';
-import { UserRole, OrganizationStatus } from '@/generated/prisma/client';
+import { prisma } from "@/lib/prisma";
+import { UserRole, OrganizationStatus } from "@/generated/prisma/client";
 
 // Service Files
-import { PrismaClient } from '@/generated/prisma/client';
-import type { Organization, Account } from '@/generated/prisma/client';
+import { PrismaClient } from "@/generated/prisma/client";
+import type { Organization, Account } from "@/generated/prisma/client";
 
 // Type Imports
-import type { Prisma } from '@/generated/prisma/client';
+import type { Prisma } from "@/generated/prisma/client";
 ```
 
 ### ❌ Incorrect Examples (Will Break Builds)
 
 ```typescript
 // WRONG - Missing /client
-import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from "@/generated/prisma";
 
 // WRONG - Standard Prisma path (we use custom output)
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 // WRONG - Creating new instances (use singleton)
 const prisma = new PrismaClient();
@@ -148,17 +151,17 @@ If any of these fail, fix the issues before committing.
 When working with versioned entities (Organization, Account, OrganizationUser, PlannedPurchase):
 
 ```typescript
-import { TemporalRepository } from '@/lib/temporal/temporal-repository';
-import { prisma } from '@/lib/prisma';
+import { TemporalRepository } from "@/lib/temporal/temporal-repository";
+import { prisma } from "@/lib/prisma";
 
 // Use the temporal repository
-const orgRepo = new TemporalRepository(prisma, 'organization');
+const orgRepo = new TemporalRepository(prisma, "organization");
 
 // Get current version
 const current = await orgRepo.findCurrentById(id);
 
 // Update (creates new version)
-const updated = await orgRepo.update(id, { name: 'New Name' }, userId);
+const updated = await orgRepo.update(id, { name: "New Name" }, userId);
 ```
 
 See `TEMPORAL_SCHEMA_DESIGN.md` for complete patterns.
@@ -188,6 +191,7 @@ See `TEMPORAL_SCHEMA_DESIGN.md` for complete patterns.
 ## Documentation to Reference
 
 Before implementing new features, check:
+
 - `APPROACH.md` - System architecture
 - `PROJECT_STRUCTURE.md` - File organization
 - `TEMPORAL_SCHEMA_DESIGN.md` - Versioning patterns
@@ -207,3 +211,11 @@ Before implementing new features, check:
 ---
 
 **Last Updated**: February 12, 2026
+
+## Key Architecture Notes
+
+- **Prisma client** imports from `@/generated/prisma/client` (not `@prisma/client`).
+- After schema changes, run `npx prisma generate` and create a migration in `prisma/migrations/`.
+- **ClerkProvider** is wrapped in `SafeClerkProvider` (client component) to avoid `useContext` null errors during static prerendering.
+- **Double-entry bookkeeping**: every Transaction has `debitAccountId` + `creditAccountId`. Always update account balances atomically.
+- **Bi-temporal versioning**: never reuse `id` on new versions (causes P2002). Let Prisma auto-generate UUIDs.

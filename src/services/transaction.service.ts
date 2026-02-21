@@ -6,6 +6,7 @@
 import { prisma } from '@/lib/prisma';
 import { updateAccountBalances, reverseAccountBalances } from '@/lib/accounting/balance-calculator';
 import { MAX_DATE } from '@/lib/temporal/temporal-utils';
+import { recalculateBillStatus } from '@/services/bill.service';
 
 export interface EditTransactionInput {
   transactionDate?: string;
@@ -14,6 +15,7 @@ export interface EditTransactionInput {
   debitAccountId?: string;
   creditAccountId?: string;
   referenceNumber?: string | null;
+  contactId?: string | null;
   category?: string | null;
   notes?: string | null;
   changeReason: string;
@@ -88,6 +90,7 @@ export async function editTransaction(
         category: input.category !== undefined ? input.category : current.category,
         paymentMethod: current.paymentMethod,
         referenceNumber: input.referenceNumber !== undefined ? input.referenceNumber : current.referenceNumber,
+        contactId: input.contactId !== undefined ? input.contactId : current.contactId,
         donorUserId: current.donorUserId,
         donorName: current.donorName,
         isAnonymous: current.isAnonymous,
@@ -121,6 +124,22 @@ export async function editTransaction(
 
     // Apply new balance effects
     await updateAccountBalances(tx, newDebitAccountId, newCreditAccountId, newAmount);
+
+    // Migrate any BillPayment references from old transaction to new version
+    const billPayments = await tx.billPayment.findMany({
+      where: { transactionId: current.id },
+    });
+    if (billPayments.length > 0) {
+      await tx.billPayment.updateMany({
+        where: { transactionId: current.id },
+        data: { transactionId: newTransaction.id },
+      });
+      // Recalculate affected bill statuses (amount may have changed)
+      const billIds = [...new Set(billPayments.map(bp => bp.billId))];
+      for (const billId of billIds) {
+        await recalculateBillStatus(billId);
+      }
+    }
 
     return newTransaction;
   });
@@ -218,6 +237,20 @@ export async function voidTransaction(
       current.creditAccountId,
       parseFloat(current.amount.toString())
     );
+
+    // Remove BillPayment links for voided transaction and recalculate bills
+    const billPayments = await tx.billPayment.findMany({
+      where: { transactionId: current.id },
+    });
+    if (billPayments.length > 0) {
+      await tx.billPayment.deleteMany({
+        where: { transactionId: current.id },
+      });
+      const billIds = [...new Set(billPayments.map(bp => bp.billId))];
+      for (const billId of billIds) {
+        await recalculateBillStatus(billId);
+      }
+    }
 
     return voidedTransaction;
   });

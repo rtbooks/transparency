@@ -15,6 +15,11 @@ jest.mock('@/lib/prisma', () => ({
       update: jest.fn(),
       findMany: jest.fn(),
     },
+    billPayment: {
+      findMany: jest.fn(),
+      updateMany: jest.fn(),
+      deleteMany: jest.fn(),
+    },
     $transaction: jest.fn(),
   },
 }));
@@ -26,6 +31,10 @@ jest.mock('@/lib/accounting/balance-calculator', () => ({
 
 jest.mock('@/lib/temporal/temporal-utils', () => ({
   MAX_DATE: new Date('9999-12-31T23:59:59.999Z'),
+}));
+
+jest.mock('@/services/bill.service', () => ({
+  recalculateBillStatus: jest.fn(),
 }));
 
 import { editTransaction, voidTransaction, getTransactionHistory } from '@/services/transaction.service';
@@ -88,6 +97,8 @@ describe('Transaction Service', () => {
     mockPrisma.$transaction.mockImplementation(async (callback: any) => {
       return callback(mockPrisma);
     });
+    // Default: no bill payments linked
+    mockPrisma.billPayment.findMany.mockResolvedValue([]);
   });
 
   describe('editTransaction()', () => {
