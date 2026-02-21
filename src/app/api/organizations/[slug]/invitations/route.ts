@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { hasRole } from '@/lib/auth/permissions';
+import { sendInvitationEmail } from '@/lib/email/send-invitation';
 import crypto from 'crypto';
 
 const inviteSchema = z.object({
@@ -39,6 +40,7 @@ export async function POST(
       where: { authId: clerkUserId },
       select: {
         id: true,
+        name: true,
         isPlatformAdmin: true,
         organizations: {
           where: { organizationId: organization.id },
@@ -125,11 +127,20 @@ export async function POST(
       },
     });
 
-    // TODO: Send email with invitation link
-    // For now, we'll just return the invitation
-    // In production, integrate with an email service (SendGrid, Resend, etc.)
-
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite/${token}`;
+
+    // Send invitation email (await to ensure it completes before serverless freeze)
+    const emailSent = await sendInvitationEmail({
+      to: email,
+      inviterName: user.name || 'A team member',
+      organizationName: organization.name,
+      role,
+      inviteUrl,
+      expiresInDays: 7,
+    });
+    if (!emailSent) {
+      console.warn('[Invitation] Email failed to send for', email);
+    }
 
     return NextResponse.json({
       success: true,
@@ -137,7 +148,7 @@ export async function POST(
         id: invitation.id,
         email: invitation.email,
         role: invitation.role,
-        inviteUrl, // In production, this would be sent via email
+        inviteUrl,
       },
     });
   } catch (error) {
