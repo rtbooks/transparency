@@ -37,6 +37,7 @@ export type PlannedPurchaseSumAggregateOutputType = {
 }
 
 export type PlannedPurchaseMinAggregateOutputType = {
+  versionId: string | null
   id: string | null
   organizationId: string | null
   title: string | null
@@ -49,7 +50,6 @@ export type PlannedPurchaseMinAggregateOutputType = {
   actualTransactionId: string | null
   actualAmount: runtime.Decimal | null
   completedAt: Date | null
-  versionId: string | null
   previousVersionId: string | null
   validFrom: Date | null
   validTo: Date | null
@@ -65,6 +65,7 @@ export type PlannedPurchaseMinAggregateOutputType = {
 }
 
 export type PlannedPurchaseMaxAggregateOutputType = {
+  versionId: string | null
   id: string | null
   organizationId: string | null
   title: string | null
@@ -77,7 +78,6 @@ export type PlannedPurchaseMaxAggregateOutputType = {
   actualTransactionId: string | null
   actualAmount: runtime.Decimal | null
   completedAt: Date | null
-  versionId: string | null
   previousVersionId: string | null
   validFrom: Date | null
   validTo: Date | null
@@ -93,6 +93,7 @@ export type PlannedPurchaseMaxAggregateOutputType = {
 }
 
 export type PlannedPurchaseCountAggregateOutputType = {
+  versionId: number
   id: number
   organizationId: number
   title: number
@@ -105,7 +106,6 @@ export type PlannedPurchaseCountAggregateOutputType = {
   actualTransactionId: number
   actualAmount: number
   completedAt: number
-  versionId: number
   previousVersionId: number
   validFrom: number
   validTo: number
@@ -133,6 +133,7 @@ export type PlannedPurchaseSumAggregateInputType = {
 }
 
 export type PlannedPurchaseMinAggregateInputType = {
+  versionId?: true
   id?: true
   organizationId?: true
   title?: true
@@ -145,7 +146,6 @@ export type PlannedPurchaseMinAggregateInputType = {
   actualTransactionId?: true
   actualAmount?: true
   completedAt?: true
-  versionId?: true
   previousVersionId?: true
   validFrom?: true
   validTo?: true
@@ -161,6 +161,7 @@ export type PlannedPurchaseMinAggregateInputType = {
 }
 
 export type PlannedPurchaseMaxAggregateInputType = {
+  versionId?: true
   id?: true
   organizationId?: true
   title?: true
@@ -173,7 +174,6 @@ export type PlannedPurchaseMaxAggregateInputType = {
   actualTransactionId?: true
   actualAmount?: true
   completedAt?: true
-  versionId?: true
   previousVersionId?: true
   validFrom?: true
   validTo?: true
@@ -189,6 +189,7 @@ export type PlannedPurchaseMaxAggregateInputType = {
 }
 
 export type PlannedPurchaseCountAggregateInputType = {
+  versionId?: true
   id?: true
   organizationId?: true
   title?: true
@@ -201,7 +202,6 @@ export type PlannedPurchaseCountAggregateInputType = {
   actualTransactionId?: true
   actualAmount?: true
   completedAt?: true
-  versionId?: true
   previousVersionId?: true
   validFrom?: true
   validTo?: true
@@ -304,6 +304,7 @@ export type PlannedPurchaseGroupByArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 export type PlannedPurchaseGroupByOutputType = {
+  versionId: string
   id: string
   organizationId: string
   title: string
@@ -316,7 +317,6 @@ export type PlannedPurchaseGroupByOutputType = {
   actualTransactionId: string | null
   actualAmount: runtime.Decimal | null
   completedAt: Date | null
-  versionId: string
   previousVersionId: string | null
   validFrom: Date
   validTo: Date
@@ -355,6 +355,7 @@ export type PlannedPurchaseWhereInput = {
   AND?: Prisma.PlannedPurchaseWhereInput | Prisma.PlannedPurchaseWhereInput[]
   OR?: Prisma.PlannedPurchaseWhereInput[]
   NOT?: Prisma.PlannedPurchaseWhereInput | Prisma.PlannedPurchaseWhereInput[]
+  versionId?: Prisma.StringFilter<"PlannedPurchase"> | string
   id?: Prisma.StringFilter<"PlannedPurchase"> | string
   organizationId?: Prisma.StringFilter<"PlannedPurchase"> | string
   title?: Prisma.StringFilter<"PlannedPurchase"> | string
@@ -367,7 +368,6 @@ export type PlannedPurchaseWhereInput = {
   actualTransactionId?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
   actualAmount?: Prisma.DecimalNullableFilter<"PlannedPurchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"PlannedPurchase"> | Date | string | null
-  versionId?: Prisma.StringFilter<"PlannedPurchase"> | string
   previousVersionId?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
   validFrom?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
   validTo?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
@@ -380,12 +380,10 @@ export type PlannedPurchaseWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
-  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
-  actualTransaction?: Prisma.XOR<Prisma.TransactionNullableScalarRelationFilter, Prisma.TransactionWhereInput> | null
-  images?: Prisma.PurchaseImageListRelationFilter
 }
 
 export type PlannedPurchaseOrderByWithRelationInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -398,7 +396,6 @@ export type PlannedPurchaseOrderByWithRelationInput = {
   actualTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   actualAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -411,18 +408,15 @@ export type PlannedPurchaseOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  organization?: Prisma.OrganizationOrderByWithRelationInput
-  actualTransaction?: Prisma.TransactionOrderByWithRelationInput
-  images?: Prisma.PurchaseImageOrderByRelationAggregateInput
 }
 
 export type PlannedPurchaseWhereUniqueInput = Prisma.AtLeast<{
-  id?: string
-  actualTransactionId?: string
   versionId?: string
+  id_validFrom?: Prisma.PlannedPurchaseIdValidFromCompoundUniqueInput
   AND?: Prisma.PlannedPurchaseWhereInput | Prisma.PlannedPurchaseWhereInput[]
   OR?: Prisma.PlannedPurchaseWhereInput[]
   NOT?: Prisma.PlannedPurchaseWhereInput | Prisma.PlannedPurchaseWhereInput[]
+  id?: Prisma.StringFilter<"PlannedPurchase"> | string
   organizationId?: Prisma.StringFilter<"PlannedPurchase"> | string
   title?: Prisma.StringFilter<"PlannedPurchase"> | string
   description?: Prisma.StringFilter<"PlannedPurchase"> | string
@@ -431,6 +425,7 @@ export type PlannedPurchaseWhereUniqueInput = Prisma.AtLeast<{
   category?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
   status?: Prisma.EnumPurchaseStatusFilter<"PlannedPurchase"> | $Enums.PurchaseStatus
   priority?: Prisma.EnumPurchasePriorityFilter<"PlannedPurchase"> | $Enums.PurchasePriority
+  actualTransactionId?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
   actualAmount?: Prisma.DecimalNullableFilter<"PlannedPurchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"PlannedPurchase"> | Date | string | null
   previousVersionId?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
@@ -445,12 +440,10 @@ export type PlannedPurchaseWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
-  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
-  actualTransaction?: Prisma.XOR<Prisma.TransactionNullableScalarRelationFilter, Prisma.TransactionWhereInput> | null
-  images?: Prisma.PurchaseImageListRelationFilter
-}, "id" | "actualTransactionId" | "versionId">
+}, "versionId" | "id_validFrom">
 
 export type PlannedPurchaseOrderByWithAggregationInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -463,7 +456,6 @@ export type PlannedPurchaseOrderByWithAggregationInput = {
   actualTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   actualAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -487,6 +479,7 @@ export type PlannedPurchaseScalarWhereWithAggregatesInput = {
   AND?: Prisma.PlannedPurchaseScalarWhereWithAggregatesInput | Prisma.PlannedPurchaseScalarWhereWithAggregatesInput[]
   OR?: Prisma.PlannedPurchaseScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PlannedPurchaseScalarWhereWithAggregatesInput | Prisma.PlannedPurchaseScalarWhereWithAggregatesInput[]
+  versionId?: Prisma.StringWithAggregatesFilter<"PlannedPurchase"> | string
   id?: Prisma.StringWithAggregatesFilter<"PlannedPurchase"> | string
   organizationId?: Prisma.StringWithAggregatesFilter<"PlannedPurchase"> | string
   title?: Prisma.StringWithAggregatesFilter<"PlannedPurchase"> | string
@@ -499,7 +492,6 @@ export type PlannedPurchaseScalarWhereWithAggregatesInput = {
   actualTransactionId?: Prisma.StringNullableWithAggregatesFilter<"PlannedPurchase"> | string | null
   actualAmount?: Prisma.DecimalNullableWithAggregatesFilter<"PlannedPurchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PlannedPurchase"> | Date | string | null
-  versionId?: Prisma.StringWithAggregatesFilter<"PlannedPurchase"> | string
   previousVersionId?: Prisma.StringNullableWithAggregatesFilter<"PlannedPurchase"> | string | null
   validFrom?: Prisma.DateTimeWithAggregatesFilter<"PlannedPurchase"> | Date | string
   validTo?: Prisma.DateTimeWithAggregatesFilter<"PlannedPurchase"> | Date | string
@@ -515,35 +507,7 @@ export type PlannedPurchaseScalarWhereWithAggregatesInput = {
 }
 
 export type PlannedPurchaseCreateInput = {
-  id?: string
-  title: string
-  description: string
-  estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Date | string | null
-  category?: string | null
-  status?: $Enums.PurchaseStatus
-  priority?: $Enums.PurchasePriority
-  actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Date | string | null
   versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  organization: Prisma.OrganizationCreateNestedOneWithoutPlannedPurchasesInput
-  actualTransaction?: Prisma.TransactionCreateNestedOneWithoutPlannedPurchaseInput
-  images?: Prisma.PurchaseImageCreateNestedManyWithoutPlannedPurchaseInput
-}
-
-export type PlannedPurchaseUncheckedCreateInput = {
   id?: string
   organizationId: string
   title: string
@@ -556,7 +520,6 @@ export type PlannedPurchaseUncheckedCreateInput = {
   actualTransactionId?: string | null
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
-  versionId?: string
   previousVersionId?: string | null
   validFrom?: Date | string
   validTo?: Date | string
@@ -569,39 +532,38 @@ export type PlannedPurchaseUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy?: string | null
-  images?: Prisma.PurchaseImageUncheckedCreateNestedManyWithoutPlannedPurchaseInput
+}
+
+export type PlannedPurchaseUncheckedCreateInput = {
+  versionId?: string
+  id?: string
+  organizationId: string
+  title: string
+  description: string
+  estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  targetDate?: Date | string | null
+  category?: string | null
+  status?: $Enums.PurchaseStatus
+  priority?: $Enums.PurchasePriority
+  actualTransactionId?: string | null
+  actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  completedAt?: Date | string | null
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
 }
 
 export type PlannedPurchaseUpdateInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPurchaseStatusFieldUpdateOperationsInput | $Enums.PurchaseStatus
-  priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
-  actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutPlannedPurchasesNestedInput
-  actualTransaction?: Prisma.TransactionUpdateOneWithoutPlannedPurchaseNestedInput
-  images?: Prisma.PurchaseImageUpdateManyWithoutPlannedPurchaseNestedInput
-}
-
-export type PlannedPurchaseUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -614,7 +576,6 @@ export type PlannedPurchaseUncheckedUpdateInput = {
   actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -627,10 +588,38 @@ export type PlannedPurchaseUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.PurchaseImageUncheckedUpdateManyWithoutPlannedPurchaseNestedInput
+}
+
+export type PlannedPurchaseUncheckedUpdateInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPurchaseStatusFieldUpdateOperationsInput | $Enums.PurchaseStatus
+  priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
+  actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PlannedPurchaseCreateManyInput = {
+  versionId?: string
   id?: string
   organizationId: string
   title: string
@@ -643,7 +632,6 @@ export type PlannedPurchaseCreateManyInput = {
   actualTransactionId?: string | null
   actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Date | string | null
-  versionId?: string
   previousVersionId?: string | null
   validFrom?: Date | string
   validTo?: Date | string
@@ -659,7 +647,9 @@ export type PlannedPurchaseCreateManyInput = {
 }
 
 export type PlannedPurchaseUpdateManyMutationInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -667,9 +657,9 @@ export type PlannedPurchaseUpdateManyMutationInput = {
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumPurchaseStatusFieldUpdateOperationsInput | $Enums.PurchaseStatus
   priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
+  actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -685,6 +675,7 @@ export type PlannedPurchaseUpdateManyMutationInput = {
 }
 
 export type PlannedPurchaseUncheckedUpdateManyInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -697,7 +688,6 @@ export type PlannedPurchaseUncheckedUpdateManyInput = {
   actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -712,22 +702,13 @@ export type PlannedPurchaseUncheckedUpdateManyInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type PlannedPurchaseListRelationFilter = {
-  every?: Prisma.PlannedPurchaseWhereInput
-  some?: Prisma.PlannedPurchaseWhereInput
-  none?: Prisma.PlannedPurchaseWhereInput
-}
-
-export type PlannedPurchaseOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
-}
-
-export type PlannedPurchaseNullableScalarRelationFilter = {
-  is?: Prisma.PlannedPurchaseWhereInput | null
-  isNot?: Prisma.PlannedPurchaseWhereInput | null
+export type PlannedPurchaseIdValidFromCompoundUniqueInput = {
+  id: string
+  validFrom: Date | string
 }
 
 export type PlannedPurchaseCountOrderByAggregateInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -740,7 +721,6 @@ export type PlannedPurchaseCountOrderByAggregateInput = {
   actualTransactionId?: Prisma.SortOrder
   actualAmount?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -761,6 +741,7 @@ export type PlannedPurchaseAvgOrderByAggregateInput = {
 }
 
 export type PlannedPurchaseMaxOrderByAggregateInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -773,7 +754,6 @@ export type PlannedPurchaseMaxOrderByAggregateInput = {
   actualTransactionId?: Prisma.SortOrder
   actualAmount?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -789,6 +769,7 @@ export type PlannedPurchaseMaxOrderByAggregateInput = {
 }
 
 export type PlannedPurchaseMinOrderByAggregateInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -801,7 +782,6 @@ export type PlannedPurchaseMinOrderByAggregateInput = {
   actualTransactionId?: Prisma.SortOrder
   actualAmount?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -821,85 +801,6 @@ export type PlannedPurchaseSumOrderByAggregateInput = {
   actualAmount?: Prisma.SortOrder
 }
 
-export type PlannedPurchaseScalarRelationFilter = {
-  is?: Prisma.PlannedPurchaseWhereInput
-  isNot?: Prisma.PlannedPurchaseWhereInput
-}
-
-export type PlannedPurchaseCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutOrganizationInput, Prisma.PlannedPurchaseUncheckedCreateWithoutOrganizationInput> | Prisma.PlannedPurchaseCreateWithoutOrganizationInput[] | Prisma.PlannedPurchaseUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.PlannedPurchaseCreateOrConnectWithoutOrganizationInput | Prisma.PlannedPurchaseCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.PlannedPurchaseCreateManyOrganizationInputEnvelope
-  connect?: Prisma.PlannedPurchaseWhereUniqueInput | Prisma.PlannedPurchaseWhereUniqueInput[]
-}
-
-export type PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutOrganizationInput, Prisma.PlannedPurchaseUncheckedCreateWithoutOrganizationInput> | Prisma.PlannedPurchaseCreateWithoutOrganizationInput[] | Prisma.PlannedPurchaseUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.PlannedPurchaseCreateOrConnectWithoutOrganizationInput | Prisma.PlannedPurchaseCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.PlannedPurchaseCreateManyOrganizationInputEnvelope
-  connect?: Prisma.PlannedPurchaseWhereUniqueInput | Prisma.PlannedPurchaseWhereUniqueInput[]
-}
-
-export type PlannedPurchaseUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutOrganizationInput, Prisma.PlannedPurchaseUncheckedCreateWithoutOrganizationInput> | Prisma.PlannedPurchaseCreateWithoutOrganizationInput[] | Prisma.PlannedPurchaseUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.PlannedPurchaseCreateOrConnectWithoutOrganizationInput | Prisma.PlannedPurchaseCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.PlannedPurchaseUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.PlannedPurchaseUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.PlannedPurchaseCreateManyOrganizationInputEnvelope
-  set?: Prisma.PlannedPurchaseWhereUniqueInput | Prisma.PlannedPurchaseWhereUniqueInput[]
-  disconnect?: Prisma.PlannedPurchaseWhereUniqueInput | Prisma.PlannedPurchaseWhereUniqueInput[]
-  delete?: Prisma.PlannedPurchaseWhereUniqueInput | Prisma.PlannedPurchaseWhereUniqueInput[]
-  connect?: Prisma.PlannedPurchaseWhereUniqueInput | Prisma.PlannedPurchaseWhereUniqueInput[]
-  update?: Prisma.PlannedPurchaseUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.PlannedPurchaseUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.PlannedPurchaseUpdateManyWithWhereWithoutOrganizationInput | Prisma.PlannedPurchaseUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.PlannedPurchaseScalarWhereInput | Prisma.PlannedPurchaseScalarWhereInput[]
-}
-
-export type PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutOrganizationInput, Prisma.PlannedPurchaseUncheckedCreateWithoutOrganizationInput> | Prisma.PlannedPurchaseCreateWithoutOrganizationInput[] | Prisma.PlannedPurchaseUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.PlannedPurchaseCreateOrConnectWithoutOrganizationInput | Prisma.PlannedPurchaseCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.PlannedPurchaseUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.PlannedPurchaseUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.PlannedPurchaseCreateManyOrganizationInputEnvelope
-  set?: Prisma.PlannedPurchaseWhereUniqueInput | Prisma.PlannedPurchaseWhereUniqueInput[]
-  disconnect?: Prisma.PlannedPurchaseWhereUniqueInput | Prisma.PlannedPurchaseWhereUniqueInput[]
-  delete?: Prisma.PlannedPurchaseWhereUniqueInput | Prisma.PlannedPurchaseWhereUniqueInput[]
-  connect?: Prisma.PlannedPurchaseWhereUniqueInput | Prisma.PlannedPurchaseWhereUniqueInput[]
-  update?: Prisma.PlannedPurchaseUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.PlannedPurchaseUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.PlannedPurchaseUpdateManyWithWhereWithoutOrganizationInput | Prisma.PlannedPurchaseUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.PlannedPurchaseScalarWhereInput | Prisma.PlannedPurchaseScalarWhereInput[]
-}
-
-export type PlannedPurchaseCreateNestedOneWithoutActualTransactionInput = {
-  create?: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutActualTransactionInput, Prisma.PlannedPurchaseUncheckedCreateWithoutActualTransactionInput>
-  connectOrCreate?: Prisma.PlannedPurchaseCreateOrConnectWithoutActualTransactionInput
-  connect?: Prisma.PlannedPurchaseWhereUniqueInput
-}
-
-export type PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput = {
-  create?: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutActualTransactionInput, Prisma.PlannedPurchaseUncheckedCreateWithoutActualTransactionInput>
-  connectOrCreate?: Prisma.PlannedPurchaseCreateOrConnectWithoutActualTransactionInput
-  connect?: Prisma.PlannedPurchaseWhereUniqueInput
-}
-
-export type PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput = {
-  create?: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutActualTransactionInput, Prisma.PlannedPurchaseUncheckedCreateWithoutActualTransactionInput>
-  connectOrCreate?: Prisma.PlannedPurchaseCreateOrConnectWithoutActualTransactionInput
-  upsert?: Prisma.PlannedPurchaseUpsertWithoutActualTransactionInput
-  disconnect?: Prisma.PlannedPurchaseWhereInput | boolean
-  delete?: Prisma.PlannedPurchaseWhereInput | boolean
-  connect?: Prisma.PlannedPurchaseWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.PlannedPurchaseUpdateToOneWithWhereWithoutActualTransactionInput, Prisma.PlannedPurchaseUpdateWithoutActualTransactionInput>, Prisma.PlannedPurchaseUncheckedUpdateWithoutActualTransactionInput>
-}
-
-export type PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput = {
-  create?: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutActualTransactionInput, Prisma.PlannedPurchaseUncheckedCreateWithoutActualTransactionInput>
-  connectOrCreate?: Prisma.PlannedPurchaseCreateOrConnectWithoutActualTransactionInput
-  upsert?: Prisma.PlannedPurchaseUpsertWithoutActualTransactionInput
-  disconnect?: Prisma.PlannedPurchaseWhereInput | boolean
-  delete?: Prisma.PlannedPurchaseWhereInput | boolean
-  connect?: Prisma.PlannedPurchaseWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.PlannedPurchaseUpdateToOneWithWhereWithoutActualTransactionInput, Prisma.PlannedPurchaseUpdateWithoutActualTransactionInput>, Prisma.PlannedPurchaseUncheckedUpdateWithoutActualTransactionInput>
-}
-
 export type EnumPurchaseStatusFieldUpdateOperationsInput = {
   set?: $Enums.PurchaseStatus
 }
@@ -916,531 +817,10 @@ export type NullableDecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
-export type PlannedPurchaseCreateNestedOneWithoutImagesInput = {
-  create?: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutImagesInput, Prisma.PlannedPurchaseUncheckedCreateWithoutImagesInput>
-  connectOrCreate?: Prisma.PlannedPurchaseCreateOrConnectWithoutImagesInput
-  connect?: Prisma.PlannedPurchaseWhereUniqueInput
-}
-
-export type PlannedPurchaseUpdateOneRequiredWithoutImagesNestedInput = {
-  create?: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutImagesInput, Prisma.PlannedPurchaseUncheckedCreateWithoutImagesInput>
-  connectOrCreate?: Prisma.PlannedPurchaseCreateOrConnectWithoutImagesInput
-  upsert?: Prisma.PlannedPurchaseUpsertWithoutImagesInput
-  connect?: Prisma.PlannedPurchaseWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.PlannedPurchaseUpdateToOneWithWhereWithoutImagesInput, Prisma.PlannedPurchaseUpdateWithoutImagesInput>, Prisma.PlannedPurchaseUncheckedUpdateWithoutImagesInput>
-}
-
-export type PlannedPurchaseCreateWithoutOrganizationInput = {
-  id?: string
-  title: string
-  description: string
-  estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Date | string | null
-  category?: string | null
-  status?: $Enums.PurchaseStatus
-  priority?: $Enums.PurchasePriority
-  actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Date | string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  actualTransaction?: Prisma.TransactionCreateNestedOneWithoutPlannedPurchaseInput
-  images?: Prisma.PurchaseImageCreateNestedManyWithoutPlannedPurchaseInput
-}
-
-export type PlannedPurchaseUncheckedCreateWithoutOrganizationInput = {
-  id?: string
-  title: string
-  description: string
-  estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Date | string | null
-  category?: string | null
-  status?: $Enums.PurchaseStatus
-  priority?: $Enums.PurchasePriority
-  actualTransactionId?: string | null
-  actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Date | string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  images?: Prisma.PurchaseImageUncheckedCreateNestedManyWithoutPlannedPurchaseInput
-}
-
-export type PlannedPurchaseCreateOrConnectWithoutOrganizationInput = {
-  where: Prisma.PlannedPurchaseWhereUniqueInput
-  create: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutOrganizationInput, Prisma.PlannedPurchaseUncheckedCreateWithoutOrganizationInput>
-}
-
-export type PlannedPurchaseCreateManyOrganizationInputEnvelope = {
-  data: Prisma.PlannedPurchaseCreateManyOrganizationInput | Prisma.PlannedPurchaseCreateManyOrganizationInput[]
-  skipDuplicates?: boolean
-}
-
-export type PlannedPurchaseUpsertWithWhereUniqueWithoutOrganizationInput = {
-  where: Prisma.PlannedPurchaseWhereUniqueInput
-  update: Prisma.XOR<Prisma.PlannedPurchaseUpdateWithoutOrganizationInput, Prisma.PlannedPurchaseUncheckedUpdateWithoutOrganizationInput>
-  create: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutOrganizationInput, Prisma.PlannedPurchaseUncheckedCreateWithoutOrganizationInput>
-}
-
-export type PlannedPurchaseUpdateWithWhereUniqueWithoutOrganizationInput = {
-  where: Prisma.PlannedPurchaseWhereUniqueInput
-  data: Prisma.XOR<Prisma.PlannedPurchaseUpdateWithoutOrganizationInput, Prisma.PlannedPurchaseUncheckedUpdateWithoutOrganizationInput>
-}
-
-export type PlannedPurchaseUpdateManyWithWhereWithoutOrganizationInput = {
-  where: Prisma.PlannedPurchaseScalarWhereInput
-  data: Prisma.XOR<Prisma.PlannedPurchaseUpdateManyMutationInput, Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationInput>
-}
-
-export type PlannedPurchaseScalarWhereInput = {
-  AND?: Prisma.PlannedPurchaseScalarWhereInput | Prisma.PlannedPurchaseScalarWhereInput[]
-  OR?: Prisma.PlannedPurchaseScalarWhereInput[]
-  NOT?: Prisma.PlannedPurchaseScalarWhereInput | Prisma.PlannedPurchaseScalarWhereInput[]
-  id?: Prisma.StringFilter<"PlannedPurchase"> | string
-  organizationId?: Prisma.StringFilter<"PlannedPurchase"> | string
-  title?: Prisma.StringFilter<"PlannedPurchase"> | string
-  description?: Prisma.StringFilter<"PlannedPurchase"> | string
-  estimatedAmount?: Prisma.DecimalFilter<"PlannedPurchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Prisma.DateTimeNullableFilter<"PlannedPurchase"> | Date | string | null
-  category?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
-  status?: Prisma.EnumPurchaseStatusFilter<"PlannedPurchase"> | $Enums.PurchaseStatus
-  priority?: Prisma.EnumPurchasePriorityFilter<"PlannedPurchase"> | $Enums.PurchasePriority
-  actualTransactionId?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
-  actualAmount?: Prisma.DecimalNullableFilter<"PlannedPurchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Prisma.DateTimeNullableFilter<"PlannedPurchase"> | Date | string | null
-  versionId?: Prisma.StringFilter<"PlannedPurchase"> | string
-  previousVersionId?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
-  validFrom?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
-  validTo?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
-  systemFrom?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
-  systemTo?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
-  isDeleted?: Prisma.BoolFilter<"PlannedPurchase"> | boolean
-  deletedAt?: Prisma.DateTimeNullableFilter<"PlannedPurchase"> | Date | string | null
-  deletedBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
-  changedBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"PlannedPurchase"> | Date | string
-  createdBy?: Prisma.StringNullableFilter<"PlannedPurchase"> | string | null
-}
-
-export type PlannedPurchaseCreateWithoutActualTransactionInput = {
-  id?: string
-  title: string
-  description: string
-  estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Date | string | null
-  category?: string | null
-  status?: $Enums.PurchaseStatus
-  priority?: $Enums.PurchasePriority
-  actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Date | string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  organization: Prisma.OrganizationCreateNestedOneWithoutPlannedPurchasesInput
-  images?: Prisma.PurchaseImageCreateNestedManyWithoutPlannedPurchaseInput
-}
-
-export type PlannedPurchaseUncheckedCreateWithoutActualTransactionInput = {
-  id?: string
-  organizationId: string
-  title: string
-  description: string
-  estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Date | string | null
-  category?: string | null
-  status?: $Enums.PurchaseStatus
-  priority?: $Enums.PurchasePriority
-  actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Date | string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  images?: Prisma.PurchaseImageUncheckedCreateNestedManyWithoutPlannedPurchaseInput
-}
-
-export type PlannedPurchaseCreateOrConnectWithoutActualTransactionInput = {
-  where: Prisma.PlannedPurchaseWhereUniqueInput
-  create: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutActualTransactionInput, Prisma.PlannedPurchaseUncheckedCreateWithoutActualTransactionInput>
-}
-
-export type PlannedPurchaseUpsertWithoutActualTransactionInput = {
-  update: Prisma.XOR<Prisma.PlannedPurchaseUpdateWithoutActualTransactionInput, Prisma.PlannedPurchaseUncheckedUpdateWithoutActualTransactionInput>
-  create: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutActualTransactionInput, Prisma.PlannedPurchaseUncheckedCreateWithoutActualTransactionInput>
-  where?: Prisma.PlannedPurchaseWhereInput
-}
-
-export type PlannedPurchaseUpdateToOneWithWhereWithoutActualTransactionInput = {
-  where?: Prisma.PlannedPurchaseWhereInput
-  data: Prisma.XOR<Prisma.PlannedPurchaseUpdateWithoutActualTransactionInput, Prisma.PlannedPurchaseUncheckedUpdateWithoutActualTransactionInput>
-}
-
-export type PlannedPurchaseUpdateWithoutActualTransactionInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPurchaseStatusFieldUpdateOperationsInput | $Enums.PurchaseStatus
-  priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
-  actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutPlannedPurchasesNestedInput
-  images?: Prisma.PurchaseImageUpdateManyWithoutPlannedPurchaseNestedInput
-}
-
-export type PlannedPurchaseUncheckedUpdateWithoutActualTransactionInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPurchaseStatusFieldUpdateOperationsInput | $Enums.PurchaseStatus
-  priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
-  actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.PurchaseImageUncheckedUpdateManyWithoutPlannedPurchaseNestedInput
-}
-
-export type PlannedPurchaseCreateWithoutImagesInput = {
-  id?: string
-  title: string
-  description: string
-  estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Date | string | null
-  category?: string | null
-  status?: $Enums.PurchaseStatus
-  priority?: $Enums.PurchasePriority
-  actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Date | string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-  organization: Prisma.OrganizationCreateNestedOneWithoutPlannedPurchasesInput
-  actualTransaction?: Prisma.TransactionCreateNestedOneWithoutPlannedPurchaseInput
-}
-
-export type PlannedPurchaseUncheckedCreateWithoutImagesInput = {
-  id?: string
-  organizationId: string
-  title: string
-  description: string
-  estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Date | string | null
-  category?: string | null
-  status?: $Enums.PurchaseStatus
-  priority?: $Enums.PurchasePriority
-  actualTransactionId?: string | null
-  actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Date | string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-}
-
-export type PlannedPurchaseCreateOrConnectWithoutImagesInput = {
-  where: Prisma.PlannedPurchaseWhereUniqueInput
-  create: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutImagesInput, Prisma.PlannedPurchaseUncheckedCreateWithoutImagesInput>
-}
-
-export type PlannedPurchaseUpsertWithoutImagesInput = {
-  update: Prisma.XOR<Prisma.PlannedPurchaseUpdateWithoutImagesInput, Prisma.PlannedPurchaseUncheckedUpdateWithoutImagesInput>
-  create: Prisma.XOR<Prisma.PlannedPurchaseCreateWithoutImagesInput, Prisma.PlannedPurchaseUncheckedCreateWithoutImagesInput>
-  where?: Prisma.PlannedPurchaseWhereInput
-}
-
-export type PlannedPurchaseUpdateToOneWithWhereWithoutImagesInput = {
-  where?: Prisma.PlannedPurchaseWhereInput
-  data: Prisma.XOR<Prisma.PlannedPurchaseUpdateWithoutImagesInput, Prisma.PlannedPurchaseUncheckedUpdateWithoutImagesInput>
-}
-
-export type PlannedPurchaseUpdateWithoutImagesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPurchaseStatusFieldUpdateOperationsInput | $Enums.PurchaseStatus
-  priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
-  actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutPlannedPurchasesNestedInput
-  actualTransaction?: Prisma.TransactionUpdateOneWithoutPlannedPurchaseNestedInput
-}
-
-export type PlannedPurchaseUncheckedUpdateWithoutImagesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPurchaseStatusFieldUpdateOperationsInput | $Enums.PurchaseStatus
-  priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
-  actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type PlannedPurchaseCreateManyOrganizationInput = {
-  id?: string
-  title: string
-  description: string
-  estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Date | string | null
-  category?: string | null
-  status?: $Enums.PurchaseStatus
-  priority?: $Enums.PurchasePriority
-  actualTransactionId?: string | null
-  actualAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Date | string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy?: string | null
-}
-
-export type PlannedPurchaseUpdateWithoutOrganizationInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPurchaseStatusFieldUpdateOperationsInput | $Enums.PurchaseStatus
-  priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
-  actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  actualTransaction?: Prisma.TransactionUpdateOneWithoutPlannedPurchaseNestedInput
-  images?: Prisma.PurchaseImageUpdateManyWithoutPlannedPurchaseNestedInput
-}
-
-export type PlannedPurchaseUncheckedUpdateWithoutOrganizationInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPurchaseStatusFieldUpdateOperationsInput | $Enums.PurchaseStatus
-  priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
-  actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  images?: Prisma.PurchaseImageUncheckedUpdateManyWithoutPlannedPurchaseNestedInput
-}
-
-export type PlannedPurchaseUncheckedUpdateManyWithoutOrganizationInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPurchaseStatusFieldUpdateOperationsInput | $Enums.PurchaseStatus
-  priority?: Prisma.EnumPurchasePriorityFieldUpdateOperationsInput | $Enums.PurchasePriority
-  actualTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  actualAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-
-/**
- * Count Type PlannedPurchaseCountOutputType
- */
-
-export type PlannedPurchaseCountOutputType = {
-  images: number
-}
-
-export type PlannedPurchaseCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  images?: boolean | PlannedPurchaseCountOutputTypeCountImagesArgs
-}
-
-/**
- * PlannedPurchaseCountOutputType without action
- */
-export type PlannedPurchaseCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PlannedPurchaseCountOutputType
-   */
-  select?: Prisma.PlannedPurchaseCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * PlannedPurchaseCountOutputType without action
- */
-export type PlannedPurchaseCountOutputTypeCountImagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PurchaseImageWhereInput
-}
 
 
 export type PlannedPurchaseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  versionId?: boolean
   id?: boolean
   organizationId?: boolean
   title?: boolean
@@ -1453,7 +833,6 @@ export type PlannedPurchaseSelect<ExtArgs extends runtime.Types.Extensions.Inter
   actualTransactionId?: boolean
   actualAmount?: boolean
   completedAt?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -1466,13 +845,10 @@ export type PlannedPurchaseSelect<ExtArgs extends runtime.Types.Extensions.Inter
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  actualTransaction?: boolean | Prisma.PlannedPurchase$actualTransactionArgs<ExtArgs>
-  images?: boolean | Prisma.PlannedPurchase$imagesArgs<ExtArgs>
-  _count?: boolean | Prisma.PlannedPurchaseCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["plannedPurchase"]>
 
 export type PlannedPurchaseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  versionId?: boolean
   id?: boolean
   organizationId?: boolean
   title?: boolean
@@ -1485,7 +861,6 @@ export type PlannedPurchaseSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   actualTransactionId?: boolean
   actualAmount?: boolean
   completedAt?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -1498,11 +873,10 @@ export type PlannedPurchaseSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  actualTransaction?: boolean | Prisma.PlannedPurchase$actualTransactionArgs<ExtArgs>
 }, ExtArgs["result"]["plannedPurchase"]>
 
 export type PlannedPurchaseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  versionId?: boolean
   id?: boolean
   organizationId?: boolean
   title?: boolean
@@ -1515,7 +889,6 @@ export type PlannedPurchaseSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   actualTransactionId?: boolean
   actualAmount?: boolean
   completedAt?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -1528,11 +901,10 @@ export type PlannedPurchaseSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  actualTransaction?: boolean | Prisma.PlannedPurchase$actualTransactionArgs<ExtArgs>
 }, ExtArgs["result"]["plannedPurchase"]>
 
 export type PlannedPurchaseSelectScalar = {
+  versionId?: boolean
   id?: boolean
   organizationId?: boolean
   title?: boolean
@@ -1545,7 +917,6 @@ export type PlannedPurchaseSelectScalar = {
   actualTransactionId?: boolean
   actualAmount?: boolean
   completedAt?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -1560,30 +931,13 @@ export type PlannedPurchaseSelectScalar = {
   createdBy?: boolean
 }
 
-export type PlannedPurchaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "title" | "description" | "estimatedAmount" | "targetDate" | "category" | "status" | "priority" | "actualTransactionId" | "actualAmount" | "completedAt" | "versionId" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt" | "createdBy", ExtArgs["result"]["plannedPurchase"]>
-export type PlannedPurchaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  actualTransaction?: boolean | Prisma.PlannedPurchase$actualTransactionArgs<ExtArgs>
-  images?: boolean | Prisma.PlannedPurchase$imagesArgs<ExtArgs>
-  _count?: boolean | Prisma.PlannedPurchaseCountOutputTypeDefaultArgs<ExtArgs>
-}
-export type PlannedPurchaseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  actualTransaction?: boolean | Prisma.PlannedPurchase$actualTransactionArgs<ExtArgs>
-}
-export type PlannedPurchaseIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  actualTransaction?: boolean | Prisma.PlannedPurchase$actualTransactionArgs<ExtArgs>
-}
+export type PlannedPurchaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "organizationId" | "title" | "description" | "estimatedAmount" | "targetDate" | "category" | "status" | "priority" | "actualTransactionId" | "actualAmount" | "completedAt" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt" | "createdBy", ExtArgs["result"]["plannedPurchase"]>
 
 export type $PlannedPurchasePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PlannedPurchase"
-  objects: {
-    organization: Prisma.$OrganizationPayload<ExtArgs>
-    actualTransaction: Prisma.$TransactionPayload<ExtArgs> | null
-    images: Prisma.$PurchaseImagePayload<ExtArgs>[]
-  }
+  objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
+    versionId: string
     id: string
     organizationId: string
     title: string
@@ -1596,7 +950,6 @@ export type $PlannedPurchasePayload<ExtArgs extends runtime.Types.Extensions.Int
     actualTransactionId: string | null
     actualAmount: runtime.Decimal | null
     completedAt: Date | null
-    versionId: string
     previousVersionId: string | null
     validFrom: Date
     validTo: Date
@@ -1692,8 +1045,8 @@ export interface PlannedPurchaseDelegate<ExtArgs extends runtime.Types.Extension
    * // Get first 10 PlannedPurchases
    * const plannedPurchases = await prisma.plannedPurchase.findMany({ take: 10 })
    * 
-   * // Only select the `id`
-   * const plannedPurchaseWithIdOnly = await prisma.plannedPurchase.findMany({ select: { id: true } })
+   * // Only select the `versionId`
+   * const plannedPurchaseWithVersionIdOnly = await prisma.plannedPurchase.findMany({ select: { versionId: true } })
    * 
    */
   findMany<T extends PlannedPurchaseFindManyArgs>(args?: Prisma.SelectSubset<T, PlannedPurchaseFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlannedPurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -1737,9 +1090,9 @@ export interface PlannedPurchaseDelegate<ExtArgs extends runtime.Types.Extension
    *   ]
    * })
    * 
-   * // Create many PlannedPurchases and only return the `id`
-   * const plannedPurchaseWithIdOnly = await prisma.plannedPurchase.createManyAndReturn({
-   *   select: { id: true },
+   * // Create many PlannedPurchases and only return the `versionId`
+   * const plannedPurchaseWithVersionIdOnly = await prisma.plannedPurchase.createManyAndReturn({
+   *   select: { versionId: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -1828,9 +1181,9 @@ export interface PlannedPurchaseDelegate<ExtArgs extends runtime.Types.Extension
    *   ]
    * })
    * 
-   * // Update zero or more PlannedPurchases and only return the `id`
-   * const plannedPurchaseWithIdOnly = await prisma.plannedPurchase.updateManyAndReturn({
-   *   select: { id: true },
+   * // Update zero or more PlannedPurchases and only return the `versionId`
+   * const plannedPurchaseWithVersionIdOnly = await prisma.plannedPurchase.updateManyAndReturn({
+   *   select: { versionId: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -2003,9 +1356,6 @@ readonly fields: PlannedPurchaseFieldRefs;
  */
 export interface Prisma__PlannedPurchaseClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  actualTransaction<T extends Prisma.PlannedPurchase$actualTransactionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlannedPurchase$actualTransactionArgs<ExtArgs>>): Prisma.Prisma__TransactionClient<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  images<T extends Prisma.PlannedPurchase$imagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlannedPurchase$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PurchaseImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2035,6 +1385,7 @@ export interface Prisma__PlannedPurchaseClient<T, Null = never, ExtArgs extends 
  * Fields of the PlannedPurchase model
  */
 export interface PlannedPurchaseFieldRefs {
+  readonly versionId: Prisma.FieldRef<"PlannedPurchase", 'String'>
   readonly id: Prisma.FieldRef<"PlannedPurchase", 'String'>
   readonly organizationId: Prisma.FieldRef<"PlannedPurchase", 'String'>
   readonly title: Prisma.FieldRef<"PlannedPurchase", 'String'>
@@ -2047,7 +1398,6 @@ export interface PlannedPurchaseFieldRefs {
   readonly actualTransactionId: Prisma.FieldRef<"PlannedPurchase", 'String'>
   readonly actualAmount: Prisma.FieldRef<"PlannedPurchase", 'Decimal'>
   readonly completedAt: Prisma.FieldRef<"PlannedPurchase", 'DateTime'>
-  readonly versionId: Prisma.FieldRef<"PlannedPurchase", 'String'>
   readonly previousVersionId: Prisma.FieldRef<"PlannedPurchase", 'String'>
   readonly validFrom: Prisma.FieldRef<"PlannedPurchase", 'DateTime'>
   readonly validTo: Prisma.FieldRef<"PlannedPurchase", 'DateTime'>
@@ -2077,10 +1427,6 @@ export type PlannedPurchaseFindUniqueArgs<ExtArgs extends runtime.Types.Extensio
    */
   omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
-  /**
    * Filter, which PlannedPurchase to fetch.
    */
   where: Prisma.PlannedPurchaseWhereUniqueInput
@@ -2099,10 +1445,6 @@ export type PlannedPurchaseFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.E
    */
   omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
-  /**
    * Filter, which PlannedPurchase to fetch.
    */
   where: Prisma.PlannedPurchaseWhereUniqueInput
@@ -2120,10 +1462,6 @@ export type PlannedPurchaseFindFirstArgs<ExtArgs extends runtime.Types.Extension
    * Omit specific fields from the PlannedPurchase
    */
   omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
   /**
    * Filter, which PlannedPurchase to fetch.
    */
@@ -2173,10 +1511,6 @@ export type PlannedPurchaseFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Ex
    */
   omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
-  /**
    * Filter, which PlannedPurchase to fetch.
    */
   where?: Prisma.PlannedPurchaseWhereInput
@@ -2225,10 +1559,6 @@ export type PlannedPurchaseFindManyArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
-  /**
    * Filter, which PlannedPurchases to fetch.
    */
   where?: Prisma.PlannedPurchaseWhereInput
@@ -2272,10 +1602,6 @@ export type PlannedPurchaseCreateArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
-  /**
    * The data needed to create a PlannedPurchase.
    */
   data: Prisma.XOR<Prisma.PlannedPurchaseCreateInput, Prisma.PlannedPurchaseUncheckedCreateInput>
@@ -2309,10 +1635,6 @@ export type PlannedPurchaseCreateManyAndReturnArgs<ExtArgs extends runtime.Types
    */
   data: Prisma.PlannedPurchaseCreateManyInput | Prisma.PlannedPurchaseCreateManyInput[]
   skipDuplicates?: boolean
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -2327,10 +1649,6 @@ export type PlannedPurchaseUpdateArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the PlannedPurchase
    */
   omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
   /**
    * The data needed to update a PlannedPurchase.
    */
@@ -2383,10 +1701,6 @@ export type PlannedPurchaseUpdateManyAndReturnArgs<ExtArgs extends runtime.Types
    * Limit how many PlannedPurchases to update.
    */
   limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -2401,10 +1715,6 @@ export type PlannedPurchaseUpsertArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the PlannedPurchase
    */
   omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
   /**
    * The filter to search for the PlannedPurchase to update in case it exists.
    */
@@ -2432,10 +1742,6 @@ export type PlannedPurchaseDeleteArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
-  /**
    * Filter which PlannedPurchase to delete.
    */
   where: Prisma.PlannedPurchaseWhereUniqueInput
@@ -2456,49 +1762,6 @@ export type PlannedPurchaseDeleteManyArgs<ExtArgs extends runtime.Types.Extensio
 }
 
 /**
- * PlannedPurchase.actualTransaction
- */
-export type PlannedPurchase$actualTransactionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Transaction
-   */
-  select?: Prisma.TransactionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Transaction
-   */
-  omit?: Prisma.TransactionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TransactionInclude<ExtArgs> | null
-  where?: Prisma.TransactionWhereInput
-}
-
-/**
- * PlannedPurchase.images
- */
-export type PlannedPurchase$imagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PurchaseImage
-   */
-  select?: Prisma.PurchaseImageSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PurchaseImage
-   */
-  omit?: Prisma.PurchaseImageOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageInclude<ExtArgs> | null
-  where?: Prisma.PurchaseImageWhereInput
-  orderBy?: Prisma.PurchaseImageOrderByWithRelationInput | Prisma.PurchaseImageOrderByWithRelationInput[]
-  cursor?: Prisma.PurchaseImageWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.PurchaseImageScalarFieldEnum | Prisma.PurchaseImageScalarFieldEnum[]
-}
-
-/**
  * PlannedPurchase without action
  */
 export type PlannedPurchaseDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2510,8 +1773,4 @@ export type PlannedPurchaseDefaultArgs<ExtArgs extends runtime.Types.Extensions.
    * Omit specific fields from the PlannedPurchase
    */
   omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
 }

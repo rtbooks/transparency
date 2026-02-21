@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { getBill, updateBill, cancelBill } from '@/services/bill.service';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
 
 const updateBillSchema = z.object({
@@ -31,18 +32,18 @@ export async function GET(
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: { where: { userId: user.id } },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
-    if (!organization.organizationUsers[0]) {
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    if (!orgUsers[0]) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
@@ -79,18 +80,18 @@ export async function PATCH(
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: { where: { userId: user.id } },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
-    const orgUser = organization.organizationUsers[0];
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const orgUser = orgUsers[0];
     if (!orgUser || orgUser.role === 'DONOR') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }

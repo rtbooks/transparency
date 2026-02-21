@@ -7,6 +7,7 @@
 import { prisma } from '@/lib/prisma';
 import { UserRole } from '@/generated/prisma/client';
 import { hasRole, hasPermission, RolePermissions, getRolePermissions } from './permissions';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 export interface UserOrgAccess {
   userId: string;
@@ -23,7 +24,6 @@ export async function getUserOrgAccess(
   clerkUserId: string,
   organizationSlug: string
 ): Promise<UserOrgAccess | null> {
-  // Find user in database
   const user = await prisma.user.findUnique({
     where: { authId: clerkUserId },
   });
@@ -32,21 +32,23 @@ export async function getUserOrgAccess(
     return null;
   }
 
-  // Find organization and user's access
-  const organization = await prisma.organization.findUnique({
-    where: { slug: organizationSlug },
-    include: {
-      organizationUsers: {
-        where: { userId: user.id },
-      },
-    },
+  const organization = await prisma.organization.findFirst({
+    where: buildCurrentVersionWhere({ slug: organizationSlug }),
   });
 
-  if (!organization || organization.organizationUsers.length === 0) {
+  if (!organization) {
     return null;
   }
 
-  const orgUser = organization.organizationUsers[0];
+  const orgUsers = await prisma.organizationUser.findMany({
+    where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+  });
+
+  if (orgUsers.length === 0) {
+    return null;
+  }
+
+  const orgUser = orgUsers[0];
   const permissions = getRolePermissions(orgUser.role);
 
   return {
@@ -145,8 +147,8 @@ export async function getUserOrgAccessOrPlatformAdmin(
 
   // Platform admins have full access
   if (user.isPlatformAdmin) {
-    const organization = await prisma.organization.findUnique({
-      where: { slug: organizationSlug },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug: organizationSlug }),
       select: { id: true },
     });
 

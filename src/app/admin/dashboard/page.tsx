@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,25 +18,47 @@ export default async function AdminDashboard() {
     totalTransactions,
     recentOrganizations,
   ] = await Promise.all([
-    prisma.organization.count(),
+    prisma.organization.count({ where: buildCurrentVersionWhere({}) }),
     prisma.user.count(),
-    prisma.transaction.count(),
+    prisma.transaction.count({ where: buildCurrentVersionWhere({}) }),
     prisma.organization.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
-      include: {
-        _count: {
-          select: {
-            organizationUsers: true,
-            transactions: true,
-          },
-        },
-      },
+      where: buildCurrentVersionWhere({}),
     }),
   ]);
 
+  // Fetch counts for recent orgs separately
+  const recentOrgIds = recentOrganizations.map(org => org.id);
+  const [recentOrgUserCounts, recentTxCounts] = recentOrgIds.length > 0
+    ? await Promise.all([
+        prisma.organizationUser.groupBy({
+          by: ['organizationId'],
+          where: buildCurrentVersionWhere({ organizationId: { in: recentOrgIds } }),
+          _count: true,
+        }),
+        prisma.transaction.groupBy({
+          by: ['organizationId'],
+          where: buildCurrentVersionWhere({ organizationId: { in: recentOrgIds } }),
+          _count: true,
+        }),
+      ])
+    : [[], []];
+
+  const recentOrgUserCountMap = new Map(recentOrgUserCounts.map(c => [c.organizationId, c._count]));
+  const recentTxCountMap = new Map(recentTxCounts.map(c => [c.organizationId, c._count]));
+
+  const recentOrgsWithCounts = recentOrganizations.map(org => ({
+    ...org,
+    _count: {
+      organizationUsers: recentOrgUserCountMap.get(org.id) || 0,
+      transactions: recentTxCountMap.get(org.id) || 0,
+    },
+  }));
+
   // Calculate total transaction value
   const transactionSum = await prisma.transaction.aggregate({
+    where: buildCurrentVersionWhere({}),
     _sum: {
       amount: true,
     },
@@ -129,12 +152,12 @@ export default async function AdminDashboard() {
           </div>
         </div>
         <div className="divide-y divide-gray-200">
-          {recentOrganizations.length === 0 ? (
+          {recentOrgsWithCounts.length === 0 ? (
             <div className="px-6 py-8 text-center text-gray-500">
               No organizations yet
             </div>
           ) : (
-            recentOrganizations.map((org) => (
+            recentOrgsWithCounts.map((org) => (
               <div
                 key={org.id}
                 className="px-6 py-4 flex items-center justify-between hover:bg-gray-50"

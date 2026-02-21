@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { recordPayment, linkPayment } from '@/services/bill-payment.service';
 import { recalculateBillStatus } from '@/services/bill.service';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
 
 const dateString = z.string().refine(
@@ -44,18 +45,18 @@ export async function POST(
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: { where: { userId: user.id } },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
-    const orgUser = organization.organizationUsers[0];
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const orgUser = orgUsers[0];
     if (!orgUser || orgUser.role === 'DONOR') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
@@ -80,7 +81,7 @@ export async function POST(
 
     // Verify cash account belongs to this organization
     const cashAccount = await prisma.account.findFirst({
-      where: { id: validated.cashAccountId, organizationId: organization.id },
+      where: buildCurrentVersionWhere({ id: validated.cashAccountId, organizationId: organization.id }),
     });
 
     if (!cashAccount) {

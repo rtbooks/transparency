@@ -25,6 +25,7 @@ export type AggregateOrganization = {
 }
 
 export type OrganizationMinAggregateOutputType = {
+  versionId: string | null
   id: string | null
   name: string | null
   slug: string | null
@@ -41,7 +42,6 @@ export type OrganizationMinAggregateOutputType = {
   verificationNotes: string | null
   officialWebsite: string | null
   determinationLetterUrl: string | null
-  versionId: string | null
   previousVersionId: string | null
   validFrom: Date | null
   validTo: Date | null
@@ -56,6 +56,7 @@ export type OrganizationMinAggregateOutputType = {
 }
 
 export type OrganizationMaxAggregateOutputType = {
+  versionId: string | null
   id: string | null
   name: string | null
   slug: string | null
@@ -72,7 +73,6 @@ export type OrganizationMaxAggregateOutputType = {
   verificationNotes: string | null
   officialWebsite: string | null
   determinationLetterUrl: string | null
-  versionId: string | null
   previousVersionId: string | null
   validFrom: Date | null
   validTo: Date | null
@@ -87,6 +87,7 @@ export type OrganizationMaxAggregateOutputType = {
 }
 
 export type OrganizationCountAggregateOutputType = {
+  versionId: number
   id: number
   name: number
   slug: number
@@ -103,7 +104,6 @@ export type OrganizationCountAggregateOutputType = {
   verificationNotes: number
   officialWebsite: number
   determinationLetterUrl: number
-  versionId: number
   previousVersionId: number
   validFrom: number
   validTo: number
@@ -120,6 +120,7 @@ export type OrganizationCountAggregateOutputType = {
 
 
 export type OrganizationMinAggregateInputType = {
+  versionId?: true
   id?: true
   name?: true
   slug?: true
@@ -136,7 +137,6 @@ export type OrganizationMinAggregateInputType = {
   verificationNotes?: true
   officialWebsite?: true
   determinationLetterUrl?: true
-  versionId?: true
   previousVersionId?: true
   validFrom?: true
   validTo?: true
@@ -151,6 +151,7 @@ export type OrganizationMinAggregateInputType = {
 }
 
 export type OrganizationMaxAggregateInputType = {
+  versionId?: true
   id?: true
   name?: true
   slug?: true
@@ -167,7 +168,6 @@ export type OrganizationMaxAggregateInputType = {
   verificationNotes?: true
   officialWebsite?: true
   determinationLetterUrl?: true
-  versionId?: true
   previousVersionId?: true
   validFrom?: true
   validTo?: true
@@ -182,6 +182,7 @@ export type OrganizationMaxAggregateInputType = {
 }
 
 export type OrganizationCountAggregateInputType = {
+  versionId?: true
   id?: true
   name?: true
   slug?: true
@@ -198,7 +199,6 @@ export type OrganizationCountAggregateInputType = {
   verificationNotes?: true
   officialWebsite?: true
   determinationLetterUrl?: true
-  versionId?: true
   previousVersionId?: true
   validFrom?: true
   validTo?: true
@@ -286,6 +286,7 @@ export type OrganizationGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 export type OrganizationGroupByOutputType = {
+  versionId: string
   id: string
   name: string
   slug: string
@@ -302,7 +303,6 @@ export type OrganizationGroupByOutputType = {
   verificationNotes: string | null
   officialWebsite: string | null
   determinationLetterUrl: string | null
-  versionId: string
   previousVersionId: string | null
   validFrom: Date
   validTo: Date
@@ -338,6 +338,7 @@ export type OrganizationWhereInput = {
   AND?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
   OR?: Prisma.OrganizationWhereInput[]
   NOT?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
+  versionId?: Prisma.StringFilter<"Organization"> | string
   id?: Prisma.StringFilter<"Organization"> | string
   name?: Prisma.StringFilter<"Organization"> | string
   slug?: Prisma.StringFilter<"Organization"> | string
@@ -354,7 +355,6 @@ export type OrganizationWhereInput = {
   verificationNotes?: Prisma.StringNullableFilter<"Organization"> | string | null
   officialWebsite?: Prisma.StringNullableFilter<"Organization"> | string | null
   determinationLetterUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
-  versionId?: Prisma.StringFilter<"Organization"> | string
   previousVersionId?: Prisma.StringNullableFilter<"Organization"> | string | null
   validFrom?: Prisma.DateTimeFilter<"Organization"> | Date | string
   validTo?: Prisma.DateTimeFilter<"Organization"> | Date | string
@@ -366,17 +366,10 @@ export type OrganizationWhereInput = {
   changedBy?: Prisma.StringNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
-  accounts?: Prisma.AccountListRelationFilter
-  transactions?: Prisma.TransactionListRelationFilter
-  contacts?: Prisma.ContactListRelationFilter
-  bills?: Prisma.BillListRelationFilter
-  plannedPurchases?: Prisma.PlannedPurchaseListRelationFilter
-  organizationUsers?: Prisma.OrganizationUserListRelationFilter
-  bankAccounts?: Prisma.BankAccountListRelationFilter
-  invitations?: Prisma.InvitationListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
@@ -393,7 +386,6 @@ export type OrganizationOrderByWithRelationInput = {
   verificationNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   officialWebsite?: Prisma.SortOrderInput | Prisma.SortOrder
   determinationLetterUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -405,24 +397,17 @@ export type OrganizationOrderByWithRelationInput = {
   changedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  accounts?: Prisma.AccountOrderByRelationAggregateInput
-  transactions?: Prisma.TransactionOrderByRelationAggregateInput
-  contacts?: Prisma.ContactOrderByRelationAggregateInput
-  bills?: Prisma.BillOrderByRelationAggregateInput
-  plannedPurchases?: Prisma.PlannedPurchaseOrderByRelationAggregateInput
-  organizationUsers?: Prisma.OrganizationUserOrderByRelationAggregateInput
-  bankAccounts?: Prisma.BankAccountOrderByRelationAggregateInput
-  invitations?: Prisma.InvitationOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
-  id?: string
-  slug?: string
   versionId?: string
+  id_validFrom?: Prisma.OrganizationIdValidFromCompoundUniqueInput
   AND?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
   OR?: Prisma.OrganizationWhereInput[]
   NOT?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
+  id?: Prisma.StringFilter<"Organization"> | string
   name?: Prisma.StringFilter<"Organization"> | string
+  slug?: Prisma.StringFilter<"Organization"> | string
   ein?: Prisma.StringNullableFilter<"Organization"> | string | null
   mission?: Prisma.StringNullableFilter<"Organization"> | string | null
   logoUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
@@ -447,17 +432,10 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   changedBy?: Prisma.StringNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
-  accounts?: Prisma.AccountListRelationFilter
-  transactions?: Prisma.TransactionListRelationFilter
-  contacts?: Prisma.ContactListRelationFilter
-  bills?: Prisma.BillListRelationFilter
-  plannedPurchases?: Prisma.PlannedPurchaseListRelationFilter
-  organizationUsers?: Prisma.OrganizationUserListRelationFilter
-  bankAccounts?: Prisma.BankAccountListRelationFilter
-  invitations?: Prisma.InvitationListRelationFilter
-}, "id" | "slug" | "versionId">
+}, "versionId" | "id_validFrom">
 
 export type OrganizationOrderByWithAggregationInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
@@ -474,7 +452,6 @@ export type OrganizationOrderByWithAggregationInput = {
   verificationNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   officialWebsite?: Prisma.SortOrderInput | Prisma.SortOrder
   determinationLetterUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -495,6 +472,7 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   AND?: Prisma.OrganizationScalarWhereWithAggregatesInput | Prisma.OrganizationScalarWhereWithAggregatesInput[]
   OR?: Prisma.OrganizationScalarWhereWithAggregatesInput[]
   NOT?: Prisma.OrganizationScalarWhereWithAggregatesInput | Prisma.OrganizationScalarWhereWithAggregatesInput[]
+  versionId?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   id?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   name?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Organization"> | string
@@ -511,7 +489,6 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   verificationNotes?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   officialWebsite?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   determinationLetterUrl?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
-  versionId?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   previousVersionId?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   validFrom?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
   validTo?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
@@ -526,6 +503,7 @@ export type OrganizationScalarWhereWithAggregatesInput = {
 }
 
 export type OrganizationCreateInput = {
+  versionId?: string
   id?: string
   name: string
   slug: string
@@ -542,7 +520,6 @@ export type OrganizationCreateInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
-  versionId?: string
   previousVersionId?: string | null
   validFrom?: Date | string
   validTo?: Date | string
@@ -554,17 +531,10 @@ export type OrganizationCreateInput = {
   changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
+  versionId?: string
   id?: string
   name: string
   slug: string
@@ -581,7 +551,6 @@ export type OrganizationUncheckedCreateInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
-  versionId?: string
   previousVersionId?: string | null
   validFrom?: Date | string
   validTo?: Date | string
@@ -593,17 +562,10 @@ export type OrganizationUncheckedCreateInput = {
   changedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
@@ -620,7 +582,6 @@ export type OrganizationUpdateInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -632,17 +593,10 @@ export type OrganizationUpdateInput = {
   changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
@@ -659,7 +613,6 @@ export type OrganizationUncheckedUpdateInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -671,17 +624,10 @@ export type OrganizationUncheckedUpdateInput = {
   changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
+  versionId?: string
   id?: string
   name: string
   slug: string
@@ -698,7 +644,6 @@ export type OrganizationCreateManyInput = {
   verificationNotes?: string | null
   officialWebsite?: string | null
   determinationLetterUrl?: string | null
-  versionId?: string
   previousVersionId?: string | null
   validFrom?: Date | string
   validTo?: Date | string
@@ -713,6 +658,7 @@ export type OrganizationCreateManyInput = {
 }
 
 export type OrganizationUpdateManyMutationInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
@@ -729,7 +675,6 @@ export type OrganizationUpdateManyMutationInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -744,6 +689,7 @@ export type OrganizationUpdateManyMutationInput = {
 }
 
 export type OrganizationUncheckedUpdateManyInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
@@ -760,7 +706,6 @@ export type OrganizationUncheckedUpdateManyInput = {
   verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -774,7 +719,13 @@ export type OrganizationUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type OrganizationIdValidFromCompoundUniqueInput = {
+  id: string
+  validFrom: Date | string
+}
+
 export type OrganizationCountOrderByAggregateInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
@@ -791,7 +742,6 @@ export type OrganizationCountOrderByAggregateInput = {
   verificationNotes?: Prisma.SortOrder
   officialWebsite?: Prisma.SortOrder
   determinationLetterUrl?: Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -806,6 +756,7 @@ export type OrganizationCountOrderByAggregateInput = {
 }
 
 export type OrganizationMaxOrderByAggregateInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
@@ -822,7 +773,6 @@ export type OrganizationMaxOrderByAggregateInput = {
   verificationNotes?: Prisma.SortOrder
   officialWebsite?: Prisma.SortOrder
   determinationLetterUrl?: Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -837,6 +787,7 @@ export type OrganizationMaxOrderByAggregateInput = {
 }
 
 export type OrganizationMinOrderByAggregateInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
@@ -853,7 +804,6 @@ export type OrganizationMinOrderByAggregateInput = {
   verificationNotes?: Prisma.SortOrder
   officialWebsite?: Prisma.SortOrder
   determinationLetterUrl?: Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -865,11 +815,6 @@ export type OrganizationMinOrderByAggregateInput = {
   changedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type OrganizationScalarRelationFilter = {
-  is?: Prisma.OrganizationWhereInput
-  isNot?: Prisma.OrganizationWhereInput
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -904,1557 +849,10 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type OrganizationCreateNestedOneWithoutOrganizationUsersInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutOrganizationUsersInput, Prisma.OrganizationUncheckedCreateWithoutOrganizationUsersInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutOrganizationUsersInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutOrganizationUsersNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutOrganizationUsersInput, Prisma.OrganizationUncheckedCreateWithoutOrganizationUsersInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutOrganizationUsersInput
-  upsert?: Prisma.OrganizationUpsertWithoutOrganizationUsersInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutOrganizationUsersInput, Prisma.OrganizationUpdateWithoutOrganizationUsersInput>, Prisma.OrganizationUncheckedUpdateWithoutOrganizationUsersInput>
-}
-
-export type OrganizationCreateNestedOneWithoutAccountsInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutAccountsInput, Prisma.OrganizationUncheckedCreateWithoutAccountsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutAccountsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutAccountsNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutAccountsInput, Prisma.OrganizationUncheckedCreateWithoutAccountsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutAccountsInput
-  upsert?: Prisma.OrganizationUpsertWithoutAccountsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutAccountsInput, Prisma.OrganizationUpdateWithoutAccountsInput>, Prisma.OrganizationUncheckedUpdateWithoutAccountsInput>
-}
-
-export type OrganizationCreateNestedOneWithoutTransactionsInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTransactionsInput, Prisma.OrganizationUncheckedCreateWithoutTransactionsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTransactionsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutTransactionsNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTransactionsInput, Prisma.OrganizationUncheckedCreateWithoutTransactionsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTransactionsInput
-  upsert?: Prisma.OrganizationUpsertWithoutTransactionsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutTransactionsInput, Prisma.OrganizationUpdateWithoutTransactionsInput>, Prisma.OrganizationUncheckedUpdateWithoutTransactionsInput>
-}
-
-export type OrganizationCreateNestedOneWithoutPlannedPurchasesInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPlannedPurchasesInput, Prisma.OrganizationUncheckedCreateWithoutPlannedPurchasesInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPlannedPurchasesInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutPlannedPurchasesNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPlannedPurchasesInput, Prisma.OrganizationUncheckedCreateWithoutPlannedPurchasesInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPlannedPurchasesInput
-  upsert?: Prisma.OrganizationUpsertWithoutPlannedPurchasesInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutPlannedPurchasesInput, Prisma.OrganizationUpdateWithoutPlannedPurchasesInput>, Prisma.OrganizationUncheckedUpdateWithoutPlannedPurchasesInput>
-}
-
-export type OrganizationCreateNestedOneWithoutBankAccountsInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBankAccountsInput, Prisma.OrganizationUncheckedCreateWithoutBankAccountsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBankAccountsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutBankAccountsNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBankAccountsInput, Prisma.OrganizationUncheckedCreateWithoutBankAccountsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBankAccountsInput
-  upsert?: Prisma.OrganizationUpsertWithoutBankAccountsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutBankAccountsInput, Prisma.OrganizationUpdateWithoutBankAccountsInput>, Prisma.OrganizationUncheckedUpdateWithoutBankAccountsInput>
-}
-
-export type OrganizationCreateNestedOneWithoutInvitationsInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutInvitationsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutInvitationsNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutInvitationsInput
-  upsert?: Prisma.OrganizationUpsertWithoutInvitationsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutInvitationsInput, Prisma.OrganizationUpdateWithoutInvitationsInput>, Prisma.OrganizationUncheckedUpdateWithoutInvitationsInput>
-}
-
-export type OrganizationCreateNestedOneWithoutContactsInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutContactsInput, Prisma.OrganizationUncheckedCreateWithoutContactsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutContactsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutContactsNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutContactsInput, Prisma.OrganizationUncheckedCreateWithoutContactsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutContactsInput
-  upsert?: Prisma.OrganizationUpsertWithoutContactsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutContactsInput, Prisma.OrganizationUpdateWithoutContactsInput>, Prisma.OrganizationUncheckedUpdateWithoutContactsInput>
-}
-
-export type OrganizationCreateNestedOneWithoutBillsInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBillsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutBillsNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBillsInput
-  upsert?: Prisma.OrganizationUpsertWithoutBillsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutBillsInput, Prisma.OrganizationUpdateWithoutBillsInput>, Prisma.OrganizationUncheckedUpdateWithoutBillsInput>
-}
-
-export type OrganizationCreateWithoutOrganizationUsersInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutOrganizationUsersInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutOrganizationUsersInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutOrganizationUsersInput, Prisma.OrganizationUncheckedCreateWithoutOrganizationUsersInput>
-}
-
-export type OrganizationUpsertWithoutOrganizationUsersInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutOrganizationUsersInput, Prisma.OrganizationUncheckedUpdateWithoutOrganizationUsersInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutOrganizationUsersInput, Prisma.OrganizationUncheckedCreateWithoutOrganizationUsersInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutOrganizationUsersInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutOrganizationUsersInput, Prisma.OrganizationUncheckedUpdateWithoutOrganizationUsersInput>
-}
-
-export type OrganizationUpdateWithoutOrganizationUsersInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutOrganizationUsersInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutAccountsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutAccountsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutAccountsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutAccountsInput, Prisma.OrganizationUncheckedCreateWithoutAccountsInput>
-}
-
-export type OrganizationUpsertWithoutAccountsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutAccountsInput, Prisma.OrganizationUncheckedUpdateWithoutAccountsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutAccountsInput, Prisma.OrganizationUncheckedCreateWithoutAccountsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutAccountsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutAccountsInput, Prisma.OrganizationUncheckedUpdateWithoutAccountsInput>
-}
-
-export type OrganizationUpdateWithoutAccountsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutAccountsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutTransactionsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutTransactionsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutTransactionsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTransactionsInput, Prisma.OrganizationUncheckedCreateWithoutTransactionsInput>
-}
-
-export type OrganizationUpsertWithoutTransactionsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutTransactionsInput, Prisma.OrganizationUncheckedUpdateWithoutTransactionsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTransactionsInput, Prisma.OrganizationUncheckedCreateWithoutTransactionsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutTransactionsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutTransactionsInput, Prisma.OrganizationUncheckedUpdateWithoutTransactionsInput>
-}
-
-export type OrganizationUpdateWithoutTransactionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutTransactionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutPlannedPurchasesInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutPlannedPurchasesInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutPlannedPurchasesInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPlannedPurchasesInput, Prisma.OrganizationUncheckedCreateWithoutPlannedPurchasesInput>
-}
-
-export type OrganizationUpsertWithoutPlannedPurchasesInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutPlannedPurchasesInput, Prisma.OrganizationUncheckedUpdateWithoutPlannedPurchasesInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPlannedPurchasesInput, Prisma.OrganizationUncheckedCreateWithoutPlannedPurchasesInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutPlannedPurchasesInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutPlannedPurchasesInput, Prisma.OrganizationUncheckedUpdateWithoutPlannedPurchasesInput>
-}
-
-export type OrganizationUpdateWithoutPlannedPurchasesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutPlannedPurchasesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutBankAccountsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutBankAccountsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutBankAccountsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBankAccountsInput, Prisma.OrganizationUncheckedCreateWithoutBankAccountsInput>
-}
-
-export type OrganizationUpsertWithoutBankAccountsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutBankAccountsInput, Prisma.OrganizationUncheckedUpdateWithoutBankAccountsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBankAccountsInput, Prisma.OrganizationUncheckedCreateWithoutBankAccountsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutBankAccountsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutBankAccountsInput, Prisma.OrganizationUncheckedUpdateWithoutBankAccountsInput>
-}
-
-export type OrganizationUpdateWithoutBankAccountsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutBankAccountsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutInvitationsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutInvitationsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutInvitationsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
-}
-
-export type OrganizationUpsertWithoutInvitationsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutInvitationsInput, Prisma.OrganizationUncheckedUpdateWithoutInvitationsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutInvitationsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutInvitationsInput, Prisma.OrganizationUncheckedUpdateWithoutInvitationsInput>
-}
-
-export type OrganizationUpdateWithoutInvitationsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutContactsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutContactsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
-  bills?: Prisma.BillUncheckedCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutContactsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutContactsInput, Prisma.OrganizationUncheckedCreateWithoutContactsInput>
-}
-
-export type OrganizationUpsertWithoutContactsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutContactsInput, Prisma.OrganizationUncheckedUpdateWithoutContactsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutContactsInput, Prisma.OrganizationUncheckedCreateWithoutContactsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutContactsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutContactsInput, Prisma.OrganizationUncheckedUpdateWithoutContactsInput>
-}
-
-export type OrganizationUpdateWithoutContactsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutContactsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
-  bills?: Prisma.BillUncheckedUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutBillsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutBillsInput = {
-  id?: string
-  name: string
-  slug: string
-  ein?: string | null
-  mission?: string | null
-  logoUrl?: string | null
-  fiscalYearStart?: Date | string
-  status?: $Enums.OrganizationStatus
-  subscriptionTier?: $Enums.SubscriptionTier
-  verificationStatus?: $Enums.VerificationStatus
-  einVerifiedAt?: Date | string | null
-  verifiedAt?: Date | string | null
-  verifiedBy?: string | null
-  verificationNotes?: string | null
-  officialWebsite?: string | null
-  determinationLetterUrl?: string | null
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutOrganizationInput
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrganizationInput
-  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOrganizationInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedCreateNestedManyWithoutOrganizationInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutOrganizationInput
-  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutBillsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
-}
-
-export type OrganizationUpsertWithoutBillsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutBillsInput, Prisma.OrganizationUncheckedUpdateWithoutBillsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutBillsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutBillsInput, Prisma.OrganizationUncheckedUpdateWithoutBillsInput>
-}
-
-export type OrganizationUpdateWithoutBillsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutBillsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
-  subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
-  einVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialWebsite?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  determinationLetterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrganizationNestedInput
-  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOrganizationNestedInput
-  plannedPurchases?: Prisma.PlannedPurchaseUncheckedUpdateManyWithoutOrganizationNestedInput
-  organizationUsers?: Prisma.OrganizationUserUncheckedUpdateManyWithoutOrganizationNestedInput
-  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-
-/**
- * Count Type OrganizationCountOutputType
- */
-
-export type OrganizationCountOutputType = {
-  accounts: number
-  transactions: number
-  contacts: number
-  bills: number
-  plannedPurchases: number
-  organizationUsers: number
-  bankAccounts: number
-  invitations: number
-}
-
-export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  accounts?: boolean | OrganizationCountOutputTypeCountAccountsArgs
-  transactions?: boolean | OrganizationCountOutputTypeCountTransactionsArgs
-  contacts?: boolean | OrganizationCountOutputTypeCountContactsArgs
-  bills?: boolean | OrganizationCountOutputTypeCountBillsArgs
-  plannedPurchases?: boolean | OrganizationCountOutputTypeCountPlannedPurchasesArgs
-  organizationUsers?: boolean | OrganizationCountOutputTypeCountOrganizationUsersArgs
-  bankAccounts?: boolean | OrganizationCountOutputTypeCountBankAccountsArgs
-  invitations?: boolean | OrganizationCountOutputTypeCountInvitationsArgs
-}
-
-/**
- * OrganizationCountOutputType without action
- */
-export type OrganizationCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the OrganizationCountOutputType
-   */
-  select?: Prisma.OrganizationCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * OrganizationCountOutputType without action
- */
-export type OrganizationCountOutputTypeCountAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AccountWhereInput
-}
-
-/**
- * OrganizationCountOutputType without action
- */
-export type OrganizationCountOutputTypeCountTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TransactionWhereInput
-}
-
-/**
- * OrganizationCountOutputType without action
- */
-export type OrganizationCountOutputTypeCountContactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ContactWhereInput
-}
-
-/**
- * OrganizationCountOutputType without action
- */
-export type OrganizationCountOutputTypeCountBillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.BillWhereInput
-}
-
-/**
- * OrganizationCountOutputType without action
- */
-export type OrganizationCountOutputTypeCountPlannedPurchasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PlannedPurchaseWhereInput
-}
-
-/**
- * OrganizationCountOutputType without action
- */
-export type OrganizationCountOutputTypeCountOrganizationUsersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.OrganizationUserWhereInput
-}
-
-/**
- * OrganizationCountOutputType without action
- */
-export type OrganizationCountOutputTypeCountBankAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.BankAccountWhereInput
-}
-
-/**
- * OrganizationCountOutputType without action
- */
-export type OrganizationCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.InvitationWhereInput
-}
 
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  versionId?: boolean
   id?: boolean
   name?: boolean
   slug?: boolean
@@ -2471,7 +869,6 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   verificationNotes?: boolean
   officialWebsite?: boolean
   determinationLetterUrl?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -2483,18 +880,10 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   changedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  accounts?: boolean | Prisma.Organization$accountsArgs<ExtArgs>
-  transactions?: boolean | Prisma.Organization$transactionsArgs<ExtArgs>
-  contacts?: boolean | Prisma.Organization$contactsArgs<ExtArgs>
-  bills?: boolean | Prisma.Organization$billsArgs<ExtArgs>
-  plannedPurchases?: boolean | Prisma.Organization$plannedPurchasesArgs<ExtArgs>
-  organizationUsers?: boolean | Prisma.Organization$organizationUsersArgs<ExtArgs>
-  bankAccounts?: boolean | Prisma.Organization$bankAccountsArgs<ExtArgs>
-  invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
-  _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
 export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  versionId?: boolean
   id?: boolean
   name?: boolean
   slug?: boolean
@@ -2511,7 +900,6 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   verificationNotes?: boolean
   officialWebsite?: boolean
   determinationLetterUrl?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -2526,6 +914,7 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
 }, ExtArgs["result"]["organization"]>
 
 export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  versionId?: boolean
   id?: boolean
   name?: boolean
   slug?: boolean
@@ -2542,7 +931,6 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   verificationNotes?: boolean
   officialWebsite?: boolean
   determinationLetterUrl?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -2557,6 +945,7 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
 }, ExtArgs["result"]["organization"]>
 
 export type OrganizationSelectScalar = {
+  versionId?: boolean
   id?: boolean
   name?: boolean
   slug?: boolean
@@ -2573,7 +962,6 @@ export type OrganizationSelectScalar = {
   verificationNotes?: boolean
   officialWebsite?: boolean
   determinationLetterUrl?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -2587,34 +975,13 @@ export type OrganizationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "fiscalYearStart" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "versionId" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
-export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  accounts?: boolean | Prisma.Organization$accountsArgs<ExtArgs>
-  transactions?: boolean | Prisma.Organization$transactionsArgs<ExtArgs>
-  contacts?: boolean | Prisma.Organization$contactsArgs<ExtArgs>
-  bills?: boolean | Prisma.Organization$billsArgs<ExtArgs>
-  plannedPurchases?: boolean | Prisma.Organization$plannedPurchasesArgs<ExtArgs>
-  organizationUsers?: boolean | Prisma.Organization$organizationUsersArgs<ExtArgs>
-  bankAccounts?: boolean | Prisma.Organization$bankAccountsArgs<ExtArgs>
-  invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
-  _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
-}
-export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type OrganizationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "fiscalYearStart" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 
 export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Organization"
-  objects: {
-    accounts: Prisma.$AccountPayload<ExtArgs>[]
-    transactions: Prisma.$TransactionPayload<ExtArgs>[]
-    contacts: Prisma.$ContactPayload<ExtArgs>[]
-    bills: Prisma.$BillPayload<ExtArgs>[]
-    plannedPurchases: Prisma.$PlannedPurchasePayload<ExtArgs>[]
-    organizationUsers: Prisma.$OrganizationUserPayload<ExtArgs>[]
-    bankAccounts: Prisma.$BankAccountPayload<ExtArgs>[]
-    invitations: Prisma.$InvitationPayload<ExtArgs>[]
-  }
+  objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
+    versionId: string
     id: string
     name: string
     slug: string
@@ -2631,7 +998,6 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     verificationNotes: string | null
     officialWebsite: string | null
     determinationLetterUrl: string | null
-    versionId: string
     previousVersionId: string | null
     validFrom: Date
     validTo: Date
@@ -2726,8 +1092,8 @@ export interface OrganizationDelegate<ExtArgs extends runtime.Types.Extensions.I
    * // Get first 10 Organizations
    * const organizations = await prisma.organization.findMany({ take: 10 })
    * 
-   * // Only select the `id`
-   * const organizationWithIdOnly = await prisma.organization.findMany({ select: { id: true } })
+   * // Only select the `versionId`
+   * const organizationWithVersionIdOnly = await prisma.organization.findMany({ select: { versionId: true } })
    * 
    */
   findMany<T extends OrganizationFindManyArgs>(args?: Prisma.SelectSubset<T, OrganizationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -2771,9 +1137,9 @@ export interface OrganizationDelegate<ExtArgs extends runtime.Types.Extensions.I
    *   ]
    * })
    * 
-   * // Create many Organizations and only return the `id`
-   * const organizationWithIdOnly = await prisma.organization.createManyAndReturn({
-   *   select: { id: true },
+   * // Create many Organizations and only return the `versionId`
+   * const organizationWithVersionIdOnly = await prisma.organization.createManyAndReturn({
+   *   select: { versionId: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -2862,9 +1228,9 @@ export interface OrganizationDelegate<ExtArgs extends runtime.Types.Extensions.I
    *   ]
    * })
    * 
-   * // Update zero or more Organizations and only return the `id`
-   * const organizationWithIdOnly = await prisma.organization.updateManyAndReturn({
-   *   select: { id: true },
+   * // Update zero or more Organizations and only return the `versionId`
+   * const organizationWithVersionIdOnly = await prisma.organization.updateManyAndReturn({
+   *   select: { versionId: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -3037,14 +1403,6 @@ readonly fields: OrganizationFieldRefs;
  */
 export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  accounts<T extends Prisma.Organization$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  transactions<T extends Prisma.Organization$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  contacts<T extends Prisma.Organization$contactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$contactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  bills<T extends Prisma.Organization$billsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$billsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  plannedPurchases<T extends Prisma.Organization$plannedPurchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$plannedPurchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlannedPurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  organizationUsers<T extends Prisma.Organization$organizationUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$organizationUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  bankAccounts<T extends Prisma.Organization$bankAccountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$bankAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  invitations<T extends Prisma.Organization$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3074,6 +1432,7 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
  * Fields of the Organization model
  */
 export interface OrganizationFieldRefs {
+  readonly versionId: Prisma.FieldRef<"Organization", 'String'>
   readonly id: Prisma.FieldRef<"Organization", 'String'>
   readonly name: Prisma.FieldRef<"Organization", 'String'>
   readonly slug: Prisma.FieldRef<"Organization", 'String'>
@@ -3090,7 +1449,6 @@ export interface OrganizationFieldRefs {
   readonly verificationNotes: Prisma.FieldRef<"Organization", 'String'>
   readonly officialWebsite: Prisma.FieldRef<"Organization", 'String'>
   readonly determinationLetterUrl: Prisma.FieldRef<"Organization", 'String'>
-  readonly versionId: Prisma.FieldRef<"Organization", 'String'>
   readonly previousVersionId: Prisma.FieldRef<"Organization", 'String'>
   readonly validFrom: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly validTo: Prisma.FieldRef<"Organization", 'DateTime'>
@@ -3119,10 +1477,6 @@ export type OrganizationFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.
    */
   omit?: Prisma.OrganizationOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OrganizationInclude<ExtArgs> | null
-  /**
    * Filter, which Organization to fetch.
    */
   where: Prisma.OrganizationWhereUniqueInput
@@ -3141,10 +1495,6 @@ export type OrganizationFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.OrganizationOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OrganizationInclude<ExtArgs> | null
-  /**
    * Filter, which Organization to fetch.
    */
   where: Prisma.OrganizationWhereUniqueInput
@@ -3162,10 +1512,6 @@ export type OrganizationFindFirstArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the Organization
    */
   omit?: Prisma.OrganizationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OrganizationInclude<ExtArgs> | null
   /**
    * Filter, which Organization to fetch.
    */
@@ -3215,10 +1561,6 @@ export type OrganizationFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.OrganizationOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OrganizationInclude<ExtArgs> | null
-  /**
    * Filter, which Organization to fetch.
    */
   where?: Prisma.OrganizationWhereInput
@@ -3267,10 +1609,6 @@ export type OrganizationFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.OrganizationOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OrganizationInclude<ExtArgs> | null
-  /**
    * Filter, which Organizations to fetch.
    */
   where?: Prisma.OrganizationWhereInput
@@ -3313,10 +1651,6 @@ export type OrganizationCreateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the Organization
    */
   omit?: Prisma.OrganizationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OrganizationInclude<ExtArgs> | null
   /**
    * The data needed to create a Organization.
    */
@@ -3365,10 +1699,6 @@ export type OrganizationUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the Organization
    */
   omit?: Prisma.OrganizationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OrganizationInclude<ExtArgs> | null
   /**
    * The data needed to update a Organization.
    */
@@ -3436,10 +1766,6 @@ export type OrganizationUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.OrganizationOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OrganizationInclude<ExtArgs> | null
-  /**
    * The filter to search for the Organization to update in case it exists.
    */
   where: Prisma.OrganizationWhereUniqueInput
@@ -3466,10 +1792,6 @@ export type OrganizationDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.OrganizationOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OrganizationInclude<ExtArgs> | null
-  /**
    * Filter which Organization to delete.
    */
   where: Prisma.OrganizationWhereUniqueInput
@@ -3490,198 +1812,6 @@ export type OrganizationDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
- * Organization.accounts
- */
-export type Organization$accountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Account
-   */
-  select?: Prisma.AccountSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Account
-   */
-  omit?: Prisma.AccountOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AccountInclude<ExtArgs> | null
-  where?: Prisma.AccountWhereInput
-  orderBy?: Prisma.AccountOrderByWithRelationInput | Prisma.AccountOrderByWithRelationInput[]
-  cursor?: Prisma.AccountWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.AccountScalarFieldEnum | Prisma.AccountScalarFieldEnum[]
-}
-
-/**
- * Organization.transactions
- */
-export type Organization$transactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Transaction
-   */
-  select?: Prisma.TransactionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Transaction
-   */
-  omit?: Prisma.TransactionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TransactionInclude<ExtArgs> | null
-  where?: Prisma.TransactionWhereInput
-  orderBy?: Prisma.TransactionOrderByWithRelationInput | Prisma.TransactionOrderByWithRelationInput[]
-  cursor?: Prisma.TransactionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TransactionScalarFieldEnum | Prisma.TransactionScalarFieldEnum[]
-}
-
-/**
- * Organization.contacts
- */
-export type Organization$contactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Contact
-   */
-  select?: Prisma.ContactSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Contact
-   */
-  omit?: Prisma.ContactOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ContactInclude<ExtArgs> | null
-  where?: Prisma.ContactWhereInput
-  orderBy?: Prisma.ContactOrderByWithRelationInput | Prisma.ContactOrderByWithRelationInput[]
-  cursor?: Prisma.ContactWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ContactScalarFieldEnum | Prisma.ContactScalarFieldEnum[]
-}
-
-/**
- * Organization.bills
- */
-export type Organization$billsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Bill
-   */
-  select?: Prisma.BillSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Bill
-   */
-  omit?: Prisma.BillOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.BillInclude<ExtArgs> | null
-  where?: Prisma.BillWhereInput
-  orderBy?: Prisma.BillOrderByWithRelationInput | Prisma.BillOrderByWithRelationInput[]
-  cursor?: Prisma.BillWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.BillScalarFieldEnum | Prisma.BillScalarFieldEnum[]
-}
-
-/**
- * Organization.plannedPurchases
- */
-export type Organization$plannedPurchasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PlannedPurchase
-   */
-  select?: Prisma.PlannedPurchaseSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PlannedPurchase
-   */
-  omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
-  where?: Prisma.PlannedPurchaseWhereInput
-  orderBy?: Prisma.PlannedPurchaseOrderByWithRelationInput | Prisma.PlannedPurchaseOrderByWithRelationInput[]
-  cursor?: Prisma.PlannedPurchaseWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.PlannedPurchaseScalarFieldEnum | Prisma.PlannedPurchaseScalarFieldEnum[]
-}
-
-/**
- * Organization.organizationUsers
- */
-export type Organization$organizationUsersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the OrganizationUser
-   */
-  select?: Prisma.OrganizationUserSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the OrganizationUser
-   */
-  omit?: Prisma.OrganizationUserOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OrganizationUserInclude<ExtArgs> | null
-  where?: Prisma.OrganizationUserWhereInput
-  orderBy?: Prisma.OrganizationUserOrderByWithRelationInput | Prisma.OrganizationUserOrderByWithRelationInput[]
-  cursor?: Prisma.OrganizationUserWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.OrganizationUserScalarFieldEnum | Prisma.OrganizationUserScalarFieldEnum[]
-}
-
-/**
- * Organization.bankAccounts
- */
-export type Organization$bankAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the BankAccount
-   */
-  select?: Prisma.BankAccountSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the BankAccount
-   */
-  omit?: Prisma.BankAccountOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.BankAccountInclude<ExtArgs> | null
-  where?: Prisma.BankAccountWhereInput
-  orderBy?: Prisma.BankAccountOrderByWithRelationInput | Prisma.BankAccountOrderByWithRelationInput[]
-  cursor?: Prisma.BankAccountWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.BankAccountScalarFieldEnum | Prisma.BankAccountScalarFieldEnum[]
-}
-
-/**
- * Organization.invitations
- */
-export type Organization$invitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Invitation
-   */
-  select?: Prisma.InvitationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Invitation
-   */
-  omit?: Prisma.InvitationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.InvitationInclude<ExtArgs> | null
-  where?: Prisma.InvitationWhereInput
-  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[]
-  cursor?: Prisma.InvitationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
-}
-
-/**
  * Organization without action
  */
 export type OrganizationDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3693,8 +1823,4 @@ export type OrganizationDefaultArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the Organization
    */
   omit?: Prisma.OrganizationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OrganizationInclude<ExtArgs> | null
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { MAX_DATE } from '@/lib/temporal/temporal-utils';
+import { MAX_DATE, buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 /**
  * GET /api/organizations/[slug]/contacts/[id]/transactions
@@ -20,7 +20,7 @@ export async function GET(
     }
 
     const organization = await prisma.organization.findFirst({
-      where: { slug, isDeleted: false },
+      where: buildCurrentVersionWhere({ slug }),
       select: { id: true },
     });
 
@@ -45,16 +45,33 @@ export async function GET(
         orderBy: { transactionDate: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
-        include: {
-          debitAccount: { select: { id: true, code: true, name: true, type: true } },
-          creditAccount: { select: { id: true, code: true, name: true, type: true } },
-        },
       }),
       prisma.transaction.count({ where }),
     ]);
 
+    // Resolve debit/credit accounts separately
+    const accountIds = [
+      ...new Set([
+        ...transactions.map(t => t.debitAccountId),
+        ...transactions.map(t => t.creditAccountId),
+      ])
+    ];
+    const accounts = accountIds.length > 0
+      ? await prisma.account.findMany({
+          where: buildCurrentVersionWhere({ id: { in: accountIds } }),
+          select: { id: true, code: true, name: true, type: true },
+        })
+      : [];
+    const accountMap = new Map(accounts.map(a => [a.id, a]));
+
+    const enrichedTransactions = transactions.map(tx => ({
+      ...tx,
+      debitAccount: accountMap.get(tx.debitAccountId) || null,
+      creditAccount: accountMap.get(tx.creditAccountId) || null,
+    }));
+
     return NextResponse.json({
-      transactions,
+      transactions: enrichedTransactions,
       pagination: {
         page,
         limit,

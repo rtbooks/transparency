@@ -95,9 +95,10 @@ export async function updateContact(
       },
     });
 
-    // Create new version (auto-generated id to avoid PK conflict)
+    // Create new version with stable entity id
     return await tx.contact.create({
       data: {
+        id: current.id, // Stable entity ID — never changes across versions
         organizationId: current.organizationId,
         name: updates.name ?? current.name,
         type: updates.type ?? current.type,

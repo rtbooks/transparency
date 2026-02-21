@@ -1,6 +1,7 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { TopNavWrapper } from '@/components/navigation/TopNavWrapper';
 import { getPublicNavLinks } from '@/lib/navigation';
 
@@ -15,19 +16,30 @@ export default async function ProfilePage() {
   const adminEmails = process.env.PLATFORM_ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
   const isPlatformAdmin = adminEmails.includes(userEmail.toLowerCase());
 
-  const orgInclude = {
-    organizations: {
-      include: {
-        organization: true,
-      },
-    },
-  };
+  // Helper to enrich a user with their organizations
+  async function enrichUserWithOrgs(userId: string) {
+    const orgUserRecords = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ userId }),
+    });
+    const orgIds = orgUserRecords.map(ou => ou.organizationId);
+    const orgs = orgIds.length > 0
+      ? await prisma.organization.findMany({
+          where: buildCurrentVersionWhere({ id: { in: orgIds } }),
+        })
+      : [];
+    const orgMap = new Map(orgs.map(o => [o.id, o]));
+    return orgUserRecords.map(ou => ({
+      ...ou,
+      organization: orgMap.get(ou.organizationId)!,
+    }));
+  }
 
   // Try to find or create user in our database
   let dbUser = await prisma.user.findUnique({
     where: { authId: user.id },
-    include: orgInclude,
   });
+
+  let dbUserOrganizations = dbUser ? await enrichUserWithOrgs(dbUser.id) : [];
 
   // Clerk instance migration: authId changed but email already exists in DB
   if (!dbUser) {
@@ -44,8 +56,8 @@ export default async function ProfilePage() {
           avatarUrl: user.imageUrl,
           isPlatformAdmin,
         },
-        include: orgInclude,
       });
+      dbUserOrganizations = await enrichUserWithOrgs(dbUser.id);
       console.log(`✅ Migrated authId for existing user: ${dbUser.email}`);
     }
   }
@@ -62,7 +74,6 @@ export default async function ProfilePage() {
         avatarUrl: user.imageUrl,
         isPlatformAdmin,
       },
-      include: orgInclude,
     });
 
     if (isPlatformAdmin) {
@@ -75,10 +86,16 @@ export default async function ProfilePage() {
         email: dbUser.email.toLowerCase(),
         status: 'PENDING',
       },
-      include: {
-        organization: true,
-      },
     });
+
+    // Resolve organizations for pending invitations
+    const invOrgIds = [...new Set(pendingInvitations.map(inv => inv.organizationId))];
+    const invOrgs = invOrgIds.length > 0
+      ? await prisma.organization.findMany({
+          where: buildCurrentVersionWhere({ id: { in: invOrgIds } }),
+        })
+      : [];
+    const invOrgMap = new Map(invOrgs.map(o => [o.id, o]));
 
     // Auto-accept all pending invitations
     for (const invitation of pendingInvitations) {
@@ -109,7 +126,10 @@ export default async function ProfilePage() {
 
           // Redirect to the first organization that was just joined
           if (pendingInvitations.length === 1) {
-            redirect(`/org/${invitation.organization.slug}/dashboard`);
+            const invOrg = invOrgMap.get(invitation.organizationId);
+            if (invOrg) {
+              redirect(`/org/${invOrg.slug}/dashboard`);
+            }
           }
         } catch (error) {
           console.error('Error auto-accepting invitation:', error);
@@ -118,18 +138,15 @@ export default async function ProfilePage() {
       }
     }
 
-    // If multiple invitations were accepted, reload the user to show organizations
+    // If multiple invitations were accepted, reload the organizations
     if (pendingInvitations.length > 1) {
-      dbUser = await prisma.user.findUnique({
+      const reloadedUser = await prisma.user.findUnique({
         where: { authId: user.id },
-        include: {
-          organizations: {
-            include: {
-              organization: true,
-            },
-          },
-        },
-      }) as any;
+      });
+      if (reloadedUser) {
+        dbUser = reloadedUser;
+        dbUserOrganizations = await enrichUserWithOrgs(dbUser.id);
+      }
     }
   }
 
@@ -172,13 +189,13 @@ export default async function ProfilePage() {
           </div>
         </div>
 
-        {dbUser.organizations.length > 0 && (
+        {dbUserOrganizations.length > 0 && (
           <div className="mt-8 rounded-lg bg-white p-6 shadow">
             <h2 className="mb-4 text-xl font-semibold text-gray-900">
               Your Organizations
             </h2>
             <ul className="space-y-3">
-              {dbUser.organizations.map((orgUser) => (
+              {dbUserOrganizations.map((orgUser) => (
                 <li key={orgUser.id}>
                   <a
                     href={`/org/${orgUser.organization.slug}/dashboard`}
@@ -197,7 +214,7 @@ export default async function ProfilePage() {
           </div>
         )}
 
-        {dbUser.organizations.length === 0 && (
+        {dbUserOrganizations.length === 0 && (
           <div className="mt-8 rounded-lg bg-blue-50 p-6">
             <p className="text-blue-900">
               You're not part of any organizations yet. Start by exploring
