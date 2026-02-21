@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight, Search, Pencil } from "lucide-react";
 import { ContactForm } from "./ContactForm";
+import { ContactTransactionHistory } from "./ContactTransactionHistory";
 
 interface Contact {
   id: string;
@@ -273,7 +274,7 @@ export function ContactList({ organizationSlug, refreshKey }: ContactListProps) 
         open={!!selectedContact}
         onOpenChange={(open) => !open && setSelectedContact(null)}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Contact Details</DialogTitle>
             <DialogDescription>
@@ -351,6 +352,15 @@ export function ContactList({ organizationSlug, refreshKey }: ContactListProps) 
                 <div>
                   <span className="font-medium">ID:</span> {selectedContact.id.slice(0, 8)}...
                 </div>
+              </div>
+
+              {/* Transaction History */}
+              <div className="border-t pt-4">
+                <h3 className="mb-3 text-sm font-medium text-gray-700">Transaction History</h3>
+                <ContactTransactionHistory
+                  organizationSlug={organizationSlug}
+                  contactId={selectedContact.id}
+                />
               </div>
 
               <div className="flex gap-2 border-t pt-4">

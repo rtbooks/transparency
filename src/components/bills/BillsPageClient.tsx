@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BillList } from "./BillList";
 import { BillForm } from "./BillForm";
+import { AgingSummary } from "./AgingSummary";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -43,6 +44,11 @@ export function BillsPageClient({ organizationSlug }: BillsPageClientProps) {
           <Plus className="mr-2 h-4 w-4" />
           Create Bill
         </Button>
+      </div>
+
+      {/* Aging Summary */}
+      <div className="mb-6">
+        <AgingSummary organizationSlug={organizationSlug} />
       </div>
 
       {/* Direction Tabs */}

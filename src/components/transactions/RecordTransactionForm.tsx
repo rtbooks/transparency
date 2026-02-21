@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { ContactSelector } from '@/components/contacts/ContactSelector';
 import {
   TransactionType,
   getAccountTypesForTransaction,
@@ -74,6 +75,7 @@ export function RecordTransactionForm({
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contactId, setContactId] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -131,7 +133,7 @@ export function RecordTransactionForm({
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ ...payload, contactId }),
         }
       );
 
@@ -318,6 +320,16 @@ export function RecordTransactionForm({
             </FormItem>
           )}
         />
+
+        <div>
+          <label className="text-sm font-medium">Contact (Optional)</label>
+          <p className="text-sm text-muted-foreground mb-2">Link this transaction to a payee or donor</p>
+          <ContactSelector
+            organizationSlug={organizationSlug}
+            value={contactId}
+            onChange={setContactId}
+          />
+        </div>
 
         <FormField
           control={form.control}

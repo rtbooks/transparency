@@ -95,10 +95,9 @@ export async function updateContact(
       },
     });
 
-    // Create new version
+    // Create new version (auto-generated id to avoid PK conflict)
     return await tx.contact.create({
       data: {
-        id: current.id,
         organizationId: current.organizationId,
         name: updates.name ?? current.name,
         type: updates.type ?? current.type,
