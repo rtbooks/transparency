@@ -10,6 +10,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import type { NavLink } from "@/lib/navigation";
+import { getNavIcon } from "@/lib/nav-icons";
 
 interface MobileSidebarProps {
   navLinks: NavLink[];
@@ -50,7 +51,7 @@ export function MobileSidebar({ navLinks, open, onOpenChange }: MobileSidebarPro
                 const isActive =
                   pathname === link.href ||
                   (link.href !== `/org/` && pathname.startsWith(link.href + "/"));
-                const Icon = link.icon;
+                const Icon = getNavIcon(link.icon);
 
                 return (
                   <Link

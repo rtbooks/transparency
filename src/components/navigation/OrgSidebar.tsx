@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { NavLink } from "@/lib/navigation";
+import { getNavIcon } from "@/lib/nav-icons";
 
 const STORAGE_KEY = "radbooks-sidebar-collapsed";
 
@@ -69,7 +70,7 @@ export function OrgSidebar({ navLinks, className }: OrgSidebarProps) {
                 const isActive =
                   pathname === link.href ||
                   (link.href !== `/org/` && pathname.startsWith(link.href + "/"));
-                const Icon = link.icon;
+                const Icon = getNavIcon(link.icon);
 
                 const linkContent = (
                   <Link

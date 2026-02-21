@@ -1,22 +1,9 @@
 import { UserRole } from '@/generated/prisma/client';
-import {
-  LayoutDashboard,
-  BookOpen,
-  ArrowLeftRight,
-  Users,
-  FileText,
-  BarChart3,
-  ShoppingCart,
-  UserCog,
-  Settings,
-  Heart,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
 
 export interface NavLink {
   label: string;
   href: string;
-  icon?: LucideIcon;
+  icon?: string;
   section?: string;
 }
 
@@ -27,31 +14,31 @@ export function getOrganizationNavLinks(
   // DONOR role gets limited nav
   if (role === 'DONOR') {
     return [
-      { label: 'Dashboard', href: `/org/${slug}/dashboard`, icon: LayoutDashboard },
-      { label: 'Reports', href: `/org/${slug}/reports`, icon: BarChart3 },
-      { label: 'My Donations', href: `/org/${slug}/donations`, icon: Heart },
+      { label: 'Dashboard', href: `/org/${slug}/dashboard`, icon: 'LayoutDashboard' },
+      { label: 'Reports', href: `/org/${slug}/reports`, icon: 'BarChart3' },
+      { label: 'My Donations', href: `/org/${slug}/donations`, icon: 'Heart' },
     ];
   }
 
   // ORG_ADMIN and PLATFORM_ADMIN get full nav with sections
   if (role === 'ORG_ADMIN' || role === 'PLATFORM_ADMIN') {
     return [
-      { label: 'Dashboard', href: `/org/${slug}/dashboard`, icon: LayoutDashboard, section: 'Main' },
-      { label: 'Accounts', href: `/org/${slug}/accounts`, icon: BookOpen, section: 'Main' },
-      { label: 'Transactions', href: `/org/${slug}/transactions`, icon: ArrowLeftRight, section: 'Main' },
-      { label: 'Contacts', href: `/org/${slug}/contacts`, icon: Users, section: 'Payables' },
-      { label: 'Bills', href: `/org/${slug}/bills`, icon: FileText, section: 'Payables' },
-      { label: 'Reports', href: `/org/${slug}/reports`, icon: BarChart3, section: 'Reporting' },
-      { label: 'Planned Purchases', href: `/org/${slug}/planned-purchases`, icon: ShoppingCart, section: 'Reporting' },
-      { label: 'Users', href: `/org/${slug}/users`, icon: UserCog, section: 'Admin' },
-      { label: 'Settings', href: `/org/${slug}/settings`, icon: Settings, section: 'Admin' },
+      { label: 'Dashboard', href: `/org/${slug}/dashboard`, icon: 'LayoutDashboard', section: 'Main' },
+      { label: 'Accounts', href: `/org/${slug}/accounts`, icon: 'BookOpen', section: 'Main' },
+      { label: 'Transactions', href: `/org/${slug}/transactions`, icon: 'ArrowLeftRight', section: 'Main' },
+      { label: 'Contacts', href: `/org/${slug}/contacts`, icon: 'Users', section: 'Payables' },
+      { label: 'Bills', href: `/org/${slug}/bills`, icon: 'FileText', section: 'Payables' },
+      { label: 'Reports', href: `/org/${slug}/reports`, icon: 'BarChart3', section: 'Reporting' },
+      { label: 'Planned Purchases', href: `/org/${slug}/planned-purchases`, icon: 'ShoppingCart', section: 'Reporting' },
+      { label: 'Users', href: `/org/${slug}/users`, icon: 'UserCog', section: 'Admin' },
+      { label: 'Settings', href: `/org/${slug}/settings`, icon: 'Settings', section: 'Admin' },
     ];
   }
 
   // PUBLIC or unknown role
   return [
-    { label: 'Dashboard', href: `/org/${slug}/dashboard`, icon: LayoutDashboard },
-    { label: 'Reports', href: `/org/${slug}/reports`, icon: BarChart3 },
+    { label: 'Dashboard', href: `/org/${slug}/dashboard`, icon: 'LayoutDashboard' },
+    { label: 'Reports', href: `/org/${slug}/reports`, icon: 'BarChart3' },
   ];
 }
 
