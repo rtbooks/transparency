@@ -1,18 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ContactSelector } from "@/components/contacts/ContactSelector";
 
 const billFormSchema = z.object({
   direction: z.enum(["PAYABLE", "RECEIVABLE"]),
@@ -25,11 +19,6 @@ const billFormSchema = z.object({
   dueDate: z.string().min(1, "Due date is required"),
   notes: z.string().nullable().optional().or(z.literal("")),
 });
-
-interface Contact {
-  id: string;
-  name: string;
-}
 
 interface BillFormProps {
   organizationSlug: string;
@@ -75,39 +64,9 @@ export function BillForm({
   );
   const [notes, setNotes] = useState(bill?.notes ?? "");
 
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [contactSearch, setContactSearch] = useState("");
-  const [loadingContacts, setLoadingContacts] = useState(false);
-
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    const fetchContacts = async () => {
-      try {
-        setLoadingContacts(true);
-        const params = new URLSearchParams({ limit: "100" });
-        if (contactSearch) {
-          params.append("search", contactSearch);
-        }
-        const response = await fetch(
-          `/api/organizations/${organizationSlug}/contacts?${params.toString()}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setContacts(data.contacts);
-        }
-      } catch {
-        // Silently fail - contacts will just be empty
-      } finally {
-        setLoadingContacts(false);
-      }
-    };
-
-    const debounce = setTimeout(fetchContacts, 300);
-    return () => clearTimeout(debounce);
-  }, [organizationSlug, contactSearch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,29 +166,11 @@ export function BillForm({
         <label className="mb-2 block text-sm font-medium text-gray-700">
           Contact <span className="text-red-500">*</span>
         </label>
-        <Input
-          placeholder="Search contacts..."
-          value={contactSearch}
-          onChange={(e) => setContactSearch(e.target.value)}
-          className="mb-2"
+        <ContactSelector
+          organizationSlug={organizationSlug}
+          value={contactId || null}
+          onChange={(id) => setContactId(id ?? "")}
         />
-        <Select value={contactId} onValueChange={setContactId}>
-          <SelectTrigger>
-            <SelectValue placeholder={loadingContacts ? "Loading..." : "Select a contact"} />
-          </SelectTrigger>
-          <SelectContent>
-            {contacts.map((c) => (
-              <SelectItem key={c.id} value={c.id}>
-                {c.name}
-              </SelectItem>
-            ))}
-            {contacts.length === 0 && !loadingContacts && (
-              <SelectItem value="__none__" disabled>
-                No contacts found
-              </SelectItem>
-            )}
-          </SelectContent>
-        </Select>
         {validationErrors.contactId && (
           <p className="mt-1 text-sm text-red-500">{validationErrors.contactId}</p>
         )}
