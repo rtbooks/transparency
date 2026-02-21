@@ -11,7 +11,7 @@ function getResendClient(): Resend | null {
   return null;
 }
 
-const DEFAULT_FROM = 'RadBooks <onboarding@resend.dev>';
+const DEFAULT_FROM = 'RadBooks <noreply@radbooks.org>';
 
 interface SendEmailOptions {
   to: string | string[];
