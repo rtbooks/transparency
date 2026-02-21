@@ -2,7 +2,9 @@ import { ReactNode } from 'react';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { TopNavWrapper } from './TopNavWrapper';
+import { OrgSidebarWrapper } from './OrgSidebarWrapper';
 import { getOrganizationNavLinks } from '@/lib/navigation';
+import type { NavLink } from '@/lib/navigation';
 
 interface OrganizationLayoutWrapperProps {
   children: ReactNode;
@@ -16,7 +18,7 @@ export async function OrganizationLayoutWrapper({
   const { userId: clerkUserId } = await auth();
 
   // Determine navigation links based on user's role
-  let navLinks: any[] = [{ label: 'Dashboard', href: `/org/${organizationSlug}` }];
+  let navLinks: NavLink[] = [{ label: 'Dashboard', href: `/org/${organizationSlug}` }];
 
   if (clerkUserId) {
     const user = await prisma.user.findUnique({
@@ -41,7 +43,10 @@ export async function OrganizationLayoutWrapper({
   return (
     <>
       <TopNavWrapper organizationSlug={organizationSlug} navLinks={navLinks} />
-      <main>{children}</main>
+      <div className="flex">
+        <OrgSidebarWrapper navLinks={navLinks} />
+        <main className="min-h-[calc(100vh-4rem)] flex-1 overflow-auto">{children}</main>
+      </div>
     </>
   );
 }

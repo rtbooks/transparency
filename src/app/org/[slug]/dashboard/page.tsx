@@ -1,11 +1,8 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { DashboardSummary } from '@/components/dashboard/DashboardSummary';
-import { RecordTransactionButton } from '@/components/transactions/RecordTransactionButton';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
 import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 
 interface DashboardPageProps {
   params: Promise<{ slug: string }>;
@@ -52,28 +49,13 @@ export default async function OrganizationDashboard({
     <OrganizationLayoutWrapper organizationSlug={slug}>
       <div className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              {organization.name} Dashboard
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Role: {userAccess.role}
-            </p>
-          </div>
-          <div className="flex gap-2">
-            {userAccess.role === 'ORG_ADMIN' && (
-              <>
-                <Link href={`/org/${slug}/settings`}>
-                  <Button variant="outline">Settings</Button>
-                </Link>
-                <Link href={`/org/${slug}/users`}>
-                  <Button variant="outline">Manage Users</Button>
-                </Link>
-              </>
-            )}
-            <RecordTransactionButton organizationSlug={slug} />
-          </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            {organization.name} Dashboard
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Role: {userAccess.role}
+          </p>
         </div>
         
         <DashboardSummary organizationSlug={slug} />

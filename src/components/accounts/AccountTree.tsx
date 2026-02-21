@@ -89,11 +89,16 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
   }
 
   return (
-    <div className="rounded-lg bg-white p-6 shadow">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Chart of Accounts
-        </h2>
+    <div>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Chart of Accounts
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Manage your organization&apos;s chart of accounts.
+          </p>
+        </div>
         <div className="flex items-center gap-4">
           {/* Show Inactive Toggle */}
           <div className="flex items-center gap-2">

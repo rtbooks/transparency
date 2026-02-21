@@ -45,15 +45,6 @@ export default async function AccountsPage({ params }: AccountsPageProps) {
     <OrganizationLayoutWrapper organizationSlug={slug}>
       <div className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Chart of Accounts
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Manage your organization&apos;s chart of accounts.
-            </p>
-          </div>
-
           <AccountTree organizationSlug={slug} />
         </div>
       </div>
