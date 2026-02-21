@@ -423,6 +423,57 @@ export type EnumInvitationStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumInvitationStatusFilter<$PrismaModel>
 }
 
+export type EnumContactTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContactType | Prisma.EnumContactTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ContactType[] | Prisma.ListEnumContactTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContactType[] | Prisma.ListEnumContactTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContactTypeFilter<$PrismaModel> | $Enums.ContactType
+}
+
+export type EnumContactTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContactType | Prisma.EnumContactTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ContactType[] | Prisma.ListEnumContactTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContactType[] | Prisma.ListEnumContactTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContactTypeWithAggregatesFilter<$PrismaModel> | $Enums.ContactType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContactTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContactTypeFilter<$PrismaModel>
+}
+
+export type EnumBillDirectionFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillDirection | Prisma.EnumBillDirectionFieldRefInput<$PrismaModel>
+  in?: $Enums.BillDirection[] | Prisma.ListEnumBillDirectionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BillDirection[] | Prisma.ListEnumBillDirectionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBillDirectionFilter<$PrismaModel> | $Enums.BillDirection
+}
+
+export type EnumBillStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillStatus | Prisma.EnumBillStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BillStatus[] | Prisma.ListEnumBillStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BillStatus[] | Prisma.ListEnumBillStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBillStatusFilter<$PrismaModel> | $Enums.BillStatus
+}
+
+export type EnumBillDirectionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillDirection | Prisma.EnumBillDirectionFieldRefInput<$PrismaModel>
+  in?: $Enums.BillDirection[] | Prisma.ListEnumBillDirectionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BillDirection[] | Prisma.ListEnumBillDirectionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBillDirectionWithAggregatesFilter<$PrismaModel> | $Enums.BillDirection
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBillDirectionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBillDirectionFilter<$PrismaModel>
+}
+
+export type EnumBillStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillStatus | Prisma.EnumBillStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BillStatus[] | Prisma.ListEnumBillStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BillStatus[] | Prisma.ListEnumBillStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBillStatusWithAggregatesFilter<$PrismaModel> | $Enums.BillStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBillStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBillStatusFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -816,6 +867,57 @@ export type NestedEnumInvitationStatusWithAggregatesFilter<$PrismaModel = never>
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumInvitationStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumInvitationStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumContactTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContactType | Prisma.EnumContactTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ContactType[] | Prisma.ListEnumContactTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContactType[] | Prisma.ListEnumContactTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContactTypeFilter<$PrismaModel> | $Enums.ContactType
+}
+
+export type NestedEnumContactTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContactType | Prisma.EnumContactTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ContactType[] | Prisma.ListEnumContactTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContactType[] | Prisma.ListEnumContactTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContactTypeWithAggregatesFilter<$PrismaModel> | $Enums.ContactType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContactTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContactTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumBillDirectionFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillDirection | Prisma.EnumBillDirectionFieldRefInput<$PrismaModel>
+  in?: $Enums.BillDirection[] | Prisma.ListEnumBillDirectionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BillDirection[] | Prisma.ListEnumBillDirectionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBillDirectionFilter<$PrismaModel> | $Enums.BillDirection
+}
+
+export type NestedEnumBillStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillStatus | Prisma.EnumBillStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BillStatus[] | Prisma.ListEnumBillStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BillStatus[] | Prisma.ListEnumBillStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBillStatusFilter<$PrismaModel> | $Enums.BillStatus
+}
+
+export type NestedEnumBillDirectionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillDirection | Prisma.EnumBillDirectionFieldRefInput<$PrismaModel>
+  in?: $Enums.BillDirection[] | Prisma.ListEnumBillDirectionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BillDirection[] | Prisma.ListEnumBillDirectionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBillDirectionWithAggregatesFilter<$PrismaModel> | $Enums.BillDirection
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBillDirectionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBillDirectionFilter<$PrismaModel>
+}
+
+export type NestedEnumBillStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BillStatus | Prisma.EnumBillStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BillStatus[] | Prisma.ListEnumBillStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BillStatus[] | Prisma.ListEnumBillStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBillStatusWithAggregatesFilter<$PrismaModel> | $Enums.BillStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBillStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBillStatusFilter<$PrismaModel>
 }
 
 

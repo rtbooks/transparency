@@ -11,6 +11,7 @@ const editTransactionSchema = z.object({
   debitAccountId: z.string().uuid().optional(),
   creditAccountId: z.string().uuid().optional(),
   referenceNumber: z.string().nullable().optional(),
+  contactId: z.string().uuid().nullable().optional(),
   category: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
   changeReason: z.string().min(1, 'A reason for the change is required'),

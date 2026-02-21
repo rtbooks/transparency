@@ -250,6 +250,7 @@ export type UserWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   organizations?: Prisma.OrganizationUserListRelationFilter
   donations?: Prisma.TransactionListRelationFilter
+  contacts?: Prisma.ContactListRelationFilter
   invitationsSent?: Prisma.InvitationListRelationFilter
 }
 
@@ -265,6 +266,7 @@ export type UserOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   organizations?: Prisma.OrganizationUserOrderByRelationAggregateInput
   donations?: Prisma.TransactionOrderByRelationAggregateInput
+  contacts?: Prisma.ContactOrderByRelationAggregateInput
   invitationsSent?: Prisma.InvitationOrderByRelationAggregateInput
 }
 
@@ -283,6 +285,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   organizations?: Prisma.OrganizationUserListRelationFilter
   donations?: Prisma.TransactionListRelationFilter
+  contacts?: Prisma.ContactListRelationFilter
   invitationsSent?: Prisma.InvitationListRelationFilter
 }, "id" | "email" | "authId">
 
@@ -330,6 +333,7 @@ export type UserCreateInput = {
   updatedAt?: Date | string
   organizations?: Prisma.OrganizationUserCreateNestedManyWithoutUserInput
   donations?: Prisma.TransactionCreateNestedManyWithoutDonorInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
 }
 
@@ -345,6 +349,7 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   organizations?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutUserInput
   donations?: Prisma.TransactionUncheckedCreateNestedManyWithoutDonorInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
 }
 
@@ -360,6 +365,7 @@ export type UserUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizations?: Prisma.OrganizationUserUpdateManyWithoutUserNestedInput
   donations?: Prisma.TransactionUpdateManyWithoutDonorNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
 }
 
@@ -375,6 +381,7 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizations?: Prisma.OrganizationUserUncheckedUpdateManyWithoutUserNestedInput
   donations?: Prisma.TransactionUncheckedUpdateManyWithoutDonorNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
 }
 
@@ -520,6 +527,22 @@ export type UserUpdateOneRequiredWithoutInvitationsSentNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInvitationsSentInput, Prisma.UserUpdateWithoutInvitationsSentInput>, Prisma.UserUncheckedUpdateWithoutInvitationsSentInput>
 }
 
+export type UserCreateNestedOneWithoutContactsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContactsInput, Prisma.UserUncheckedCreateWithoutContactsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContactsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutContactsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContactsInput, Prisma.UserUncheckedCreateWithoutContactsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContactsInput
+  upsert?: Prisma.UserUpsertWithoutContactsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutContactsInput, Prisma.UserUpdateWithoutContactsInput>, Prisma.UserUncheckedUpdateWithoutContactsInput>
+}
+
 export type UserCreateWithoutOrganizationsInput = {
   id?: string
   email: string
@@ -531,6 +554,7 @@ export type UserCreateWithoutOrganizationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   donations?: Prisma.TransactionCreateNestedManyWithoutDonorInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
 }
 
@@ -545,6 +569,7 @@ export type UserUncheckedCreateWithoutOrganizationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   donations?: Prisma.TransactionUncheckedCreateNestedManyWithoutDonorInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
 }
 
@@ -575,6 +600,7 @@ export type UserUpdateWithoutOrganizationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donations?: Prisma.TransactionUpdateManyWithoutDonorNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
 }
 
@@ -589,6 +615,7 @@ export type UserUncheckedUpdateWithoutOrganizationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donations?: Prisma.TransactionUncheckedUpdateManyWithoutDonorNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
 }
 
@@ -603,6 +630,7 @@ export type UserCreateWithoutDonationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   organizations?: Prisma.OrganizationUserCreateNestedManyWithoutUserInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
 }
 
@@ -617,6 +645,7 @@ export type UserUncheckedCreateWithoutDonationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   organizations?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutUserInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
 }
 
@@ -647,6 +676,7 @@ export type UserUpdateWithoutDonationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizations?: Prisma.OrganizationUserUpdateManyWithoutUserNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
 }
 
@@ -661,6 +691,7 @@ export type UserUncheckedUpdateWithoutDonationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizations?: Prisma.OrganizationUserUncheckedUpdateManyWithoutUserNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
 }
 
@@ -676,6 +707,7 @@ export type UserCreateWithoutInvitationsSentInput = {
   updatedAt?: Date | string
   organizations?: Prisma.OrganizationUserCreateNestedManyWithoutUserInput
   donations?: Prisma.TransactionCreateNestedManyWithoutDonorInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsSentInput = {
@@ -690,6 +722,7 @@ export type UserUncheckedCreateWithoutInvitationsSentInput = {
   updatedAt?: Date | string
   organizations?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutUserInput
   donations?: Prisma.TransactionUncheckedCreateNestedManyWithoutDonorInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsSentInput = {
@@ -720,6 +753,7 @@ export type UserUpdateWithoutInvitationsSentInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizations?: Prisma.OrganizationUserUpdateManyWithoutUserNestedInput
   donations?: Prisma.TransactionUpdateManyWithoutDonorNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsSentInput = {
@@ -734,6 +768,83 @@ export type UserUncheckedUpdateWithoutInvitationsSentInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizations?: Prisma.OrganizationUserUncheckedUpdateManyWithoutUserNestedInput
   donations?: Prisma.TransactionUncheckedUpdateManyWithoutDonorNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutContactsInput = {
+  id?: string
+  email: string
+  name: string
+  avatarUrl?: string | null
+  authId: string
+  isPlatformAdmin?: boolean
+  totalDonated?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizations?: Prisma.OrganizationUserCreateNestedManyWithoutUserInput
+  donations?: Prisma.TransactionCreateNestedManyWithoutDonorInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserUncheckedCreateWithoutContactsInput = {
+  id?: string
+  email: string
+  name: string
+  avatarUrl?: string | null
+  authId: string
+  isPlatformAdmin?: boolean
+  totalDonated?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizations?: Prisma.OrganizationUserUncheckedCreateNestedManyWithoutUserInput
+  donations?: Prisma.TransactionUncheckedCreateNestedManyWithoutDonorInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserCreateOrConnectWithoutContactsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutContactsInput, Prisma.UserUncheckedCreateWithoutContactsInput>
+}
+
+export type UserUpsertWithoutContactsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutContactsInput, Prisma.UserUncheckedUpdateWithoutContactsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutContactsInput, Prisma.UserUncheckedCreateWithoutContactsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutContactsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutContactsInput, Prisma.UserUncheckedUpdateWithoutContactsInput>
+}
+
+export type UserUpdateWithoutContactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizations?: Prisma.OrganizationUserUpdateManyWithoutUserNestedInput
+  donations?: Prisma.TransactionUpdateManyWithoutDonorNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutContactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authId?: Prisma.StringFieldUpdateOperationsInput | string
+  isPlatformAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  totalDonated?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizations?: Prisma.OrganizationUserUncheckedUpdateManyWithoutUserNestedInput
+  donations?: Prisma.TransactionUncheckedUpdateManyWithoutDonorNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
 }
 
 
@@ -744,12 +855,14 @@ export type UserUncheckedUpdateWithoutInvitationsSentInput = {
 export type UserCountOutputType = {
   organizations: number
   donations: number
+  contacts: number
   invitationsSent: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organizations?: boolean | UserCountOutputTypeCountOrganizationsArgs
   donations?: boolean | UserCountOutputTypeCountDonationsArgs
+  contacts?: boolean | UserCountOutputTypeCountContactsArgs
   invitationsSent?: boolean | UserCountOutputTypeCountInvitationsSentArgs
 }
 
@@ -780,6 +893,13 @@ export type UserCountOutputTypeCountDonationsArgs<ExtArgs extends runtime.Types.
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountContactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContactWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountInvitationsSentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.InvitationWhereInput
 }
@@ -797,6 +917,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   organizations?: boolean | Prisma.User$organizationsArgs<ExtArgs>
   donations?: boolean | Prisma.User$donationsArgs<ExtArgs>
+  contacts?: boolean | Prisma.User$contactsArgs<ExtArgs>
   invitationsSent?: boolean | Prisma.User$invitationsSentArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -841,6 +962,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organizations?: boolean | Prisma.User$organizationsArgs<ExtArgs>
   donations?: boolean | Prisma.User$donationsArgs<ExtArgs>
+  contacts?: boolean | Prisma.User$contactsArgs<ExtArgs>
   invitationsSent?: boolean | Prisma.User$invitationsSentArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -852,6 +974,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     organizations: Prisma.$OrganizationUserPayload<ExtArgs>[]
     donations: Prisma.$TransactionPayload<ExtArgs>[]
+    contacts: Prisma.$ContactPayload<ExtArgs>[]
     invitationsSent: Prisma.$InvitationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1260,6 +1383,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   organizations<T extends Prisma.User$organizationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$organizationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   donations<T extends Prisma.User$donationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$donationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contacts<T extends Prisma.User$contactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invitationsSent<T extends Prisma.User$invitationsSentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitationsSentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1732,6 +1856,30 @@ export type User$donationsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.TransactionScalarFieldEnum | Prisma.TransactionScalarFieldEnum[]
+}
+
+/**
+ * User.contacts
+ */
+export type User$contactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Contact
+   */
+  select?: Prisma.ContactSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Contact
+   */
+  omit?: Prisma.ContactOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContactInclude<ExtArgs> | null
+  where?: Prisma.ContactWhereInput
+  orderBy?: Prisma.ContactOrderByWithRelationInput | Prisma.ContactOrderByWithRelationInput[]
+  cursor?: Prisma.ContactWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContactScalarFieldEnum | Prisma.ContactScalarFieldEnum[]
 }
 
 /**

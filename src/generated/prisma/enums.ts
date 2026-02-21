@@ -106,3 +106,39 @@ export const InvitationStatus = {
 } as const
 
 export type InvitationStatus = (typeof InvitationStatus)[keyof typeof InvitationStatus]
+
+
+export const ContactType = {
+  INDIVIDUAL: 'INDIVIDUAL',
+  ORGANIZATION: 'ORGANIZATION'
+} as const
+
+export type ContactType = (typeof ContactType)[keyof typeof ContactType]
+
+
+export const ContactRole = {
+  DONOR: 'DONOR',
+  VENDOR: 'VENDOR'
+} as const
+
+export type ContactRole = (typeof ContactRole)[keyof typeof ContactRole]
+
+
+export const BillDirection = {
+  PAYABLE: 'PAYABLE',
+  RECEIVABLE: 'RECEIVABLE'
+} as const
+
+export type BillDirection = (typeof BillDirection)[keyof typeof BillDirection]
+
+
+export const BillStatus = {
+  DRAFT: 'DRAFT',
+  PENDING: 'PENDING',
+  PARTIAL: 'PARTIAL',
+  PAID: 'PAID',
+  OVERDUE: 'OVERDUE',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type BillStatus = (typeof BillStatus)[keyof typeof BillStatus]

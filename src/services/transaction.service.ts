@@ -14,6 +14,7 @@ export interface EditTransactionInput {
   debitAccountId?: string;
   creditAccountId?: string;
   referenceNumber?: string | null;
+  contactId?: string | null;
   category?: string | null;
   notes?: string | null;
   changeReason: string;
@@ -88,6 +89,7 @@ export async function editTransaction(
         category: input.category !== undefined ? input.category : current.category,
         paymentMethod: current.paymentMethod,
         referenceNumber: input.referenceNumber !== undefined ? input.referenceNumber : current.referenceNumber,
+        contactId: input.contactId !== undefined ? input.contactId : current.contactId,
         donorUserId: current.donorUserId,
         donorName: current.donorName,
         isAnonymous: current.isAnonymous,
