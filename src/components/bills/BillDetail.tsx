@@ -116,7 +116,18 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
       if (!response.ok) {
         throw new Error("Failed to fetch bill details");
       }
-      const data = await response.json();
+      const raw = await response.json();
+      // Map payments from Prisma shape to UI shape
+      const data = {
+        ...raw,
+        payments: (raw.payments || []).map((p: { id: string; amount: unknown; notes: string | null; createdAt: string; transaction?: { transactionDate?: string; referenceNumber?: string | null; description?: string | null } }) => ({
+          id: p.id,
+          date: p.transaction?.transactionDate || p.createdAt,
+          amount: p.amount,
+          transactionReference: p.transaction?.referenceNumber ?? null,
+          transactionDescription: p.transaction?.description ?? null,
+        })),
+      };
       setDetail(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
