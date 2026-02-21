@@ -13,8 +13,7 @@ export interface RecordPaymentInput {
   organizationId: string;
   amount: number;
   transactionDate: Date;
-  debitAccountId: string;
-  creditAccountId: string;
+  cashAccountId: string; // The cash/bank account for the payment
   description?: string;
   referenceNumber?: string | null;
   notes?: string | null;
@@ -36,6 +35,7 @@ export async function recordPayment(
 ): Promise<BillPayment> {
   const bill = await prisma.bill.findFirst({
     where: { id: input.billId, organizationId: input.organizationId },
+    include: { accrualTransaction: true },
   });
 
   if (!bill) {
@@ -51,6 +51,25 @@ export async function recordPayment(
     throw new Error(`Payment amount (${input.amount}) exceeds remaining balance (${remaining})`);
   }
 
+  // Derive AP/AR account from the accrual transaction
+  // PAYABLE accrual: DR Expense, CR AP → payment reverses AP: DR AP, CR Cash
+  // RECEIVABLE accrual: DR AR, CR Revenue → receipt reverses AR: DR Cash, CR AR
+  let debitAccountId: string;
+  let creditAccountId: string;
+
+  if (bill.accrualTransaction) {
+    if (bill.direction === 'PAYABLE') {
+      debitAccountId = bill.accrualTransaction.creditAccountId; // AP account
+      creditAccountId = input.cashAccountId; // Cash/Bank
+    } else {
+      debitAccountId = input.cashAccountId; // Cash/Bank
+      creditAccountId = bill.accrualTransaction.debitAccountId; // AR account
+    }
+  } else {
+    // Fallback for bills created before accrual integration
+    throw new Error('Bill has no accrual transaction — cannot determine AP/AR account');
+  }
+
   // Determine transaction type based on bill direction
   const transactionType = bill.direction === 'PAYABLE' ? 'EXPENSE' : 'INCOME';
 
@@ -62,8 +81,8 @@ export async function recordPayment(
         transactionDate: input.transactionDate,
         amount: input.amount,
         type: transactionType as any,
-        debitAccountId: input.debitAccountId,
-        creditAccountId: input.creditAccountId,
+        debitAccountId,
+        creditAccountId,
         description: input.description || `Payment for bill ${bill.id.slice(0, 8)}`,
         referenceNumber: input.referenceNumber ?? null,
         paymentMethod: 'OTHER',
@@ -75,8 +94,8 @@ export async function recordPayment(
     // Update account balances
     await updateAccountBalances(
       tx,
-      input.debitAccountId,
-      input.creditAccountId,
+      debitAccountId,
+      creditAccountId,
       input.amount
     );
 

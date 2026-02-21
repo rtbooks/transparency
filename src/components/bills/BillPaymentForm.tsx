@@ -55,28 +55,14 @@ export function BillPaymentForm({
 }: BillPaymentFormProps) {
   const [amount, setAmount] = useState(amountRemaining.toFixed(2));
   const [paymentDate, setPaymentDate] = useState<Date | undefined>(new Date());
-  const [debitAccountId, setDebitAccountId] = useState("");
-  const [creditAccountId, setCreditAccountId] = useState("");
+  const [cashAccountId, setCashAccountId] = useState("");
   const [description, setDescription] = useState("");
   const [referenceNumber, setReferenceNumber] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // PAYABLE payment: DR liability (AP), CR asset (Cash)
-  // RECEIVABLE receipt: DR asset (Cash), CR asset (AR)
-  const debitAccounts = accounts.filter((a) =>
-    direction === "PAYABLE" ? a.type === "LIABILITY" : a.type === "ASSET"
-  );
-  const creditAccounts = accounts.filter((a) => a.type === "ASSET");
-
-  const debitLabel =
-    direction === "PAYABLE"
-      ? "Accounts Payable (Liability)"
-      : "Cash / Bank (Asset)";
-  const creditLabel =
-    direction === "PAYABLE"
-      ? "Cash / Bank (Asset)"
-      : "Accounts Receivable (Asset)";
+  // Cash/Bank accounts are always ASSET type
+  const cashAccounts = accounts.filter((a) => a.type === "ASSET");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,8 +81,8 @@ export function BillPaymentForm({
       setError("Payment date is required");
       return;
     }
-    if (!debitAccountId || !creditAccountId) {
-      setError("Both accounts are required");
+    if (!cashAccountId) {
+      setError("Cash/Bank account is required");
       return;
     }
 
@@ -110,8 +96,7 @@ export function BillPaymentForm({
           body: JSON.stringify({
             amount: parsedAmount,
             transactionDate: paymentDate.toISOString(),
-            debitAccountId,
-            creditAccountId,
+            cashAccountId,
             description: description.trim() || undefined,
             referenceNumber: referenceNumber.trim() || null,
           }),
@@ -190,42 +175,23 @@ export function BillPaymentForm({
         </Popover>
       </div>
 
-      {/* Account Selectors */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
-            {debitLabel} <span className="text-red-500">*</span>
-          </label>
-          <Select value={debitAccountId} onValueChange={setDebitAccountId}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select account..." />
-            </SelectTrigger>
-            <SelectContent>
-              {debitAccounts.map((acct) => (
-                <SelectItem key={acct.id} value={acct.id}>
-                  {acct.code} – {acct.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
-            {creditLabel} <span className="text-red-500">*</span>
-          </label>
-          <Select value={creditAccountId} onValueChange={setCreditAccountId}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select account..." />
-            </SelectTrigger>
-            <SelectContent>
-              {creditAccounts.map((acct) => (
-                <SelectItem key={acct.id} value={acct.id}>
-                  {acct.code} – {acct.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Cash/Bank Account */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-gray-700">
+          Cash / Bank Account <span className="text-red-500">*</span>
+        </label>
+        <Select value={cashAccountId} onValueChange={setCashAccountId}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select cash or bank account..." />
+          </SelectTrigger>
+          <SelectContent>
+            {cashAccounts.map((acct) => (
+              <SelectItem key={acct.id} value={acct.id}>
+                {acct.code} – {acct.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Description */}

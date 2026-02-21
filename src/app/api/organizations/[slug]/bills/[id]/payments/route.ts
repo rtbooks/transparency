@@ -13,8 +13,7 @@ const dateString = z.string().refine(
 const recordPaymentSchema = z.object({
   amount: z.number().positive(),
   transactionDate: dateString,
-  debitAccountId: z.string().uuid(),
-  creditAccountId: z.string().uuid(),
+  cashAccountId: z.string().uuid(),
   description: z.string().optional(),
   referenceNumber: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
@@ -81,17 +80,12 @@ export async function POST(
 
     const validated = recordPaymentSchema.parse(body);
 
-    // Verify accounts belong to this organization
-    const [debitAccount, creditAccount] = await Promise.all([
-      prisma.account.findFirst({
-        where: { id: validated.debitAccountId, organizationId: organization.id },
-      }),
-      prisma.account.findFirst({
-        where: { id: validated.creditAccountId, organizationId: organization.id },
-      }),
-    ]);
+    // Verify cash account belongs to this organization
+    const cashAccount = await prisma.account.findFirst({
+      where: { id: validated.cashAccountId, organizationId: organization.id },
+    });
 
-    if (!debitAccount || !creditAccount) {
+    if (!cashAccount) {
       return NextResponse.json({ error: 'Invalid account selection' }, { status: 400 });
     }
 
@@ -100,8 +94,7 @@ export async function POST(
       organizationId: organization.id,
       amount: validated.amount,
       transactionDate: new Date(validated.transactionDate),
-      debitAccountId: validated.debitAccountId,
-      creditAccountId: validated.creditAccountId,
+      cashAccountId: validated.cashAccountId,
       description: validated.description,
       referenceNumber: validated.referenceNumber ?? null,
       notes: validated.notes ?? null,
