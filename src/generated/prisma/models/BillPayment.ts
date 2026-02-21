@@ -183,7 +183,6 @@ export type BillPaymentWhereInput = {
   notes?: Prisma.StringNullableFilter<"BillPayment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BillPayment"> | Date | string
   bill?: Prisma.XOR<Prisma.BillScalarRelationFilter, Prisma.BillWhereInput>
-  transaction?: Prisma.XOR<Prisma.TransactionScalarRelationFilter, Prisma.TransactionWhereInput>
 }
 
 export type BillPaymentOrderByWithRelationInput = {
@@ -193,7 +192,6 @@ export type BillPaymentOrderByWithRelationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   bill?: Prisma.BillOrderByWithRelationInput
-  transaction?: Prisma.TransactionOrderByWithRelationInput
 }
 
 export type BillPaymentWhereUniqueInput = Prisma.AtLeast<{
@@ -206,7 +204,6 @@ export type BillPaymentWhereUniqueInput = Prisma.AtLeast<{
   notes?: Prisma.StringNullableFilter<"BillPayment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BillPayment"> | Date | string
   bill?: Prisma.XOR<Prisma.BillScalarRelationFilter, Prisma.BillWhereInput>
-  transaction?: Prisma.XOR<Prisma.TransactionScalarRelationFilter, Prisma.TransactionWhereInput>
 }, "id">
 
 export type BillPaymentOrderByWithAggregationInput = {
@@ -233,10 +230,10 @@ export type BillPaymentScalarWhereWithAggregatesInput = {
 
 export type BillPaymentCreateInput = {
   id?: string
+  transactionId: string
   notes?: string | null
   createdAt?: Date | string
   bill: Prisma.BillCreateNestedOneWithoutPaymentsInput
-  transaction: Prisma.TransactionCreateNestedOneWithoutBillPaymentsInput
 }
 
 export type BillPaymentUncheckedCreateInput = {
@@ -249,10 +246,10 @@ export type BillPaymentUncheckedCreateInput = {
 
 export type BillPaymentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bill?: Prisma.BillUpdateOneRequiredWithoutPaymentsNestedInput
-  transaction?: Prisma.TransactionUpdateOneRequiredWithoutBillPaymentsNestedInput
 }
 
 export type BillPaymentUncheckedUpdateInput = {
@@ -273,6 +270,7 @@ export type BillPaymentCreateManyInput = {
 
 export type BillPaymentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -319,48 +317,6 @@ export type BillPaymentMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
 }
 
-export type BillPaymentCreateNestedManyWithoutTransactionInput = {
-  create?: Prisma.XOR<Prisma.BillPaymentCreateWithoutTransactionInput, Prisma.BillPaymentUncheckedCreateWithoutTransactionInput> | Prisma.BillPaymentCreateWithoutTransactionInput[] | Prisma.BillPaymentUncheckedCreateWithoutTransactionInput[]
-  connectOrCreate?: Prisma.BillPaymentCreateOrConnectWithoutTransactionInput | Prisma.BillPaymentCreateOrConnectWithoutTransactionInput[]
-  createMany?: Prisma.BillPaymentCreateManyTransactionInputEnvelope
-  connect?: Prisma.BillPaymentWhereUniqueInput | Prisma.BillPaymentWhereUniqueInput[]
-}
-
-export type BillPaymentUncheckedCreateNestedManyWithoutTransactionInput = {
-  create?: Prisma.XOR<Prisma.BillPaymentCreateWithoutTransactionInput, Prisma.BillPaymentUncheckedCreateWithoutTransactionInput> | Prisma.BillPaymentCreateWithoutTransactionInput[] | Prisma.BillPaymentUncheckedCreateWithoutTransactionInput[]
-  connectOrCreate?: Prisma.BillPaymentCreateOrConnectWithoutTransactionInput | Prisma.BillPaymentCreateOrConnectWithoutTransactionInput[]
-  createMany?: Prisma.BillPaymentCreateManyTransactionInputEnvelope
-  connect?: Prisma.BillPaymentWhereUniqueInput | Prisma.BillPaymentWhereUniqueInput[]
-}
-
-export type BillPaymentUpdateManyWithoutTransactionNestedInput = {
-  create?: Prisma.XOR<Prisma.BillPaymentCreateWithoutTransactionInput, Prisma.BillPaymentUncheckedCreateWithoutTransactionInput> | Prisma.BillPaymentCreateWithoutTransactionInput[] | Prisma.BillPaymentUncheckedCreateWithoutTransactionInput[]
-  connectOrCreate?: Prisma.BillPaymentCreateOrConnectWithoutTransactionInput | Prisma.BillPaymentCreateOrConnectWithoutTransactionInput[]
-  upsert?: Prisma.BillPaymentUpsertWithWhereUniqueWithoutTransactionInput | Prisma.BillPaymentUpsertWithWhereUniqueWithoutTransactionInput[]
-  createMany?: Prisma.BillPaymentCreateManyTransactionInputEnvelope
-  set?: Prisma.BillPaymentWhereUniqueInput | Prisma.BillPaymentWhereUniqueInput[]
-  disconnect?: Prisma.BillPaymentWhereUniqueInput | Prisma.BillPaymentWhereUniqueInput[]
-  delete?: Prisma.BillPaymentWhereUniqueInput | Prisma.BillPaymentWhereUniqueInput[]
-  connect?: Prisma.BillPaymentWhereUniqueInput | Prisma.BillPaymentWhereUniqueInput[]
-  update?: Prisma.BillPaymentUpdateWithWhereUniqueWithoutTransactionInput | Prisma.BillPaymentUpdateWithWhereUniqueWithoutTransactionInput[]
-  updateMany?: Prisma.BillPaymentUpdateManyWithWhereWithoutTransactionInput | Prisma.BillPaymentUpdateManyWithWhereWithoutTransactionInput[]
-  deleteMany?: Prisma.BillPaymentScalarWhereInput | Prisma.BillPaymentScalarWhereInput[]
-}
-
-export type BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput = {
-  create?: Prisma.XOR<Prisma.BillPaymentCreateWithoutTransactionInput, Prisma.BillPaymentUncheckedCreateWithoutTransactionInput> | Prisma.BillPaymentCreateWithoutTransactionInput[] | Prisma.BillPaymentUncheckedCreateWithoutTransactionInput[]
-  connectOrCreate?: Prisma.BillPaymentCreateOrConnectWithoutTransactionInput | Prisma.BillPaymentCreateOrConnectWithoutTransactionInput[]
-  upsert?: Prisma.BillPaymentUpsertWithWhereUniqueWithoutTransactionInput | Prisma.BillPaymentUpsertWithWhereUniqueWithoutTransactionInput[]
-  createMany?: Prisma.BillPaymentCreateManyTransactionInputEnvelope
-  set?: Prisma.BillPaymentWhereUniqueInput | Prisma.BillPaymentWhereUniqueInput[]
-  disconnect?: Prisma.BillPaymentWhereUniqueInput | Prisma.BillPaymentWhereUniqueInput[]
-  delete?: Prisma.BillPaymentWhereUniqueInput | Prisma.BillPaymentWhereUniqueInput[]
-  connect?: Prisma.BillPaymentWhereUniqueInput | Prisma.BillPaymentWhereUniqueInput[]
-  update?: Prisma.BillPaymentUpdateWithWhereUniqueWithoutTransactionInput | Prisma.BillPaymentUpdateWithWhereUniqueWithoutTransactionInput[]
-  updateMany?: Prisma.BillPaymentUpdateManyWithWhereWithoutTransactionInput | Prisma.BillPaymentUpdateManyWithWhereWithoutTransactionInput[]
-  deleteMany?: Prisma.BillPaymentScalarWhereInput | Prisma.BillPaymentScalarWhereInput[]
-}
-
 export type BillPaymentCreateNestedManyWithoutBillInput = {
   create?: Prisma.XOR<Prisma.BillPaymentCreateWithoutBillInput, Prisma.BillPaymentUncheckedCreateWithoutBillInput> | Prisma.BillPaymentCreateWithoutBillInput[] | Prisma.BillPaymentUncheckedCreateWithoutBillInput[]
   connectOrCreate?: Prisma.BillPaymentCreateOrConnectWithoutBillInput | Prisma.BillPaymentCreateOrConnectWithoutBillInput[]
@@ -403,62 +359,11 @@ export type BillPaymentUncheckedUpdateManyWithoutBillNestedInput = {
   deleteMany?: Prisma.BillPaymentScalarWhereInput | Prisma.BillPaymentScalarWhereInput[]
 }
 
-export type BillPaymentCreateWithoutTransactionInput = {
-  id?: string
-  notes?: string | null
-  createdAt?: Date | string
-  bill: Prisma.BillCreateNestedOneWithoutPaymentsInput
-}
-
-export type BillPaymentUncheckedCreateWithoutTransactionInput = {
-  id?: string
-  billId: string
-  notes?: string | null
-  createdAt?: Date | string
-}
-
-export type BillPaymentCreateOrConnectWithoutTransactionInput = {
-  where: Prisma.BillPaymentWhereUniqueInput
-  create: Prisma.XOR<Prisma.BillPaymentCreateWithoutTransactionInput, Prisma.BillPaymentUncheckedCreateWithoutTransactionInput>
-}
-
-export type BillPaymentCreateManyTransactionInputEnvelope = {
-  data: Prisma.BillPaymentCreateManyTransactionInput | Prisma.BillPaymentCreateManyTransactionInput[]
-  skipDuplicates?: boolean
-}
-
-export type BillPaymentUpsertWithWhereUniqueWithoutTransactionInput = {
-  where: Prisma.BillPaymentWhereUniqueInput
-  update: Prisma.XOR<Prisma.BillPaymentUpdateWithoutTransactionInput, Prisma.BillPaymentUncheckedUpdateWithoutTransactionInput>
-  create: Prisma.XOR<Prisma.BillPaymentCreateWithoutTransactionInput, Prisma.BillPaymentUncheckedCreateWithoutTransactionInput>
-}
-
-export type BillPaymentUpdateWithWhereUniqueWithoutTransactionInput = {
-  where: Prisma.BillPaymentWhereUniqueInput
-  data: Prisma.XOR<Prisma.BillPaymentUpdateWithoutTransactionInput, Prisma.BillPaymentUncheckedUpdateWithoutTransactionInput>
-}
-
-export type BillPaymentUpdateManyWithWhereWithoutTransactionInput = {
-  where: Prisma.BillPaymentScalarWhereInput
-  data: Prisma.XOR<Prisma.BillPaymentUpdateManyMutationInput, Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionInput>
-}
-
-export type BillPaymentScalarWhereInput = {
-  AND?: Prisma.BillPaymentScalarWhereInput | Prisma.BillPaymentScalarWhereInput[]
-  OR?: Prisma.BillPaymentScalarWhereInput[]
-  NOT?: Prisma.BillPaymentScalarWhereInput | Prisma.BillPaymentScalarWhereInput[]
-  id?: Prisma.StringFilter<"BillPayment"> | string
-  billId?: Prisma.StringFilter<"BillPayment"> | string
-  transactionId?: Prisma.StringFilter<"BillPayment"> | string
-  notes?: Prisma.StringNullableFilter<"BillPayment"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"BillPayment"> | Date | string
-}
-
 export type BillPaymentCreateWithoutBillInput = {
   id?: string
+  transactionId: string
   notes?: string | null
   createdAt?: Date | string
-  transaction: Prisma.TransactionCreateNestedOneWithoutBillPaymentsInput
 }
 
 export type BillPaymentUncheckedCreateWithoutBillInput = {
@@ -494,32 +399,15 @@ export type BillPaymentUpdateManyWithWhereWithoutBillInput = {
   data: Prisma.XOR<Prisma.BillPaymentUpdateManyMutationInput, Prisma.BillPaymentUncheckedUpdateManyWithoutBillInput>
 }
 
-export type BillPaymentCreateManyTransactionInput = {
-  id?: string
-  billId: string
-  notes?: string | null
-  createdAt?: Date | string
-}
-
-export type BillPaymentUpdateWithoutTransactionInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  bill?: Prisma.BillUpdateOneRequiredWithoutPaymentsNestedInput
-}
-
-export type BillPaymentUncheckedUpdateWithoutTransactionInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  billId?: Prisma.StringFieldUpdateOperationsInput | string
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type BillPaymentUncheckedUpdateManyWithoutTransactionInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  billId?: Prisma.StringFieldUpdateOperationsInput | string
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+export type BillPaymentScalarWhereInput = {
+  AND?: Prisma.BillPaymentScalarWhereInput | Prisma.BillPaymentScalarWhereInput[]
+  OR?: Prisma.BillPaymentScalarWhereInput[]
+  NOT?: Prisma.BillPaymentScalarWhereInput | Prisma.BillPaymentScalarWhereInput[]
+  id?: Prisma.StringFilter<"BillPayment"> | string
+  billId?: Prisma.StringFilter<"BillPayment"> | string
+  transactionId?: Prisma.StringFilter<"BillPayment"> | string
+  notes?: Prisma.StringNullableFilter<"BillPayment"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"BillPayment"> | Date | string
 }
 
 export type BillPaymentCreateManyBillInput = {
@@ -531,9 +419,9 @@ export type BillPaymentCreateManyBillInput = {
 
 export type BillPaymentUpdateWithoutBillInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  transaction?: Prisma.TransactionUpdateOneRequiredWithoutBillPaymentsNestedInput
 }
 
 export type BillPaymentUncheckedUpdateWithoutBillInput = {
@@ -559,7 +447,6 @@ export type BillPaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   notes?: boolean
   createdAt?: boolean
   bill?: boolean | Prisma.BillDefaultArgs<ExtArgs>
-  transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["billPayment"]>
 
 export type BillPaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -569,7 +456,6 @@ export type BillPaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   notes?: boolean
   createdAt?: boolean
   bill?: boolean | Prisma.BillDefaultArgs<ExtArgs>
-  transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["billPayment"]>
 
 export type BillPaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -579,7 +465,6 @@ export type BillPaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   notes?: boolean
   createdAt?: boolean
   bill?: boolean | Prisma.BillDefaultArgs<ExtArgs>
-  transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["billPayment"]>
 
 export type BillPaymentSelectScalar = {
@@ -593,22 +478,18 @@ export type BillPaymentSelectScalar = {
 export type BillPaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "billId" | "transactionId" | "notes" | "createdAt", ExtArgs["result"]["billPayment"]>
 export type BillPaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bill?: boolean | Prisma.BillDefaultArgs<ExtArgs>
-  transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
 }
 export type BillPaymentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bill?: boolean | Prisma.BillDefaultArgs<ExtArgs>
-  transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
 }
 export type BillPaymentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bill?: boolean | Prisma.BillDefaultArgs<ExtArgs>
-  transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
 }
 
 export type $BillPaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "BillPayment"
   objects: {
     bill: Prisma.$BillPayload<ExtArgs>
-    transaction: Prisma.$TransactionPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1011,7 +892,6 @@ readonly fields: BillPaymentFieldRefs;
 export interface Prisma__BillPaymentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   bill<T extends Prisma.BillDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BillDefaultArgs<ExtArgs>>): Prisma.Prisma__BillClient<runtime.Types.Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  transaction<T extends Prisma.TransactionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TransactionDefaultArgs<ExtArgs>>): Prisma.Prisma__TransactionClient<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

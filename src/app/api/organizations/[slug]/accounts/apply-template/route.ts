@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { getTemplate } from '@/lib/templates/account-templates';
 
 export async function POST(
@@ -26,13 +27,8 @@ export async function POST(
       );
     }
 
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -42,7 +38,10 @@ export async function POST(
       );
     }
 
-    const orgUser = organization.organizationUsers[0];
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const orgUser = orgUsers[0];
     if (!orgUser || orgUser.role === 'DONOR') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
@@ -102,10 +101,15 @@ export async function POST(
         const parentId = accountMap.get(accountTemplate.parentCode);
 
         if (accountId && parentId) {
-          await prisma.account.update({
-            where: { id: accountId },
-            data: { parentAccountId: parentId },
+          const acctToUpdate = await prisma.account.findFirst({
+            where: buildCurrentVersionWhere({ id: accountId }),
           });
+          if (acctToUpdate) {
+            await prisma.account.update({
+              where: { versionId: acctToUpdate.versionId },
+              data: { parentAccountId: parentId },
+            });
+          }
         }
       }
     }

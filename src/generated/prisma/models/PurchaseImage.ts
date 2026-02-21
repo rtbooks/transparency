@@ -182,7 +182,6 @@ export type PurchaseImageWhereInput = {
   url?: Prisma.StringFilter<"PurchaseImage"> | string
   caption?: Prisma.StringNullableFilter<"PurchaseImage"> | string | null
   uploadedAt?: Prisma.DateTimeFilter<"PurchaseImage"> | Date | string
-  plannedPurchase?: Prisma.XOR<Prisma.PlannedPurchaseScalarRelationFilter, Prisma.PlannedPurchaseWhereInput>
 }
 
 export type PurchaseImageOrderByWithRelationInput = {
@@ -191,7 +190,6 @@ export type PurchaseImageOrderByWithRelationInput = {
   url?: Prisma.SortOrder
   caption?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadedAt?: Prisma.SortOrder
-  plannedPurchase?: Prisma.PlannedPurchaseOrderByWithRelationInput
 }
 
 export type PurchaseImageWhereUniqueInput = Prisma.AtLeast<{
@@ -203,7 +201,6 @@ export type PurchaseImageWhereUniqueInput = Prisma.AtLeast<{
   url?: Prisma.StringFilter<"PurchaseImage"> | string
   caption?: Prisma.StringNullableFilter<"PurchaseImage"> | string | null
   uploadedAt?: Prisma.DateTimeFilter<"PurchaseImage"> | Date | string
-  plannedPurchase?: Prisma.XOR<Prisma.PlannedPurchaseScalarRelationFilter, Prisma.PlannedPurchaseWhereInput>
 }, "id">
 
 export type PurchaseImageOrderByWithAggregationInput = {
@@ -230,10 +227,10 @@ export type PurchaseImageScalarWhereWithAggregatesInput = {
 
 export type PurchaseImageCreateInput = {
   id?: string
+  plannedPurchaseId: string
   url: string
   caption?: string | null
   uploadedAt?: Date | string
-  plannedPurchase: Prisma.PlannedPurchaseCreateNestedOneWithoutImagesInput
 }
 
 export type PurchaseImageUncheckedCreateInput = {
@@ -246,10 +243,10 @@ export type PurchaseImageUncheckedCreateInput = {
 
 export type PurchaseImageUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedPurchaseId?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   caption?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  plannedPurchase?: Prisma.PlannedPurchaseUpdateOneRequiredWithoutImagesNestedInput
 }
 
 export type PurchaseImageUncheckedUpdateInput = {
@@ -270,6 +267,7 @@ export type PurchaseImageCreateManyInput = {
 
 export type PurchaseImageUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  plannedPurchaseId?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   caption?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -281,16 +279,6 @@ export type PurchaseImageUncheckedUpdateManyInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   caption?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type PurchaseImageListRelationFilter = {
-  every?: Prisma.PurchaseImageWhereInput
-  some?: Prisma.PurchaseImageWhereInput
-  none?: Prisma.PurchaseImageWhereInput
-}
-
-export type PurchaseImageOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
 }
 
 export type PurchaseImageCountOrderByAggregateInput = {
@@ -317,127 +305,6 @@ export type PurchaseImageMinOrderByAggregateInput = {
   uploadedAt?: Prisma.SortOrder
 }
 
-export type PurchaseImageCreateNestedManyWithoutPlannedPurchaseInput = {
-  create?: Prisma.XOR<Prisma.PurchaseImageCreateWithoutPlannedPurchaseInput, Prisma.PurchaseImageUncheckedCreateWithoutPlannedPurchaseInput> | Prisma.PurchaseImageCreateWithoutPlannedPurchaseInput[] | Prisma.PurchaseImageUncheckedCreateWithoutPlannedPurchaseInput[]
-  connectOrCreate?: Prisma.PurchaseImageCreateOrConnectWithoutPlannedPurchaseInput | Prisma.PurchaseImageCreateOrConnectWithoutPlannedPurchaseInput[]
-  createMany?: Prisma.PurchaseImageCreateManyPlannedPurchaseInputEnvelope
-  connect?: Prisma.PurchaseImageWhereUniqueInput | Prisma.PurchaseImageWhereUniqueInput[]
-}
-
-export type PurchaseImageUncheckedCreateNestedManyWithoutPlannedPurchaseInput = {
-  create?: Prisma.XOR<Prisma.PurchaseImageCreateWithoutPlannedPurchaseInput, Prisma.PurchaseImageUncheckedCreateWithoutPlannedPurchaseInput> | Prisma.PurchaseImageCreateWithoutPlannedPurchaseInput[] | Prisma.PurchaseImageUncheckedCreateWithoutPlannedPurchaseInput[]
-  connectOrCreate?: Prisma.PurchaseImageCreateOrConnectWithoutPlannedPurchaseInput | Prisma.PurchaseImageCreateOrConnectWithoutPlannedPurchaseInput[]
-  createMany?: Prisma.PurchaseImageCreateManyPlannedPurchaseInputEnvelope
-  connect?: Prisma.PurchaseImageWhereUniqueInput | Prisma.PurchaseImageWhereUniqueInput[]
-}
-
-export type PurchaseImageUpdateManyWithoutPlannedPurchaseNestedInput = {
-  create?: Prisma.XOR<Prisma.PurchaseImageCreateWithoutPlannedPurchaseInput, Prisma.PurchaseImageUncheckedCreateWithoutPlannedPurchaseInput> | Prisma.PurchaseImageCreateWithoutPlannedPurchaseInput[] | Prisma.PurchaseImageUncheckedCreateWithoutPlannedPurchaseInput[]
-  connectOrCreate?: Prisma.PurchaseImageCreateOrConnectWithoutPlannedPurchaseInput | Prisma.PurchaseImageCreateOrConnectWithoutPlannedPurchaseInput[]
-  upsert?: Prisma.PurchaseImageUpsertWithWhereUniqueWithoutPlannedPurchaseInput | Prisma.PurchaseImageUpsertWithWhereUniqueWithoutPlannedPurchaseInput[]
-  createMany?: Prisma.PurchaseImageCreateManyPlannedPurchaseInputEnvelope
-  set?: Prisma.PurchaseImageWhereUniqueInput | Prisma.PurchaseImageWhereUniqueInput[]
-  disconnect?: Prisma.PurchaseImageWhereUniqueInput | Prisma.PurchaseImageWhereUniqueInput[]
-  delete?: Prisma.PurchaseImageWhereUniqueInput | Prisma.PurchaseImageWhereUniqueInput[]
-  connect?: Prisma.PurchaseImageWhereUniqueInput | Prisma.PurchaseImageWhereUniqueInput[]
-  update?: Prisma.PurchaseImageUpdateWithWhereUniqueWithoutPlannedPurchaseInput | Prisma.PurchaseImageUpdateWithWhereUniqueWithoutPlannedPurchaseInput[]
-  updateMany?: Prisma.PurchaseImageUpdateManyWithWhereWithoutPlannedPurchaseInput | Prisma.PurchaseImageUpdateManyWithWhereWithoutPlannedPurchaseInput[]
-  deleteMany?: Prisma.PurchaseImageScalarWhereInput | Prisma.PurchaseImageScalarWhereInput[]
-}
-
-export type PurchaseImageUncheckedUpdateManyWithoutPlannedPurchaseNestedInput = {
-  create?: Prisma.XOR<Prisma.PurchaseImageCreateWithoutPlannedPurchaseInput, Prisma.PurchaseImageUncheckedCreateWithoutPlannedPurchaseInput> | Prisma.PurchaseImageCreateWithoutPlannedPurchaseInput[] | Prisma.PurchaseImageUncheckedCreateWithoutPlannedPurchaseInput[]
-  connectOrCreate?: Prisma.PurchaseImageCreateOrConnectWithoutPlannedPurchaseInput | Prisma.PurchaseImageCreateOrConnectWithoutPlannedPurchaseInput[]
-  upsert?: Prisma.PurchaseImageUpsertWithWhereUniqueWithoutPlannedPurchaseInput | Prisma.PurchaseImageUpsertWithWhereUniqueWithoutPlannedPurchaseInput[]
-  createMany?: Prisma.PurchaseImageCreateManyPlannedPurchaseInputEnvelope
-  set?: Prisma.PurchaseImageWhereUniqueInput | Prisma.PurchaseImageWhereUniqueInput[]
-  disconnect?: Prisma.PurchaseImageWhereUniqueInput | Prisma.PurchaseImageWhereUniqueInput[]
-  delete?: Prisma.PurchaseImageWhereUniqueInput | Prisma.PurchaseImageWhereUniqueInput[]
-  connect?: Prisma.PurchaseImageWhereUniqueInput | Prisma.PurchaseImageWhereUniqueInput[]
-  update?: Prisma.PurchaseImageUpdateWithWhereUniqueWithoutPlannedPurchaseInput | Prisma.PurchaseImageUpdateWithWhereUniqueWithoutPlannedPurchaseInput[]
-  updateMany?: Prisma.PurchaseImageUpdateManyWithWhereWithoutPlannedPurchaseInput | Prisma.PurchaseImageUpdateManyWithWhereWithoutPlannedPurchaseInput[]
-  deleteMany?: Prisma.PurchaseImageScalarWhereInput | Prisma.PurchaseImageScalarWhereInput[]
-}
-
-export type PurchaseImageCreateWithoutPlannedPurchaseInput = {
-  id?: string
-  url: string
-  caption?: string | null
-  uploadedAt?: Date | string
-}
-
-export type PurchaseImageUncheckedCreateWithoutPlannedPurchaseInput = {
-  id?: string
-  url: string
-  caption?: string | null
-  uploadedAt?: Date | string
-}
-
-export type PurchaseImageCreateOrConnectWithoutPlannedPurchaseInput = {
-  where: Prisma.PurchaseImageWhereUniqueInput
-  create: Prisma.XOR<Prisma.PurchaseImageCreateWithoutPlannedPurchaseInput, Prisma.PurchaseImageUncheckedCreateWithoutPlannedPurchaseInput>
-}
-
-export type PurchaseImageCreateManyPlannedPurchaseInputEnvelope = {
-  data: Prisma.PurchaseImageCreateManyPlannedPurchaseInput | Prisma.PurchaseImageCreateManyPlannedPurchaseInput[]
-  skipDuplicates?: boolean
-}
-
-export type PurchaseImageUpsertWithWhereUniqueWithoutPlannedPurchaseInput = {
-  where: Prisma.PurchaseImageWhereUniqueInput
-  update: Prisma.XOR<Prisma.PurchaseImageUpdateWithoutPlannedPurchaseInput, Prisma.PurchaseImageUncheckedUpdateWithoutPlannedPurchaseInput>
-  create: Prisma.XOR<Prisma.PurchaseImageCreateWithoutPlannedPurchaseInput, Prisma.PurchaseImageUncheckedCreateWithoutPlannedPurchaseInput>
-}
-
-export type PurchaseImageUpdateWithWhereUniqueWithoutPlannedPurchaseInput = {
-  where: Prisma.PurchaseImageWhereUniqueInput
-  data: Prisma.XOR<Prisma.PurchaseImageUpdateWithoutPlannedPurchaseInput, Prisma.PurchaseImageUncheckedUpdateWithoutPlannedPurchaseInput>
-}
-
-export type PurchaseImageUpdateManyWithWhereWithoutPlannedPurchaseInput = {
-  where: Prisma.PurchaseImageScalarWhereInput
-  data: Prisma.XOR<Prisma.PurchaseImageUpdateManyMutationInput, Prisma.PurchaseImageUncheckedUpdateManyWithoutPlannedPurchaseInput>
-}
-
-export type PurchaseImageScalarWhereInput = {
-  AND?: Prisma.PurchaseImageScalarWhereInput | Prisma.PurchaseImageScalarWhereInput[]
-  OR?: Prisma.PurchaseImageScalarWhereInput[]
-  NOT?: Prisma.PurchaseImageScalarWhereInput | Prisma.PurchaseImageScalarWhereInput[]
-  id?: Prisma.StringFilter<"PurchaseImage"> | string
-  plannedPurchaseId?: Prisma.StringFilter<"PurchaseImage"> | string
-  url?: Prisma.StringFilter<"PurchaseImage"> | string
-  caption?: Prisma.StringNullableFilter<"PurchaseImage"> | string | null
-  uploadedAt?: Prisma.DateTimeFilter<"PurchaseImage"> | Date | string
-}
-
-export type PurchaseImageCreateManyPlannedPurchaseInput = {
-  id?: string
-  url: string
-  caption?: string | null
-  uploadedAt?: Date | string
-}
-
-export type PurchaseImageUpdateWithoutPlannedPurchaseInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  url?: Prisma.StringFieldUpdateOperationsInput | string
-  caption?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type PurchaseImageUncheckedUpdateWithoutPlannedPurchaseInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  url?: Prisma.StringFieldUpdateOperationsInput | string
-  caption?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type PurchaseImageUncheckedUpdateManyWithoutPlannedPurchaseInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  url?: Prisma.StringFieldUpdateOperationsInput | string
-  caption?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
 
 
 export type PurchaseImageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -446,7 +313,6 @@ export type PurchaseImageSelect<ExtArgs extends runtime.Types.Extensions.Interna
   url?: boolean
   caption?: boolean
   uploadedAt?: boolean
-  plannedPurchase?: boolean | Prisma.PlannedPurchaseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["purchaseImage"]>
 
 export type PurchaseImageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -455,7 +321,6 @@ export type PurchaseImageSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   url?: boolean
   caption?: boolean
   uploadedAt?: boolean
-  plannedPurchase?: boolean | Prisma.PlannedPurchaseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["purchaseImage"]>
 
 export type PurchaseImageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -464,7 +329,6 @@ export type PurchaseImageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   url?: boolean
   caption?: boolean
   uploadedAt?: boolean
-  plannedPurchase?: boolean | Prisma.PlannedPurchaseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["purchaseImage"]>
 
 export type PurchaseImageSelectScalar = {
@@ -476,21 +340,10 @@ export type PurchaseImageSelectScalar = {
 }
 
 export type PurchaseImageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "plannedPurchaseId" | "url" | "caption" | "uploadedAt", ExtArgs["result"]["purchaseImage"]>
-export type PurchaseImageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  plannedPurchase?: boolean | Prisma.PlannedPurchaseDefaultArgs<ExtArgs>
-}
-export type PurchaseImageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  plannedPurchase?: boolean | Prisma.PlannedPurchaseDefaultArgs<ExtArgs>
-}
-export type PurchaseImageIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  plannedPurchase?: boolean | Prisma.PlannedPurchaseDefaultArgs<ExtArgs>
-}
 
 export type $PurchaseImagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PurchaseImage"
-  objects: {
-    plannedPurchase: Prisma.$PlannedPurchasePayload<ExtArgs>
-  }
+  objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     plannedPurchaseId: string
@@ -891,7 +744,6 @@ readonly fields: PurchaseImageFieldRefs;
  */
 export interface Prisma__PurchaseImageClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  plannedPurchase<T extends Prisma.PlannedPurchaseDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlannedPurchaseDefaultArgs<ExtArgs>>): Prisma.Prisma__PlannedPurchaseClient<runtime.Types.Result.GetResult<Prisma.$PlannedPurchasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -943,10 +795,6 @@ export type PurchaseImageFindUniqueArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.PurchaseImageOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageInclude<ExtArgs> | null
-  /**
    * Filter, which PurchaseImage to fetch.
    */
   where: Prisma.PurchaseImageWhereUniqueInput
@@ -965,10 +813,6 @@ export type PurchaseImageFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Ext
    */
   omit?: Prisma.PurchaseImageOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageInclude<ExtArgs> | null
-  /**
    * Filter, which PurchaseImage to fetch.
    */
   where: Prisma.PurchaseImageWhereUniqueInput
@@ -986,10 +830,6 @@ export type PurchaseImageFindFirstArgs<ExtArgs extends runtime.Types.Extensions.
    * Omit specific fields from the PurchaseImage
    */
   omit?: Prisma.PurchaseImageOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageInclude<ExtArgs> | null
   /**
    * Filter, which PurchaseImage to fetch.
    */
@@ -1039,10 +879,6 @@ export type PurchaseImageFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.PurchaseImageOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageInclude<ExtArgs> | null
-  /**
    * Filter, which PurchaseImage to fetch.
    */
   where?: Prisma.PurchaseImageWhereInput
@@ -1091,10 +927,6 @@ export type PurchaseImageFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.PurchaseImageOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageInclude<ExtArgs> | null
-  /**
    * Filter, which PurchaseImages to fetch.
    */
   where?: Prisma.PurchaseImageWhereInput
@@ -1138,10 +970,6 @@ export type PurchaseImageCreateArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   omit?: Prisma.PurchaseImageOmit<ExtArgs> | null
   /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageInclude<ExtArgs> | null
-  /**
    * The data needed to create a PurchaseImage.
    */
   data: Prisma.XOR<Prisma.PurchaseImageCreateInput, Prisma.PurchaseImageUncheckedCreateInput>
@@ -1175,10 +1003,6 @@ export type PurchaseImageCreateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    */
   data: Prisma.PurchaseImageCreateManyInput | Prisma.PurchaseImageCreateManyInput[]
   skipDuplicates?: boolean
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1193,10 +1017,6 @@ export type PurchaseImageUpdateArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the PurchaseImage
    */
   omit?: Prisma.PurchaseImageOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageInclude<ExtArgs> | null
   /**
    * The data needed to update a PurchaseImage.
    */
@@ -1249,10 +1069,6 @@ export type PurchaseImageUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    * Limit how many PurchaseImages to update.
    */
   limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1267,10 +1083,6 @@ export type PurchaseImageUpsertArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the PurchaseImage
    */
   omit?: Prisma.PurchaseImageOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageInclude<ExtArgs> | null
   /**
    * The filter to search for the PurchaseImage to update in case it exists.
    */
@@ -1297,10 +1109,6 @@ export type PurchaseImageDeleteArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the PurchaseImage
    */
   omit?: Prisma.PurchaseImageOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageInclude<ExtArgs> | null
   /**
    * Filter which PurchaseImage to delete.
    */
@@ -1333,8 +1141,4 @@ export type PurchaseImageDefaultArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the PurchaseImage
    */
   omit?: Prisma.PurchaseImageOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseImageInclude<ExtArgs> | null
 }

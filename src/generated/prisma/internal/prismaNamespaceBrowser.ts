@@ -83,6 +83,7 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 
 export const OrganizationScalarFieldEnum = {
+  versionId: 'versionId',
   id: 'id',
   name: 'name',
   slug: 'slug',
@@ -99,7 +100,6 @@ export const OrganizationScalarFieldEnum = {
   verificationNotes: 'verificationNotes',
   officialWebsite: 'officialWebsite',
   determinationLetterUrl: 'determinationLetterUrl',
-  versionId: 'versionId',
   previousVersionId: 'previousVersionId',
   validFrom: 'validFrom',
   validTo: 'validTo',
@@ -132,13 +132,13 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 
 
 export const OrganizationUserScalarFieldEnum = {
+  versionId: 'versionId',
   id: 'id',
   userId: 'userId',
   organizationId: 'organizationId',
   role: 'role',
   anonymousDonor: 'anonymousDonor',
   showInHighlights: 'showInHighlights',
-  versionId: 'versionId',
   previousVersionId: 'previousVersionId',
   validFrom: 'validFrom',
   validTo: 'validTo',
@@ -157,6 +157,7 @@ export type OrganizationUserScalarFieldEnum = (typeof OrganizationUserScalarFiel
 
 
 export const AccountScalarFieldEnum = {
+  versionId: 'versionId',
   id: 'id',
   organizationId: 'organizationId',
   code: 'code',
@@ -166,7 +167,6 @@ export const AccountScalarFieldEnum = {
   parentAccountId: 'parentAccountId',
   isActive: 'isActive',
   currentBalance: 'currentBalance',
-  versionId: 'versionId',
   previousVersionId: 'previousVersionId',
   validFrom: 'validFrom',
   validTo: 'validTo',
@@ -184,6 +184,7 @@ export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeo
 
 
 export const TransactionScalarFieldEnum = {
+  versionId: 'versionId',
   id: 'id',
   organizationId: 'organizationId',
   transactionDate: 'transactionDate',
@@ -209,7 +210,6 @@ export const TransactionScalarFieldEnum = {
   createdAt: 'createdAt',
   createdBy: 'createdBy',
   updatedAt: 'updatedAt',
-  versionId: 'versionId',
   previousVersionId: 'previousVersionId',
   validFrom: 'validFrom',
   validTo: 'validTo',
@@ -230,6 +230,7 @@ export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[key
 
 
 export const PlannedPurchaseScalarFieldEnum = {
+  versionId: 'versionId',
   id: 'id',
   organizationId: 'organizationId',
   title: 'title',
@@ -242,7 +243,6 @@ export const PlannedPurchaseScalarFieldEnum = {
   actualTransactionId: 'actualTransactionId',
   actualAmount: 'actualAmount',
   completedAt: 'completedAt',
-  versionId: 'versionId',
   previousVersionId: 'previousVersionId',
   validFrom: 'validFrom',
   validTo: 'validTo',
@@ -323,6 +323,7 @@ export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof
 
 
 export const ContactScalarFieldEnum = {
+  versionId: 'versionId',
   id: 'id',
   organizationId: 'organizationId',
   name: 'name',
@@ -334,7 +335,6 @@ export const ContactScalarFieldEnum = {
   notes: 'notes',
   userId: 'userId',
   isActive: 'isActive',
-  versionId: 'versionId',
   previousVersionId: 'previousVersionId',
   validFrom: 'validFrom',
   validTo: 'validTo',

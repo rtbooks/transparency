@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { UsersPageClient } from './UsersPageClient';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
 import Link from 'next/link';
@@ -28,20 +29,18 @@ export default async function UsersPage({ params }: UsersPageProps) {
   }
 
   // Find organization and check if user has access
-  const organization = await prisma.organization.findUnique({
-    where: { slug },
-    include: {
-      organizationUsers: {
-        where: { userId: user.id },
-      },
-    },
+  const organization = await prisma.organization.findFirst({
+    where: buildCurrentVersionWhere({ slug }),
   });
 
   if (!organization) {
     notFound();
   }
 
-  const userAccess = organization.organizationUsers[0];
+  const userOrgUsers = await prisma.organizationUser.findMany({
+    where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+  });
+  const userAccess = userOrgUsers[0];
   
   // Only ORG_ADMIN and PLATFORM_ADMIN can access user management
   if (!userAccess || userAccess.role === 'DONOR' || userAccess.role === 'PUBLIC') {
@@ -64,16 +63,22 @@ export default async function UsersPage({ params }: UsersPageProps) {
 
   // Fetch all organization users with their user data
   const organizationUsers = await prisma.organizationUser.findMany({
-    where: {
+    where: buildCurrentVersionWhere({
       organizationId: organization.id,
-    },
-    include: {
-      user: true,
-    },
+    }),
     orderBy: {
       joinedAt: 'asc',
     },
   });
+
+  // Fetch user details for org users
+  const orgUserUserIds = organizationUsers.map(ou => ou.userId);
+  const orgUserUsers = orgUserUserIds.length > 0
+    ? await prisma.user.findMany({
+        where: { id: { in: orgUserUserIds } },
+      })
+    : [];
+  const orgUserUserMap = new Map(orgUserUsers.map(u => [u.id, u]));
 
   // Fetch pending invitations
   const pendingInvitations = await prisma.invitation.findMany({
@@ -98,8 +103,8 @@ export default async function UsersPage({ params }: UsersPageProps) {
   const serializedUsers = organizationUsers.map((orgUser) => ({
     ...orgUser,
     user: {
-      ...orgUser.user,
-      totalDonated: Number(orgUser.user.totalDonated),
+      ...(orgUserUserMap.get(orgUser.userId) || {}),
+      totalDonated: Number(orgUserUserMap.get(orgUser.userId)?.totalDonated || 0),
     },
   }));
 

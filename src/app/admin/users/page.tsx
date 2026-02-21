@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import {
   Table,
   TableBody,
@@ -12,22 +13,39 @@ import { Users as UsersIcon, Building2 } from 'lucide-react';
 
 export default async function AdminUsersPage() {
   const users = await prisma.user.findMany({
-    include: {
-      organizations: {
-        include: {
-          organization: {
-            select: {
-              name: true,
-              slug: true,
-            },
-          },
-        },
-      },
-    },
     orderBy: {
       createdAt: 'desc',
     },
   });
+
+  // Fetch organization memberships separately (bitemporal)
+  const userIds = users.map(u => u.id);
+  const orgUsers = userIds.length > 0
+    ? await prisma.organizationUser.findMany({
+        where: buildCurrentVersionWhere({ userId: { in: userIds } }),
+      })
+    : [];
+
+  // Fetch organizations for those memberships
+  const orgIds = [...new Set(orgUsers.map(ou => ou.organizationId))];
+  const organizations = orgIds.length > 0
+    ? await prisma.organization.findMany({
+        where: buildCurrentVersionWhere({ id: { in: orgIds } }),
+        select: { id: true, name: true, slug: true },
+      })
+    : [];
+  const orgMap = new Map(organizations.map(o => [o.id, { name: o.name, slug: o.slug }]));
+
+  // Build enriched users with organizations
+  const usersWithOrgs = users.map(user => ({
+    ...user,
+    organizations: orgUsers
+      .filter(ou => ou.userId === user.id)
+      .map(ou => ({
+        ...ou,
+        organization: orgMap.get(ou.organizationId) || { name: 'Unknown', slug: '' },
+      })),
+  }));
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -78,7 +96,7 @@ export default async function AdminUsersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Users</p>
-              <p className="text-2xl font-bold text-gray-900">{users.length}</p>
+              <p className="text-2xl font-bold text-gray-900">{usersWithOrgs.length}</p>
             </div>
             <UsersIcon className="h-8 w-8 text-blue-600" />
           </div>
@@ -89,7 +107,7 @@ export default async function AdminUsersPage() {
               <p className="text-sm text-gray-600">Platform Admins</p>
               <p className="text-2xl font-bold text-gray-900">
                 {
-                  users.filter((u) =>
+                  usersWithOrgs.filter((u) =>
                     u.organizations.some((o) => o.role === 'PLATFORM_ADMIN')
                   ).length
                 }
@@ -104,7 +122,7 @@ export default async function AdminUsersPage() {
               <p className="text-sm text-gray-600">Org Admins</p>
               <p className="text-2xl font-bold text-gray-900">
                 {
-                  users.filter((u) =>
+                  usersWithOrgs.filter((u) =>
                     u.organizations.some((o) => o.role === 'ORG_ADMIN')
                   ).length
                 }
@@ -135,7 +153,7 @@ export default async function AdminUsersPage() {
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user) => (
+              usersWithOrgs.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <div>

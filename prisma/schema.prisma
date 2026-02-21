@@ -15,9 +15,10 @@ datasource db {
 // ============================================
 
 model Organization {
-  id              String   @id @default(uuid())
+  versionId       String   @id @default(uuid()) @map("version_id")
+  id              String   @default(uuid())
   name            String
-  slug            String   @unique // URL-friendly identifier (e.g., "grit-hoops")
+  slug            String // URL-friendly identifier (e.g., "grit-hoops") — uniqueness enforced at app level for current versions
   ein             String? // Tax ID / EIN
   mission         String?  @db.Text
   logoUrl         String?  @map("logo_url")
@@ -37,7 +38,6 @@ model Organization {
   determinationLetterUrl String?            @map("determination_letter_url")
 
   // Temporal versioning (bi-temporal pattern)
-  versionId         String    @unique @default(uuid()) @map("version_id")
   previousVersionId String?   @map("previous_version_id")
   validFrom         DateTime  @default(now()) @map("valid_from")
   validTo           DateTime  @default("9999-12-31T23:59:59.999Z") @map("valid_to")
@@ -52,17 +52,10 @@ model Organization {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Relationships
-  accounts          Account[]
-  transactions      Transaction[]
-  contacts          Contact[]
-  bills             Bill[]
-  plannedPurchases  PlannedPurchase[]
-  organizationUsers OrganizationUser[]
-  bankAccounts      BankAccount[]
-  invitations       Invitation[]
+  // No reverse relation arrays — FKs to Organization are plain string fields resolved at service layer
 
   // Temporal indexes
+  @@unique([id, validFrom])
   @@index([id, validTo], name: "idx_org_current")
   @@index([id, validFrom, validTo], name: "idx_org_valid_time")
   @@index([systemFrom, systemTo], name: "idx_org_system_time")
@@ -118,7 +111,8 @@ model User {
 }
 
 model OrganizationUser {
-  id             String   @id @default(uuid())
+  versionId      String   @id @default(uuid()) @map("version_id")
+  id             String   @default(uuid())
   userId         String   @map("user_id")
   organizationId String   @map("organization_id")
   role           UserRole @default(DONOR)
@@ -128,7 +122,6 @@ model OrganizationUser {
   showInHighlights Boolean @default(true) @map("show_in_highlights")
 
   // Temporal versioning (bi-temporal pattern)
-  versionId         String    @unique @default(uuid()) @map("version_id")
   previousVersionId String?   @map("previous_version_id")
   validFrom         DateTime  @default(now()) @map("valid_from")
   validTo           DateTime  @default("9999-12-31T23:59:59.999Z") @map("valid_to")
@@ -144,12 +137,11 @@ model OrganizationUser {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Relations
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  // Relations (only to non-bitemporal User; Organization resolved at service layer)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Temporal indexes
-  @@unique([userId, organizationId])
+  @@unique([id, validFrom])
   @@index([id, validTo], name: "idx_orguser_current")
   @@index([id, validFrom, validTo], name: "idx_orguser_valid_time")
   @@index([systemFrom, systemTo], name: "idx_orguser_system_time")
@@ -169,7 +161,8 @@ enum UserRole {
 // ============================================
 
 model Account {
-  id             String @id @default(uuid())
+  versionId      String @id @default(uuid()) @map("version_id")
+  id             String @default(uuid())
   organizationId String @map("organization_id")
 
   // Account details
@@ -188,7 +181,6 @@ model Account {
   currentBalance Decimal @default(0) @map("current_balance") @db.Decimal(12, 2)
 
   // Temporal versioning (bi-temporal pattern)
-  versionId         String    @unique @default(uuid()) @map("version_id")
   previousVersionId String?   @map("previous_version_id")
   validFrom         DateTime  @default(now()) @map("valid_from")
   validTo           DateTime  @default("9999-12-31T23:59:59.999Z") @map("valid_to")
@@ -203,18 +195,10 @@ model Account {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Relations
-  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  parentAccount Account?     @relation("AccountHierarchy", fields: [parentAccountId], references: [id])
-  childAccounts Account[]    @relation("AccountHierarchy")
-
-  debitTransactions  Transaction[] @relation("DebitAccount")
-  creditTransactions Transaction[] @relation("CreditAccount")
-
-  bankAccount BankAccount?
+  // No relations — Organization, parentAccount, and reverse arrays resolved at service layer
 
   // Temporal indexes
-  @@unique([organizationId, code])
+  @@unique([id, validFrom])
   @@index([id, validTo], name: "idx_account_current")
   @@index([id, validFrom, validTo], name: "idx_account_valid_time")
   @@index([systemFrom, systemTo], name: "idx_account_system_time")
@@ -235,7 +219,8 @@ enum AccountType {
 // ============================================
 
 model Transaction {
-  id             String @id @default(uuid())
+  versionId      String @id @default(uuid()) @map("version_id")
+  id             String @default(uuid())
   organizationId String @map("organization_id")
 
   // Transaction details
@@ -266,13 +251,13 @@ model Transaction {
   notes      String? @db.Text
 
   // Reconciliation
-  bankTransactionId String?   @unique @map("bank_transaction_id")
+  bankTransactionId String?   @map("bank_transaction_id")
   reconciled        Boolean   @default(false)
   reconciledAt      DateTime? @map("reconciled_at")
 
   // Stripe integration
-  stripeSessionId String? @unique @map("stripe_session_id")
-  stripePaymentId String? @unique @map("stripe_payment_id")
+  stripeSessionId String? @map("stripe_session_id")
+  stripePaymentId String? @map("stripe_payment_id")
 
   // Metadata
   createdAt DateTime @default(now()) @map("created_at")
@@ -280,7 +265,6 @@ model Transaction {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Temporal versioning (bi-temporal pattern)
-  versionId         String    @unique @default(uuid()) @map("version_id")
   previousVersionId String?   @map("previous_version_id")
   validFrom         DateTime  @default(now()) @map("valid_from")
   validTo           DateTime  @default("9999-12-31T23:59:59.999Z") @map("valid_to")
@@ -298,18 +282,11 @@ model Transaction {
   voidReason String?    @map("void_reason") @db.Text
   changeReason String?  @map("change_reason") @db.Text
 
-  // Relations
-  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  debitAccount  Account      @relation("DebitAccount", fields: [debitAccountId], references: [id])
-  creditAccount Account      @relation("CreditAccount", fields: [creditAccountId], references: [id])
-  donor         User?        @relation("DonorTransactions", fields: [donorUserId], references: [id])
-  contact       Contact?     @relation(fields: [contactId], references: [id])
-  billPayments  BillPayment[]
-  billAccrual   Bill?        @relation("BillAccrualTransaction")
-
-  plannedPurchase PlannedPurchase? @relation("CompletedPurchase")
+  // Relations (only to non-bitemporal User; Organization/Account/Contact resolved at service layer)
+  donor User? @relation("DonorTransactions", fields: [donorUserId], references: [id])
 
   // Temporal indexes
+  @@unique([id, validFrom])
   @@index([id, validTo], name: "idx_transaction_current")
   @@index([id, validFrom, validTo], name: "idx_transaction_valid_time")
   @@index([systemFrom, systemTo], name: "idx_transaction_system_time")
@@ -338,7 +315,8 @@ enum PaymentMethod {
 // ============================================
 
 model PlannedPurchase {
-  id             String @id @default(uuid())
+  versionId      String @id @default(uuid()) @map("version_id")
+  id             String @default(uuid())
   organizationId String @map("organization_id")
 
   // Purchase details
@@ -353,12 +331,11 @@ model PlannedPurchase {
   priority PurchasePriority @default(MEDIUM)
 
   // Completion
-  actualTransactionId String?   @unique @map("actual_transaction_id")
+  actualTransactionId String?   @map("actual_transaction_id")
   actualAmount        Decimal?  @map("actual_amount") @db.Decimal(12, 2)
   completedAt         DateTime? @map("completed_at")
 
   // Temporal versioning (bi-temporal pattern)
-  versionId         String    @unique @default(uuid()) @map("version_id")
   previousVersionId String?   @map("previous_version_id")
   validFrom         DateTime  @default(now()) @map("valid_from")
   validTo           DateTime  @default("9999-12-31T23:59:59.999Z") @map("valid_to")
@@ -374,12 +351,10 @@ model PlannedPurchase {
   updatedAt DateTime @updatedAt @map("updated_at")
   createdBy String?  @map("created_by")
 
-  // Relations
-  organization      Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  actualTransaction Transaction?    @relation("CompletedPurchase", fields: [actualTransactionId], references: [id])
-  images            PurchaseImage[]
+  // No relations — Organization and Transaction resolved at service layer
 
   // Temporal indexes
+  @@unique([id, validFrom])
   @@index([id, validTo], name: "idx_purchase_current")
   @@index([id, validFrom, validTo], name: "idx_purchase_valid_time")
   @@index([systemFrom, systemTo], name: "idx_purchase_system_time")
@@ -408,8 +383,7 @@ model PurchaseImage {
   caption    String?  @db.Text
   uploadedAt DateTime @default(now()) @map("uploaded_at")
 
-  // Relations
-  plannedPurchase PlannedPurchase @relation(fields: [plannedPurchaseId], references: [id], onDelete: Cascade)
+  // PlannedPurchase is bitemporal — no @relation, resolved at service layer
 
   @@map("purchase_images")
 }
@@ -421,7 +395,7 @@ model PurchaseImage {
 model BankAccount {
   id             String @id @default(uuid())
   organizationId String @map("organization_id")
-  accountId      String @unique @map("account_id") // Links to Account (Chart of Accounts)
+  accountId      String @unique @map("account_id") // Links to Account (Chart of Accounts) entity ID
 
   // Bank details
   bankName           String  @map("bank_name")
@@ -440,9 +414,7 @@ model BankAccount {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Relations
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  account      Account      @relation(fields: [accountId], references: [id])
+  // Organization and Account are bitemporal — no @relation, resolved at service layer
 
   @@map("bank_accounts")
 }
@@ -481,7 +453,9 @@ model Invitation {
   token          String   @unique
 
   invitedById String @map("invited_by_id")
-  invitedBy   User   @relation("InvitationsSent", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  // Relations (Organization is bitemporal — no @relation for it)
+  invitedBy User @relation("InvitationsSent", fields: [invitedById], references: [id], onDelete: Cascade)
 
   status     InvitationStatus @default(PENDING)
   expiresAt  DateTime         @map("expires_at")
@@ -489,8 +463,6 @@ model Invitation {
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, email])
   @@map("invitations")
@@ -508,7 +480,8 @@ enum InvitationStatus {
 // ============================================
 
 model Contact {
-  id             String @id @default(uuid())
+  versionId      String @id @default(uuid()) @map("version_id")
+  id             String @default(uuid())
   organizationId String @map("organization_id")
 
   // Contact details
@@ -526,7 +499,6 @@ model Contact {
   isActive Boolean @default(true) @map("is_active")
 
   // Temporal versioning (bi-temporal pattern)
-  versionId         String    @unique @default(uuid()) @map("version_id")
   previousVersionId String?   @map("previous_version_id")
   validFrom         DateTime  @default(now()) @map("valid_from")
   validTo           DateTime  @default("9999-12-31T23:59:59.999Z") @map("valid_to")
@@ -542,16 +514,14 @@ model Contact {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Relations
-  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user         User?         @relation("UserContacts", fields: [userId], references: [id])
-  bills        Bill[]
-  transactions Transaction[]
+  // Relations (only to non-bitemporal User; Organization resolved at service layer)
+  user User? @relation("UserContacts", fields: [userId], references: [id])
 
   // Index for looking up contact by user (uniqueness enforced in service layer for current versions)
   @@index([organizationId, userId], name: "idx_contact_org_user")
 
   // Temporal indexes
+  @@unique([id, validFrom])
   @@index([id, validTo], name: "idx_contact_current")
   @@index([id, validFrom, validTo], name: "idx_contact_valid_time")
   @@index([systemFrom, systemTo], name: "idx_contact_system_time")
@@ -601,10 +571,7 @@ model Bill {
   updatedAt DateTime @updatedAt @map("updated_at")
   createdBy String?  @map("created_by")
 
-  // Relations
-  organization       Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  contact            Contact       @relation(fields: [contactId], references: [id])
-  accrualTransaction Transaction?  @relation("BillAccrualTransaction", fields: [accrualTransactionId], references: [id])
+  // Relations (Organization, Contact, and Transaction are bitemporal — no @relation for those)
   payments           BillPayment[]
 
   @@index([organizationId, status], name: "idx_bill_org_status")
@@ -636,9 +603,8 @@ model BillPayment {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  // Relations
+  // Relations (Transaction is bitemporal — no @relation for it)
   bill        Bill        @relation(fields: [billId], references: [id], onDelete: Cascade)
-  transaction Transaction @relation(fields: [transactionId], references: [id])
 
   @@index([billId], name: "idx_billpayment_bill")
   @@index([transactionId], name: "idx_billpayment_transaction")

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 export async function POST(
   request: NextRequest,
@@ -27,13 +28,8 @@ export async function POST(
     }
 
     // Find organization and check access
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -43,14 +39,17 @@ export async function POST(
       );
     }
 
-    const orgUser = organization.organizationUsers[0];
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const orgUser = orgUsers[0];
     if (!orgUser || orgUser.role === 'DONOR') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     // Check if account exists and belongs to organization
-    const existingAccount = await prisma.account.findUnique({
-      where: { id },
+    const existingAccount = await prisma.account.findFirst({
+      where: buildCurrentVersionWhere({ id }),
     });
 
     if (!existingAccount || existingAccount.organizationId !== organization.id) {
@@ -63,10 +62,10 @@ export async function POST(
     // Validate deactivation: cannot deactivate if has active children
     if (existingAccount.isActive) {
       const activeChildren = await prisma.account.findFirst({
-        where: {
+        where: buildCurrentVersionWhere({
           parentAccountId: existingAccount.id,
           isActive: true,
-        },
+        }),
       });
 
       if (activeChildren) {
@@ -79,8 +78,8 @@ export async function POST(
 
     // Validate activation: cannot activate if parent is inactive
     if (!existingAccount.isActive && existingAccount.parentAccountId) {
-      const parentAccount = await prisma.account.findUnique({
-        where: { id: existingAccount.parentAccountId },
+      const parentAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({ id: existingAccount.parentAccountId }),
       });
 
       if (parentAccount && !parentAccount.isActive) {
@@ -93,7 +92,7 @@ export async function POST(
 
     // Toggle the isActive status
     const updatedAccount = await prisma.account.update({
-      where: { id },
+      where: { versionId: existingAccount.versionId },
       data: {
         isActive: !existingAccount.isActive,
       },

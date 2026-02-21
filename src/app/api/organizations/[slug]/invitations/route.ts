@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
 import { hasRole } from '@/lib/auth/permissions';
 import { sendInvitationEmail } from '@/lib/email/send-invitation';
@@ -24,8 +25,8 @@ export async function POST(
     const { slug } = await params;
 
     // Find the organization
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -42,9 +43,6 @@ export async function POST(
         id: true,
         name: true,
         isPlatformAdmin: true,
-        organizations: {
-          where: { organizationId: organization.id },
-        },
       },
     });
 
@@ -52,7 +50,10 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const currentUserRole = user.organizations[0]?.role;
+    const userOrgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const currentUserRole = userOrgUsers[0]?.role;
 
     // Platform admins or ORG_ADMIN can invite users
     const canInvite = user.isPlatformAdmin || (currentUserRole && hasRole(currentUserRole, 'ORG_ADMIN'));
@@ -71,18 +72,18 @@ export async function POST(
     // Check if user already exists in the organization
     const existingUser = await prisma.user.findUnique({
       where: { email },
-      include: {
-        organizations: {
-          where: { organizationId: organization.id },
-        },
-      },
     });
 
-    if (existingUser && existingUser.organizations.length > 0) {
-      return NextResponse.json(
-        { error: 'User is already a member of this organization' },
-        { status: 400 }
-      );
+    if (existingUser) {
+      const existingOrgUsers = await prisma.organizationUser.findMany({
+        where: buildCurrentVersionWhere({ organizationId: organization.id, userId: existingUser.id }),
+      });
+      if (existingOrgUsers.length > 0) {
+        return NextResponse.json(
+          { error: 'User is already a member of this organization' },
+          { status: 400 }
+        );
+      }
     }
 
     // Check if there's already a pending invitation
@@ -182,8 +183,8 @@ export async function GET(
     const { slug } = await params;
 
     // Find the organization
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -196,18 +197,21 @@ export async function GET(
     // Verify user has permission
     const user = await prisma.user.findUnique({
       where: { authId: clerkUserId },
-      include: {
-        organizations: {
-          where: { organizationId: organization.id },
-        },
-      },
     });
 
-    if (!user || user.organizations.length === 0) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const currentUserRole = user.organizations[0].role;
+    const userOrgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+
+    if (userOrgUsers.length === 0) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    const currentUserRole = userOrgUsers[0].role;
 
     if (!hasRole(currentUserRole, 'ORG_ADMIN')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });

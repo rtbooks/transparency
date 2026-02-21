@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { sendInvitationEmail } from '@/lib/email/send-invitation';
 import crypto from 'crypto';
 
@@ -39,13 +40,8 @@ export async function POST(
     }
 
     // Find organization
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -55,7 +51,10 @@ export async function POST(
       );
     }
 
-    const userAccess = organization.organizationUsers[0];
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const userAccess = orgUsers[0];
 
     // Platform admins or ORG_ADMIN can resend invitations
     const canResend = user.isPlatformAdmin || (userAccess && userAccess.role === 'ORG_ADMIN');

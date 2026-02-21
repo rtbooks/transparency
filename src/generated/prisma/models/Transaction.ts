@@ -35,6 +35,7 @@ export type TransactionSumAggregateOutputType = {
 }
 
 export type TransactionMinAggregateOutputType = {
+  versionId: string | null
   id: string | null
   organizationId: string | null
   transactionDate: Date | null
@@ -60,7 +61,6 @@ export type TransactionMinAggregateOutputType = {
   createdAt: Date | null
   createdBy: string | null
   updatedAt: Date | null
-  versionId: string | null
   previousVersionId: string | null
   validFrom: Date | null
   validTo: Date | null
@@ -78,6 +78,7 @@ export type TransactionMinAggregateOutputType = {
 }
 
 export type TransactionMaxAggregateOutputType = {
+  versionId: string | null
   id: string | null
   organizationId: string | null
   transactionDate: Date | null
@@ -103,7 +104,6 @@ export type TransactionMaxAggregateOutputType = {
   createdAt: Date | null
   createdBy: string | null
   updatedAt: Date | null
-  versionId: string | null
   previousVersionId: string | null
   validFrom: Date | null
   validTo: Date | null
@@ -121,6 +121,7 @@ export type TransactionMaxAggregateOutputType = {
 }
 
 export type TransactionCountAggregateOutputType = {
+  versionId: number
   id: number
   organizationId: number
   transactionDate: number
@@ -146,7 +147,6 @@ export type TransactionCountAggregateOutputType = {
   createdAt: number
   createdBy: number
   updatedAt: number
-  versionId: number
   previousVersionId: number
   validFrom: number
   validTo: number
@@ -174,6 +174,7 @@ export type TransactionSumAggregateInputType = {
 }
 
 export type TransactionMinAggregateInputType = {
+  versionId?: true
   id?: true
   organizationId?: true
   transactionDate?: true
@@ -199,7 +200,6 @@ export type TransactionMinAggregateInputType = {
   createdAt?: true
   createdBy?: true
   updatedAt?: true
-  versionId?: true
   previousVersionId?: true
   validFrom?: true
   validTo?: true
@@ -217,6 +217,7 @@ export type TransactionMinAggregateInputType = {
 }
 
 export type TransactionMaxAggregateInputType = {
+  versionId?: true
   id?: true
   organizationId?: true
   transactionDate?: true
@@ -242,7 +243,6 @@ export type TransactionMaxAggregateInputType = {
   createdAt?: true
   createdBy?: true
   updatedAt?: true
-  versionId?: true
   previousVersionId?: true
   validFrom?: true
   validTo?: true
@@ -260,6 +260,7 @@ export type TransactionMaxAggregateInputType = {
 }
 
 export type TransactionCountAggregateInputType = {
+  versionId?: true
   id?: true
   organizationId?: true
   transactionDate?: true
@@ -285,7 +286,6 @@ export type TransactionCountAggregateInputType = {
   createdAt?: true
   createdBy?: true
   updatedAt?: true
-  versionId?: true
   previousVersionId?: true
   validFrom?: true
   validTo?: true
@@ -390,6 +390,7 @@ export type TransactionGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 export type TransactionGroupByOutputType = {
+  versionId: string
   id: string
   organizationId: string
   transactionDate: Date
@@ -415,7 +416,6 @@ export type TransactionGroupByOutputType = {
   createdAt: Date
   createdBy: string | null
   updatedAt: Date
-  versionId: string
   previousVersionId: string | null
   validFrom: Date
   validTo: Date
@@ -456,6 +456,7 @@ export type TransactionWhereInput = {
   AND?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
   OR?: Prisma.TransactionWhereInput[]
   NOT?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
+  versionId?: Prisma.StringFilter<"Transaction"> | string
   id?: Prisma.StringFilter<"Transaction"> | string
   organizationId?: Prisma.StringFilter<"Transaction"> | string
   transactionDate?: Prisma.DateTimeFilter<"Transaction"> | Date | string
@@ -481,7 +482,6 @@ export type TransactionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  versionId?: Prisma.StringFilter<"Transaction"> | string
   previousVersionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   validFrom?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   validTo?: Prisma.DateTimeFilter<"Transaction"> | Date | string
@@ -496,17 +496,11 @@ export type TransactionWhereInput = {
   voidedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
   voidReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
   changeReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
-  debitAccount?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
-  creditAccount?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
   donor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-  contact?: Prisma.XOR<Prisma.ContactNullableScalarRelationFilter, Prisma.ContactWhereInput> | null
-  billPayments?: Prisma.BillPaymentListRelationFilter
-  billAccrual?: Prisma.XOR<Prisma.BillNullableScalarRelationFilter, Prisma.BillWhereInput> | null
-  plannedPurchase?: Prisma.XOR<Prisma.PlannedPurchaseNullableScalarRelationFilter, Prisma.PlannedPurchaseWhereInput> | null
 }
 
 export type TransactionOrderByWithRelationInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   transactionDate?: Prisma.SortOrder
@@ -532,7 +526,6 @@ export type TransactionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -547,25 +540,16 @@ export type TransactionOrderByWithRelationInput = {
   voidedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
   changeReason?: Prisma.SortOrderInput | Prisma.SortOrder
-  organization?: Prisma.OrganizationOrderByWithRelationInput
-  debitAccount?: Prisma.AccountOrderByWithRelationInput
-  creditAccount?: Prisma.AccountOrderByWithRelationInput
   donor?: Prisma.UserOrderByWithRelationInput
-  contact?: Prisma.ContactOrderByWithRelationInput
-  billPayments?: Prisma.BillPaymentOrderByRelationAggregateInput
-  billAccrual?: Prisma.BillOrderByWithRelationInput
-  plannedPurchase?: Prisma.PlannedPurchaseOrderByWithRelationInput
 }
 
 export type TransactionWhereUniqueInput = Prisma.AtLeast<{
-  id?: string
-  bankTransactionId?: string
-  stripeSessionId?: string
-  stripePaymentId?: string
   versionId?: string
+  id_validFrom?: Prisma.TransactionIdValidFromCompoundUniqueInput
   AND?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
   OR?: Prisma.TransactionWhereInput[]
   NOT?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
+  id?: Prisma.StringFilter<"Transaction"> | string
   organizationId?: Prisma.StringFilter<"Transaction"> | string
   transactionDate?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   amount?: Prisma.DecimalFilter<"Transaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -582,8 +566,11 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   contactId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   receiptUrl?: Prisma.StringNullableFilter<"Transaction"> | string | null
   notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  bankTransactionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   reconciled?: Prisma.BoolFilter<"Transaction"> | boolean
   reconciledAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  stripeSessionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  stripePaymentId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
@@ -601,17 +588,11 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   voidedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
   voidReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
   changeReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
-  debitAccount?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
-  creditAccount?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
   donor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-  contact?: Prisma.XOR<Prisma.ContactNullableScalarRelationFilter, Prisma.ContactWhereInput> | null
-  billPayments?: Prisma.BillPaymentListRelationFilter
-  billAccrual?: Prisma.XOR<Prisma.BillNullableScalarRelationFilter, Prisma.BillWhereInput> | null
-  plannedPurchase?: Prisma.XOR<Prisma.PlannedPurchaseNullableScalarRelationFilter, Prisma.PlannedPurchaseWhereInput> | null
-}, "id" | "bankTransactionId" | "stripeSessionId" | "stripePaymentId" | "versionId">
+}, "versionId" | "id_validFrom">
 
 export type TransactionOrderByWithAggregationInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   transactionDate?: Prisma.SortOrder
@@ -637,7 +618,6 @@ export type TransactionOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -663,6 +643,7 @@ export type TransactionScalarWhereWithAggregatesInput = {
   AND?: Prisma.TransactionScalarWhereWithAggregatesInput | Prisma.TransactionScalarWhereWithAggregatesInput[]
   OR?: Prisma.TransactionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TransactionScalarWhereWithAggregatesInput | Prisma.TransactionScalarWhereWithAggregatesInput[]
+  versionId?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   id?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   organizationId?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   transactionDate?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
@@ -688,7 +669,6 @@ export type TransactionScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
   createdBy?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
-  versionId?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   previousVersionId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   validFrom?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
   validTo?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
@@ -706,16 +686,21 @@ export type TransactionScalarWhereWithAggregatesInput = {
 }
 
 export type TransactionCreateInput = {
+  versionId?: string
   id?: string
+  organizationId: string
   transactionDate: Date | string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   type: $Enums.TransactionType
+  debitAccountId: string
+  creditAccountId: string
   description: string
   category?: string | null
   paymentMethod: $Enums.PaymentMethod
   referenceNumber?: string | null
   donorName?: string | null
   isAnonymous?: boolean
+  contactId?: string | null
   receiptUrl?: string | null
   notes?: string | null
   bankTransactionId?: string | null
@@ -726,7 +711,6 @@ export type TransactionCreateInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
-  versionId?: string
   previousVersionId?: string | null
   validFrom?: Date | string
   validTo?: Date | string
@@ -741,17 +725,11 @@ export type TransactionCreateInput = {
   voidedBy?: string | null
   voidReason?: string | null
   changeReason?: string | null
-  organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
-  debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
-  creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
-  contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
-  billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
 }
 
 export type TransactionUncheckedCreateInput = {
+  versionId?: string
   id?: string
   organizationId: string
   transactionDate: Date | string
@@ -777,7 +755,6 @@ export type TransactionUncheckedCreateInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
-  versionId?: string
   previousVersionId?: string | null
   validFrom?: Date | string
   validTo?: Date | string
@@ -792,22 +769,24 @@ export type TransactionUncheckedCreateInput = {
   voidedBy?: string | null
   voidReason?: string | null
   changeReason?: string | null
-  billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
 export type TransactionUpdateInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
+  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -818,7 +797,6 @@ export type TransactionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -833,17 +811,11 @@ export type TransactionUpdateInput = {
   voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
-  debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
-  creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
-  contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
-  billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -869,7 +841,6 @@ export type TransactionUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -884,12 +855,10 @@ export type TransactionUncheckedUpdateInput = {
   voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
 export type TransactionCreateManyInput = {
+  versionId?: string
   id?: string
   organizationId: string
   transactionDate: Date | string
@@ -915,7 +884,6 @@ export type TransactionCreateManyInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
-  versionId?: string
   previousVersionId?: string | null
   validFrom?: Date | string
   validTo?: Date | string
@@ -933,16 +901,21 @@ export type TransactionCreateManyInput = {
 }
 
 export type TransactionUpdateManyMutationInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
+  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -953,7 +926,6 @@ export type TransactionUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -971,6 +943,7 @@ export type TransactionUpdateManyMutationInput = {
 }
 
 export type TransactionUncheckedUpdateManyInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -996,7 +969,6 @@ export type TransactionUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1023,7 +995,13 @@ export type TransactionOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type TransactionIdValidFromCompoundUniqueInput = {
+  id: string
+  validFrom: Date | string
+}
+
 export type TransactionCountOrderByAggregateInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   transactionDate?: Prisma.SortOrder
@@ -1049,7 +1027,6 @@ export type TransactionCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -1071,6 +1048,7 @@ export type TransactionAvgOrderByAggregateInput = {
 }
 
 export type TransactionMaxOrderByAggregateInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   transactionDate?: Prisma.SortOrder
@@ -1096,7 +1074,6 @@ export type TransactionMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -1114,6 +1091,7 @@ export type TransactionMaxOrderByAggregateInput = {
 }
 
 export type TransactionMinOrderByAggregateInput = {
+  versionId?: Prisma.SortOrder
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   transactionDate?: Prisma.SortOrder
@@ -1139,7 +1117,6 @@ export type TransactionMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  versionId?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validTo?: Prisma.SortOrder
@@ -1158,58 +1135,6 @@ export type TransactionMinOrderByAggregateInput = {
 
 export type TransactionSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
-}
-
-export type TransactionNullableScalarRelationFilter = {
-  is?: Prisma.TransactionWhereInput | null
-  isNot?: Prisma.TransactionWhereInput | null
-}
-
-export type TransactionScalarRelationFilter = {
-  is?: Prisma.TransactionWhereInput
-  isNot?: Prisma.TransactionWhereInput
-}
-
-export type TransactionCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutOrganizationInput, Prisma.TransactionUncheckedCreateWithoutOrganizationInput> | Prisma.TransactionCreateWithoutOrganizationInput[] | Prisma.TransactionUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutOrganizationInput | Prisma.TransactionCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.TransactionCreateManyOrganizationInputEnvelope
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-}
-
-export type TransactionUncheckedCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutOrganizationInput, Prisma.TransactionUncheckedCreateWithoutOrganizationInput> | Prisma.TransactionCreateWithoutOrganizationInput[] | Prisma.TransactionUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutOrganizationInput | Prisma.TransactionCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.TransactionCreateManyOrganizationInputEnvelope
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-}
-
-export type TransactionUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutOrganizationInput, Prisma.TransactionUncheckedCreateWithoutOrganizationInput> | Prisma.TransactionCreateWithoutOrganizationInput[] | Prisma.TransactionUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutOrganizationInput | Prisma.TransactionCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.TransactionUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.TransactionUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.TransactionCreateManyOrganizationInputEnvelope
-  set?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  disconnect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  delete?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  update?: Prisma.TransactionUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.TransactionUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.TransactionUpdateManyWithWhereWithoutOrganizationInput | Prisma.TransactionUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
-}
-
-export type TransactionUncheckedUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutOrganizationInput, Prisma.TransactionUncheckedCreateWithoutOrganizationInput> | Prisma.TransactionCreateWithoutOrganizationInput[] | Prisma.TransactionUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutOrganizationInput | Prisma.TransactionCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.TransactionUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.TransactionUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.TransactionCreateManyOrganizationInputEnvelope
-  set?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  disconnect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  delete?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  update?: Prisma.TransactionUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.TransactionUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.TransactionUpdateManyWithWhereWithoutOrganizationInput | Prisma.TransactionUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
 }
 
 export type TransactionCreateNestedManyWithoutDonorInput = {
@@ -1254,90 +1179,6 @@ export type TransactionUncheckedUpdateManyWithoutDonorNestedInput = {
   deleteMany?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
 }
 
-export type TransactionCreateNestedManyWithoutDebitAccountInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutDebitAccountInput, Prisma.TransactionUncheckedCreateWithoutDebitAccountInput> | Prisma.TransactionCreateWithoutDebitAccountInput[] | Prisma.TransactionUncheckedCreateWithoutDebitAccountInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutDebitAccountInput | Prisma.TransactionCreateOrConnectWithoutDebitAccountInput[]
-  createMany?: Prisma.TransactionCreateManyDebitAccountInputEnvelope
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-}
-
-export type TransactionCreateNestedManyWithoutCreditAccountInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutCreditAccountInput, Prisma.TransactionUncheckedCreateWithoutCreditAccountInput> | Prisma.TransactionCreateWithoutCreditAccountInput[] | Prisma.TransactionUncheckedCreateWithoutCreditAccountInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutCreditAccountInput | Prisma.TransactionCreateOrConnectWithoutCreditAccountInput[]
-  createMany?: Prisma.TransactionCreateManyCreditAccountInputEnvelope
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-}
-
-export type TransactionUncheckedCreateNestedManyWithoutDebitAccountInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutDebitAccountInput, Prisma.TransactionUncheckedCreateWithoutDebitAccountInput> | Prisma.TransactionCreateWithoutDebitAccountInput[] | Prisma.TransactionUncheckedCreateWithoutDebitAccountInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutDebitAccountInput | Prisma.TransactionCreateOrConnectWithoutDebitAccountInput[]
-  createMany?: Prisma.TransactionCreateManyDebitAccountInputEnvelope
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-}
-
-export type TransactionUncheckedCreateNestedManyWithoutCreditAccountInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutCreditAccountInput, Prisma.TransactionUncheckedCreateWithoutCreditAccountInput> | Prisma.TransactionCreateWithoutCreditAccountInput[] | Prisma.TransactionUncheckedCreateWithoutCreditAccountInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutCreditAccountInput | Prisma.TransactionCreateOrConnectWithoutCreditAccountInput[]
-  createMany?: Prisma.TransactionCreateManyCreditAccountInputEnvelope
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-}
-
-export type TransactionUpdateManyWithoutDebitAccountNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutDebitAccountInput, Prisma.TransactionUncheckedCreateWithoutDebitAccountInput> | Prisma.TransactionCreateWithoutDebitAccountInput[] | Prisma.TransactionUncheckedCreateWithoutDebitAccountInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutDebitAccountInput | Prisma.TransactionCreateOrConnectWithoutDebitAccountInput[]
-  upsert?: Prisma.TransactionUpsertWithWhereUniqueWithoutDebitAccountInput | Prisma.TransactionUpsertWithWhereUniqueWithoutDebitAccountInput[]
-  createMany?: Prisma.TransactionCreateManyDebitAccountInputEnvelope
-  set?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  disconnect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  delete?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  update?: Prisma.TransactionUpdateWithWhereUniqueWithoutDebitAccountInput | Prisma.TransactionUpdateWithWhereUniqueWithoutDebitAccountInput[]
-  updateMany?: Prisma.TransactionUpdateManyWithWhereWithoutDebitAccountInput | Prisma.TransactionUpdateManyWithWhereWithoutDebitAccountInput[]
-  deleteMany?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
-}
-
-export type TransactionUpdateManyWithoutCreditAccountNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutCreditAccountInput, Prisma.TransactionUncheckedCreateWithoutCreditAccountInput> | Prisma.TransactionCreateWithoutCreditAccountInput[] | Prisma.TransactionUncheckedCreateWithoutCreditAccountInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutCreditAccountInput | Prisma.TransactionCreateOrConnectWithoutCreditAccountInput[]
-  upsert?: Prisma.TransactionUpsertWithWhereUniqueWithoutCreditAccountInput | Prisma.TransactionUpsertWithWhereUniqueWithoutCreditAccountInput[]
-  createMany?: Prisma.TransactionCreateManyCreditAccountInputEnvelope
-  set?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  disconnect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  delete?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  update?: Prisma.TransactionUpdateWithWhereUniqueWithoutCreditAccountInput | Prisma.TransactionUpdateWithWhereUniqueWithoutCreditAccountInput[]
-  updateMany?: Prisma.TransactionUpdateManyWithWhereWithoutCreditAccountInput | Prisma.TransactionUpdateManyWithWhereWithoutCreditAccountInput[]
-  deleteMany?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
-}
-
-export type TransactionUncheckedUpdateManyWithoutDebitAccountNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutDebitAccountInput, Prisma.TransactionUncheckedCreateWithoutDebitAccountInput> | Prisma.TransactionCreateWithoutDebitAccountInput[] | Prisma.TransactionUncheckedCreateWithoutDebitAccountInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutDebitAccountInput | Prisma.TransactionCreateOrConnectWithoutDebitAccountInput[]
-  upsert?: Prisma.TransactionUpsertWithWhereUniqueWithoutDebitAccountInput | Prisma.TransactionUpsertWithWhereUniqueWithoutDebitAccountInput[]
-  createMany?: Prisma.TransactionCreateManyDebitAccountInputEnvelope
-  set?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  disconnect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  delete?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  update?: Prisma.TransactionUpdateWithWhereUniqueWithoutDebitAccountInput | Prisma.TransactionUpdateWithWhereUniqueWithoutDebitAccountInput[]
-  updateMany?: Prisma.TransactionUpdateManyWithWhereWithoutDebitAccountInput | Prisma.TransactionUpdateManyWithWhereWithoutDebitAccountInput[]
-  deleteMany?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
-}
-
-export type TransactionUncheckedUpdateManyWithoutCreditAccountNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutCreditAccountInput, Prisma.TransactionUncheckedCreateWithoutCreditAccountInput> | Prisma.TransactionCreateWithoutCreditAccountInput[] | Prisma.TransactionUncheckedCreateWithoutCreditAccountInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutCreditAccountInput | Prisma.TransactionCreateOrConnectWithoutCreditAccountInput[]
-  upsert?: Prisma.TransactionUpsertWithWhereUniqueWithoutCreditAccountInput | Prisma.TransactionUpsertWithWhereUniqueWithoutCreditAccountInput[]
-  createMany?: Prisma.TransactionCreateManyCreditAccountInputEnvelope
-  set?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  disconnect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  delete?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  update?: Prisma.TransactionUpdateWithWhereUniqueWithoutCreditAccountInput | Prisma.TransactionUpdateWithWhereUniqueWithoutCreditAccountInput[]
-  updateMany?: Prisma.TransactionUpdateManyWithWhereWithoutCreditAccountInput | Prisma.TransactionUpdateManyWithWhereWithoutCreditAccountInput[]
-  deleteMany?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
-}
-
 export type EnumTransactionTypeFieldUpdateOperationsInput = {
   set?: $Enums.TransactionType
 }
@@ -1346,302 +1187,8 @@ export type EnumPaymentMethodFieldUpdateOperationsInput = {
   set?: $Enums.PaymentMethod
 }
 
-export type TransactionCreateNestedOneWithoutPlannedPurchaseInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutPlannedPurchaseInput, Prisma.TransactionUncheckedCreateWithoutPlannedPurchaseInput>
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutPlannedPurchaseInput
-  connect?: Prisma.TransactionWhereUniqueInput
-}
-
-export type TransactionUpdateOneWithoutPlannedPurchaseNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutPlannedPurchaseInput, Prisma.TransactionUncheckedCreateWithoutPlannedPurchaseInput>
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutPlannedPurchaseInput
-  upsert?: Prisma.TransactionUpsertWithoutPlannedPurchaseInput
-  disconnect?: Prisma.TransactionWhereInput | boolean
-  delete?: Prisma.TransactionWhereInput | boolean
-  connect?: Prisma.TransactionWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.TransactionUpdateToOneWithWhereWithoutPlannedPurchaseInput, Prisma.TransactionUpdateWithoutPlannedPurchaseInput>, Prisma.TransactionUncheckedUpdateWithoutPlannedPurchaseInput>
-}
-
-export type TransactionCreateNestedManyWithoutContactInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutContactInput, Prisma.TransactionUncheckedCreateWithoutContactInput> | Prisma.TransactionCreateWithoutContactInput[] | Prisma.TransactionUncheckedCreateWithoutContactInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutContactInput | Prisma.TransactionCreateOrConnectWithoutContactInput[]
-  createMany?: Prisma.TransactionCreateManyContactInputEnvelope
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-}
-
-export type TransactionUncheckedCreateNestedManyWithoutContactInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutContactInput, Prisma.TransactionUncheckedCreateWithoutContactInput> | Prisma.TransactionCreateWithoutContactInput[] | Prisma.TransactionUncheckedCreateWithoutContactInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutContactInput | Prisma.TransactionCreateOrConnectWithoutContactInput[]
-  createMany?: Prisma.TransactionCreateManyContactInputEnvelope
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-}
-
-export type TransactionUpdateManyWithoutContactNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutContactInput, Prisma.TransactionUncheckedCreateWithoutContactInput> | Prisma.TransactionCreateWithoutContactInput[] | Prisma.TransactionUncheckedCreateWithoutContactInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutContactInput | Prisma.TransactionCreateOrConnectWithoutContactInput[]
-  upsert?: Prisma.TransactionUpsertWithWhereUniqueWithoutContactInput | Prisma.TransactionUpsertWithWhereUniqueWithoutContactInput[]
-  createMany?: Prisma.TransactionCreateManyContactInputEnvelope
-  set?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  disconnect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  delete?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  update?: Prisma.TransactionUpdateWithWhereUniqueWithoutContactInput | Prisma.TransactionUpdateWithWhereUniqueWithoutContactInput[]
-  updateMany?: Prisma.TransactionUpdateManyWithWhereWithoutContactInput | Prisma.TransactionUpdateManyWithWhereWithoutContactInput[]
-  deleteMany?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
-}
-
-export type TransactionUncheckedUpdateManyWithoutContactNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutContactInput, Prisma.TransactionUncheckedCreateWithoutContactInput> | Prisma.TransactionCreateWithoutContactInput[] | Prisma.TransactionUncheckedCreateWithoutContactInput[]
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutContactInput | Prisma.TransactionCreateOrConnectWithoutContactInput[]
-  upsert?: Prisma.TransactionUpsertWithWhereUniqueWithoutContactInput | Prisma.TransactionUpsertWithWhereUniqueWithoutContactInput[]
-  createMany?: Prisma.TransactionCreateManyContactInputEnvelope
-  set?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  disconnect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  delete?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  connect?: Prisma.TransactionWhereUniqueInput | Prisma.TransactionWhereUniqueInput[]
-  update?: Prisma.TransactionUpdateWithWhereUniqueWithoutContactInput | Prisma.TransactionUpdateWithWhereUniqueWithoutContactInput[]
-  updateMany?: Prisma.TransactionUpdateManyWithWhereWithoutContactInput | Prisma.TransactionUpdateManyWithWhereWithoutContactInput[]
-  deleteMany?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
-}
-
-export type TransactionCreateNestedOneWithoutBillAccrualInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutBillAccrualInput, Prisma.TransactionUncheckedCreateWithoutBillAccrualInput>
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutBillAccrualInput
-  connect?: Prisma.TransactionWhereUniqueInput
-}
-
-export type TransactionUpdateOneWithoutBillAccrualNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutBillAccrualInput, Prisma.TransactionUncheckedCreateWithoutBillAccrualInput>
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutBillAccrualInput
-  upsert?: Prisma.TransactionUpsertWithoutBillAccrualInput
-  disconnect?: Prisma.TransactionWhereInput | boolean
-  delete?: Prisma.TransactionWhereInput | boolean
-  connect?: Prisma.TransactionWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.TransactionUpdateToOneWithWhereWithoutBillAccrualInput, Prisma.TransactionUpdateWithoutBillAccrualInput>, Prisma.TransactionUncheckedUpdateWithoutBillAccrualInput>
-}
-
-export type TransactionCreateNestedOneWithoutBillPaymentsInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutBillPaymentsInput, Prisma.TransactionUncheckedCreateWithoutBillPaymentsInput>
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutBillPaymentsInput
-  connect?: Prisma.TransactionWhereUniqueInput
-}
-
-export type TransactionUpdateOneRequiredWithoutBillPaymentsNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionCreateWithoutBillPaymentsInput, Prisma.TransactionUncheckedCreateWithoutBillPaymentsInput>
-  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutBillPaymentsInput
-  upsert?: Prisma.TransactionUpsertWithoutBillPaymentsInput
-  connect?: Prisma.TransactionWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.TransactionUpdateToOneWithWhereWithoutBillPaymentsInput, Prisma.TransactionUpdateWithoutBillPaymentsInput>, Prisma.TransactionUncheckedUpdateWithoutBillPaymentsInput>
-}
-
-export type TransactionCreateWithoutOrganizationInput = {
-  id?: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
-  creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
-  donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
-  contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
-  billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionUncheckedCreateWithoutOrganizationInput = {
-  id?: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  debitAccountId: string
-  creditAccountId: string
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorUserId?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  contactId?: string | null
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionCreateOrConnectWithoutOrganizationInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutOrganizationInput, Prisma.TransactionUncheckedCreateWithoutOrganizationInput>
-}
-
-export type TransactionCreateManyOrganizationInputEnvelope = {
-  data: Prisma.TransactionCreateManyOrganizationInput | Prisma.TransactionCreateManyOrganizationInput[]
-  skipDuplicates?: boolean
-}
-
-export type TransactionUpsertWithWhereUniqueWithoutOrganizationInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  update: Prisma.XOR<Prisma.TransactionUpdateWithoutOrganizationInput, Prisma.TransactionUncheckedUpdateWithoutOrganizationInput>
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutOrganizationInput, Prisma.TransactionUncheckedCreateWithoutOrganizationInput>
-}
-
-export type TransactionUpdateWithWhereUniqueWithoutOrganizationInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  data: Prisma.XOR<Prisma.TransactionUpdateWithoutOrganizationInput, Prisma.TransactionUncheckedUpdateWithoutOrganizationInput>
-}
-
-export type TransactionUpdateManyWithWhereWithoutOrganizationInput = {
-  where: Prisma.TransactionScalarWhereInput
-  data: Prisma.XOR<Prisma.TransactionUpdateManyMutationInput, Prisma.TransactionUncheckedUpdateManyWithoutOrganizationInput>
-}
-
-export type TransactionScalarWhereInput = {
-  AND?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
-  OR?: Prisma.TransactionScalarWhereInput[]
-  NOT?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
-  id?: Prisma.StringFilter<"Transaction"> | string
-  organizationId?: Prisma.StringFilter<"Transaction"> | string
-  transactionDate?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  amount?: Prisma.DecimalFilter<"Transaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFilter<"Transaction"> | $Enums.TransactionType
-  debitAccountId?: Prisma.StringFilter<"Transaction"> | string
-  creditAccountId?: Prisma.StringFilter<"Transaction"> | string
-  description?: Prisma.StringFilter<"Transaction"> | string
-  category?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Transaction"> | $Enums.PaymentMethod
-  referenceNumber?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  donorUserId?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  donorName?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  isAnonymous?: Prisma.BoolFilter<"Transaction"> | boolean
-  contactId?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  receiptUrl?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  bankTransactionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  reconciled?: Prisma.BoolFilter<"Transaction"> | boolean
-  reconciledAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
-  stripeSessionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  stripePaymentId?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  createdBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  versionId?: Prisma.StringFilter<"Transaction"> | string
-  previousVersionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  validFrom?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  validTo?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  systemFrom?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  systemTo?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  isDeleted?: Prisma.BoolFilter<"Transaction"> | boolean
-  deletedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
-  deletedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  changedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  isVoided?: Prisma.BoolFilter<"Transaction"> | boolean
-  voidedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
-  voidedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  voidReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  changeReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
-}
-
 export type TransactionCreateWithoutDonorInput = {
-  id?: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
   versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
-  debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
-  creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
-  contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
-  billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionUncheckedCreateWithoutDonorInput = {
   id?: string
   organizationId: string
   transactionDate: Date | string
@@ -1666,7 +1213,6 @@ export type TransactionUncheckedCreateWithoutDonorInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
-  versionId?: string
   previousVersionId?: string | null
   validFrom?: Date | string
   validTo?: Date | string
@@ -1681,9 +1227,48 @@ export type TransactionUncheckedCreateWithoutDonorInput = {
   voidedBy?: string | null
   voidReason?: string | null
   changeReason?: string | null
-  billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
+}
+
+export type TransactionUncheckedCreateWithoutDonorInput = {
+  versionId?: string
+  id?: string
+  organizationId: string
+  transactionDate: Date | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  type: $Enums.TransactionType
+  debitAccountId: string
+  creditAccountId: string
+  description: string
+  category?: string | null
+  paymentMethod: $Enums.PaymentMethod
+  referenceNumber?: string | null
+  donorName?: string | null
+  isAnonymous?: boolean
+  contactId?: string | null
+  receiptUrl?: string | null
+  notes?: string | null
+  bankTransactionId?: string | null
+  reconciled?: boolean
+  reconciledAt?: Date | string | null
+  stripeSessionId?: string | null
+  stripePaymentId?: string | null
+  createdAt?: Date | string
+  createdBy?: string | null
+  updatedAt?: Date | string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
 }
 
 export type TransactionCreateOrConnectWithoutDonorInput = {
@@ -1712,1117 +1297,54 @@ export type TransactionUpdateManyWithWhereWithoutDonorInput = {
   data: Prisma.XOR<Prisma.TransactionUpdateManyMutationInput, Prisma.TransactionUncheckedUpdateManyWithoutDonorInput>
 }
 
-export type TransactionCreateWithoutDebitAccountInput = {
-  id?: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
-  creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
-  donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
-  contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
-  billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionUncheckedCreateWithoutDebitAccountInput = {
-  id?: string
-  organizationId: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  creditAccountId: string
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorUserId?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  contactId?: string | null
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionCreateOrConnectWithoutDebitAccountInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutDebitAccountInput, Prisma.TransactionUncheckedCreateWithoutDebitAccountInput>
-}
-
-export type TransactionCreateManyDebitAccountInputEnvelope = {
-  data: Prisma.TransactionCreateManyDebitAccountInput | Prisma.TransactionCreateManyDebitAccountInput[]
-  skipDuplicates?: boolean
-}
-
-export type TransactionCreateWithoutCreditAccountInput = {
-  id?: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
-  debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
-  donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
-  contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
-  billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionUncheckedCreateWithoutCreditAccountInput = {
-  id?: string
-  organizationId: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  debitAccountId: string
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorUserId?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  contactId?: string | null
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionCreateOrConnectWithoutCreditAccountInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutCreditAccountInput, Prisma.TransactionUncheckedCreateWithoutCreditAccountInput>
-}
-
-export type TransactionCreateManyCreditAccountInputEnvelope = {
-  data: Prisma.TransactionCreateManyCreditAccountInput | Prisma.TransactionCreateManyCreditAccountInput[]
-  skipDuplicates?: boolean
-}
-
-export type TransactionUpsertWithWhereUniqueWithoutDebitAccountInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  update: Prisma.XOR<Prisma.TransactionUpdateWithoutDebitAccountInput, Prisma.TransactionUncheckedUpdateWithoutDebitAccountInput>
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutDebitAccountInput, Prisma.TransactionUncheckedCreateWithoutDebitAccountInput>
-}
-
-export type TransactionUpdateWithWhereUniqueWithoutDebitAccountInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  data: Prisma.XOR<Prisma.TransactionUpdateWithoutDebitAccountInput, Prisma.TransactionUncheckedUpdateWithoutDebitAccountInput>
-}
-
-export type TransactionUpdateManyWithWhereWithoutDebitAccountInput = {
-  where: Prisma.TransactionScalarWhereInput
-  data: Prisma.XOR<Prisma.TransactionUpdateManyMutationInput, Prisma.TransactionUncheckedUpdateManyWithoutDebitAccountInput>
-}
-
-export type TransactionUpsertWithWhereUniqueWithoutCreditAccountInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  update: Prisma.XOR<Prisma.TransactionUpdateWithoutCreditAccountInput, Prisma.TransactionUncheckedUpdateWithoutCreditAccountInput>
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutCreditAccountInput, Prisma.TransactionUncheckedCreateWithoutCreditAccountInput>
-}
-
-export type TransactionUpdateWithWhereUniqueWithoutCreditAccountInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  data: Prisma.XOR<Prisma.TransactionUpdateWithoutCreditAccountInput, Prisma.TransactionUncheckedUpdateWithoutCreditAccountInput>
-}
-
-export type TransactionUpdateManyWithWhereWithoutCreditAccountInput = {
-  where: Prisma.TransactionScalarWhereInput
-  data: Prisma.XOR<Prisma.TransactionUpdateManyMutationInput, Prisma.TransactionUncheckedUpdateManyWithoutCreditAccountInput>
-}
-
-export type TransactionCreateWithoutPlannedPurchaseInput = {
-  id?: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
-  debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
-  creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
-  donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
-  contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
-  billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
-}
-
-export type TransactionUncheckedCreateWithoutPlannedPurchaseInput = {
-  id?: string
-  organizationId: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  debitAccountId: string
-  creditAccountId: string
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorUserId?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  contactId?: string | null
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
-}
-
-export type TransactionCreateOrConnectWithoutPlannedPurchaseInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutPlannedPurchaseInput, Prisma.TransactionUncheckedCreateWithoutPlannedPurchaseInput>
-}
-
-export type TransactionUpsertWithoutPlannedPurchaseInput = {
-  update: Prisma.XOR<Prisma.TransactionUpdateWithoutPlannedPurchaseInput, Prisma.TransactionUncheckedUpdateWithoutPlannedPurchaseInput>
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutPlannedPurchaseInput, Prisma.TransactionUncheckedCreateWithoutPlannedPurchaseInput>
-  where?: Prisma.TransactionWhereInput
-}
-
-export type TransactionUpdateToOneWithWhereWithoutPlannedPurchaseInput = {
-  where?: Prisma.TransactionWhereInput
-  data: Prisma.XOR<Prisma.TransactionUpdateWithoutPlannedPurchaseInput, Prisma.TransactionUncheckedUpdateWithoutPlannedPurchaseInput>
-}
-
-export type TransactionUpdateWithoutPlannedPurchaseInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
-  debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
-  creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
-  donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
-  contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
-  billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
-}
-
-export type TransactionUncheckedUpdateWithoutPlannedPurchaseInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
-}
-
-export type TransactionCreateWithoutContactInput = {
-  id?: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
-  debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
-  creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
-  donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
-  billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionUncheckedCreateWithoutContactInput = {
-  id?: string
-  organizationId: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  debitAccountId: string
-  creditAccountId: string
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorUserId?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
-  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionCreateOrConnectWithoutContactInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutContactInput, Prisma.TransactionUncheckedCreateWithoutContactInput>
-}
-
-export type TransactionCreateManyContactInputEnvelope = {
-  data: Prisma.TransactionCreateManyContactInput | Prisma.TransactionCreateManyContactInput[]
-  skipDuplicates?: boolean
-}
-
-export type TransactionUpsertWithWhereUniqueWithoutContactInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  update: Prisma.XOR<Prisma.TransactionUpdateWithoutContactInput, Prisma.TransactionUncheckedUpdateWithoutContactInput>
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutContactInput, Prisma.TransactionUncheckedCreateWithoutContactInput>
-}
-
-export type TransactionUpdateWithWhereUniqueWithoutContactInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  data: Prisma.XOR<Prisma.TransactionUpdateWithoutContactInput, Prisma.TransactionUncheckedUpdateWithoutContactInput>
-}
-
-export type TransactionUpdateManyWithWhereWithoutContactInput = {
-  where: Prisma.TransactionScalarWhereInput
-  data: Prisma.XOR<Prisma.TransactionUpdateManyMutationInput, Prisma.TransactionUncheckedUpdateManyWithoutContactInput>
-}
-
-export type TransactionCreateWithoutBillAccrualInput = {
-  id?: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
-  debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
-  creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
-  donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
-  contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
-  billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionUncheckedCreateWithoutBillAccrualInput = {
-  id?: string
-  organizationId: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  debitAccountId: string
-  creditAccountId: string
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorUserId?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  contactId?: string | null
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionCreateOrConnectWithoutBillAccrualInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutBillAccrualInput, Prisma.TransactionUncheckedCreateWithoutBillAccrualInput>
-}
-
-export type TransactionUpsertWithoutBillAccrualInput = {
-  update: Prisma.XOR<Prisma.TransactionUpdateWithoutBillAccrualInput, Prisma.TransactionUncheckedUpdateWithoutBillAccrualInput>
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutBillAccrualInput, Prisma.TransactionUncheckedCreateWithoutBillAccrualInput>
-  where?: Prisma.TransactionWhereInput
-}
-
-export type TransactionUpdateToOneWithWhereWithoutBillAccrualInput = {
-  where?: Prisma.TransactionWhereInput
-  data: Prisma.XOR<Prisma.TransactionUpdateWithoutBillAccrualInput, Prisma.TransactionUncheckedUpdateWithoutBillAccrualInput>
-}
-
-export type TransactionUpdateWithoutBillAccrualInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
-  debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
-  creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
-  donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
-  contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
-  billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionUncheckedUpdateWithoutBillAccrualInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionCreateWithoutBillPaymentsInput = {
-  id?: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
-  debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
-  creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
-  donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
-  contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
-  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionUncheckedCreateWithoutBillPaymentsInput = {
-  id?: string
-  organizationId: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  debitAccountId: string
-  creditAccountId: string
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorUserId?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  contactId?: string | null
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
-}
-
-export type TransactionCreateOrConnectWithoutBillPaymentsInput = {
-  where: Prisma.TransactionWhereUniqueInput
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutBillPaymentsInput, Prisma.TransactionUncheckedCreateWithoutBillPaymentsInput>
-}
-
-export type TransactionUpsertWithoutBillPaymentsInput = {
-  update: Prisma.XOR<Prisma.TransactionUpdateWithoutBillPaymentsInput, Prisma.TransactionUncheckedUpdateWithoutBillPaymentsInput>
-  create: Prisma.XOR<Prisma.TransactionCreateWithoutBillPaymentsInput, Prisma.TransactionUncheckedCreateWithoutBillPaymentsInput>
-  where?: Prisma.TransactionWhereInput
-}
-
-export type TransactionUpdateToOneWithWhereWithoutBillPaymentsInput = {
-  where?: Prisma.TransactionWhereInput
-  data: Prisma.XOR<Prisma.TransactionUpdateWithoutBillPaymentsInput, Prisma.TransactionUncheckedUpdateWithoutBillPaymentsInput>
-}
-
-export type TransactionUpdateWithoutBillPaymentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
-  debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
-  creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
-  donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
-  contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
-  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionUncheckedUpdateWithoutBillPaymentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionCreateManyOrganizationInput = {
-  id?: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  debitAccountId: string
-  creditAccountId: string
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorUserId?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  contactId?: string | null
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-}
-
-export type TransactionUpdateWithoutOrganizationInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
-  creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
-  donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
-  contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
-  billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionUncheckedUpdateWithoutOrganizationInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionUncheckedUpdateManyWithoutOrganizationInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+export type TransactionScalarWhereInput = {
+  AND?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
+  OR?: Prisma.TransactionScalarWhereInput[]
+  NOT?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
+  versionId?: Prisma.StringFilter<"Transaction"> | string
+  id?: Prisma.StringFilter<"Transaction"> | string
+  organizationId?: Prisma.StringFilter<"Transaction"> | string
+  transactionDate?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  amount?: Prisma.DecimalFilter<"Transaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  type?: Prisma.EnumTransactionTypeFilter<"Transaction"> | $Enums.TransactionType
+  debitAccountId?: Prisma.StringFilter<"Transaction"> | string
+  creditAccountId?: Prisma.StringFilter<"Transaction"> | string
+  description?: Prisma.StringFilter<"Transaction"> | string
+  category?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Transaction"> | $Enums.PaymentMethod
+  referenceNumber?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  donorUserId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  donorName?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  isAnonymous?: Prisma.BoolFilter<"Transaction"> | boolean
+  contactId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  receiptUrl?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  bankTransactionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  reconciled?: Prisma.BoolFilter<"Transaction"> | boolean
+  reconciledAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  stripeSessionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  stripePaymentId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  createdBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  previousVersionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  validFrom?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  validTo?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  systemFrom?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  systemTo?: Prisma.DateTimeFilter<"Transaction"> | Date | string
+  isDeleted?: Prisma.BoolFilter<"Transaction"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  changedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  isVoided?: Prisma.BoolFilter<"Transaction"> | boolean
+  voidedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  voidedBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  changeReason?: Prisma.StringNullableFilter<"Transaction"> | string | null
 }
 
 export type TransactionCreateManyDonorInput = {
+  versionId?: string
   id?: string
   organizationId: string
   transactionDate: Date | string
@@ -2847,7 +1369,6 @@ export type TransactionCreateManyDonorInput = {
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
-  versionId?: string
   previousVersionId?: string | null
   validFrom?: Date | string
   validTo?: Date | string
@@ -2865,16 +1386,21 @@ export type TransactionCreateManyDonorInput = {
 }
 
 export type TransactionUpdateWithoutDonorInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
+  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2885,7 +1411,6 @@ export type TransactionUpdateWithoutDonorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2900,16 +1425,10 @@ export type TransactionUpdateWithoutDonorInput = {
   voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
-  debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
-  creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
-  contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
-  billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutDonorInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2934,7 +1453,6 @@ export type TransactionUncheckedUpdateWithoutDonorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2949,12 +1467,10 @@ export type TransactionUncheckedUpdateWithoutDonorInput = {
   voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateManyWithoutDonorInput = {
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2979,7 +1495,6 @@ export type TransactionUncheckedUpdateManyWithoutDonorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2996,560 +1511,10 @@ export type TransactionUncheckedUpdateManyWithoutDonorInput = {
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type TransactionCreateManyDebitAccountInput = {
-  id?: string
-  organizationId: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  creditAccountId: string
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorUserId?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  contactId?: string | null
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-}
-
-export type TransactionCreateManyCreditAccountInput = {
-  id?: string
-  organizationId: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  debitAccountId: string
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorUserId?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  contactId?: string | null
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-}
-
-export type TransactionUpdateWithoutDebitAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
-  creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
-  donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
-  contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
-  billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionUncheckedUpdateWithoutDebitAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionUncheckedUpdateManyWithoutDebitAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type TransactionUpdateWithoutCreditAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
-  debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
-  donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
-  contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
-  billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionUncheckedUpdateWithoutCreditAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionUncheckedUpdateManyWithoutCreditAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type TransactionCreateManyContactInput = {
-  id?: string
-  organizationId: string
-  transactionDate: Date | string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  type: $Enums.TransactionType
-  debitAccountId: string
-  creditAccountId: string
-  description: string
-  category?: string | null
-  paymentMethod: $Enums.PaymentMethod
-  referenceNumber?: string | null
-  donorUserId?: string | null
-  donorName?: string | null
-  isAnonymous?: boolean
-  receiptUrl?: string | null
-  notes?: string | null
-  bankTransactionId?: string | null
-  reconciled?: boolean
-  reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
-  createdAt?: Date | string
-  createdBy?: string | null
-  updatedAt?: Date | string
-  versionId?: string
-  previousVersionId?: string | null
-  validFrom?: Date | string
-  validTo?: Date | string
-  systemFrom?: Date | string
-  systemTo?: Date | string
-  isDeleted?: boolean
-  deletedAt?: Date | string | null
-  deletedBy?: string | null
-  changedBy?: string | null
-  isVoided?: boolean
-  voidedAt?: Date | string | null
-  voidedBy?: string | null
-  voidReason?: string | null
-  changeReason?: string | null
-}
-
-export type TransactionUpdateWithoutContactInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
-  debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
-  creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
-  donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
-  billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionUncheckedUpdateWithoutContactInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
-  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
-  plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
-}
-
-export type TransactionUncheckedUpdateManyWithoutContactInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
-  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  versionId?: Prisma.StringFieldUpdateOperationsInput | string
-  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-
-/**
- * Count Type TransactionCountOutputType
- */
-
-export type TransactionCountOutputType = {
-  billPayments: number
-}
-
-export type TransactionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  billPayments?: boolean | TransactionCountOutputTypeCountBillPaymentsArgs
-}
-
-/**
- * TransactionCountOutputType without action
- */
-export type TransactionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TransactionCountOutputType
-   */
-  select?: Prisma.TransactionCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * TransactionCountOutputType without action
- */
-export type TransactionCountOutputTypeCountBillPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.BillPaymentWhereInput
-}
 
 
 export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  versionId?: boolean
   id?: boolean
   organizationId?: boolean
   transactionDate?: boolean
@@ -3575,7 +1540,6 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -3590,18 +1554,11 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   voidedBy?: boolean
   voidReason?: boolean
   changeReason?: boolean
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  debitAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
-  creditAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
   donor?: boolean | Prisma.Transaction$donorArgs<ExtArgs>
-  contact?: boolean | Prisma.Transaction$contactArgs<ExtArgs>
-  billPayments?: boolean | Prisma.Transaction$billPaymentsArgs<ExtArgs>
-  billAccrual?: boolean | Prisma.Transaction$billAccrualArgs<ExtArgs>
-  plannedPurchase?: boolean | Prisma.Transaction$plannedPurchaseArgs<ExtArgs>
-  _count?: boolean | Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transaction"]>
 
 export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  versionId?: boolean
   id?: boolean
   organizationId?: boolean
   transactionDate?: boolean
@@ -3627,7 +1584,6 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -3642,14 +1598,11 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   voidedBy?: boolean
   voidReason?: boolean
   changeReason?: boolean
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  debitAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
-  creditAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
   donor?: boolean | Prisma.Transaction$donorArgs<ExtArgs>
-  contact?: boolean | Prisma.Transaction$contactArgs<ExtArgs>
 }, ExtArgs["result"]["transaction"]>
 
 export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  versionId?: boolean
   id?: boolean
   organizationId?: boolean
   transactionDate?: boolean
@@ -3675,7 +1628,6 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -3690,14 +1642,11 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   voidedBy?: boolean
   voidReason?: boolean
   changeReason?: boolean
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  debitAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
-  creditAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
   donor?: boolean | Prisma.Transaction$donorArgs<ExtArgs>
-  contact?: boolean | Prisma.Transaction$contactArgs<ExtArgs>
 }, ExtArgs["result"]["transaction"]>
 
 export type TransactionSelectScalar = {
+  versionId?: boolean
   id?: boolean
   organizationId?: boolean
   transactionDate?: boolean
@@ -3723,7 +1672,6 @@ export type TransactionSelectScalar = {
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
-  versionId?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
   validTo?: boolean
@@ -3740,46 +1688,24 @@ export type TransactionSelectScalar = {
   changeReason?: boolean
 }
 
-export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "transactionDate" | "amount" | "type" | "debitAccountId" | "creditAccountId" | "description" | "category" | "paymentMethod" | "referenceNumber" | "donorUserId" | "donorName" | "isAnonymous" | "contactId" | "receiptUrl" | "notes" | "bankTransactionId" | "reconciled" | "reconciledAt" | "stripeSessionId" | "stripePaymentId" | "createdAt" | "createdBy" | "updatedAt" | "versionId" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "isVoided" | "voidedAt" | "voidedBy" | "voidReason" | "changeReason", ExtArgs["result"]["transaction"]>
+export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "organizationId" | "transactionDate" | "amount" | "type" | "debitAccountId" | "creditAccountId" | "description" | "category" | "paymentMethod" | "referenceNumber" | "donorUserId" | "donorName" | "isAnonymous" | "contactId" | "receiptUrl" | "notes" | "bankTransactionId" | "reconciled" | "reconciledAt" | "stripeSessionId" | "stripePaymentId" | "createdAt" | "createdBy" | "updatedAt" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "isVoided" | "voidedAt" | "voidedBy" | "voidReason" | "changeReason", ExtArgs["result"]["transaction"]>
 export type TransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  debitAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
-  creditAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
   donor?: boolean | Prisma.Transaction$donorArgs<ExtArgs>
-  contact?: boolean | Prisma.Transaction$contactArgs<ExtArgs>
-  billPayments?: boolean | Prisma.Transaction$billPaymentsArgs<ExtArgs>
-  billAccrual?: boolean | Prisma.Transaction$billAccrualArgs<ExtArgs>
-  plannedPurchase?: boolean | Prisma.Transaction$plannedPurchaseArgs<ExtArgs>
-  _count?: boolean | Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TransactionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  debitAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
-  creditAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
   donor?: boolean | Prisma.Transaction$donorArgs<ExtArgs>
-  contact?: boolean | Prisma.Transaction$contactArgs<ExtArgs>
 }
 export type TransactionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  debitAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
-  creditAccount?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
   donor?: boolean | Prisma.Transaction$donorArgs<ExtArgs>
-  contact?: boolean | Prisma.Transaction$contactArgs<ExtArgs>
 }
 
 export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Transaction"
   objects: {
-    organization: Prisma.$OrganizationPayload<ExtArgs>
-    debitAccount: Prisma.$AccountPayload<ExtArgs>
-    creditAccount: Prisma.$AccountPayload<ExtArgs>
     donor: Prisma.$UserPayload<ExtArgs> | null
-    contact: Prisma.$ContactPayload<ExtArgs> | null
-    billPayments: Prisma.$BillPaymentPayload<ExtArgs>[]
-    billAccrual: Prisma.$BillPayload<ExtArgs> | null
-    plannedPurchase: Prisma.$PlannedPurchasePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
+    versionId: string
     id: string
     organizationId: string
     transactionDate: Date
@@ -3805,7 +1731,6 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     createdAt: Date
     createdBy: string | null
     updatedAt: Date
-    versionId: string
     previousVersionId: string | null
     validFrom: Date
     validTo: Date
@@ -3903,8 +1828,8 @@ export interface TransactionDelegate<ExtArgs extends runtime.Types.Extensions.In
    * // Get first 10 Transactions
    * const transactions = await prisma.transaction.findMany({ take: 10 })
    * 
-   * // Only select the `id`
-   * const transactionWithIdOnly = await prisma.transaction.findMany({ select: { id: true } })
+   * // Only select the `versionId`
+   * const transactionWithVersionIdOnly = await prisma.transaction.findMany({ select: { versionId: true } })
    * 
    */
   findMany<T extends TransactionFindManyArgs>(args?: Prisma.SelectSubset<T, TransactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -3948,9 +1873,9 @@ export interface TransactionDelegate<ExtArgs extends runtime.Types.Extensions.In
    *   ]
    * })
    * 
-   * // Create many Transactions and only return the `id`
-   * const transactionWithIdOnly = await prisma.transaction.createManyAndReturn({
-   *   select: { id: true },
+   * // Create many Transactions and only return the `versionId`
+   * const transactionWithVersionIdOnly = await prisma.transaction.createManyAndReturn({
+   *   select: { versionId: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -4039,9 +1964,9 @@ export interface TransactionDelegate<ExtArgs extends runtime.Types.Extensions.In
    *   ]
    * })
    * 
-   * // Update zero or more Transactions and only return the `id`
-   * const transactionWithIdOnly = await prisma.transaction.updateManyAndReturn({
-   *   select: { id: true },
+   * // Update zero or more Transactions and only return the `versionId`
+   * const transactionWithVersionIdOnly = await prisma.transaction.updateManyAndReturn({
+   *   select: { versionId: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -4214,14 +2139,7 @@ readonly fields: TransactionFieldRefs;
  */
 export interface Prisma__TransactionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  debitAccount<T extends Prisma.AccountDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AccountDefaultArgs<ExtArgs>>): Prisma.Prisma__AccountClient<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  creditAccount<T extends Prisma.AccountDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AccountDefaultArgs<ExtArgs>>): Prisma.Prisma__AccountClient<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   donor<T extends Prisma.Transaction$donorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$donorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  contact<T extends Prisma.Transaction$contactArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$contactArgs<ExtArgs>>): Prisma.Prisma__ContactClient<runtime.Types.Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  billPayments<T extends Prisma.Transaction$billPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$billPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BillPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  billAccrual<T extends Prisma.Transaction$billAccrualArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$billAccrualArgs<ExtArgs>>): Prisma.Prisma__BillClient<runtime.Types.Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  plannedPurchase<T extends Prisma.Transaction$plannedPurchaseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$plannedPurchaseArgs<ExtArgs>>): Prisma.Prisma__PlannedPurchaseClient<runtime.Types.Result.GetResult<Prisma.$PlannedPurchasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4251,6 +2169,7 @@ export interface Prisma__TransactionClient<T, Null = never, ExtArgs extends runt
  * Fields of the Transaction model
  */
 export interface TransactionFieldRefs {
+  readonly versionId: Prisma.FieldRef<"Transaction", 'String'>
   readonly id: Prisma.FieldRef<"Transaction", 'String'>
   readonly organizationId: Prisma.FieldRef<"Transaction", 'String'>
   readonly transactionDate: Prisma.FieldRef<"Transaction", 'DateTime'>
@@ -4276,7 +2195,6 @@ export interface TransactionFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly createdBy: Prisma.FieldRef<"Transaction", 'String'>
   readonly updatedAt: Prisma.FieldRef<"Transaction", 'DateTime'>
-  readonly versionId: Prisma.FieldRef<"Transaction", 'String'>
   readonly previousVersionId: Prisma.FieldRef<"Transaction", 'String'>
   readonly validFrom: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly validTo: Prisma.FieldRef<"Transaction", 'DateTime'>
@@ -4703,87 +2621,6 @@ export type Transaction$donorArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
-}
-
-/**
- * Transaction.contact
- */
-export type Transaction$contactArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Contact
-   */
-  select?: Prisma.ContactSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Contact
-   */
-  omit?: Prisma.ContactOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ContactInclude<ExtArgs> | null
-  where?: Prisma.ContactWhereInput
-}
-
-/**
- * Transaction.billPayments
- */
-export type Transaction$billPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the BillPayment
-   */
-  select?: Prisma.BillPaymentSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the BillPayment
-   */
-  omit?: Prisma.BillPaymentOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.BillPaymentInclude<ExtArgs> | null
-  where?: Prisma.BillPaymentWhereInput
-  orderBy?: Prisma.BillPaymentOrderByWithRelationInput | Prisma.BillPaymentOrderByWithRelationInput[]
-  cursor?: Prisma.BillPaymentWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.BillPaymentScalarFieldEnum | Prisma.BillPaymentScalarFieldEnum[]
-}
-
-/**
- * Transaction.billAccrual
- */
-export type Transaction$billAccrualArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Bill
-   */
-  select?: Prisma.BillSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Bill
-   */
-  omit?: Prisma.BillOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.BillInclude<ExtArgs> | null
-  where?: Prisma.BillWhereInput
-}
-
-/**
- * Transaction.plannedPurchase
- */
-export type Transaction$plannedPurchaseArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PlannedPurchase
-   */
-  select?: Prisma.PlannedPurchaseSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PlannedPurchase
-   */
-  omit?: Prisma.PlannedPurchaseOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlannedPurchaseInclude<ExtArgs> | null
-  where?: Prisma.PlannedPurchaseWhereInput
 }
 
 /**
