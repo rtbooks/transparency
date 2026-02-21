@@ -6,7 +6,6 @@ import {
   Heading,
   Hr,
   Html,
-  Img,
   Preview,
   Section,
   Text,
@@ -38,14 +37,7 @@ export function InvitationEmail({
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Img
-              src="https://radbooks.org/logo.png"
-              width="40"
-              height="40"
-              alt="RadBooks"
-              style={logo}
-            />
-            <Text style={brandName}>RadBooks</Text>
+            <Text style={brandName}>📚 RadBooks</Text>
           </Section>
 
           <Heading style={heading}>
@@ -106,16 +98,8 @@ const header = {
   marginBottom: '24px',
 };
 
-const logo = {
-  display: 'inline-block',
-  verticalAlign: 'middle',
-  marginRight: '8px',
-};
-
 const brandName = {
-  display: 'inline-block',
-  verticalAlign: 'middle',
-  fontSize: '20px',
+  fontSize: '22px',
   fontWeight: '700' as const,
   color: '#1a1a1a',
   margin: '0',
