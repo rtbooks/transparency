@@ -37,7 +37,6 @@ interface Bill {
   status: "DRAFT" | "PENDING" | "PARTIAL" | "PAID" | "OVERDUE" | "CANCELLED";
   amount: number;
   amountPaid: number;
-  amountRemaining: number;
   description: string | null;
   category: string | null;
   issueDate: string;
@@ -268,11 +267,14 @@ export function BillList({ organizationSlug, directionFilter, refreshKey }: Bill
                     {formatCurrency(bill.amountPaid)}
                   </TableCell>
                   <TableCell className="text-right text-sm text-gray-600">
-                    {formatCurrency(bill.amountRemaining)}
+                    {formatCurrency(
+                      (parseFloat(String(bill.amount)) || 0) -
+                      (parseFloat(String(bill.amountPaid)) || 0)
+                    )}
                   </TableCell>
                   <TableCell>{getStatusBadge(bill.status)}</TableCell>
                   <TableCell className="text-sm text-gray-600">
-                    {new Date(bill.dueDate).toLocaleDateString()}
+                    {bill.dueDate ? new Date(bill.dueDate).toLocaleDateString() : "—"}
                   </TableCell>
                   <TableCell className="text-sm text-gray-600">
                     {new Date(bill.issueDate).toLocaleDateString()}

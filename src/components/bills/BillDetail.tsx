@@ -38,7 +38,6 @@ interface BillDetailData {
   status: "DRAFT" | "PENDING" | "PARTIAL" | "PAID" | "OVERDUE" | "CANCELLED";
   amount: number;
   amountPaid: number;
-  amountRemaining: number;
   description: string | null;
   category: string | null;
   issueDate: string;
@@ -64,7 +63,6 @@ interface BillDetailProps {
     status: "DRAFT" | "PENDING" | "PARTIAL" | "PAID" | "OVERDUE" | "CANCELLED";
     amount: number;
     amountPaid: number;
-    amountRemaining: number;
     description: string | null;
     category: string | null;
     issueDate: string;
@@ -238,7 +236,10 @@ export function BillDetail({ organizationSlug, bill, onClose, onRefresh }: BillD
             <div>
               <div className="text-sm text-gray-600">Remaining</div>
               <div className="text-lg font-semibold text-orange-700">
-                {formatCurrency(detail.amountRemaining)}
+                {formatCurrency(
+                  (parseFloat(String(detail.amount)) || 0) -
+                  (parseFloat(String(detail.amountPaid)) || 0)
+                )}
               </div>
             </div>
           </div>

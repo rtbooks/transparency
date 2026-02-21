@@ -158,6 +158,9 @@ export async function listBills(
       orderBy: { createdAt: 'desc' },
       skip,
       take: limit,
+      include: {
+        contact: { select: { id: true, name: true } },
+      },
     }),
     prisma.bill.count({ where }),
   ]);
