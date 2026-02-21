@@ -5,9 +5,14 @@ import { recordPayment, linkPayment } from '@/services/bill-payment.service';
 import { recalculateBillStatus } from '@/services/bill.service';
 import { z } from 'zod';
 
+const dateString = z.string().refine(
+  (val) => !isNaN(Date.parse(val)),
+  { message: 'Invalid date' }
+);
+
 const recordPaymentSchema = z.object({
   amount: z.number().positive(),
-  transactionDate: z.string().datetime(),
+  transactionDate: dateString,
   debitAccountId: z.string().uuid(),
   creditAccountId: z.string().uuid(),
   description: z.string().optional(),

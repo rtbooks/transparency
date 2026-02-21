@@ -21,6 +21,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Pencil, Ban, DollarSign } from "lucide-react";
 import { BillForm } from "./BillForm";
+import { BillPaymentForm } from "./BillPaymentForm";
 import { formatCurrency } from "@/lib/utils/account-tree";
 
 interface Payment {
@@ -52,6 +53,13 @@ interface BillDetailData {
   updatedAt: string;
 }
 
+interface Account {
+  id: string;
+  code: string;
+  name: string;
+  type: string;
+}
+
 interface BillDetailProps {
   organizationSlug: string;
   bill: {
@@ -68,6 +76,7 @@ interface BillDetailProps {
     createdAt: string;
     updatedAt: string;
   };
+  accounts?: Account[];
   onClose: () => void;
   onRefresh: () => void;
 }
@@ -89,12 +98,13 @@ function getStatusBadge(status: BillDetailData["status"]) {
   );
 }
 
-export function BillDetail({ organizationSlug, bill, onClose, onRefresh }: BillDetailProps) {
+export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefresh }: BillDetailProps) {
   const [detail, setDetail] = useState<BillDetailData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const fetchDetail = useCallback(async () => {
     try {
@@ -149,7 +159,7 @@ export function BillDetail({ organizationSlug, bill, onClose, onRefresh }: BillD
   };
 
   const handleRecordPayment = () => {
-    alert("Coming soon: Record payment functionality will be available in a future update.");
+    setShowPaymentForm(true);
   };
 
   if (loading) {
@@ -393,6 +403,37 @@ export function BillDetail({ organizationSlug, bill, onClose, onRefresh }: BillD
             }}
             onCancel={() => setEditing(false)}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Dialog */}
+      <Dialog open={showPaymentForm} onOpenChange={setShowPaymentForm}>
+        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {detail?.direction === "PAYABLE" ? "Record Payment" : "Record Receipt"}
+            </DialogTitle>
+            <DialogDescription>
+              {detail?.description || "Record a payment for this bill"}
+            </DialogDescription>
+          </DialogHeader>
+          {detail && accounts && (
+            <BillPaymentForm
+              organizationSlug={organizationSlug}
+              billId={detail.id}
+              direction={detail.direction}
+              amountRemaining={
+                (parseFloat(String(detail.amount)) || 0) -
+                (parseFloat(String(detail.amountPaid)) || 0)
+              }
+              accounts={accounts}
+              onSuccess={() => {
+                setShowPaymentForm(false);
+                fetchDetail();
+              }}
+              onCancel={() => setShowPaymentForm(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </>

@@ -48,10 +48,18 @@ interface Bill {
   updatedAt: string;
 }
 
+interface Account {
+  id: string;
+  code: string;
+  name: string;
+  type: string;
+}
+
 interface BillListProps {
   organizationSlug: string;
   directionFilter?: "PAYABLE" | "RECEIVABLE";
   refreshKey?: number;
+  accounts?: Account[];
 }
 
 const STATUS_OPTIONS = [
@@ -93,7 +101,7 @@ function getDirectionBadge(direction: Bill["direction"]) {
   );
 }
 
-export function BillList({ organizationSlug, directionFilter, refreshKey }: BillListProps) {
+export function BillList({ organizationSlug, directionFilter, refreshKey, accounts }: BillListProps) {
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -329,6 +337,7 @@ export function BillList({ organizationSlug, directionFilter, refreshKey }: Bill
             <BillDetail
               organizationSlug={organizationSlug}
               bill={selectedBill}
+              accounts={accounts}
               onClose={() => setSelectedBill(null)}
               onRefresh={() => {
                 setSelectedBill(null);

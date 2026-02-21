@@ -80,6 +80,7 @@ export function BillsPageClient({ organizationSlug, accounts }: BillsPageClientP
         organizationSlug={organizationSlug}
         directionFilter={directionFilter === "ALL" ? undefined : directionFilter}
         refreshKey={refreshKey}
+        accounts={accounts}
       />
 
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
