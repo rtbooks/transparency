@@ -2,9 +2,17 @@
 
 import { useState } from "react";
 import { z } from "zod";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ContactSelector } from "@/components/contacts/ContactSelector";
 
@@ -56,11 +64,11 @@ export function BillForm({
   const [amount, setAmount] = useState(bill?.amount?.toString() ?? "");
   const [description, setDescription] = useState(bill?.description ?? "");
   const [category, setCategory] = useState(bill?.category ?? "");
-  const [issueDate, setIssueDate] = useState(
-    bill?.issueDate ? bill.issueDate.slice(0, 10) : new Date().toISOString().slice(0, 10)
+  const [issueDate, setIssueDate] = useState<Date | undefined>(
+    bill?.issueDate ? new Date(bill.issueDate) : new Date()
   );
-  const [dueDate, setDueDate] = useState(
-    bill?.dueDate ? bill.dueDate.slice(0, 10) : ""
+  const [dueDate, setDueDate] = useState<Date | undefined>(
+    bill?.dueDate ? new Date(bill.dueDate) : undefined
   );
   const [notes, setNotes] = useState(bill?.notes ?? "");
 
@@ -80,8 +88,8 @@ export function BillForm({
       amount: parseFloat(amount) || 0,
       description: description.trim() || null,
       category: category.trim() || null,
-      issueDate,
-      dueDate,
+      issueDate: issueDate ? issueDate.toISOString().slice(0, 10) : "",
+      dueDate: dueDate ? dueDate.toISOString().slice(0, 10) : "",
       notes: notes.trim() || null,
     };
 
@@ -231,28 +239,50 @@ export function BillForm({
 
       {/* Dates */}
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+        <div className="flex flex-col">
+          <label className="mb-2 text-sm font-medium text-gray-700">
             Issue Date <span className="text-red-500">*</span>
           </label>
-          <Input
-            type="date"
-            value={issueDate}
-            onChange={(e) => setIssueDate(e.target.value)}
-          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full pl-3 text-left font-normal">
+                {issueDate ? format(issueDate, "PPP") : <span className="text-muted-foreground">Pick a date</span>}
+                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={issueDate}
+                onSelect={setIssueDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
           {validationErrors.issueDate && (
             <p className="mt-1 text-sm text-red-500">{validationErrors.issueDate}</p>
           )}
         </div>
-        <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+        <div className="flex flex-col">
+          <label className="mb-2 text-sm font-medium text-gray-700">
             Due Date <span className="text-red-500">*</span>
           </label>
-          <Input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full pl-3 text-left font-normal">
+                {dueDate ? format(dueDate, "PPP") : <span className="text-muted-foreground">Pick a date</span>}
+                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={dueDate}
+                onSelect={setDueDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
           {validationErrors.dueDate && (
             <p className="mt-1 text-sm text-red-500">{validationErrors.dueDate}</p>
           )}
