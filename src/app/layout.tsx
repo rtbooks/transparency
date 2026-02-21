@@ -1,5 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
-import { ClerkProvider } from "@clerk/nextjs";
+import { SafeClerkProvider } from "@/components/providers/SafeClerkProvider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -58,11 +58,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // In CI builds without valid Clerk keys, skip ClerkProvider to allow static generation
-  const hasValidClerkKeys =
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
-    !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.includes("test_Y2xlcms");
-
   const content = (
     <html lang="en">
       <body className={inter.className}>
@@ -72,5 +67,5 @@ export default function RootLayout({
     </html>
   );
 
-  return hasValidClerkKeys ? <ClerkProvider>{content}</ClerkProvider> : content;
+  return <SafeClerkProvider>{content}</SafeClerkProvider>;
 }
