@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { sendInvitationEmail } from '@/lib/email/send-invitation';
 import crypto from 'crypto';
 
 interface RouteParams {
@@ -28,6 +29,7 @@ export async function POST(
       where: { authId: clerkUserId },
       select: {
         id: true,
+        name: true,
         isPlatformAdmin: true,
       },
     });
@@ -94,13 +96,22 @@ export async function POST(
       },
     });
 
-    // TODO: Send invitation email
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite/${newToken}`;
+
+    // Send invitation email (fire-and-forget)
+    sendInvitationEmail({
+      to: invitation.email,
+      inviterName: user.name || 'A team member',
+      organizationName: organization.name,
+      role: invitation.role,
+      inviteUrl,
+      expiresInDays: 7,
+    }).catch((err) => console.error('[Invitation] Email resend failed:', err));
 
     return NextResponse.json({
       message: 'Invitation resent successfully',
       invitation: updatedInvitation,
-      inviteUrl, // For development - remove when email is implemented
+      inviteUrl,
     });
   } catch (error) {
     console.error('Error resending invitation:', error);
