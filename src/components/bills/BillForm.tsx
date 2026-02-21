@@ -224,7 +224,7 @@ export function BillForm({
               </SelectItem>
             ))}
             {contacts.length === 0 && !loadingContacts && (
-              <SelectItem value="" disabled>
+              <SelectItem value="__none__" disabled>
                 No contacts found
               </SelectItem>
             )}
