@@ -9,6 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -26,10 +33,20 @@ const billFormSchema = z.object({
   issueDate: z.string().min(1, "Issue date is required"),
   dueDate: z.string().min(1, "Due date is required"),
   notes: z.string().nullable().optional().or(z.literal("")),
+  liabilityOrAssetAccountId: z.string().min(1, "Account is required"),
+  expenseOrRevenueAccountId: z.string().min(1, "Account is required"),
 });
+
+interface Account {
+  id: string;
+  code: string;
+  name: string;
+  type: string;
+}
 
 interface BillFormProps {
   organizationSlug: string;
+  accounts?: Account[];
   bill?: {
     id: string;
     direction: "PAYABLE" | "RECEIVABLE";
@@ -49,6 +66,7 @@ interface BillFormProps {
 
 export function BillForm({
   organizationSlug,
+  accounts,
   bill,
   onSuccess,
   onCancel,
@@ -71,6 +89,22 @@ export function BillForm({
     bill?.dueDate ? new Date(bill.dueDate) : undefined
   );
   const [notes, setNotes] = useState(bill?.notes ?? "");
+  const [liabilityOrAssetAccountId, setLiabilityOrAssetAccountId] = useState("");
+  const [expenseOrRevenueAccountId, setExpenseOrRevenueAccountId] = useState("");
+
+  // Filter accounts based on direction
+  // PAYABLE: liability account (AP) + expense account
+  // RECEIVABLE: asset account (AR) + revenue account
+  const apArAccounts = (accounts ?? []).filter((a) =>
+    direction === "PAYABLE"
+      ? a.type === "LIABILITY"
+      : a.type === "ASSET"
+  );
+  const expRevAccounts = (accounts ?? []).filter((a) =>
+    direction === "PAYABLE"
+      ? a.type === "EXPENSE"
+      : a.type === "REVENUE"
+  );
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +115,7 @@ export function BillForm({
     setError(null);
     setValidationErrors({});
 
-    const formData = {
+    const formData: Record<string, unknown> = {
       direction,
       contactId: contactId || "",
       billNumber: billNumber.trim(),
@@ -91,9 +125,13 @@ export function BillForm({
       issueDate: issueDate ? issueDate.toISOString().slice(0, 10) : "",
       dueDate: dueDate ? dueDate.toISOString().slice(0, 10) : "",
       notes: notes.trim() || null,
+      ...(isEditing ? {} : { liabilityOrAssetAccountId, expenseOrRevenueAccountId }),
     };
 
-    const result = billFormSchema.safeParse(formData);
+    const schema = isEditing
+      ? billFormSchema.omit({ liabilityOrAssetAccountId: true, expenseOrRevenueAccountId: true })
+      : billFormSchema;
+    const result = schema.safeParse(formData);
     if (!result.success) {
       const errors: Record<string, string> = {};
       result.error.errors.forEach((err) => {
@@ -146,7 +184,11 @@ export function BillForm({
         <div className="flex gap-1 rounded-lg border p-1">
           <button
             type="button"
-            onClick={() => setDirection("PAYABLE")}
+            onClick={() => {
+              setDirection("PAYABLE");
+              setLiabilityOrAssetAccountId("");
+              setExpenseOrRevenueAccountId("");
+            }}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
               direction === "PAYABLE"
                 ? "bg-orange-100 text-orange-700"
@@ -157,7 +199,11 @@ export function BillForm({
           </button>
           <button
             type="button"
-            onClick={() => setDirection("RECEIVABLE")}
+            onClick={() => {
+              setDirection("RECEIVABLE");
+              setLiabilityOrAssetAccountId("");
+              setExpenseOrRevenueAccountId("");
+            }}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
               direction === "RECEIVABLE"
                 ? "bg-emerald-100 text-emerald-700"
@@ -226,6 +272,64 @@ export function BillForm({
           placeholder="Brief description"
         />
       </div>
+
+      {/* Account Selectors */}
+      {!isEditing && (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              {direction === "PAYABLE" ? "Accounts Payable (Liability)" : "Accounts Receivable (Asset)"}{" "}
+              <span className="text-red-500">*</span>
+            </label>
+            <Select value={liabilityOrAssetAccountId} onValueChange={setLiabilityOrAssetAccountId}>
+              <SelectTrigger>
+                <SelectValue placeholder={direction === "PAYABLE" ? "Select AP account..." : "Select AR account..."} />
+              </SelectTrigger>
+              <SelectContent>
+                {apArAccounts.map((acct) => (
+                  <SelectItem key={acct.id} value={acct.id}>
+                    {acct.code} – {acct.name}
+                  </SelectItem>
+                ))}
+                {apArAccounts.length === 0 && (
+                  <SelectItem value="__none__" disabled>
+                    No {direction === "PAYABLE" ? "liability" : "asset"} accounts found
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+            {validationErrors.liabilityOrAssetAccountId && (
+              <p className="mt-1 text-sm text-red-500">{validationErrors.liabilityOrAssetAccountId}</p>
+            )}
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              {direction === "PAYABLE" ? "Expense Account" : "Revenue Account"}{" "}
+              <span className="text-red-500">*</span>
+            </label>
+            <Select value={expenseOrRevenueAccountId} onValueChange={setExpenseOrRevenueAccountId}>
+              <SelectTrigger>
+                <SelectValue placeholder={direction === "PAYABLE" ? "Select expense account..." : "Select revenue account..."} />
+              </SelectTrigger>
+              <SelectContent>
+                {expRevAccounts.map((acct) => (
+                  <SelectItem key={acct.id} value={acct.id}>
+                    {acct.code} – {acct.name}
+                  </SelectItem>
+                ))}
+                {expRevAccounts.length === 0 && (
+                  <SelectItem value="__none__" disabled>
+                    No {direction === "PAYABLE" ? "expense" : "revenue"} accounts found
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+            {validationErrors.expenseOrRevenueAccountId && (
+              <p className="mt-1 text-sm text-red-500">{validationErrors.expenseOrRevenueAccountId}</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Category */}
       <div>

@@ -4,6 +4,8 @@
  */
 
 import { prisma } from '@/lib/prisma';
+import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
+import { MAX_DATE } from '@/lib/temporal/temporal-utils';
 import type { Bill, BillPayment, Transaction } from '@/generated/prisma/client';
 
 // Valid status transitions
@@ -28,6 +30,9 @@ export interface CreateBillInput {
   dueDate?: Date | null;
   notes?: string | null;
   createdBy?: string;
+  // Account IDs for the accrual transaction
+  liabilityOrAssetAccountId: string; // AP for payables, AR for receivables
+  expenseOrRevenueAccountId: string; // Expense for payables, Revenue for receivables
 }
 
 export interface UpdateBillInput {
@@ -40,25 +45,69 @@ export interface UpdateBillInput {
 }
 
 /**
- * Create a new bill with DRAFT status
+ * Create a new bill with PENDING status and its accrual transaction.
+ *
+ * PAYABLE:    DR Expense/Asset,      CR Accounts Payable
+ * RECEIVABLE: DR Accounts Receivable, CR Revenue
  */
 export async function createBill(input: CreateBillInput): Promise<Bill> {
-  return await prisma.bill.create({
-    data: {
-      organizationId: input.organizationId,
-      contactId: input.contactId,
-      billNumber: input.billNumber ?? null,
-      direction: input.direction,
-      status: 'DRAFT',
-      amount: input.amount,
-      amountPaid: 0,
-      description: input.description,
-      category: input.category ?? null,
-      issueDate: input.issueDate,
-      dueDate: input.dueDate ?? null,
-      notes: input.notes ?? null,
-      createdBy: input.createdBy ?? null,
-    },
+  return await prisma.$transaction(async (tx) => {
+    // Determine debit/credit based on direction
+    const debitAccountId = input.direction === 'PAYABLE'
+      ? input.expenseOrRevenueAccountId  // DR Expense
+      : input.liabilityOrAssetAccountId; // DR Accounts Receivable
+    const creditAccountId = input.direction === 'PAYABLE'
+      ? input.liabilityOrAssetAccountId  // CR Accounts Payable
+      : input.expenseOrRevenueAccountId; // CR Revenue
+
+    const now = new Date();
+    const txDescription = `${input.direction === 'PAYABLE' ? 'Bill' : 'Pledge'}: ${input.description || input.billNumber || 'No description'}`;
+
+    // Create the accrual transaction
+    const accrualTransaction = await tx.transaction.create({
+      data: {
+        organizationId: input.organizationId,
+        transactionDate: input.issueDate,
+        amount: input.amount,
+        type: input.direction === 'PAYABLE' ? 'EXPENSE' : 'INCOME',
+        debitAccountId,
+        creditAccountId,
+        description: txDescription,
+        referenceNumber: input.billNumber ?? null,
+        contactId: input.contactId,
+        paymentMethod: 'OTHER',
+        versionId: crypto.randomUUID(),
+        validFrom: now,
+        validTo: MAX_DATE,
+        systemFrom: now,
+        systemTo: MAX_DATE,
+      },
+    });
+
+    // Update account balances
+    await updateAccountBalances(tx, debitAccountId, creditAccountId, input.amount);
+
+    // Create the bill linked to the accrual transaction
+    const bill = await tx.bill.create({
+      data: {
+        organizationId: input.organizationId,
+        contactId: input.contactId,
+        billNumber: input.billNumber ?? null,
+        direction: input.direction,
+        status: 'PENDING',
+        amount: input.amount,
+        amountPaid: 0,
+        description: input.description,
+        category: input.category ?? null,
+        issueDate: input.issueDate,
+        dueDate: input.dueDate ?? null,
+        notes: input.notes ?? null,
+        createdBy: input.createdBy ?? null,
+        accrualTransactionId: accrualTransaction.id,
+      },
+    });
+
+    return bill;
   });
 }
 

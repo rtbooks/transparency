@@ -19,6 +19,8 @@ const createBillSchema = z.object({
   issueDate: dateString,
   dueDate: dateString.nullable().optional(),
   notes: z.string().nullable().optional(),
+  liabilityOrAssetAccountId: z.string().uuid(),
+  expenseOrRevenueAccountId: z.string().uuid(),
 });
 
 export async function GET(
@@ -148,6 +150,8 @@ export async function POST(
       dueDate: validated.dueDate ? new Date(validated.dueDate) : null,
       notes: validated.notes ?? null,
       createdBy: user.id,
+      liabilityOrAssetAccountId: validated.liabilityOrAssetAccountId,
+      expenseOrRevenueAccountId: validated.expenseOrRevenueAccountId,
     });
 
     return NextResponse.json(bill, { status: 201 });

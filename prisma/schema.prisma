@@ -305,6 +305,7 @@ model Transaction {
   donor         User?        @relation("DonorTransactions", fields: [donorUserId], references: [id])
   contact       Contact?     @relation(fields: [contactId], references: [id])
   billPayments  BillPayment[]
+  billAccrual   Bill?        @relation("BillAccrualTransaction")
 
   plannedPurchase PlannedPurchase? @relation("CompletedPurchase")
 
@@ -594,15 +595,19 @@ model Bill {
 
   notes String? @db.Text
 
+  // Accrual transaction created when bill is entered
+  accrualTransactionId String? @unique @map("accrual_transaction_id")
+
   // Metadata
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   createdBy String?  @map("created_by")
 
   // Relations
-  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  contact      Contact       @relation(fields: [contactId], references: [id])
-  payments     BillPayment[]
+  organization       Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  contact            Contact       @relation(fields: [contactId], references: [id])
+  accrualTransaction Transaction?  @relation("BillAccrualTransaction", fields: [accrualTransactionId], references: [id])
+  payments           BillPayment[]
 
   @@index([organizationId, status], name: "idx_bill_org_status")
   @@index([organizationId, direction], name: "idx_bill_org_direction")

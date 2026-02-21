@@ -16,11 +16,19 @@ import { Plus } from "lucide-react";
 
 type DirectionFilter = "ALL" | "PAYABLE" | "RECEIVABLE";
 
-interface BillsPageClientProps {
-  organizationSlug: string;
+interface Account {
+  id: string;
+  code: string;
+  name: string;
+  type: string;
 }
 
-export function BillsPageClient({ organizationSlug }: BillsPageClientProps) {
+interface BillsPageClientProps {
+  organizationSlug: string;
+  accounts: Account[];
+}
+
+export function BillsPageClient({ organizationSlug, accounts }: BillsPageClientProps) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [directionFilter, setDirectionFilter] = useState<DirectionFilter>("ALL");
@@ -84,6 +92,7 @@ export function BillsPageClient({ organizationSlug }: BillsPageClientProps) {
           </DialogHeader>
           <BillForm
             organizationSlug={organizationSlug}
+            accounts={accounts}
             onSuccess={() => {
               setShowAddDialog(false);
               setRefreshKey((k) => k + 1);

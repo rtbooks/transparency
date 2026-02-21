@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import { BillsPageClient } from "@/components/bills/BillsPageClient";
 import { OrganizationLayoutWrapper } from "@/components/navigation/OrganizationLayoutWrapper";
 import { checkOrganizationAccess, VerificationStatusMessage } from "@/lib/organization-access";
@@ -43,11 +44,22 @@ export default async function BillsPage({ params }: BillsPageProps) {
     return verificationMessage;
   }
 
+  // Fetch accounts for bill form account selectors
+  const accounts = await prisma.account.findMany({
+    where: {
+      organizationId: organization.id,
+      isDeleted: false,
+      validTo: { gt: new Date() },
+    },
+    select: { id: true, code: true, name: true, type: true },
+    orderBy: [{ type: "asc" }, { code: "asc" }],
+  });
+
   return (
     <OrganizationLayoutWrapper organizationSlug={slug}>
       <div className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <BillsPageClient organizationSlug={slug} />
+          <BillsPageClient organizationSlug={slug} accounts={accounts} />
         </div>
       </div>
     </OrganizationLayoutWrapper>

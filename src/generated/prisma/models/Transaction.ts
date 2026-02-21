@@ -502,6 +502,7 @@ export type TransactionWhereInput = {
   donor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   contact?: Prisma.XOR<Prisma.ContactNullableScalarRelationFilter, Prisma.ContactWhereInput> | null
   billPayments?: Prisma.BillPaymentListRelationFilter
+  billAccrual?: Prisma.XOR<Prisma.BillNullableScalarRelationFilter, Prisma.BillWhereInput> | null
   plannedPurchase?: Prisma.XOR<Prisma.PlannedPurchaseNullableScalarRelationFilter, Prisma.PlannedPurchaseWhereInput> | null
 }
 
@@ -552,6 +553,7 @@ export type TransactionOrderByWithRelationInput = {
   donor?: Prisma.UserOrderByWithRelationInput
   contact?: Prisma.ContactOrderByWithRelationInput
   billPayments?: Prisma.BillPaymentOrderByRelationAggregateInput
+  billAccrual?: Prisma.BillOrderByWithRelationInput
   plannedPurchase?: Prisma.PlannedPurchaseOrderByWithRelationInput
 }
 
@@ -605,6 +607,7 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   donor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   contact?: Prisma.XOR<Prisma.ContactNullableScalarRelationFilter, Prisma.ContactWhereInput> | null
   billPayments?: Prisma.BillPaymentListRelationFilter
+  billAccrual?: Prisma.XOR<Prisma.BillNullableScalarRelationFilter, Prisma.BillWhereInput> | null
   plannedPurchase?: Prisma.XOR<Prisma.PlannedPurchaseNullableScalarRelationFilter, Prisma.PlannedPurchaseWhereInput> | null
 }, "id" | "bankTransactionId" | "stripeSessionId" | "stripePaymentId" | "versionId">
 
@@ -744,6 +747,7 @@ export type TransactionCreateInput = {
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
   contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
   billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -789,6 +793,7 @@ export type TransactionUncheckedCreateInput = {
   voidReason?: string | null
   changeReason?: string | null
   billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -834,6 +839,7 @@ export type TransactionUpdateInput = {
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
   contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
   billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -879,6 +885,7 @@ export type TransactionUncheckedUpdateInput = {
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -1397,6 +1404,22 @@ export type TransactionUncheckedUpdateManyWithoutContactNestedInput = {
   deleteMany?: Prisma.TransactionScalarWhereInput | Prisma.TransactionScalarWhereInput[]
 }
 
+export type TransactionCreateNestedOneWithoutBillAccrualInput = {
+  create?: Prisma.XOR<Prisma.TransactionCreateWithoutBillAccrualInput, Prisma.TransactionUncheckedCreateWithoutBillAccrualInput>
+  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutBillAccrualInput
+  connect?: Prisma.TransactionWhereUniqueInput
+}
+
+export type TransactionUpdateOneWithoutBillAccrualNestedInput = {
+  create?: Prisma.XOR<Prisma.TransactionCreateWithoutBillAccrualInput, Prisma.TransactionUncheckedCreateWithoutBillAccrualInput>
+  connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutBillAccrualInput
+  upsert?: Prisma.TransactionUpsertWithoutBillAccrualInput
+  disconnect?: Prisma.TransactionWhereInput | boolean
+  delete?: Prisma.TransactionWhereInput | boolean
+  connect?: Prisma.TransactionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TransactionUpdateToOneWithWhereWithoutBillAccrualInput, Prisma.TransactionUpdateWithoutBillAccrualInput>, Prisma.TransactionUncheckedUpdateWithoutBillAccrualInput>
+}
+
 export type TransactionCreateNestedOneWithoutBillPaymentsInput = {
   create?: Prisma.XOR<Prisma.TransactionCreateWithoutBillPaymentsInput, Prisma.TransactionUncheckedCreateWithoutBillPaymentsInput>
   connectOrCreate?: Prisma.TransactionCreateOrConnectWithoutBillPaymentsInput
@@ -1452,6 +1475,7 @@ export type TransactionCreateWithoutOrganizationInput = {
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
   contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
   billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1496,6 +1520,7 @@ export type TransactionUncheckedCreateWithoutOrganizationInput = {
   voidReason?: string | null
   changeReason?: string | null
   billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1612,6 +1637,7 @@ export type TransactionCreateWithoutDonorInput = {
   creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
   contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
   billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1656,6 +1682,7 @@ export type TransactionUncheckedCreateWithoutDonorInput = {
   voidReason?: string | null
   changeReason?: string | null
   billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1726,6 +1753,7 @@ export type TransactionCreateWithoutDebitAccountInput = {
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
   contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
   billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1770,6 +1798,7 @@ export type TransactionUncheckedCreateWithoutDebitAccountInput = {
   voidReason?: string | null
   changeReason?: string | null
   billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1824,6 +1853,7 @@ export type TransactionCreateWithoutCreditAccountInput = {
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
   contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
   billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1868,6 +1898,7 @@ export type TransactionUncheckedCreateWithoutCreditAccountInput = {
   voidReason?: string | null
   changeReason?: string | null
   billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -1955,6 +1986,7 @@ export type TransactionCreateWithoutPlannedPurchaseInput = {
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
   contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
   billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
 }
 
 export type TransactionUncheckedCreateWithoutPlannedPurchaseInput = {
@@ -1999,6 +2031,7 @@ export type TransactionUncheckedCreateWithoutPlannedPurchaseInput = {
   voidReason?: string | null
   changeReason?: string | null
   billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
 }
 
 export type TransactionCreateOrConnectWithoutPlannedPurchaseInput = {
@@ -2059,6 +2092,7 @@ export type TransactionUpdateWithoutPlannedPurchaseInput = {
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
   contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
   billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutPlannedPurchaseInput = {
@@ -2103,6 +2137,7 @@ export type TransactionUncheckedUpdateWithoutPlannedPurchaseInput = {
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
 }
 
 export type TransactionCreateWithoutContactInput = {
@@ -2146,6 +2181,7 @@ export type TransactionCreateWithoutContactInput = {
   creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
   billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -2190,6 +2226,7 @@ export type TransactionUncheckedCreateWithoutContactInput = {
   voidReason?: string | null
   changeReason?: string | null
   billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
+  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -2217,6 +2254,202 @@ export type TransactionUpdateWithWhereUniqueWithoutContactInput = {
 export type TransactionUpdateManyWithWhereWithoutContactInput = {
   where: Prisma.TransactionScalarWhereInput
   data: Prisma.XOR<Prisma.TransactionUpdateManyMutationInput, Prisma.TransactionUncheckedUpdateManyWithoutContactInput>
+}
+
+export type TransactionCreateWithoutBillAccrualInput = {
+  id?: string
+  transactionDate: Date | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  type: $Enums.TransactionType
+  description: string
+  category?: string | null
+  paymentMethod: $Enums.PaymentMethod
+  referenceNumber?: string | null
+  donorName?: string | null
+  isAnonymous?: boolean
+  receiptUrl?: string | null
+  notes?: string | null
+  bankTransactionId?: string | null
+  reconciled?: boolean
+  reconciledAt?: Date | string | null
+  stripeSessionId?: string | null
+  stripePaymentId?: string | null
+  createdAt?: Date | string
+  createdBy?: string | null
+  updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
+  organization: Prisma.OrganizationCreateNestedOneWithoutTransactionsInput
+  debitAccount: Prisma.AccountCreateNestedOneWithoutDebitTransactionsInput
+  creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
+  donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
+  contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
+  billPayments?: Prisma.BillPaymentCreateNestedManyWithoutTransactionInput
+  plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
+}
+
+export type TransactionUncheckedCreateWithoutBillAccrualInput = {
+  id?: string
+  organizationId: string
+  transactionDate: Date | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  type: $Enums.TransactionType
+  debitAccountId: string
+  creditAccountId: string
+  description: string
+  category?: string | null
+  paymentMethod: $Enums.PaymentMethod
+  referenceNumber?: string | null
+  donorUserId?: string | null
+  donorName?: string | null
+  isAnonymous?: boolean
+  contactId?: string | null
+  receiptUrl?: string | null
+  notes?: string | null
+  bankTransactionId?: string | null
+  reconciled?: boolean
+  reconciledAt?: Date | string | null
+  stripeSessionId?: string | null
+  stripePaymentId?: string | null
+  createdAt?: Date | string
+  createdBy?: string | null
+  updatedAt?: Date | string
+  versionId?: string
+  previousVersionId?: string | null
+  validFrom?: Date | string
+  validTo?: Date | string
+  systemFrom?: Date | string
+  systemTo?: Date | string
+  isDeleted?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  changedBy?: string | null
+  isVoided?: boolean
+  voidedAt?: Date | string | null
+  voidedBy?: string | null
+  voidReason?: string | null
+  changeReason?: string | null
+  billPayments?: Prisma.BillPaymentUncheckedCreateNestedManyWithoutTransactionInput
+  plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
+}
+
+export type TransactionCreateOrConnectWithoutBillAccrualInput = {
+  where: Prisma.TransactionWhereUniqueInput
+  create: Prisma.XOR<Prisma.TransactionCreateWithoutBillAccrualInput, Prisma.TransactionUncheckedCreateWithoutBillAccrualInput>
+}
+
+export type TransactionUpsertWithoutBillAccrualInput = {
+  update: Prisma.XOR<Prisma.TransactionUpdateWithoutBillAccrualInput, Prisma.TransactionUncheckedUpdateWithoutBillAccrualInput>
+  create: Prisma.XOR<Prisma.TransactionCreateWithoutBillAccrualInput, Prisma.TransactionUncheckedCreateWithoutBillAccrualInput>
+  where?: Prisma.TransactionWhereInput
+}
+
+export type TransactionUpdateToOneWithWhereWithoutBillAccrualInput = {
+  where?: Prisma.TransactionWhereInput
+  data: Prisma.XOR<Prisma.TransactionUpdateWithoutBillAccrualInput, Prisma.TransactionUncheckedUpdateWithoutBillAccrualInput>
+}
+
+export type TransactionUpdateWithoutBillAccrualInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTransactionsNestedInput
+  debitAccount?: Prisma.AccountUpdateOneRequiredWithoutDebitTransactionsNestedInput
+  creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
+  donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
+  contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
+  billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
+  plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
+}
+
+export type TransactionUncheckedUpdateWithoutBillAccrualInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  type?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+  debitAccountId?: Prisma.StringFieldUpdateOperationsInput | string
+  creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAnonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versionId?: Prisma.StringFieldUpdateOperationsInput | string
+  previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  systemTo?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVoided?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
+  plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
 export type TransactionCreateWithoutBillPaymentsInput = {
@@ -2260,6 +2493,7 @@ export type TransactionCreateWithoutBillPaymentsInput = {
   creditAccount: Prisma.AccountCreateNestedOneWithoutCreditTransactionsInput
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
   contact?: Prisma.ContactCreateNestedOneWithoutTransactionsInput
+  billAccrual?: Prisma.BillCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -2304,6 +2538,7 @@ export type TransactionUncheckedCreateWithoutBillPaymentsInput = {
   voidedBy?: string | null
   voidReason?: string | null
   changeReason?: string | null
+  billAccrual?: Prisma.BillUncheckedCreateNestedOneWithoutAccrualTransactionInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedCreateNestedOneWithoutActualTransactionInput
 }
 
@@ -2364,6 +2599,7 @@ export type TransactionUpdateWithoutBillPaymentsInput = {
   creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
   contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
+  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -2408,6 +2644,7 @@ export type TransactionUncheckedUpdateWithoutBillPaymentsInput = {
   voidedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -2494,6 +2731,7 @@ export type TransactionUpdateWithoutOrganizationInput = {
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
   contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
   billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -2538,6 +2776,7 @@ export type TransactionUncheckedUpdateWithoutOrganizationInput = {
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -2666,6 +2905,7 @@ export type TransactionUpdateWithoutDonorInput = {
   creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
   contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
   billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -2710,6 +2950,7 @@ export type TransactionUncheckedUpdateWithoutDonorInput = {
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -2880,6 +3121,7 @@ export type TransactionUpdateWithoutDebitAccountInput = {
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
   contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
   billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -2924,6 +3166,7 @@ export type TransactionUncheckedUpdateWithoutDebitAccountInput = {
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -3010,6 +3253,7 @@ export type TransactionUpdateWithoutCreditAccountInput = {
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
   contact?: Prisma.ContactUpdateOneWithoutTransactionsNestedInput
   billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -3054,6 +3298,7 @@ export type TransactionUncheckedUpdateWithoutCreditAccountInput = {
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -3182,6 +3427,7 @@ export type TransactionUpdateWithoutContactInput = {
   creditAccount?: Prisma.AccountUpdateOneRequiredWithoutCreditTransactionsNestedInput
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
   billPayments?: Prisma.BillPaymentUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -3226,6 +3472,7 @@ export type TransactionUncheckedUpdateWithoutContactInput = {
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billPayments?: Prisma.BillPaymentUncheckedUpdateManyWithoutTransactionNestedInput
+  billAccrual?: Prisma.BillUncheckedUpdateOneWithoutAccrualTransactionNestedInput
   plannedPurchase?: Prisma.PlannedPurchaseUncheckedUpdateOneWithoutActualTransactionNestedInput
 }
 
@@ -3349,6 +3596,7 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   donor?: boolean | Prisma.Transaction$donorArgs<ExtArgs>
   contact?: boolean | Prisma.Transaction$contactArgs<ExtArgs>
   billPayments?: boolean | Prisma.Transaction$billPaymentsArgs<ExtArgs>
+  billAccrual?: boolean | Prisma.Transaction$billAccrualArgs<ExtArgs>
   plannedPurchase?: boolean | Prisma.Transaction$plannedPurchaseArgs<ExtArgs>
   _count?: boolean | Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transaction"]>
@@ -3500,6 +3748,7 @@ export type TransactionInclude<ExtArgs extends runtime.Types.Extensions.Internal
   donor?: boolean | Prisma.Transaction$donorArgs<ExtArgs>
   contact?: boolean | Prisma.Transaction$contactArgs<ExtArgs>
   billPayments?: boolean | Prisma.Transaction$billPaymentsArgs<ExtArgs>
+  billAccrual?: boolean | Prisma.Transaction$billAccrualArgs<ExtArgs>
   plannedPurchase?: boolean | Prisma.Transaction$plannedPurchaseArgs<ExtArgs>
   _count?: boolean | Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -3527,6 +3776,7 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     donor: Prisma.$UserPayload<ExtArgs> | null
     contact: Prisma.$ContactPayload<ExtArgs> | null
     billPayments: Prisma.$BillPaymentPayload<ExtArgs>[]
+    billAccrual: Prisma.$BillPayload<ExtArgs> | null
     plannedPurchase: Prisma.$PlannedPurchasePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -3970,6 +4220,7 @@ export interface Prisma__TransactionClient<T, Null = never, ExtArgs extends runt
   donor<T extends Prisma.Transaction$donorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$donorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   contact<T extends Prisma.Transaction$contactArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$contactArgs<ExtArgs>>): Prisma.Prisma__ContactClient<runtime.Types.Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   billPayments<T extends Prisma.Transaction$billPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$billPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BillPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  billAccrual<T extends Prisma.Transaction$billAccrualArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$billAccrualArgs<ExtArgs>>): Prisma.Prisma__BillClient<runtime.Types.Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   plannedPurchase<T extends Prisma.Transaction$plannedPurchaseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$plannedPurchaseArgs<ExtArgs>>): Prisma.Prisma__PlannedPurchaseClient<runtime.Types.Result.GetResult<Prisma.$PlannedPurchasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4495,6 +4746,25 @@ export type Transaction$billPaymentsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.BillPaymentScalarFieldEnum | Prisma.BillPaymentScalarFieldEnum[]
+}
+
+/**
+ * Transaction.billAccrual
+ */
+export type Transaction$billAccrualArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Bill
+   */
+  select?: Prisma.BillSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Bill
+   */
+  omit?: Prisma.BillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BillInclude<ExtArgs> | null
+  where?: Prisma.BillWhereInput
 }
 
 /**

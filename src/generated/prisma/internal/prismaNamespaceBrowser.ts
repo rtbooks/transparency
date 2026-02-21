@@ -367,6 +367,7 @@ export const BillScalarFieldEnum = {
   dueDate: 'dueDate',
   paidInFullDate: 'paidInFullDate',
   notes: 'notes',
+  accrualTransactionId: 'accrualTransactionId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdBy: 'createdBy'
