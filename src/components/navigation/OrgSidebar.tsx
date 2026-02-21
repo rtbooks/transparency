@@ -54,7 +54,7 @@ export function OrgSidebar({ navLinks, className }: OrgSidebarProps) {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          "flex h-[calc(100vh-4rem)] flex-col border-r bg-gray-50/50 transition-all duration-200",
+          "sticky top-16 flex h-[calc(100vh-4rem)] flex-col border-r bg-gray-50/50 transition-all duration-200",
           collapsed ? "w-16" : "w-60",
           className
         )}
