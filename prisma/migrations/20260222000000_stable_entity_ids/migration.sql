@@ -188,8 +188,6 @@ UPDATE transactions SET credit_account_id = m.entity_id
   FROM acct_id_map m WHERE transactions.credit_account_id = m.old_id;
 UPDATE accounts SET parent_account_id = m.entity_id
   FROM acct_id_map m WHERE accounts.parent_account_id = m.old_id;
-UPDATE planned_purchases SET account_id = m.entity_id
-  FROM acct_id_map m WHERE planned_purchases.account_id = m.old_id;
 UPDATE bank_accounts SET account_id = m.entity_id
   FROM acct_id_map m WHERE bank_accounts.account_id = m.old_id;
 
