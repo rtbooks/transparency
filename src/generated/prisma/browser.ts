@@ -67,3 +67,18 @@ export type AuditLog = Prisma.AuditLogModel
  * 
  */
 export type Invitation = Prisma.InvitationModel
+/**
+ * Model Contact
+ * 
+ */
+export type Contact = Prisma.ContactModel
+/**
+ * Model Bill
+ * 
+ */
+export type Bill = Prisma.BillModel
+/**
+ * Model BillPayment
+ * 
+ */
+export type BillPayment = Prisma.BillPaymentModel

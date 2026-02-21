@@ -39,6 +39,7 @@ import { VoidTransactionDialog } from "./VoidTransactionDialog";
 interface TransactionWithAccounts extends Transaction {
   debitAccount: Pick<Account, "id" | "code" | "name" | "type">;
   creditAccount: Pick<Account, "id" | "code" | "name" | "type">;
+  contact?: { id: string; name: string; type: string; roles: string[] } | null;
 }
 
 interface TransactionListProps {
@@ -376,13 +377,14 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
               <TableHead>Credit Account</TableHead>
               <TableHead className="text-right">Amount</TableHead>
               <TableHead>Description</TableHead>
+              <TableHead>Contact</TableHead>
               <TableHead>Reference</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {transactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="py-8 text-center text-gray-500">
+                <TableCell colSpan={9} className="py-8 text-center text-gray-500">
                   No transactions found. Record your first transaction to get started.
                 </TableCell>
               </TableRow>
@@ -430,6 +432,9 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
                     {formatCurrency(transaction.amount)}
                   </TableCell>
                   <TableCell className="max-w-xs truncate">{transaction.description}</TableCell>
+                  <TableCell className="text-sm text-gray-600">
+                    {transaction.contact?.name || "—"}
+                  </TableCell>
                   <TableCell className="text-gray-500">
                     {transaction.referenceNumber || "—"}
                   </TableCell>
