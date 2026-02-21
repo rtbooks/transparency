@@ -632,7 +632,6 @@ model BillPayment {
   id            String  @id @default(uuid())
   billId        String  @map("bill_id")
   transactionId String  @map("transaction_id")
-  amount        Decimal @db.Decimal(12, 2)
   notes         String? @db.Text
 
   createdAt DateTime @default(now()) @map("created_at")

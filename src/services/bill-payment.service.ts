@@ -23,7 +23,6 @@ export interface RecordPaymentInput {
 export interface LinkPaymentInput {
   billId: string;
   transactionId: string;
-  amount: number;
   notes?: string | null;
 }
 
@@ -99,12 +98,11 @@ export async function recordPayment(
       input.amount
     );
 
-    // Create the bill payment link
+    // Create the bill payment link (amount derived from transaction)
     const billPayment = await tx.billPayment.create({
       data: {
         billId: input.billId,
         transactionId: transaction.id,
-        amount: input.amount,
         notes: input.notes ?? null,
       },
     });
@@ -137,15 +135,15 @@ export async function linkPayment(
   }
 
   const remaining = parseFloat(bill.amount.toString()) - parseFloat(bill.amountPaid.toString());
-  if (input.amount > remaining) {
-    throw new Error(`Link amount (${input.amount}) exceeds remaining balance (${remaining})`);
+  const txAmount = parseFloat(transaction.amount.toString());
+  if (txAmount > remaining + 0.001) {
+    throw new Error(`Transaction amount (${txAmount}) exceeds remaining balance (${remaining})`);
   }
 
   const billPayment = await prisma.billPayment.create({
     data: {
       billId: input.billId,
       transactionId: input.transactionId,
-      amount: input.amount,
       notes: input.notes ?? null,
     },
   });

@@ -1713,7 +1713,6 @@ export const BillPaymentScalarFieldEnum = {
   id: 'id',
   billId: 'billId',
   transactionId: 'transactionId',
-  amount: 'amount',
   notes: 'notes',
   createdAt: 'createdAt'
 } as const

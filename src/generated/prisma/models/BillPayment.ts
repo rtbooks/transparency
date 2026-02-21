@@ -20,25 +20,14 @@ export type BillPaymentModel = runtime.Types.Result.DefaultSelection<Prisma.$Bil
 
 export type AggregateBillPayment = {
   _count: BillPaymentCountAggregateOutputType | null
-  _avg: BillPaymentAvgAggregateOutputType | null
-  _sum: BillPaymentSumAggregateOutputType | null
   _min: BillPaymentMinAggregateOutputType | null
   _max: BillPaymentMaxAggregateOutputType | null
-}
-
-export type BillPaymentAvgAggregateOutputType = {
-  amount: runtime.Decimal | null
-}
-
-export type BillPaymentSumAggregateOutputType = {
-  amount: runtime.Decimal | null
 }
 
 export type BillPaymentMinAggregateOutputType = {
   id: string | null
   billId: string | null
   transactionId: string | null
-  amount: runtime.Decimal | null
   notes: string | null
   createdAt: Date | null
 }
@@ -47,7 +36,6 @@ export type BillPaymentMaxAggregateOutputType = {
   id: string | null
   billId: string | null
   transactionId: string | null
-  amount: runtime.Decimal | null
   notes: string | null
   createdAt: Date | null
 }
@@ -56,26 +44,16 @@ export type BillPaymentCountAggregateOutputType = {
   id: number
   billId: number
   transactionId: number
-  amount: number
   notes: number
   createdAt: number
   _all: number
 }
 
 
-export type BillPaymentAvgAggregateInputType = {
-  amount?: true
-}
-
-export type BillPaymentSumAggregateInputType = {
-  amount?: true
-}
-
 export type BillPaymentMinAggregateInputType = {
   id?: true
   billId?: true
   transactionId?: true
-  amount?: true
   notes?: true
   createdAt?: true
 }
@@ -84,7 +62,6 @@ export type BillPaymentMaxAggregateInputType = {
   id?: true
   billId?: true
   transactionId?: true
-  amount?: true
   notes?: true
   createdAt?: true
 }
@@ -93,7 +70,6 @@ export type BillPaymentCountAggregateInputType = {
   id?: true
   billId?: true
   transactionId?: true
-  amount?: true
   notes?: true
   createdAt?: true
   _all?: true
@@ -137,18 +113,6 @@ export type BillPaymentAggregateArgs<ExtArgs extends runtime.Types.Extensions.In
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: BillPaymentAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: BillPaymentSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: BillPaymentMinAggregateInputType
@@ -179,8 +143,6 @@ export type BillPaymentGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   _count?: BillPaymentCountAggregateInputType | true
-  _avg?: BillPaymentAvgAggregateInputType
-  _sum?: BillPaymentSumAggregateInputType
   _min?: BillPaymentMinAggregateInputType
   _max?: BillPaymentMaxAggregateInputType
 }
@@ -189,12 +151,9 @@ export type BillPaymentGroupByOutputType = {
   id: string
   billId: string
   transactionId: string
-  amount: runtime.Decimal
   notes: string | null
   createdAt: Date
   _count: BillPaymentCountAggregateOutputType | null
-  _avg: BillPaymentAvgAggregateOutputType | null
-  _sum: BillPaymentSumAggregateOutputType | null
   _min: BillPaymentMinAggregateOutputType | null
   _max: BillPaymentMaxAggregateOutputType | null
 }
@@ -221,7 +180,6 @@ export type BillPaymentWhereInput = {
   id?: Prisma.StringFilter<"BillPayment"> | string
   billId?: Prisma.StringFilter<"BillPayment"> | string
   transactionId?: Prisma.StringFilter<"BillPayment"> | string
-  amount?: Prisma.DecimalFilter<"BillPayment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.StringNullableFilter<"BillPayment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BillPayment"> | Date | string
   bill?: Prisma.XOR<Prisma.BillScalarRelationFilter, Prisma.BillWhereInput>
@@ -232,7 +190,6 @@ export type BillPaymentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   billId?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  amount?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   bill?: Prisma.BillOrderByWithRelationInput
@@ -246,7 +203,6 @@ export type BillPaymentWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.BillPaymentWhereInput | Prisma.BillPaymentWhereInput[]
   billId?: Prisma.StringFilter<"BillPayment"> | string
   transactionId?: Prisma.StringFilter<"BillPayment"> | string
-  amount?: Prisma.DecimalFilter<"BillPayment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.StringNullableFilter<"BillPayment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BillPayment"> | Date | string
   bill?: Prisma.XOR<Prisma.BillScalarRelationFilter, Prisma.BillWhereInput>
@@ -257,14 +213,11 @@ export type BillPaymentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   billId?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  amount?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.BillPaymentCountOrderByAggregateInput
-  _avg?: Prisma.BillPaymentAvgOrderByAggregateInput
   _max?: Prisma.BillPaymentMaxOrderByAggregateInput
   _min?: Prisma.BillPaymentMinOrderByAggregateInput
-  _sum?: Prisma.BillPaymentSumOrderByAggregateInput
 }
 
 export type BillPaymentScalarWhereWithAggregatesInput = {
@@ -274,14 +227,12 @@ export type BillPaymentScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"BillPayment"> | string
   billId?: Prisma.StringWithAggregatesFilter<"BillPayment"> | string
   transactionId?: Prisma.StringWithAggregatesFilter<"BillPayment"> | string
-  amount?: Prisma.DecimalWithAggregatesFilter<"BillPayment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.StringNullableWithAggregatesFilter<"BillPayment"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"BillPayment"> | Date | string
 }
 
 export type BillPaymentCreateInput = {
   id?: string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: string | null
   createdAt?: Date | string
   bill: Prisma.BillCreateNestedOneWithoutPaymentsInput
@@ -292,14 +243,12 @@ export type BillPaymentUncheckedCreateInput = {
   id?: string
   billId: string
   transactionId: string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: string | null
   createdAt?: Date | string
 }
 
 export type BillPaymentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bill?: Prisma.BillUpdateOneRequiredWithoutPaymentsNestedInput
@@ -310,7 +259,6 @@ export type BillPaymentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   billId?: Prisma.StringFieldUpdateOperationsInput | string
   transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -319,14 +267,12 @@ export type BillPaymentCreateManyInput = {
   id?: string
   billId: string
   transactionId: string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: string | null
   createdAt?: Date | string
 }
 
 export type BillPaymentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -335,7 +281,6 @@ export type BillPaymentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   billId?: Prisma.StringFieldUpdateOperationsInput | string
   transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -354,20 +299,14 @@ export type BillPaymentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   billId?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  amount?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-}
-
-export type BillPaymentAvgOrderByAggregateInput = {
-  amount?: Prisma.SortOrder
 }
 
 export type BillPaymentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   billId?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  amount?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -376,13 +315,8 @@ export type BillPaymentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   billId?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  amount?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-}
-
-export type BillPaymentSumOrderByAggregateInput = {
-  amount?: Prisma.SortOrder
 }
 
 export type BillPaymentCreateNestedManyWithoutTransactionInput = {
@@ -471,7 +405,6 @@ export type BillPaymentUncheckedUpdateManyWithoutBillNestedInput = {
 
 export type BillPaymentCreateWithoutTransactionInput = {
   id?: string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: string | null
   createdAt?: Date | string
   bill: Prisma.BillCreateNestedOneWithoutPaymentsInput
@@ -480,7 +413,6 @@ export type BillPaymentCreateWithoutTransactionInput = {
 export type BillPaymentUncheckedCreateWithoutTransactionInput = {
   id?: string
   billId: string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: string | null
   createdAt?: Date | string
 }
@@ -518,14 +450,12 @@ export type BillPaymentScalarWhereInput = {
   id?: Prisma.StringFilter<"BillPayment"> | string
   billId?: Prisma.StringFilter<"BillPayment"> | string
   transactionId?: Prisma.StringFilter<"BillPayment"> | string
-  amount?: Prisma.DecimalFilter<"BillPayment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.StringNullableFilter<"BillPayment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BillPayment"> | Date | string
 }
 
 export type BillPaymentCreateWithoutBillInput = {
   id?: string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: string | null
   createdAt?: Date | string
   transaction: Prisma.TransactionCreateNestedOneWithoutBillPaymentsInput
@@ -534,7 +464,6 @@ export type BillPaymentCreateWithoutBillInput = {
 export type BillPaymentUncheckedCreateWithoutBillInput = {
   id?: string
   transactionId: string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: string | null
   createdAt?: Date | string
 }
@@ -568,14 +497,12 @@ export type BillPaymentUpdateManyWithWhereWithoutBillInput = {
 export type BillPaymentCreateManyTransactionInput = {
   id?: string
   billId: string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: string | null
   createdAt?: Date | string
 }
 
 export type BillPaymentUpdateWithoutTransactionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bill?: Prisma.BillUpdateOneRequiredWithoutPaymentsNestedInput
@@ -584,7 +511,6 @@ export type BillPaymentUpdateWithoutTransactionInput = {
 export type BillPaymentUncheckedUpdateWithoutTransactionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   billId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -592,7 +518,6 @@ export type BillPaymentUncheckedUpdateWithoutTransactionInput = {
 export type BillPaymentUncheckedUpdateManyWithoutTransactionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   billId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -600,14 +525,12 @@ export type BillPaymentUncheckedUpdateManyWithoutTransactionInput = {
 export type BillPaymentCreateManyBillInput = {
   id?: string
   transactionId: string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: string | null
   createdAt?: Date | string
 }
 
 export type BillPaymentUpdateWithoutBillInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transaction?: Prisma.TransactionUpdateOneRequiredWithoutBillPaymentsNestedInput
@@ -616,7 +539,6 @@ export type BillPaymentUpdateWithoutBillInput = {
 export type BillPaymentUncheckedUpdateWithoutBillInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -624,7 +546,6 @@ export type BillPaymentUncheckedUpdateWithoutBillInput = {
 export type BillPaymentUncheckedUpdateManyWithoutBillInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -635,7 +556,6 @@ export type BillPaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   id?: boolean
   billId?: boolean
   transactionId?: boolean
-  amount?: boolean
   notes?: boolean
   createdAt?: boolean
   bill?: boolean | Prisma.BillDefaultArgs<ExtArgs>
@@ -646,7 +566,6 @@ export type BillPaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   id?: boolean
   billId?: boolean
   transactionId?: boolean
-  amount?: boolean
   notes?: boolean
   createdAt?: boolean
   bill?: boolean | Prisma.BillDefaultArgs<ExtArgs>
@@ -657,7 +576,6 @@ export type BillPaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   id?: boolean
   billId?: boolean
   transactionId?: boolean
-  amount?: boolean
   notes?: boolean
   createdAt?: boolean
   bill?: boolean | Prisma.BillDefaultArgs<ExtArgs>
@@ -668,12 +586,11 @@ export type BillPaymentSelectScalar = {
   id?: boolean
   billId?: boolean
   transactionId?: boolean
-  amount?: boolean
   notes?: boolean
   createdAt?: boolean
 }
 
-export type BillPaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "billId" | "transactionId" | "amount" | "notes" | "createdAt", ExtArgs["result"]["billPayment"]>
+export type BillPaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "billId" | "transactionId" | "notes" | "createdAt", ExtArgs["result"]["billPayment"]>
 export type BillPaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bill?: boolean | Prisma.BillDefaultArgs<ExtArgs>
   transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
@@ -697,7 +614,6 @@ export type $BillPaymentPayload<ExtArgs extends runtime.Types.Extensions.Interna
     id: string
     billId: string
     transactionId: string
-    amount: runtime.Decimal
     notes: string | null
     createdAt: Date
   }, ExtArgs["result"]["billPayment"]>
@@ -1128,7 +1044,6 @@ export interface BillPaymentFieldRefs {
   readonly id: Prisma.FieldRef<"BillPayment", 'String'>
   readonly billId: Prisma.FieldRef<"BillPayment", 'String'>
   readonly transactionId: Prisma.FieldRef<"BillPayment", 'String'>
-  readonly amount: Prisma.FieldRef<"BillPayment", 'Decimal'>
   readonly notes: Prisma.FieldRef<"BillPayment", 'String'>
   readonly createdAt: Prisma.FieldRef<"BillPayment", 'DateTime'>
 }

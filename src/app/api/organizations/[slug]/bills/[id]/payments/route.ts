@@ -21,7 +21,6 @@ const recordPaymentSchema = z.object({
 
 const linkPaymentSchema = z.object({
   transactionId: z.string().uuid(),
-  amount: z.number().positive(),
   notes: z.string().nullable().optional(),
 });
 
@@ -70,7 +69,6 @@ export async function POST(
         {
           billId,
           transactionId: validated.transactionId,
-          amount: validated.amount,
           notes: validated.notes ?? null,
         },
         organization.id

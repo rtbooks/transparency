@@ -120,10 +120,10 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
       // Map payments from Prisma shape to UI shape
       const data = {
         ...raw,
-        payments: (raw.payments || []).map((p: { id: string; amount: unknown; notes: string | null; createdAt: string; transaction?: { transactionDate?: string; referenceNumber?: string | null; description?: string | null } }) => ({
+        payments: (raw.payments || []).map((p: { id: string; notes: string | null; createdAt: string; transaction?: { amount?: unknown; transactionDate?: string; referenceNumber?: string | null; description?: string | null } }) => ({
           id: p.id,
           date: p.transaction?.transactionDate || p.createdAt,
-          amount: p.amount,
+          amount: p.transaction?.amount ?? 0,
           transactionReference: p.transaction?.referenceNumber ?? null,
           transactionDescription: p.transaction?.description ?? null,
         })),

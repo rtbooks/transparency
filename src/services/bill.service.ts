@@ -205,29 +205,32 @@ export async function listBills(
 }
 
 /**
- * Recalculate bill status from sum of BillPayment amounts.
+ * Recalculate bill status from linked transaction amounts.
  * Sets PAID (with paidInFullDate) if fully paid, PARTIAL if partially paid.
  */
 export async function recalculateBillStatus(billId: string): Promise<Bill> {
   return await prisma.$transaction(async (tx) => {
     const bill = await tx.bill.findUniqueOrThrow({ where: { id: billId } });
 
-    const result = await tx.billPayment.aggregate({
+    // Derive total paid from linked transactions (not a separate amount column)
+    const payments = await tx.billPayment.findMany({
       where: { billId },
-      _sum: { amount: true },
+      include: { transaction: { select: { amount: true } } },
     });
+    const totalPaid = payments.reduce(
+      (sum, p) => sum + parseFloat(p.transaction.amount.toString()),
+      0
+    );
 
-    const totalPaid = result._sum.amount ?? 0;
-    const paidNum = Number(totalPaid);
     const amountNum = Number(bill.amount);
 
     let newStatus = bill.status;
     let paidInFullDate = bill.paidInFullDate;
 
-    if (paidNum >= amountNum) {
+    if (totalPaid >= amountNum) {
       newStatus = 'PAID';
       paidInFullDate = paidInFullDate ?? new Date();
-    } else if (paidNum > 0) {
+    } else if (totalPaid > 0) {
       newStatus = 'PARTIAL';
       paidInFullDate = null;
     }
