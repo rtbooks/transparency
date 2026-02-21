@@ -4,15 +4,20 @@ import { prisma } from '@/lib/prisma';
 import { createBill, listBills } from '@/services/bill.service';
 import { z } from 'zod';
 
+const dateString = z.string().refine(
+  (val) => !isNaN(Date.parse(val)),
+  { message: 'Invalid date' }
+);
+
 const createBillSchema = z.object({
   contactId: z.string().uuid(),
   billNumber: z.string().nullable().optional(),
   direction: z.enum(['PAYABLE', 'RECEIVABLE']),
   amount: z.number().positive(),
-  description: z.string().min(1),
+  description: z.string().nullable().optional(),
   category: z.string().nullable().optional(),
-  issueDate: z.string().datetime(),
-  dueDate: z.string().datetime().nullable().optional(),
+  issueDate: dateString,
+  dueDate: dateString.nullable().optional(),
   notes: z.string().nullable().optional(),
 });
 
@@ -137,7 +142,7 @@ export async function POST(
       billNumber: validated.billNumber ?? null,
       direction: validated.direction,
       amount: validated.amount,
-      description: validated.description,
+      description: validated.description || '',
       category: validated.category ?? null,
       issueDate: new Date(validated.issueDate),
       dueDate: validated.dueDate ? new Date(validated.dueDate) : null,
