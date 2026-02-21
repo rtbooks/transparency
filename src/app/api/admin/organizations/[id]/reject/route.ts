@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { buildCurrentVersionWhere } from "@/lib/temporal/temporal-utils";
 
 const rejectSchema = z.object({
   reason: z.string().min(1, "Rejection reason is required"),
@@ -40,9 +41,18 @@ export async function POST(
     const body = await request.json();
     const { reason } = rejectSchema.parse(body);
 
+    // Find current version of the organization
+    const org = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ id }),
+    });
+
+    if (!org) {
+      return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+    }
+
     // Update organization to VERIFICATION_FAILED status
     const organization = await prisma.organization.update({
-      where: { id },
+      where: { versionId: org.versionId },
       data: {
         verificationStatus: "VERIFICATION_FAILED",
         verificationNotes: reason,

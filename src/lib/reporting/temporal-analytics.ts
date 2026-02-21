@@ -4,6 +4,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 interface AccountEvolutionPoint {
   date: Date;
@@ -366,25 +367,34 @@ export async function getOrganizationGrowthMetrics(
     }),
   ]);
 
+  // Find revenue account IDs for this organization
+  const revenueAccounts = await prisma.account.findMany({
+    where: buildCurrentVersionWhere({ organizationId, type: 'REVENUE' }),
+    select: { id: true },
+  });
+  const revenueAccountIds = revenueAccounts.map(a => a.id);
+
   // Calculate revenue growth
-  const [startRevenue, endRevenue] = await Promise.all([
-    prisma.transaction.aggregate({
-      where: {
-        organizationId,
-        transactionDate: { lte: startDate },
-        creditAccount: { type: 'REVENUE' },
-      },
-      _sum: { amount: true },
-    }),
-    prisma.transaction.aggregate({
-      where: {
-        organizationId,
-        transactionDate: { lte: endDate },
-        creditAccount: { type: 'REVENUE' },
-      },
-      _sum: { amount: true },
-    }),
-  ]);
+  const [startRevenue, endRevenue] = revenueAccountIds.length > 0
+    ? await Promise.all([
+        prisma.transaction.aggregate({
+          where: {
+            organizationId,
+            transactionDate: { lte: startDate },
+            creditAccountId: { in: revenueAccountIds },
+          },
+          _sum: { amount: true },
+        }),
+        prisma.transaction.aggregate({
+          where: {
+            organizationId,
+            transactionDate: { lte: endDate },
+            creditAccountId: { in: revenueAccountIds },
+          },
+          _sum: { amount: true },
+        }),
+      ])
+    : [{ _sum: { amount: null } }, { _sum: { amount: null } }];
 
   const startRevenueTotal = Number(startRevenue._sum?.amount || 0);
   const endRevenueTotal = Number(endRevenue._sum?.amount || 0);

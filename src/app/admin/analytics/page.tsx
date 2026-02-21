@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import {
   Building2,
   Users,
@@ -18,21 +19,17 @@ export default async function AdminAnalyticsPage() {
     recentOrganizations,
     recentUsers,
   ] = await Promise.all([
-    prisma.organization.count(),
+    prisma.organization.count({ where: buildCurrentVersionWhere({}) }),
     prisma.user.count(),
-    prisma.transaction.count(),
+    prisma.transaction.count({ where: buildCurrentVersionWhere({}) }),
     prisma.organization.findMany({
       take: 10,
       orderBy: { createdAt: 'desc' },
+      where: buildCurrentVersionWhere({}),
       select: {
+        id: true,
         name: true,
         createdAt: true,
-        _count: {
-          select: {
-            organizationUsers: true,
-            transactions: true,
-          },
-        },
       },
     }),
     prisma.user.findMany({
@@ -45,6 +42,32 @@ export default async function AdminAnalyticsPage() {
       },
     }),
   ]);
+
+  // Get counts for recent orgs
+  const recentOrgIds = recentOrganizations.map(o => o.id);
+  const [orgUserCounts, txCounts] = recentOrgIds.length > 0
+    ? await Promise.all([
+        prisma.organizationUser.groupBy({
+          by: ['organizationId'],
+          where: buildCurrentVersionWhere({ organizationId: { in: recentOrgIds } }),
+          _count: true,
+        }),
+        prisma.transaction.groupBy({
+          by: ['organizationId'],
+          where: buildCurrentVersionWhere({ organizationId: { in: recentOrgIds } }),
+          _count: true,
+        }),
+      ])
+    : [[], []];
+  const ouCountMap = new Map(orgUserCounts.map(c => [c.organizationId, c._count]));
+  const txCountMap = new Map(txCounts.map(c => [c.organizationId, c._count]));
+  const recentOrgsWithCounts = recentOrganizations.map(org => ({
+    ...org,
+    _count: {
+      organizationUsers: ouCountMap.get(org.id) || 0,
+      transactions: txCountMap.get(org.id) || 0,
+    },
+  }));
 
   // Calculate transaction volume
   const transactionSum = await prisma.transaction.aggregate({
@@ -185,12 +208,12 @@ export default async function AdminAnalyticsPage() {
             </h2>
           </div>
           <div className="divide-y divide-gray-200">
-            {recentOrganizations.length === 0 ? (
+            {recentOrgsWithCounts.length === 0 ? (
               <div className="px-6 py-8 text-center text-gray-500">
                 No organizations yet
               </div>
             ) : (
-              recentOrganizations.map((org, index) => (
+              recentOrgsWithCounts.map((org, index) => (
                 <div key={index} className="px-6 py-4">
                   <div className="flex items-start justify-between">
                     <div>

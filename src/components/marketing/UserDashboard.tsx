@@ -3,9 +3,9 @@ import { User } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { OrganizationCard } from "./OrganizationCard";
 import { MarketingNav } from "@/app/(marketing)/MarketingNav";
+import { buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap, MAX_DATE } from "@/lib/temporal/temporal-utils";
 
 async function getUserOrganizations(clerkUserId: string) {
-  // First, find the database user by their Clerk auth ID
   const dbUser = await prisma.user.findUnique({
     where: {
       authId: clerkUserId,
@@ -20,34 +20,46 @@ async function getUserOrganizations(clerkUserId: string) {
     return { organizations: [], isPlatformAdmin: false };
   }
 
-  // Then fetch their organizations
+  // Fetch org memberships and resolve organizations separately
   const orgUsers = await prisma.organizationUser.findMany({
-    where: {
-      userId: dbUser.id,
-    },
-    include: {
-      organization: {
+    where: buildCurrentVersionWhere({ userId: dbUser.id }),
+    orderBy: { joinedAt: "desc" },
+  });
+
+  const orgIds = [...new Set(orgUsers.map(ou => ou.organizationId))];
+  const orgs = orgIds.length > 0
+    ? await prisma.organization.findMany({
+        where: {
+          id: { in: orgIds },
+          validTo: MAX_DATE,
+          isDeleted: false,
+        },
         select: {
           id: true,
           name: true,
           slug: true,
           status: true,
           verificationStatus: true,
-          _count: {
-            select: {
-              transactions: true,
-            },
-          },
         },
-      },
-    },
-    orderBy: {
-      joinedAt: "desc",
-    },
-  });
+      })
+    : [];
+
+  // Get transaction counts per org
+  const txCounts = orgIds.length > 0
+    ? await prisma.transaction.groupBy({
+        by: ['organizationId'],
+        where: buildCurrentVersionWhere({ organizationId: { in: orgIds } }),
+        _count: true,
+      })
+    : [];
+  const txCountMap = new Map(txCounts.map(c => [c.organizationId, c._count]));
+
+  const orgMap = new Map(orgs.map(o => [o.id, { ...o, _count: { transactions: txCountMap.get(o.id) || 0 } }]));
 
   return { 
-    organizations: orgUsers.map((ou) => ou.organization),
+    organizations: orgUsers
+      .map(ou => orgMap.get(ou.organizationId))
+      .filter((org): org is NonNullable<typeof org> => org != null),
     isPlatformAdmin: dbUser.isPlatformAdmin,
   };
 }

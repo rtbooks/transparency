@@ -6,6 +6,7 @@
 import { prisma } from '@/lib/prisma';
 import type { Account, AccountType } from '@/generated/prisma/client';
 import type { Prisma } from '@/generated/prisma/client';
+import { buildEntitiesWhere, buildEntityMap } from '@/lib/temporal/temporal-utils';
 
 interface BalanceSheetData {
   asOfDate: Date;
@@ -254,12 +255,18 @@ export async function generateCashFlow(
         { creditAccountId: { in: cashAccountIds } },
       ],
     },
-    include: {
-      debitAccount: true,
-      creditAccount: true,
-    },
     orderBy: { transactionDate: 'asc' },
   });
+
+  // Resolve debit and credit accounts (bitemporal entities)
+  const allAccountIds = [...new Set([
+    ...transactions.map(tx => tx.debitAccountId),
+    ...transactions.map(tx => tx.creditAccountId),
+  ])];
+  const accounts = allAccountIds.length > 0
+    ? await prisma.account.findMany({ where: buildEntitiesWhere(allAccountIds) })
+    : [];
+  const accountMap = buildEntityMap(accounts);
 
   // Categorize cash flows (simplified)
   const operating: Array<{ description: string; amount: number }> = [];
@@ -269,8 +276,12 @@ export async function generateCashFlow(
   transactions.forEach((tx) => {
     const amount = Number(tx.amount);
     const isCashDebit = cashAccountIds.includes(tx.debitAccountId);
-    const otherAccount = isCashDebit ? tx.creditAccount : tx.debitAccount;
+    const otherAccount = isCashDebit
+      ? accountMap.get(tx.creditAccountId)
+      : accountMap.get(tx.debitAccountId);
     const netAmount = isCashDebit ? amount : -amount;
+
+    if (!otherAccount) return;
 
     // Categorize based on other account type/code
     if (otherAccount.type === 'REVENUE' || otherAccount.type === 'EXPENSE') {

@@ -1,4 +1,5 @@
 import { AccountType } from '@/generated/prisma/client';
+import { MAX_DATE } from '@/lib/temporal/temporal-utils';
 
 /**
  * Calculate updated balance for an account based on a transaction
@@ -37,10 +38,10 @@ export async function updateAccountBalances(
   creditAccountId: string,
   amount: number
 ) {
-  // Fetch both accounts
+  // Fetch both accounts (current versions)
   const [debitAccount, creditAccount] = await Promise.all([
-    prisma.account.findUnique({ where: { id: debitAccountId } }),
-    prisma.account.findUnique({ where: { id: creditAccountId } }),
+    prisma.account.findFirst({ where: { id: debitAccountId, validTo: MAX_DATE, isDeleted: false } }),
+    prisma.account.findFirst({ where: { id: creditAccountId, validTo: MAX_DATE, isDeleted: false } }),
   ]);
 
   if (!debitAccount || !creditAccount) {
@@ -62,14 +63,14 @@ export async function updateAccountBalances(
     false // This account is being credited
   );
 
-  // Update both accounts
+  // Update both accounts (using versionId as PK)
   await Promise.all([
     prisma.account.update({
-      where: { id: debitAccountId },
+      where: { versionId: debitAccount.versionId },
       data: { currentBalance: newDebitBalance },
     }),
     prisma.account.update({
-      where: { id: creditAccountId },
+      where: { versionId: creditAccount.versionId },
       data: { currentBalance: newCreditBalance },
     }),
   ]);
@@ -91,10 +92,10 @@ export async function reverseAccountBalances(
   creditAccountId: string,
   amount: number
 ) {
-  // Fetch both accounts
+  // Fetch both accounts (current versions)
   const [debitAccount, creditAccount] = await Promise.all([
-    prisma.account.findUnique({ where: { id: debitAccountId } }),
-    prisma.account.findUnique({ where: { id: creditAccountId } }),
+    prisma.account.findFirst({ where: { id: debitAccountId, validTo: MAX_DATE, isDeleted: false } }),
+    prisma.account.findFirst({ where: { id: creditAccountId, validTo: MAX_DATE, isDeleted: false } }),
   ]);
 
   if (!debitAccount || !creditAccount) {
@@ -117,14 +118,14 @@ export async function reverseAccountBalances(
     true // Debit to reverse the original credit
   );
 
-  // Update both accounts
+  // Update both accounts (using versionId as PK)
   await Promise.all([
     prisma.account.update({
-      where: { id: debitAccountId },
+      where: { versionId: debitAccount.versionId },
       data: { currentBalance: newDebitBalance },
     }),
     prisma.account.update({
-      where: { id: creditAccountId },
+      where: { versionId: creditAccount.versionId },
       data: { currentBalance: newCreditBalance },
     }),
   ]);

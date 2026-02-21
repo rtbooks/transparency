@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { TopNavWrapper } from './TopNavWrapper';
 import { OrgSidebarWrapper } from './OrgSidebarWrapper';
 import { getOrganizationNavLinks } from '@/lib/navigation';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import type { NavLink } from '@/lib/navigation';
 
 interface OrganizationLayoutWrapperProps {
@@ -23,20 +24,24 @@ export async function OrganizationLayoutWrapper({
   if (clerkUserId) {
     const user = await prisma.user.findUnique({
       where: { authId: clerkUserId },
-      include: {
-        organizations: {
-          where: {
-            organization: {
-              slug: organizationSlug,
-            },
-          },
-        },
-      },
     });
 
-    if (user && user.organizations.length > 0) {
-      const userRole = user.organizations[0].role;
-      navLinks = getOrganizationNavLinks(organizationSlug, userRole);
+    if (user) {
+      // Find the organization and user's membership
+      const org = await prisma.organization.findFirst({
+        where: buildCurrentVersionWhere({ slug: organizationSlug }),
+      });
+
+      if (org) {
+        const orgUsers = await prisma.organizationUser.findMany({
+          where: buildCurrentVersionWhere({ organizationId: org.id, userId: user.id }),
+        });
+
+        if (orgUsers.length > 0) {
+          const userRole = orgUsers[0].role;
+          navLinks = getOrganizationNavLinks(organizationSlug, userRole);
+        }
+      }
     }
   }
 

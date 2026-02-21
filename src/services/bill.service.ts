@@ -5,7 +5,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
-import { MAX_DATE } from '@/lib/temporal/temporal-utils';
+import { MAX_DATE, buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap } from '@/lib/temporal/temporal-utils';
 import type { Bill, BillPayment, Transaction } from '@/generated/prisma/client';
 
 // Valid status transitions
@@ -149,15 +149,27 @@ export async function updateBill(
 export async function getBill(
   id: string,
   orgId: string
-): Promise<(Bill & { payments: (BillPayment & { transaction: Transaction })[] }) | null> {
-  return await prisma.bill.findFirst({
+): Promise<(Bill & { payments: (BillPayment & { transaction: Transaction | null })[] }) | null> {
+  const bill = await prisma.bill.findFirst({
     where: { id, organizationId: orgId },
-    include: {
-      payments: {
-        include: { transaction: true },
-      },
-    },
+    include: { payments: true },
   });
+
+  if (!bill) return null;
+
+  // Resolve transactions for each payment (bitemporal entities)
+  const txnIds = bill.payments.map(p => p.transactionId);
+  const transactions = txnIds.length > 0
+    ? await prisma.transaction.findMany({ where: buildEntitiesWhere(txnIds) })
+    : [];
+  const txnMap = buildEntityMap(transactions);
+
+  const paymentsWithTxn = bill.payments.map(p => ({
+    ...p,
+    transaction: txnMap.get(p.transactionId) ?? null,
+  }));
+
+  return { ...bill, payments: paymentsWithTxn };
 }
 
 /**
@@ -194,14 +206,23 @@ export async function listBills(
       orderBy: { createdAt: 'desc' },
       skip,
       take: limit,
-      include: {
-        contact: { select: { id: true, name: true } },
-      },
     }),
     prisma.bill.count({ where }),
   ]);
 
-  return { bills, totalCount };
+  // Resolve contacts (bitemporal entities)
+  const contactIds = [...new Set(bills.map(b => b.contactId))];
+  const contacts = contactIds.length > 0
+    ? await prisma.contact.findMany({ where: buildEntitiesWhere(contactIds) })
+    : [];
+  const contactMap = buildEntityMap(contacts);
+
+  const billsWithContacts = bills.map(b => ({
+    ...b,
+    contact: contactMap.get(b.contactId) ?? null,
+  }));
+
+  return { bills: billsWithContacts, totalCount };
 }
 
 /**
@@ -215,12 +236,22 @@ export async function recalculateBillStatus(billId: string): Promise<Bill> {
     // Derive total paid from linked transactions (not a separate amount column)
     const payments = await tx.billPayment.findMany({
       where: { billId },
-      include: { transaction: { select: { amount: true } } },
     });
-    const totalPaid = payments.reduce(
-      (sum, p) => sum + parseFloat(p.transaction.amount.toString()),
-      0
-    );
+
+    // Resolve transaction amounts (bitemporal entities)
+    let totalPaid = 0;
+    if (payments.length > 0) {
+      const txnIds = payments.map(p => p.transactionId);
+      const transactions = await tx.transaction.findMany({
+        where: buildEntitiesWhere(txnIds),
+        select: { id: true, amount: true },
+      });
+      const txnMap = new Map(transactions.map(t => [t.id, t]));
+      totalPaid = payments.reduce((sum, p) => {
+        const txn = txnMap.get(p.transactionId);
+        return sum + (txn ? parseFloat(txn.amount.toString()) : 0);
+      }, 0);
+    }
 
     const amountNum = Number(bill.amount);
 

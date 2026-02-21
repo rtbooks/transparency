@@ -43,7 +43,6 @@ export async function GET(
         amountPaid: true,
         dueDate: true,
         contactId: true,
-        contact: { select: { name: true } },
         description: true,
       },
     });
