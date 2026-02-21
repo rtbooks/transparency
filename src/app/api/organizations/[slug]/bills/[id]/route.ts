@@ -5,10 +5,8 @@ import { getBill, updateBill, cancelBill } from '@/services/bill.service';
 import { z } from 'zod';
 
 const updateBillSchema = z.object({
-  billNumber: z.string().nullable().optional(),
   description: z.string().min(1).optional(),
-  category: z.string().nullable().optional(),
-  dueDate: z.string().datetime().nullable().optional(),
+  dueDate: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
   status: z.enum(['DRAFT', 'PENDING', 'PARTIAL', 'PAID', 'OVERDUE', 'CANCELLED']).optional(),
 });

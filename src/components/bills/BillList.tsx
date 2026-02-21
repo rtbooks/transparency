@@ -32,13 +32,11 @@ import { formatCurrency } from "@/lib/utils/account-tree";
 
 interface Bill {
   id: string;
-  billNumber: string;
   direction: "PAYABLE" | "RECEIVABLE";
   status: "DRAFT" | "PENDING" | "PARTIAL" | "PAID" | "OVERDUE" | "CANCELLED";
   amount: number;
   amountPaid: number;
   description: string | null;
-  category: string | null;
   issueDate: string;
   dueDate: string;
   notes: string | null;
@@ -230,7 +228,7 @@ export function BillList({ organizationSlug, directionFilter, refreshKey }: Bill
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Bill #</TableHead>
+              <TableHead>Description</TableHead>
               <TableHead>Contact</TableHead>
               <TableHead>Direction</TableHead>
               <TableHead className="text-right">Amount</TableHead>
@@ -255,7 +253,7 @@ export function BillList({ organizationSlug, directionFilter, refreshKey }: Bill
                   className="cursor-pointer hover:bg-gray-50"
                   onClick={() => handleRowClick(bill)}
                 >
-                  <TableCell className="font-medium">{bill.billNumber}</TableCell>
+                  <TableCell className="font-medium">{bill.description || "—"}</TableCell>
                   <TableCell className="text-sm text-gray-600">
                     {bill.contact?.name || "—"}
                   </TableCell>
@@ -324,7 +322,7 @@ export function BillList({ organizationSlug, directionFilter, refreshKey }: Bill
           <DialogHeader>
             <DialogTitle>Bill Details</DialogTitle>
             <DialogDescription>
-              {selectedBill?.billNumber}
+              {selectedBill?.description || "Bill Details"}
             </DialogDescription>
           </DialogHeader>
           {selectedBill && (

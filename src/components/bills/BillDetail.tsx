@@ -33,13 +33,11 @@ interface Payment {
 
 interface BillDetailData {
   id: string;
-  billNumber: string;
   direction: "PAYABLE" | "RECEIVABLE";
   status: "DRAFT" | "PENDING" | "PARTIAL" | "PAID" | "OVERDUE" | "CANCELLED";
   amount: number;
   amountPaid: number;
   description: string | null;
-  category: string | null;
   issueDate: string;
   dueDate: string;
   notes: string | null;
@@ -58,13 +56,11 @@ interface BillDetailProps {
   organizationSlug: string;
   bill: {
     id: string;
-    billNumber: string;
     direction: "PAYABLE" | "RECEIVABLE";
     status: "DRAFT" | "PENDING" | "PARTIAL" | "PAID" | "OVERDUE" | "CANCELLED";
     amount: number;
     amountPaid: number;
     description: string | null;
-    category: string | null;
     issueDate: string;
     dueDate: string;
     notes: string | null;
@@ -184,8 +180,8 @@ export function BillDetail({ organizationSlug, bill, onClose, onRefresh }: BillD
         {/* Header Info */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-medium text-gray-700">Bill Number</label>
-            <div className="mt-1 text-gray-900">{detail.billNumber}</div>
+            <label className="text-sm font-medium text-gray-700">Description</label>
+            <div className="mt-1 text-gray-900">{detail.description || "—"}</div>
           </div>
           <div>
             <label className="text-sm font-medium text-gray-700">Status</label>
@@ -276,15 +272,6 @@ export function BillDetail({ organizationSlug, bill, onClose, onRefresh }: BillD
             <label className="text-sm font-medium text-gray-700">Description</label>
             <div className="mt-1 rounded-lg border bg-gray-50 p-3 text-sm">
               {detail.description}
-            </div>
-          </div>
-        )}
-
-        {detail.category && (
-          <div>
-            <label className="text-sm font-medium text-gray-700">Category</label>
-            <div className="mt-1 rounded-lg border bg-gray-50 p-3 text-sm">
-              {detail.category}
             </div>
           </div>
         )}
@@ -394,10 +381,8 @@ export function BillDetail({ organizationSlug, bill, onClose, onRefresh }: BillD
               id: detail.id,
               direction: detail.direction,
               contactId: detail.contact?.id ?? null,
-              billNumber: detail.billNumber,
               amount: detail.amount,
               description: detail.description,
-              category: detail.category,
               issueDate: detail.issueDate,
               dueDate: detail.dueDate,
               notes: detail.notes,

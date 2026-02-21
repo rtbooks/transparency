@@ -21,11 +21,9 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 export interface CreateBillInput {
   organizationId: string;
   contactId: string;
-  billNumber?: string | null;
   direction: 'PAYABLE' | 'RECEIVABLE';
   amount: number;
   description: string;
-  category?: string | null;
   issueDate: Date;
   dueDate?: Date | null;
   notes?: string | null;
@@ -36,9 +34,7 @@ export interface CreateBillInput {
 }
 
 export interface UpdateBillInput {
-  billNumber?: string | null;
   description?: string;
-  category?: string | null;
   dueDate?: Date | null;
   notes?: string | null;
   status?: 'DRAFT' | 'PENDING' | 'PARTIAL' | 'PAID' | 'OVERDUE' | 'CANCELLED';
@@ -61,7 +57,7 @@ export async function createBill(input: CreateBillInput): Promise<Bill> {
       : input.expenseOrRevenueAccountId; // CR Revenue
 
     const now = new Date();
-    const txDescription = `${input.direction === 'PAYABLE' ? 'Bill' : 'Pledge'}: ${input.description || input.billNumber || 'No description'}`;
+    const txDescription = `${input.direction === 'PAYABLE' ? 'Bill' : 'Pledge'}: ${input.description || 'No description'}`;
 
     // Create the accrual transaction
     const accrualTransaction = await tx.transaction.create({
@@ -73,7 +69,6 @@ export async function createBill(input: CreateBillInput): Promise<Bill> {
         debitAccountId,
         creditAccountId,
         description: txDescription,
-        referenceNumber: input.billNumber ?? null,
         contactId: input.contactId,
         paymentMethod: 'OTHER',
         versionId: crypto.randomUUID(),
@@ -92,13 +87,11 @@ export async function createBill(input: CreateBillInput): Promise<Bill> {
       data: {
         organizationId: input.organizationId,
         contactId: input.contactId,
-        billNumber: input.billNumber ?? null,
         direction: input.direction,
         status: 'PENDING',
         amount: input.amount,
         amountPaid: 0,
         description: input.description,
-        category: input.category ?? null,
         issueDate: input.issueDate,
         dueDate: input.dueDate ?? null,
         notes: input.notes ?? null,
@@ -138,9 +131,7 @@ export async function updateBill(
     }
 
     const data: Record<string, unknown> = {};
-    if (updates.billNumber !== undefined) data.billNumber = updates.billNumber;
     if (updates.description !== undefined) data.description = updates.description;
-    if (updates.category !== undefined) data.category = updates.category;
     if (updates.dueDate !== undefined) data.dueDate = updates.dueDate;
     if (updates.notes !== undefined) data.notes = updates.notes;
     if (updates.status !== undefined) data.status = updates.status;
@@ -193,11 +184,7 @@ export async function listBills(
     ...(options?.status && { status: options.status }),
     ...(options?.contactId && { contactId: options.contactId }),
     ...(options?.search && {
-      OR: [
-        { description: { contains: options.search, mode: 'insensitive' } },
-        { billNumber: { contains: options.search, mode: 'insensitive' } },
-        { category: { contains: options.search, mode: 'insensitive' } },
-      ],
+      description: { contains: options.search, mode: 'insensitive' },
     }),
   };
 

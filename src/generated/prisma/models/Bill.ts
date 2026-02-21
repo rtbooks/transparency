@@ -40,13 +40,11 @@ export type BillMinAggregateOutputType = {
   id: string | null
   organizationId: string | null
   contactId: string | null
-  billNumber: string | null
   direction: $Enums.BillDirection | null
   status: $Enums.BillStatus | null
   amount: runtime.Decimal | null
   amountPaid: runtime.Decimal | null
   description: string | null
-  category: string | null
   issueDate: Date | null
   dueDate: Date | null
   paidInFullDate: Date | null
@@ -61,13 +59,11 @@ export type BillMaxAggregateOutputType = {
   id: string | null
   organizationId: string | null
   contactId: string | null
-  billNumber: string | null
   direction: $Enums.BillDirection | null
   status: $Enums.BillStatus | null
   amount: runtime.Decimal | null
   amountPaid: runtime.Decimal | null
   description: string | null
-  category: string | null
   issueDate: Date | null
   dueDate: Date | null
   paidInFullDate: Date | null
@@ -82,13 +78,11 @@ export type BillCountAggregateOutputType = {
   id: number
   organizationId: number
   contactId: number
-  billNumber: number
   direction: number
   status: number
   amount: number
   amountPaid: number
   description: number
-  category: number
   issueDate: number
   dueDate: number
   paidInFullDate: number
@@ -115,13 +109,11 @@ export type BillMinAggregateInputType = {
   id?: true
   organizationId?: true
   contactId?: true
-  billNumber?: true
   direction?: true
   status?: true
   amount?: true
   amountPaid?: true
   description?: true
-  category?: true
   issueDate?: true
   dueDate?: true
   paidInFullDate?: true
@@ -136,13 +128,11 @@ export type BillMaxAggregateInputType = {
   id?: true
   organizationId?: true
   contactId?: true
-  billNumber?: true
   direction?: true
   status?: true
   amount?: true
   amountPaid?: true
   description?: true
-  category?: true
   issueDate?: true
   dueDate?: true
   paidInFullDate?: true
@@ -157,13 +147,11 @@ export type BillCountAggregateInputType = {
   id?: true
   organizationId?: true
   contactId?: true
-  billNumber?: true
   direction?: true
   status?: true
   amount?: true
   amountPaid?: true
   description?: true
-  category?: true
   issueDate?: true
   dueDate?: true
   paidInFullDate?: true
@@ -265,13 +253,11 @@ export type BillGroupByOutputType = {
   id: string
   organizationId: string
   contactId: string
-  billNumber: string | null
   direction: $Enums.BillDirection
   status: $Enums.BillStatus
   amount: runtime.Decimal
   amountPaid: runtime.Decimal
   description: string
-  category: string | null
   issueDate: Date
   dueDate: Date | null
   paidInFullDate: Date | null
@@ -309,13 +295,11 @@ export type BillWhereInput = {
   id?: Prisma.StringFilter<"Bill"> | string
   organizationId?: Prisma.StringFilter<"Bill"> | string
   contactId?: Prisma.StringFilter<"Bill"> | string
-  billNumber?: Prisma.StringNullableFilter<"Bill"> | string | null
   direction?: Prisma.EnumBillDirectionFilter<"Bill"> | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
   amount?: Prisma.DecimalFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFilter<"Bill"> | string
-  category?: Prisma.StringNullableFilter<"Bill"> | string | null
   issueDate?: Prisma.DateTimeFilter<"Bill"> | Date | string
   dueDate?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   paidInFullDate?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
@@ -334,13 +318,11 @@ export type BillOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   contactId?: Prisma.SortOrder
-  billNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   direction?: Prisma.SortOrder
   status?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  category?: Prisma.SortOrderInput | Prisma.SortOrder
   issueDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   paidInFullDate?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -363,13 +345,11 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.BillWhereInput | Prisma.BillWhereInput[]
   organizationId?: Prisma.StringFilter<"Bill"> | string
   contactId?: Prisma.StringFilter<"Bill"> | string
-  billNumber?: Prisma.StringNullableFilter<"Bill"> | string | null
   direction?: Prisma.EnumBillDirectionFilter<"Bill"> | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
   amount?: Prisma.DecimalFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFilter<"Bill"> | string
-  category?: Prisma.StringNullableFilter<"Bill"> | string | null
   issueDate?: Prisma.DateTimeFilter<"Bill"> | Date | string
   dueDate?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   paidInFullDate?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
@@ -387,13 +367,11 @@ export type BillOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   contactId?: Prisma.SortOrder
-  billNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   direction?: Prisma.SortOrder
   status?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  category?: Prisma.SortOrderInput | Prisma.SortOrder
   issueDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   paidInFullDate?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -416,13 +394,11 @@ export type BillScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Bill"> | string
   organizationId?: Prisma.StringWithAggregatesFilter<"Bill"> | string
   contactId?: Prisma.StringWithAggregatesFilter<"Bill"> | string
-  billNumber?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   direction?: Prisma.EnumBillDirectionWithAggregatesFilter<"Bill"> | $Enums.BillDirection
   status?: Prisma.EnumBillStatusWithAggregatesFilter<"Bill"> | $Enums.BillStatus
   amount?: Prisma.DecimalWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalWithAggregatesFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringWithAggregatesFilter<"Bill"> | string
-  category?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   issueDate?: Prisma.DateTimeWithAggregatesFilter<"Bill"> | Date | string
   dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
   paidInFullDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
@@ -435,13 +411,11 @@ export type BillScalarWhereWithAggregatesInput = {
 
 export type BillCreateInput = {
   id?: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -459,13 +433,11 @@ export type BillUncheckedCreateInput = {
   id?: string
   organizationId: string
   contactId: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -479,13 +451,11 @@ export type BillUncheckedCreateInput = {
 
 export type BillUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -503,13 +473,11 @@ export type BillUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   contactId?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -525,13 +493,11 @@ export type BillCreateManyInput = {
   id?: string
   organizationId: string
   contactId: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -544,13 +510,11 @@ export type BillCreateManyInput = {
 
 export type BillUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -564,13 +528,11 @@ export type BillUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   contactId?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -600,13 +562,11 @@ export type BillCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   contactId?: Prisma.SortOrder
-  billNumber?: Prisma.SortOrder
   direction?: Prisma.SortOrder
   status?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  category?: Prisma.SortOrder
   issueDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   paidInFullDate?: Prisma.SortOrder
@@ -626,13 +586,11 @@ export type BillMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   contactId?: Prisma.SortOrder
-  billNumber?: Prisma.SortOrder
   direction?: Prisma.SortOrder
   status?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  category?: Prisma.SortOrder
   issueDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   paidInFullDate?: Prisma.SortOrder
@@ -647,13 +605,11 @@ export type BillMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   contactId?: Prisma.SortOrder
-  billNumber?: Prisma.SortOrder
   direction?: Prisma.SortOrder
   status?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  category?: Prisma.SortOrder
   issueDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   paidInFullDate?: Prisma.SortOrder
@@ -814,13 +770,11 @@ export type BillUpdateOneRequiredWithoutPaymentsNestedInput = {
 
 export type BillCreateWithoutOrganizationInput = {
   id?: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -836,13 +790,11 @@ export type BillCreateWithoutOrganizationInput = {
 export type BillUncheckedCreateWithoutOrganizationInput = {
   id?: string
   contactId: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -887,13 +839,11 @@ export type BillScalarWhereInput = {
   id?: Prisma.StringFilter<"Bill"> | string
   organizationId?: Prisma.StringFilter<"Bill"> | string
   contactId?: Prisma.StringFilter<"Bill"> | string
-  billNumber?: Prisma.StringNullableFilter<"Bill"> | string | null
   direction?: Prisma.EnumBillDirectionFilter<"Bill"> | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
   amount?: Prisma.DecimalFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFilter<"Bill"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFilter<"Bill"> | string
-  category?: Prisma.StringNullableFilter<"Bill"> | string | null
   issueDate?: Prisma.DateTimeFilter<"Bill"> | Date | string
   dueDate?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
   paidInFullDate?: Prisma.DateTimeNullableFilter<"Bill"> | Date | string | null
@@ -906,13 +856,11 @@ export type BillScalarWhereInput = {
 
 export type BillCreateWithoutAccrualTransactionInput = {
   id?: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -929,13 +877,11 @@ export type BillUncheckedCreateWithoutAccrualTransactionInput = {
   id?: string
   organizationId: string
   contactId: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -964,13 +910,11 @@ export type BillUpdateToOneWithWhereWithoutAccrualTransactionInput = {
 
 export type BillUpdateWithoutAccrualTransactionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -987,13 +931,11 @@ export type BillUncheckedUpdateWithoutAccrualTransactionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   contactId?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1006,13 +948,11 @@ export type BillUncheckedUpdateWithoutAccrualTransactionInput = {
 
 export type BillCreateWithoutContactInput = {
   id?: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -1028,13 +968,11 @@ export type BillCreateWithoutContactInput = {
 export type BillUncheckedCreateWithoutContactInput = {
   id?: string
   organizationId: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -1074,13 +1012,11 @@ export type BillUpdateManyWithWhereWithoutContactInput = {
 
 export type BillCreateWithoutPaymentsInput = {
   id?: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -1097,13 +1033,11 @@ export type BillUncheckedCreateWithoutPaymentsInput = {
   id?: string
   organizationId: string
   contactId: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -1132,13 +1066,11 @@ export type BillUpdateToOneWithWhereWithoutPaymentsInput = {
 
 export type BillUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1155,13 +1087,11 @@ export type BillUncheckedUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   contactId?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1175,13 +1105,11 @@ export type BillUncheckedUpdateWithoutPaymentsInput = {
 export type BillCreateManyOrganizationInput = {
   id?: string
   contactId: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -1194,13 +1122,11 @@ export type BillCreateManyOrganizationInput = {
 
 export type BillUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1216,13 +1142,11 @@ export type BillUpdateWithoutOrganizationInput = {
 export type BillUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   contactId?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1237,13 +1161,11 @@ export type BillUncheckedUpdateWithoutOrganizationInput = {
 export type BillUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   contactId?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1257,13 +1179,11 @@ export type BillUncheckedUpdateManyWithoutOrganizationInput = {
 export type BillCreateManyContactInput = {
   id?: string
   organizationId: string
-  billNumber?: string | null
   direction: $Enums.BillDirection
   status?: $Enums.BillStatus
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string
   description: string
-  category?: string | null
   issueDate: Date | string
   dueDate?: Date | string | null
   paidInFullDate?: Date | string | null
@@ -1276,13 +1196,11 @@ export type BillCreateManyContactInput = {
 
 export type BillUpdateWithoutContactInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1298,13 +1216,11 @@ export type BillUpdateWithoutContactInput = {
 export type BillUncheckedUpdateWithoutContactInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1319,13 +1235,11 @@ export type BillUncheckedUpdateWithoutContactInput = {
 export type BillUncheckedUpdateManyWithoutContactInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
-  billNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   direction?: Prisma.EnumBillDirectionFieldUpdateOperationsInput | $Enums.BillDirection
   status?: Prisma.EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   amountPaid?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidInFullDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1371,13 +1285,11 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   organizationId?: boolean
   contactId?: boolean
-  billNumber?: boolean
   direction?: boolean
   status?: boolean
   amount?: boolean
   amountPaid?: boolean
   description?: boolean
-  category?: boolean
   issueDate?: boolean
   dueDate?: boolean
   paidInFullDate?: boolean
@@ -1397,13 +1309,11 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   organizationId?: boolean
   contactId?: boolean
-  billNumber?: boolean
   direction?: boolean
   status?: boolean
   amount?: boolean
   amountPaid?: boolean
   description?: boolean
-  category?: boolean
   issueDate?: boolean
   dueDate?: boolean
   paidInFullDate?: boolean
@@ -1421,13 +1331,11 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   organizationId?: boolean
   contactId?: boolean
-  billNumber?: boolean
   direction?: boolean
   status?: boolean
   amount?: boolean
   amountPaid?: boolean
   description?: boolean
-  category?: boolean
   issueDate?: boolean
   dueDate?: boolean
   paidInFullDate?: boolean
@@ -1445,13 +1353,11 @@ export type BillSelectScalar = {
   id?: boolean
   organizationId?: boolean
   contactId?: boolean
-  billNumber?: boolean
   direction?: boolean
   status?: boolean
   amount?: boolean
   amountPaid?: boolean
   description?: boolean
-  category?: boolean
   issueDate?: boolean
   dueDate?: boolean
   paidInFullDate?: boolean
@@ -1462,7 +1368,7 @@ export type BillSelectScalar = {
   createdBy?: boolean
 }
 
-export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "contactId" | "billNumber" | "direction" | "status" | "amount" | "amountPaid" | "description" | "category" | "issueDate" | "dueDate" | "paidInFullDate" | "notes" | "accrualTransactionId" | "createdAt" | "updatedAt" | "createdBy", ExtArgs["result"]["bill"]>
+export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "contactId" | "direction" | "status" | "amount" | "amountPaid" | "description" | "issueDate" | "dueDate" | "paidInFullDate" | "notes" | "accrualTransactionId" | "createdAt" | "updatedAt" | "createdBy", ExtArgs["result"]["bill"]>
 export type BillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   contact?: boolean | Prisma.ContactDefaultArgs<ExtArgs>
@@ -1493,13 +1399,11 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: string
     organizationId: string
     contactId: string
-    billNumber: string | null
     direction: $Enums.BillDirection
     status: $Enums.BillStatus
     amount: runtime.Decimal
     amountPaid: runtime.Decimal
     description: string
-    category: string | null
     issueDate: Date
     dueDate: Date | null
     paidInFullDate: Date | null
@@ -1938,13 +1842,11 @@ export interface BillFieldRefs {
   readonly id: Prisma.FieldRef<"Bill", 'String'>
   readonly organizationId: Prisma.FieldRef<"Bill", 'String'>
   readonly contactId: Prisma.FieldRef<"Bill", 'String'>
-  readonly billNumber: Prisma.FieldRef<"Bill", 'String'>
   readonly direction: Prisma.FieldRef<"Bill", 'BillDirection'>
   readonly status: Prisma.FieldRef<"Bill", 'BillStatus'>
   readonly amount: Prisma.FieldRef<"Bill", 'Decimal'>
   readonly amountPaid: Prisma.FieldRef<"Bill", 'Decimal'>
   readonly description: Prisma.FieldRef<"Bill", 'String'>
-  readonly category: Prisma.FieldRef<"Bill", 'String'>
   readonly issueDate: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly dueDate: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly paidInFullDate: Prisma.FieldRef<"Bill", 'DateTime'>

@@ -11,11 +11,9 @@ const dateString = z.string().refine(
 
 const createBillSchema = z.object({
   contactId: z.string().uuid(),
-  billNumber: z.string().nullable().optional(),
   direction: z.enum(['PAYABLE', 'RECEIVABLE']),
   amount: z.number().positive(),
   description: z.string().nullable().optional(),
-  category: z.string().nullable().optional(),
   issueDate: dateString,
   dueDate: dateString.nullable().optional(),
   notes: z.string().nullable().optional(),
@@ -141,11 +139,9 @@ export async function POST(
     const bill = await createBill({
       organizationId: organization.id,
       contactId: validated.contactId,
-      billNumber: validated.billNumber ?? null,
       direction: validated.direction,
       amount: validated.amount,
       description: validated.description || '',
-      category: validated.category ?? null,
       issueDate: new Date(validated.issueDate),
       dueDate: validated.dueDate ? new Date(validated.dueDate) : null,
       notes: validated.notes ?? null,

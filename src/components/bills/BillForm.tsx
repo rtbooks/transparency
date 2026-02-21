@@ -26,10 +26,8 @@ import { ContactSelector } from "@/components/contacts/ContactSelector";
 const billFormSchema = z.object({
   direction: z.enum(["PAYABLE", "RECEIVABLE"]),
   contactId: z.string().min(1, "Contact is required"),
-  billNumber: z.string().min(1, "Bill number is required"),
   amount: z.number().positive("Amount must be greater than 0"),
   description: z.string().nullable().optional().or(z.literal("")),
-  category: z.string().nullable().optional().or(z.literal("")),
   issueDate: z.string().min(1, "Issue date is required"),
   dueDate: z.string().min(1, "Due date is required"),
   notes: z.string().nullable().optional().or(z.literal("")),
@@ -51,10 +49,8 @@ interface BillFormProps {
     id: string;
     direction: "PAYABLE" | "RECEIVABLE";
     contactId: string | null;
-    billNumber: string;
     amount: number;
     description: string | null;
-    category: string | null;
     issueDate: string;
     dueDate: string;
     notes: string | null;
@@ -78,10 +74,8 @@ export function BillForm({
     bill?.direction ?? defaultDirection ?? "PAYABLE"
   );
   const [contactId, setContactId] = useState(bill?.contactId ?? "");
-  const [billNumber, setBillNumber] = useState(bill?.billNumber ?? "");
   const [amount, setAmount] = useState(bill?.amount?.toString() ?? "");
   const [description, setDescription] = useState(bill?.description ?? "");
-  const [category, setCategory] = useState(bill?.category ?? "");
   const [issueDate, setIssueDate] = useState<Date | undefined>(
     bill?.issueDate ? new Date(bill.issueDate) : new Date()
   );
@@ -118,10 +112,8 @@ export function BillForm({
     const formData: Record<string, unknown> = {
       direction,
       contactId: contactId || "",
-      billNumber: billNumber.trim(),
       amount: parseFloat(amount) || 0,
       description: description.trim() || null,
-      category: category.trim() || null,
       issueDate: issueDate ? issueDate.toISOString().slice(0, 10) : "",
       dueDate: dueDate ? dueDate.toISOString().slice(0, 10) : "",
       notes: notes.trim() || null,
@@ -230,21 +222,6 @@ export function BillForm({
         )}
       </div>
 
-      {/* Bill Number */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
-          Bill Number <span className="text-red-500">*</span>
-        </label>
-        <Input
-          value={billNumber}
-          onChange={(e) => setBillNumber(e.target.value)}
-          placeholder="e.g., BILL-001"
-        />
-        {validationErrors.billNumber && (
-          <p className="mt-1 text-sm text-red-500">{validationErrors.billNumber}</p>
-        )}
-      </div>
-
       {/* Amount */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -330,16 +307,6 @@ export function BillForm({
           </div>
         </div>
       )}
-
-      {/* Category */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">Category</label>
-        <Input
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          placeholder="e.g., Supplies, Rent, Pledge"
-        />
-      </div>
 
       {/* Dates */}
       <div className="grid grid-cols-2 gap-4">

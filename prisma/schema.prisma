@@ -580,13 +580,11 @@ model Bill {
   contactId      String @map("contact_id")
 
   // Bill details
-  billNumber  String?       @map("bill_number")
   direction   BillDirection
   status      BillStatus    @default(DRAFT)
   amount      Decimal       @db.Decimal(12, 2)
   amountPaid  Decimal       @default(0) @map("amount_paid") @db.Decimal(12, 2)
   description String        @db.Text
-  category    String?
 
   // Dates
   issueDate      DateTime  @map("issue_date")

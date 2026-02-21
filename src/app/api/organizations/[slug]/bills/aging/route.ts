@@ -44,7 +44,6 @@ export async function GET(
         dueDate: true,
         contactId: true,
         contact: { select: { name: true } },
-        billNumber: true,
         description: true,
       },
     });

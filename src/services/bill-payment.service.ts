@@ -64,7 +64,7 @@ export async function recordPayment(
         type: transactionType as any,
         debitAccountId: input.debitAccountId,
         creditAccountId: input.creditAccountId,
-        description: input.description || `Payment for bill ${bill.billNumber || bill.id.slice(0, 8)}`,
+        description: input.description || `Payment for bill ${bill.id.slice(0, 8)}`,
         referenceNumber: input.referenceNumber ?? null,
         paymentMethod: 'OTHER',
         contactId: bill.contactId,
