@@ -1,8 +1,15 @@
 import { Resend } from 'resend';
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+let _resend: Resend | null = null;
+
+function getResendClient(): Resend | null {
+  if (_resend) return _resend;
+  if (process.env.RESEND_API_KEY) {
+    _resend = new Resend(process.env.RESEND_API_KEY);
+    return _resend;
+  }
+  return null;
+}
 
 const DEFAULT_FROM = 'RadBooks <onboarding@resend.dev>';
 
@@ -18,6 +25,8 @@ interface SendEmailOptions {
  */
 export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
   const from = process.env.EMAIL_FROM || DEFAULT_FROM;
+
+  const resend = getResendClient();
 
   if (!resend) {
     console.log('[Email] No RESEND_API_KEY — logging email instead of sending:');

@@ -129,15 +129,18 @@ export async function POST(
 
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite/${token}`;
 
-    // Send invitation email (fire-and-forget — don't fail if email fails)
-    sendInvitationEmail({
+    // Send invitation email (await to ensure it completes before serverless freeze)
+    const emailSent = await sendInvitationEmail({
       to: email,
       inviterName: user.name || 'A team member',
       organizationName: organization.name,
       role,
       inviteUrl,
       expiresInDays: 7,
-    }).catch((err) => console.error('[Invitation] Email send failed:', err));
+    });
+    if (!emailSent) {
+      console.warn('[Invitation] Email failed to send for', email);
+    }
 
     return NextResponse.json({
       success: true,

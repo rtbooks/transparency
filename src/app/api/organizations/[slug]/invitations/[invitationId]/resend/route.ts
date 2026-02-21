@@ -98,15 +98,18 @@ export async function POST(
 
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite/${newToken}`;
 
-    // Send invitation email (fire-and-forget)
-    sendInvitationEmail({
+    // Send invitation email (await to ensure it completes before serverless freeze)
+    const emailSent = await sendInvitationEmail({
       to: invitation.email,
       inviterName: user.name || 'A team member',
       organizationName: organization.name,
       role: invitation.role,
       inviteUrl,
       expiresInDays: 7,
-    }).catch((err) => console.error('[Invitation] Email resend failed:', err));
+    });
+    if (!emailSent) {
+      console.warn('[Invitation] Resend email failed for', invitation.email);
+    }
 
     return NextResponse.json({
       message: 'Invitation resent successfully',
