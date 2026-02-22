@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Shield, DollarSign, TrendingUp, TrendingDown, UserPlus, Clock, ArrowRight } from 'lucide-react';
+import { Shield, DollarSign, TrendingUp, TrendingDown, UserPlus, Clock, ArrowRight, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -45,6 +45,22 @@ export function PublicOrgContent({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentUserState, setCurrentUserState] = useState(userState);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchCampaigns() {
+      try {
+        const res = await fetch(`/api/organizations/${organization.slug}/campaigns`);
+        if (res.ok) {
+          const data = await res.json();
+          setCampaigns((data.campaigns || []).filter((c: any) => c.status === 'ACTIVE'));
+        }
+      } catch (e) {
+        // Ignore
+      }
+    }
+    fetchCampaigns();
+  }, [organization.slug]);
 
   const netIncome = financials.totalRevenue - financials.totalExpenses;
 
@@ -142,6 +158,56 @@ export function PublicOrgContent({
         <p className="mt-4 text-center text-sm text-gray-500">
           {financials.transactionCount} transactions recorded
         </p>
+
+        {/* Active Campaigns */}
+        {campaigns.length > 0 && (
+          <div className="mt-12">
+            <h2 className="mb-6 text-center text-2xl font-bold text-gray-900">
+              Active Campaigns
+            </h2>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {campaigns.map((campaign) => (
+                <div
+                  key={campaign.id}
+                  className="rounded-lg border bg-white p-6 shadow-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-green-600" />
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {campaign.name}
+                    </h3>
+                  </div>
+                  {campaign.description && (
+                    <p className="mt-2 text-sm text-gray-600 line-clamp-3">
+                      {campaign.description}
+                    </p>
+                  )}
+                  <div className="mt-4">
+                    <p className="text-xl font-bold text-green-700">
+                      {formatCurrency(campaign.amountRaised)}
+                      {campaign.targetAmount && (
+                        <span className="text-sm font-normal text-gray-500">
+                          {' '}of {formatCurrency(campaign.targetAmount)}
+                        </span>
+                      )}
+                    </p>
+                    {campaign.targetAmount && campaign.targetAmount > 0 && (
+                      <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-gray-200">
+                        <div
+                          className="h-full rounded-full bg-green-500 transition-all"
+                          style={{ width: `${campaign.progressPercent || 0}%` }}
+                        />
+                      </div>
+                    )}
+                    <p className="mt-1 text-xs text-gray-500">
+                      {campaign.donationCount} donation{campaign.donationCount !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Call to Action */}
         <div className="mt-12 text-center">

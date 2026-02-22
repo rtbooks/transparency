@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,8 +17,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Loader2, CheckCircle } from 'lucide-react';
+import { Loader2, CheckCircle, Target } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { formatCurrency } from '@/lib/utils/account-tree';
 
 const pledgeSchema = z.object({
   amount: z.number().positive('Amount must be positive'),
@@ -43,6 +44,26 @@ export function NewPledgeFormClient({
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pledgeCreated, setPledgeCreated] = useState(false);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [loadingCampaigns, setLoadingCampaigns] = useState(true);
+
+  useEffect(() => {
+    async function fetchCampaigns() {
+      try {
+        const res = await fetch(`/api/organizations/${organizationSlug}/campaigns`);
+        if (res.ok) {
+          const data = await res.json();
+          setCampaigns((data.campaigns || []).filter((c: any) => c.status === 'ACTIVE'));
+        }
+      } catch (e) {
+        // Ignore — campaigns are optional
+      } finally {
+        setLoadingCampaigns(false);
+      }
+    }
+    fetchCampaigns();
+  }, [organizationSlug]);
 
   const form = useForm<PledgeFormData>({
     resolver: zodResolver(pledgeSchema),
@@ -66,6 +87,7 @@ export function NewPledgeFormClient({
             amount: data.amount,
             description: data.description,
             dueDate: data.dueDate || null,
+            campaignId: selectedCampaignId || null,
           }),
         }
       );
@@ -152,6 +174,67 @@ export function NewPledgeFormClient({
       <div className="rounded-lg border bg-white p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Campaign Picker */}
+            {!loadingCampaigns && campaigns.length > 0 && (
+              <div className="space-y-3">
+                <label className="text-sm font-medium">
+                  Direct Your Donation (Optional)
+                </label>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCampaignId(null)}
+                    className={`rounded-lg border p-4 text-left transition-colors ${
+                      !selectedCampaignId
+                        ? 'border-green-500 bg-green-50 ring-2 ring-green-200'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <p className="font-medium text-gray-900">General Donation</p>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Support the organization&apos;s overall mission
+                    </p>
+                  </button>
+                  {campaigns.map((campaign) => (
+                    <button
+                      key={campaign.id}
+                      type="button"
+                      onClick={() => setSelectedCampaignId(campaign.id)}
+                      className={`rounded-lg border p-4 text-left transition-colors ${
+                        selectedCampaignId === campaign.id
+                          ? 'border-green-500 bg-green-50 ring-2 ring-green-200'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Target className="h-4 w-4 text-green-600" />
+                        <p className="font-medium text-gray-900">{campaign.name}</p>
+                      </div>
+                      {campaign.description && (
+                        <p className="mt-1 text-xs text-gray-500 line-clamp-2">
+                          {campaign.description}
+                        </p>
+                      )}
+                      {campaign.targetAmount && (
+                        <div className="mt-2">
+                          <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                            <div
+                              className="h-full rounded-full bg-green-500"
+                              style={{ width: `${campaign.progressPercent || 0}%` }}
+                            />
+                          </div>
+                          <p className="mt-1 text-xs text-gray-500">
+                            {formatCurrency(campaign.amountRaised)} of{' '}
+                            {formatCurrency(campaign.targetAmount)} raised
+                          </p>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <FormField
               control={form.control}
               name="amount"

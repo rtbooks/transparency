@@ -62,6 +62,7 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
   AccessRequest: 'AccessRequest',
+  Campaign: 'Campaign',
   Contact: 'Contact',
   Bill: 'Bill',
   BillPayment: 'BillPayment'
@@ -94,6 +95,7 @@ export const OrganizationScalarFieldEnum = {
   fiscalYearStart: 'fiscalYearStart',
   donorAccessMode: 'donorAccessMode',
   paymentInstructions: 'paymentInstructions',
+  donationsAccountId: 'donationsAccountId',
   status: 'status',
   subscriptionTier: 'subscriptionTier',
   verificationStatus: 'verificationStatus',
@@ -338,6 +340,24 @@ export const AccessRequestScalarFieldEnum = {
 } as const
 
 export type AccessRequestScalarFieldEnum = (typeof AccessRequestScalarFieldEnum)[keyof typeof AccessRequestScalarFieldEnum]
+
+
+export const CampaignScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  accountId: 'accountId',
+  name: 'name',
+  description: 'description',
+  targetAmount: 'targetAmount',
+  status: 'status',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CampaignScalarFieldEnum = (typeof CampaignScalarFieldEnum)[keyof typeof CampaignScalarFieldEnum]
 
 
 export const ContactScalarFieldEnum = {

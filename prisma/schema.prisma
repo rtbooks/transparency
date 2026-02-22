@@ -27,6 +27,7 @@ model Organization {
   // Donor settings
   donorAccessMode     DonorAccessMode @default(REQUIRE_APPROVAL) @map("donor_access_mode")
   paymentInstructions String?         @map("payment_instructions") @db.Text
+  donationsAccountId  String?         @map("donations_account_id") // Stable entity ID of the designated Revenue account
 
   // Subscription & Status
   status           OrganizationStatus @default(ACTIVE)
@@ -516,6 +517,39 @@ enum AccessRequestStatus {
 enum DonorAccessMode {
   AUTO_APPROVE
   REQUIRE_APPROVAL
+}
+
+// ============================================
+// FUNDRAISING CAMPAIGNS
+// ============================================
+
+model Campaign {
+  id             String         @id @default(uuid())
+  organizationId String         @map("organization_id")
+  accountId      String         @map("account_id") // Stable entity ID of the linked Revenue account
+
+  name           String
+  description    String?        @db.Text // Planned usage of funds
+  targetAmount   Decimal?       @map("target_amount") @db.Decimal(12, 2)
+  status         CampaignStatus @default(ACTIVE)
+
+  startDate      DateTime?      @map("start_date")
+  endDate        DateTime?      @map("end_date")
+
+  createdBy      String?        @map("created_by")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  @@unique([organizationId, accountId])
+  @@index([organizationId, status], name: "idx_campaign_org_status")
+  @@map("campaigns")
+}
+
+enum CampaignStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
 }
 
 // ============================================
