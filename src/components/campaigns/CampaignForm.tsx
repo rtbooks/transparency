@@ -97,6 +97,18 @@ export function CampaignForm({
     let resolvedAccountId = accountId;
 
     if (!isEditing && !resolvedAccountId && newAccountName.trim()) {
+      // Auto-generate an account code from the parent's code + next child number
+      let code = "";
+      if (donationsAccountId && childAccounts.length > 0) {
+        // Find highest existing code and increment
+        const codes = childAccounts.map((a) => parseInt(a.code, 10)).filter((n) => !isNaN(n));
+        const nextCode = codes.length > 0 ? Math.max(...codes) + 10 : 4100;
+        code = String(nextCode);
+      } else {
+        // Fallback: generate from timestamp
+        code = `C${Date.now().toString().slice(-4)}`;
+      }
+
       // Create a new child account under the donations account
       try {
         const createRes = await fetch(`/api/organizations/${organizationSlug}/accounts`, {
@@ -104,6 +116,7 @@ export function CampaignForm({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: newAccountName.trim(),
+            code,
             type: "REVENUE",
             parentAccountId: donationsAccountId,
           }),
