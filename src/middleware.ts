@@ -6,6 +6,8 @@ const isPublicRoute = createRouteMatcher([
   '/login(.*)',
   '/register(.*)',
   '/api/webhooks/(.*)',
+  '/terms', // Terms of Service
+  '/privacy', // Privacy Policy
   '/org/:slug', // Public organization dashboard
   '/org/:slug/donate', // Public donation page
   '/invite/:token', // Invitation acceptance page (handles auth internally)
