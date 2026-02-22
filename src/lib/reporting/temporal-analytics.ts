@@ -4,7 +4,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere, MAX_DATE } from '@/lib/temporal/temporal-utils';
 
 interface AccountEvolutionPoint {
   date: Date;
@@ -357,12 +357,18 @@ export async function getOrganizationGrowthMetrics(
       where: {
         organizationId,
         transactionDate: { lte: startDate },
+        validTo: MAX_DATE,
+        systemTo: MAX_DATE,
+        isDeleted: false,
       },
     }),
     prisma.transaction.count({
       where: {
         organizationId,
         transactionDate: { lte: endDate },
+        validTo: MAX_DATE,
+        systemTo: MAX_DATE,
+        isDeleted: false,
       },
     }),
   ]);
@@ -382,6 +388,9 @@ export async function getOrganizationGrowthMetrics(
             organizationId,
             transactionDate: { lte: startDate },
             creditAccountId: { in: revenueAccountIds },
+            validTo: MAX_DATE,
+            systemTo: MAX_DATE,
+            isDeleted: false,
           },
           _sum: { amount: true },
         }),
@@ -390,6 +399,9 @@ export async function getOrganizationGrowthMetrics(
             organizationId,
             transactionDate: { lte: endDate },
             creditAccountId: { in: revenueAccountIds },
+            validTo: MAX_DATE,
+            systemTo: MAX_DATE,
+            isDeleted: false,
           },
           _sum: { amount: true },
         }),

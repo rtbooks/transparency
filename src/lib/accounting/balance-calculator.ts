@@ -40,8 +40,8 @@ export async function updateAccountBalances(
 ) {
   // Fetch both accounts (current versions)
   const [debitAccount, creditAccount] = await Promise.all([
-    prisma.account.findFirst({ where: { id: debitAccountId, validTo: MAX_DATE, isDeleted: false } }),
-    prisma.account.findFirst({ where: { id: creditAccountId, validTo: MAX_DATE, isDeleted: false } }),
+    prisma.account.findFirst({ where: { id: debitAccountId, validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false } }),
+    prisma.account.findFirst({ where: { id: creditAccountId, validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false } }),
   ]);
 
   if (!debitAccount || !creditAccount) {
@@ -94,8 +94,8 @@ export async function reverseAccountBalances(
 ) {
   // Fetch both accounts (current versions)
   const [debitAccount, creditAccount] = await Promise.all([
-    prisma.account.findFirst({ where: { id: debitAccountId, validTo: MAX_DATE, isDeleted: false } }),
-    prisma.account.findFirst({ where: { id: creditAccountId, validTo: MAX_DATE, isDeleted: false } }),
+    prisma.account.findFirst({ where: { id: debitAccountId, validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false } }),
+    prisma.account.findFirst({ where: { id: creditAccountId, validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false } }),
   ]);
 
   if (!debitAccount || !creditAccount) {

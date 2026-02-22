@@ -1,11 +1,14 @@
 import { prisma } from "@/lib/prisma";
+import { buildCurrentVersionWhere } from "@/lib/temporal/temporal-utils";
 
 async function getStats() {
   const [orgCount, transactionCount] = await Promise.all([
     prisma.organization.count({
-      where: { status: "ACTIVE" },
+      where: buildCurrentVersionWhere({ status: "ACTIVE" }),
     }),
-    prisma.transaction.count(),
+    prisma.transaction.count({
+      where: buildCurrentVersionWhere({}),
+    }),
   ]);
 
   return {

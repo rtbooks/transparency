@@ -242,10 +242,10 @@ describe('Balance Calculator', () => {
       // Verify both accounts were fetched
       expect(mockPrisma.account.findFirst).toHaveBeenCalledTimes(2);
       expect(mockPrisma.account.findFirst).toHaveBeenCalledWith({
-        where: { id: 'debit-account-id', validTo: expect.any(Date), isDeleted: false },
+        where: { id: 'debit-account-id', validTo: expect.any(Date), systemTo: expect.any(Date), isDeleted: false },
       });
       expect(mockPrisma.account.findFirst).toHaveBeenCalledWith({
-        where: { id: 'credit-account-id', validTo: expect.any(Date), isDeleted: false },
+        where: { id: 'credit-account-id', validTo: expect.any(Date), systemTo: expect.any(Date), isDeleted: false },
       });
 
       // Verify both accounts were updated

@@ -49,6 +49,7 @@ export function buildCurrentVersionWhere(
   return {
     ...baseWhere,
     validTo: MAX_DATE,
+    systemTo: MAX_DATE,
     ...(options.includeDeleted ? {} : { isDeleted: false }),
   };
 }

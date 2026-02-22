@@ -66,7 +66,7 @@ export async function POST(
     }
 
     const existingAccountCount = await prisma.account.count({
-      where: { organizationId: organization.id },
+      where: buildCurrentVersionWhere({ organizationId: organization.id }),
     });
 
     if (existingAccountCount > 0) {

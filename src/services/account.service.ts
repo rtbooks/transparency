@@ -280,6 +280,7 @@ export const AccountService = {
         organizationId,
         id: { in: accountIds },
         validTo: MAX_DATE,
+        systemTo: MAX_DATE,
         isDeleted: false,
       },
     });
