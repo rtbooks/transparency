@@ -125,6 +125,16 @@ export const DonorAccessMode = {
 export type DonorAccessMode = (typeof DonorAccessMode)[keyof typeof DonorAccessMode]
 
 
+export const CampaignStatus = {
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type CampaignStatus = (typeof CampaignStatus)[keyof typeof CampaignStatus]
+
+
 export const ContactType = {
   INDIVIDUAL: 'INDIVIDUAL',
   ORGANIZATION: 'ORGANIZATION'

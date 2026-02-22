@@ -16,6 +16,7 @@ const updateOrganizationSchema = z.object({
   logoUrl: z.string().nullable().optional(),
   donorAccessMode: z.enum(['AUTO_APPROVE', 'REQUIRE_APPROVAL']).optional(),
   paymentInstructions: z.string().nullable().optional(),
+  donationsAccountId: z.string().nullable().optional(),
 });
 
 export async function GET(
@@ -138,6 +139,7 @@ export async function PATCH(
     if (validatedData.logoUrl !== undefined) updates.logoUrl = validatedData.logoUrl;
     if (validatedData.donorAccessMode !== undefined) updates.donorAccessMode = validatedData.donorAccessMode;
     if (validatedData.paymentInstructions !== undefined) updates.paymentInstructions = validatedData.paymentInstructions;
+    if (validatedData.donationsAccountId !== undefined) updates.donationsAccountId = validatedData.donationsAccountId;
 
     // Update organization (creates new version with audit trail)
     const updatedOrganization = await updateOrganization(

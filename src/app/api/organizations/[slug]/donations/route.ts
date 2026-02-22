@@ -95,13 +95,41 @@ export async function GET(
       : [];
     const txMap = buildEntityMap(transactions);
 
+    // Resolve campaign attribution via accrual transactions
+    const accrualTxIds = pledges.map(p => p.accrualTransactionId).filter(Boolean) as string[];
+    const accrualTransactions = accrualTxIds.length > 0
+      ? await prisma.transaction.findMany({ where: buildEntitiesWhere(accrualTxIds) })
+      : [];
+    const accrualTxMap = buildEntityMap(accrualTransactions);
+
+    // Load all campaigns for this org to map accountId → campaign name
+    const allCampaigns = await prisma.campaign.findMany({
+      where: { organizationId: organization.id },
+    });
+    const campaignByAccountId = new Map(allCampaigns.map(c => [c.accountId, c]));
+
     const enrichedPledges = pledges.map(pledge => {
       const contact = contactMap.get(pledge.contactId);
+      // Find campaign via accrual transaction's credit account
+      let campaignName: string | null = null;
+      let campaignId: string | null = null;
+      if (pledge.accrualTransactionId) {
+        const accrualTx = accrualTxMap.get(pledge.accrualTransactionId);
+        if (accrualTx) {
+          const campaign = campaignByAccountId.get(accrualTx.creditAccountId);
+          if (campaign) {
+            campaignName = campaign.name;
+            campaignId = campaign.id;
+          }
+        }
+      }
       return {
         ...pledge,
         contactName: contact?.name ?? 'Unknown',
         amount: Number(pledge.amount),
         amountPaid: Number(pledge.amountPaid),
+        campaignName,
+        campaignId,
         payments: pledge.payments.map(pay => {
           const tx = txMap.get(pay.transactionId);
           return {

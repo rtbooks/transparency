@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { DollarSign, Clock, CheckCircle, AlertCircle, Plus } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils/account-tree';
@@ -24,6 +24,8 @@ interface Pledge {
   issueDate: string;
   dueDate?: string | null;
   payments: Payment[];
+  campaignName?: string | null;
+  campaignId?: string | null;
 }
 
 interface DonationsData {
@@ -191,6 +193,14 @@ export function DonationsPageClient({
                       <Badge variant={config.variant}>{config.label}</Badge>
                     </div>
                     <p className="mt-1 text-sm text-gray-600">{pledge.description}</p>
+                    {pledge.campaignName && (
+                      <div className="mt-1 flex items-center gap-1">
+                        <Target className="h-3 w-3 text-green-600" />
+                        <span className="text-xs font-medium text-green-700">
+                          {pledge.campaignName}
+                        </span>
+                      </div>
+                    )}
                     <p className="mt-1 text-xs text-gray-500">
                       Pledged on {new Date(pledge.issueDate).toLocaleDateString()}
                       {pledge.dueDate && (

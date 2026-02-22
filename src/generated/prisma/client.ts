@@ -95,6 +95,11 @@ export type Invitation = Prisma.InvitationModel
  */
 export type AccessRequest = Prisma.AccessRequestModel
 /**
+ * Model Campaign
+ * 
+ */
+export type Campaign = Prisma.CampaignModel
+/**
  * Model Contact
  * 
  */

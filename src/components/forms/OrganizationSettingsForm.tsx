@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,6 +36,7 @@ const organizationSettingsSchema = z.object({
   logoUrl: z.string().optional(),
   donorAccessMode: z.enum(['AUTO_APPROVE', 'REQUIRE_APPROVAL']),
   paymentInstructions: z.string().optional(),
+  donationsAccountId: z.string().nullable().optional(),
 });
 
 type OrganizationSettingsData = z.infer<typeof organizationSettingsSchema>;
@@ -61,8 +62,29 @@ export function OrganizationSettingsForm({
       logoUrl: organization.logoUrl || '',
       donorAccessMode: organization.donorAccessMode || 'REQUIRE_APPROVAL',
       paymentInstructions: organization.paymentInstructions || '',
+      donationsAccountId: organization.donationsAccountId || null,
     },
   });
+
+  // Fetch Revenue accounts for donations account dropdown
+  const [revenueAccounts, setRevenueAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
+  useEffect(() => {
+    async function fetchAccounts() {
+      try {
+        const res = await fetch(`/api/organizations/${organization.slug}/accounts`);
+        if (res.ok) {
+          const data = await res.json();
+          const accounts = (data.accounts || data || []).filter(
+            (a: any) => a.type === 'REVENUE' && !a.parentAccountId
+          );
+          setRevenueAccounts(accounts.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
+        }
+      } catch (e) {
+        console.error('Failed to load accounts:', e);
+      }
+    }
+    fetchAccounts();
+  }, [organization.slug]);
 
   const onSubmit = async (data: OrganizationSettingsData) => {
     try {
@@ -79,6 +101,7 @@ export function OrganizationSettingsForm({
           logoUrl: data.logoUrl || null,
           donorAccessMode: data.donorAccessMode,
           paymentInstructions: data.paymentInstructions || null,
+          donationsAccountId: data.donationsAccountId || null,
         }),
       });
 
@@ -281,6 +304,35 @@ export function OrganizationSettingsForm({
                   <FormDescription>
                     Controls whether donors who request access are automatically
                     approved or need manual review by an admin.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="donationsAccountId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Donations Account</FormLabel>
+                  <FormControl>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      value={field.value || ''}
+                      onChange={(e) => field.onChange(e.target.value || null)}
+                    >
+                      <option value="">None (auto-detect)</option>
+                      {revenueAccounts.map((acct) => (
+                        <option key={acct.id} value={acct.id}>
+                          {acct.code} - {acct.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormDescription>
+                    Designate a top-level Revenue account for donations. Child
+                    accounts under it can be used as fundraising campaigns.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

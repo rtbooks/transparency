@@ -9,6 +9,7 @@ const pledgeSchema = z.object({
   amount: z.number().positive(),
   description: z.string().min(1),
   dueDate: z.string().nullable().optional(),
+  campaignId: z.string().uuid().nullable().optional(),
 });
 
 /**
@@ -98,14 +99,40 @@ export async function POST(
       );
     }
 
-    // Find a Revenue account (prefer Donation Revenue)
-    let revenueAccount = await prisma.account.findFirst({
-      where: buildCurrentVersionWhere({
-        organizationId: organization.id,
-        type: 'REVENUE',
-        name: { contains: 'Donation' },
-      }),
-    });
+    // Find a Revenue account — campaign-directed or fallback
+    let revenueAccount;
+
+    if (validated.campaignId) {
+      // Donor selected a specific campaign — use its linked account
+      const campaign = await prisma.campaign.findUnique({
+        where: { id: validated.campaignId },
+      });
+      if (!campaign || campaign.organizationId !== organization.id || campaign.status !== 'ACTIVE') {
+        return NextResponse.json({ error: 'Campaign not found or inactive' }, { status: 400 });
+      }
+      revenueAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({ id: campaign.accountId, organizationId: organization.id }),
+      });
+      if (!revenueAccount) {
+        return NextResponse.json({ error: 'Campaign account not found' }, { status: 400 });
+      }
+    } else if (organization.donationsAccountId) {
+      // No campaign selected — use the org's donations account (general donation)
+      revenueAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({ id: organization.donationsAccountId, organizationId: organization.id }),
+      });
+    }
+
+    // Fallback: auto-search for a Revenue account
+    if (!revenueAccount) {
+      revenueAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({
+          organizationId: organization.id,
+          type: 'REVENUE',
+          name: { contains: 'Donation' },
+        }),
+      });
+    }
 
     if (!revenueAccount) {
       revenueAccount = await prisma.account.findFirst({
