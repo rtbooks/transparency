@@ -11,6 +11,7 @@ import {
   buildCurrentVersionWhere,
   buildAsOfDateWhere,
   isCurrentVersion,
+  closeVersion,
 } from './temporal-utils';
 
 export class TemporalRepository<T extends TemporalFields> {
@@ -95,14 +96,8 @@ export class TemporalRepository<T extends TemporalFields> {
       throw new Error(`No current version found for ${this.modelName} with id ${id}`);
     }
 
-    // Close current version
-    await this.model.update({
-      where: { versionId: current.versionId },
-      data: {
-        validTo: now,
-        systemTo: now,
-      },
-    });
+    // Close current version with optimistic lock
+    await closeVersion(this.model, current.versionId, now, this.modelName);
 
     // Create new version
     return this.model.create({
@@ -133,9 +128,12 @@ export class TemporalRepository<T extends TemporalFields> {
       throw new Error(`No current version found for ${this.modelName} with id ${id}`);
     }
 
-    // Update to mark as deleted
-    return this.model.update({
-      where: { versionId: current.versionId },
+    // Close version with optimistic lock and mark as deleted
+    const result = await this.model.updateMany({
+      where: {
+        versionId: current.versionId,
+        systemTo: MAX_DATE,
+      },
       data: {
         validTo: now,
         systemTo: now,
@@ -143,6 +141,16 @@ export class TemporalRepository<T extends TemporalFields> {
         deletedAt: now,
         deletedBy: userId || null,
       },
+    });
+
+    if (result.count === 0) {
+      const { ConcurrentModificationError } = await import('./temporal-utils');
+      throw new ConcurrentModificationError(this.modelName, current.versionId);
+    }
+
+    // Return the updated record
+    return this.model.findFirst({
+      where: { versionId: current.versionId },
     });
   }
 

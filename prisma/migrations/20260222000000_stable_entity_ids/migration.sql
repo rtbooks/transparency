@@ -216,21 +216,23 @@ DROP TABLE contact_id_map;
 -- ============================================================
 
 -- Drop old unique constraints on version_id (becoming PK)
-ALTER TABLE "organizations" DROP CONSTRAINT IF EXISTS "organizations_version_id_key";
-ALTER TABLE "accounts" DROP CONSTRAINT IF EXISTS "accounts_version_id_key";
-ALTER TABLE "transactions" DROP CONSTRAINT IF EXISTS "transactions_version_id_key";
-ALTER TABLE "contacts" DROP CONSTRAINT IF EXISTS "contacts_version_id_key";
-ALTER TABLE "organization_users" DROP CONSTRAINT IF EXISTS "organization_users_version_id_key";
-ALTER TABLE "planned_purchases" DROP CONSTRAINT IF EXISTS "planned_purchases_version_id_key";
+-- Drop version_id unique indexes (Prisma creates as UNIQUE INDEX, not CONSTRAINT)
+DROP INDEX IF EXISTS "organizations_version_id_key";
+DROP INDEX IF EXISTS "accounts_version_id_key";
+DROP INDEX IF EXISTS "transactions_version_id_key";
+DROP INDEX IF EXISTS "contacts_version_id_key";
+DROP INDEX IF EXISTS "organization_users_version_id_key";
+DROP INDEX IF EXISTS "planned_purchases_version_id_key";
 
--- Drop unique constraints that conflict with multiple versions
-ALTER TABLE "organizations" DROP CONSTRAINT IF EXISTS "organizations_slug_key";
-ALTER TABLE "accounts" DROP CONSTRAINT IF EXISTS "accounts_organization_id_code_key";
-ALTER TABLE "organization_users" DROP CONSTRAINT IF EXISTS "organization_users_user_id_organization_id_key";
-ALTER TABLE "transactions" DROP CONSTRAINT IF EXISTS "transactions_bank_transaction_id_key";
-ALTER TABLE "transactions" DROP CONSTRAINT IF EXISTS "transactions_stripe_session_id_key";
-ALTER TABLE "transactions" DROP CONSTRAINT IF EXISTS "transactions_stripe_payment_id_key";
-ALTER TABLE "planned_purchases" DROP CONSTRAINT IF EXISTS "planned_purchases_actual_transaction_id_key";
+-- Drop unique indexes that conflict with multiple versions
+-- (Prisma creates these as UNIQUE INDEX, not CONSTRAINT, so use DROP INDEX)
+DROP INDEX IF EXISTS "organizations_slug_key";
+DROP INDEX IF EXISTS "accounts_organization_id_code_key";
+DROP INDEX IF EXISTS "organization_users_user_id_organization_id_key";
+DROP INDEX IF EXISTS "transactions_bank_transaction_id_key";
+DROP INDEX IF EXISTS "transactions_stripe_session_id_key";
+DROP INDEX IF EXISTS "transactions_stripe_payment_id_key";
+DROP INDEX IF EXISTS "planned_purchases_actual_transaction_id_key";
 
 -- ============================================================
 -- STEP 8: Swap PKs — drop old id column, rename entity_id → id
