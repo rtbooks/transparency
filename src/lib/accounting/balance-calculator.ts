@@ -45,7 +45,7 @@ async function updateSingleAccountBalance(
   now: Date
 ): Promise<number> {
   const account = await prisma.account.findFirst({
-    where: { id: accountId, validTo: MAX_DATE, isDeleted: false },
+    where: { id: accountId, validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false },
   });
 
   if (!account) {
@@ -91,23 +91,6 @@ export async function updateAccountBalances(
   creditAccountId: string,
   amount: number
 ) {
-  // Fetch both accounts (current versions)
-  const [debitAccount, creditAccount] = await Promise.all([
-    prisma.account.findFirst({ where: { id: debitAccountId, validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false } }),
-    prisma.account.findFirst({ where: { id: creditAccountId, validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false } }),
-  ]);
-
-  if (!debitAccount || !creditAccount) {
-    throw new Error('One or both accounts not found');
-  }
-
-  // Calculate new balances
-  const newDebitBalance = calculateNewBalance(
-    debitAccount.currentBalance,
-    amount,
-    debitAccount.type,
-    true // This account is being debited
-  );
   const now = new Date();
 
   const newDebitBalance = await updateSingleAccountBalance(prisma, debitAccountId, amount, true, now);
@@ -128,31 +111,6 @@ export async function reverseAccountBalances(
   creditAccountId: string,
   amount: number
 ) {
-  // Fetch both accounts (current versions)
-  const [debitAccount, creditAccount] = await Promise.all([
-    prisma.account.findFirst({ where: { id: debitAccountId, validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false } }),
-    prisma.account.findFirst({ where: { id: creditAccountId, validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false } }),
-  ]);
-
-  if (!debitAccount || !creditAccount) {
-    throw new Error('One or both accounts not found');
-  }
-
-  // Reverse the debit (apply credit to the debit account)
-  const newDebitBalance = calculateNewBalance(
-    debitAccount.currentBalance,
-    amount,
-    debitAccount.type,
-    false // Credit to reverse the original debit
-  );
-
-  // Reverse the credit (apply debit to the credit account)
-  const newCreditBalance = calculateNewBalance(
-    creditAccount.currentBalance,
-    amount,
-    creditAccount.type,
-    true // Debit to reverse the original credit
-  );
   const now = new Date();
 
   // Reverse: credit the debit account, debit the credit account
