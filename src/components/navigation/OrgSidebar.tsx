@@ -38,7 +38,7 @@ export function OrgSidebar({ navLinks, className }: OrgSidebarProps) {
 
   // Group links by section
   const sections: { name: string | null; links: NavLink[] }[] = [];
-  let currentSection: string | null = null;
+  let currentSection: string | null | undefined = undefined;
 
   for (const link of navLinks) {
     const section = link.section ?? null;
