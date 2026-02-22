@@ -61,6 +61,7 @@ export const ModelName = {
   BankAccount: 'BankAccount',
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
+  AccessRequest: 'AccessRequest',
   Contact: 'Contact',
   Bill: 'Bill',
   BillPayment: 'BillPayment'
@@ -91,6 +92,8 @@ export const OrganizationScalarFieldEnum = {
   mission: 'mission',
   logoUrl: 'logoUrl',
   fiscalYearStart: 'fiscalYearStart',
+  donorAccessMode: 'donorAccessMode',
+  paymentInstructions: 'paymentInstructions',
   status: 'status',
   subscriptionTier: 'subscriptionTier',
   verificationStatus: 'verificationStatus',
@@ -320,6 +323,21 @@ export const InvitationScalarFieldEnum = {
 } as const
 
 export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
+
+
+export const AccessRequestScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  userId: 'userId',
+  status: 'status',
+  message: 'message',
+  reviewedBy: 'reviewedBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AccessRequestScalarFieldEnum = (typeof AccessRequestScalarFieldEnum)[keyof typeof AccessRequestScalarFieldEnum]
 
 
 export const ContactScalarFieldEnum = {

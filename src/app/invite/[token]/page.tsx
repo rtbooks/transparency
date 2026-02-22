@@ -212,25 +212,42 @@ export default async function InvitePage({ params }: InvitePageProps) {
 
   // All checks passed - create the organization membership
   try {
-    await prisma.$transaction([
+    await prisma.$transaction(async (tx) => {
       // Create organization membership
-      prisma.organizationUser.create({
+      await tx.organizationUser.create({
         data: {
           userId: user.id,
           organizationId: invitation.organizationId,
           role: invitation.role,
         },
-      }),
+      });
       // Mark invitation as accepted
-      prisma.invitation.update({
+      await tx.invitation.update({
         where: { id: invitation.id },
         data: {
           status: 'ACCEPTED',
           acceptedAt: new Date(),
           updatedAt: new Date(),
         },
-      }),
-    ]);
+      });
+
+      // Auto-link existing contact record if email matches
+      if (invitation.role === 'DONOR') {
+        const existingContact = await tx.contact.findFirst({
+          where: buildCurrentVersionWhere({
+            organizationId: invitation.organizationId,
+            email: user.email,
+          }),
+        });
+
+        if (existingContact && !existingContact.userId) {
+          await tx.contact.update({
+            where: { versionId: existingContact.versionId },
+            data: { userId: user.id },
+          });
+        }
+      }
+    });
 
     // Show success message and redirect via client component
     return (

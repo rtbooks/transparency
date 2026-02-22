@@ -394,6 +394,7 @@ export const ModelName = {
   BankAccount: 'BankAccount',
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
+  AccessRequest: 'AccessRequest',
   Contact: 'Contact',
   Bill: 'Bill',
   BillPayment: 'BillPayment'
@@ -412,7 +413,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "plannedPurchase" | "purchaseImage" | "bankAccount" | "auditLog" | "invitation" | "contact" | "bill" | "billPayment"
+    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "plannedPurchase" | "purchaseImage" | "bankAccount" | "auditLog" | "invitation" | "accessRequest" | "contact" | "bill" | "billPayment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1156,6 +1157,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AccessRequest: {
+      payload: Prisma.$AccessRequestPayload<ExtArgs>
+      fields: Prisma.AccessRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AccessRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AccessRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.AccessRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AccessRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+        }
+        findMany: {
+          args: Prisma.AccessRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessRequestPayload>[]
+        }
+        create: {
+          args: Prisma.AccessRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+        }
+        createMany: {
+          args: Prisma.AccessRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AccessRequestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessRequestPayload>[]
+        }
+        delete: {
+          args: Prisma.AccessRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+        }
+        update: {
+          args: Prisma.AccessRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.AccessRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AccessRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AccessRequestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessRequestPayload>[]
+        }
+        upsert: {
+          args: Prisma.AccessRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.AccessRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAccessRequest>
+        }
+        groupBy: {
+          args: Prisma.AccessRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AccessRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AccessRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AccessRequestCountAggregateOutputType> | number
+        }
+      }
+    }
     Contact: {
       payload: Prisma.$ContactPayload<ExtArgs>
       fields: Prisma.ContactFieldRefs
@@ -1426,6 +1501,8 @@ export const OrganizationScalarFieldEnum = {
   mission: 'mission',
   logoUrl: 'logoUrl',
   fiscalYearStart: 'fiscalYearStart',
+  donorAccessMode: 'donorAccessMode',
+  paymentInstructions: 'paymentInstructions',
   status: 'status',
   subscriptionTier: 'subscriptionTier',
   verificationStatus: 'verificationStatus',
@@ -1657,6 +1734,21 @@ export const InvitationScalarFieldEnum = {
 export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
 
 
+export const AccessRequestScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  userId: 'userId',
+  status: 'status',
+  message: 'message',
+  reviewedBy: 'reviewedBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AccessRequestScalarFieldEnum = (typeof AccessRequestScalarFieldEnum)[keyof typeof AccessRequestScalarFieldEnum]
+
+
 export const ContactScalarFieldEnum = {
   versionId: 'versionId',
   id: 'id',
@@ -1792,6 +1884,20 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DonorAccessMode'
+ */
+export type EnumDonorAccessModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DonorAccessMode'>
+    
+
+
+/**
+ * Reference to a field of type 'DonorAccessMode[]'
+ */
+export type ListEnumDonorAccessModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DonorAccessMode[]'>
     
 
 
@@ -1971,6 +2077,20 @@ export type ListEnumInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputT
 
 
 /**
+ * Reference to a field of type 'AccessRequestStatus'
+ */
+export type EnumAccessRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AccessRequestStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'AccessRequestStatus[]'
+ */
+export type ListEnumAccessRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AccessRequestStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'ContactType'
  */
 export type EnumContactTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContactType'>
@@ -2144,6 +2264,7 @@ export type GlobalOmitConfig = {
   bankAccount?: Prisma.BankAccountOmit
   auditLog?: Prisma.AuditLogOmit
   invitation?: Prisma.InvitationOmit
+  accessRequest?: Prisma.AccessRequestOmit
   contact?: Prisma.ContactOmit
   bill?: Prisma.BillOmit
   billPayment?: Prisma.BillPaymentOmit

@@ -34,6 +34,8 @@ const organizationSettingsSchema = z.object({
   mission: z.string().optional(),
   fiscalYearStart: z.date(),
   logoUrl: z.string().optional(),
+  donorAccessMode: z.enum(['AUTO_APPROVE', 'REQUIRE_APPROVAL']),
+  paymentInstructions: z.string().optional(),
 });
 
 type OrganizationSettingsData = z.infer<typeof organizationSettingsSchema>;
@@ -57,6 +59,8 @@ export function OrganizationSettingsForm({
       mission: organization.mission || '',
       fiscalYearStart: new Date(organization.fiscalYearStart),
       logoUrl: organization.logoUrl || '',
+      donorAccessMode: organization.donorAccessMode || 'REQUIRE_APPROVAL',
+      paymentInstructions: organization.paymentInstructions || '',
     },
   });
 
@@ -73,6 +77,8 @@ export function OrganizationSettingsForm({
           mission: data.mission || null,
           fiscalYearStart: data.fiscalYearStart.toISOString(),
           logoUrl: data.logoUrl || null,
+          donorAccessMode: data.donorAccessMode,
+          paymentInstructions: data.paymentInstructions || null,
         }),
       });
 
@@ -238,6 +244,77 @@ export function OrganizationSettingsForm({
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 Save Changes
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+
+      {/* Donor Settings */}
+      <div className="rounded-lg border bg-white p-6">
+        <h2 className="mb-6 text-xl font-semibold text-gray-900">
+          Donor Settings
+        </h2>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="donorAccessMode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Donor Access Mode</FormLabel>
+                  <FormControl>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      value={field.value}
+                      onChange={field.onChange}
+                    >
+                      <option value="REQUIRE_APPROVAL">
+                        Require admin approval for donor access requests
+                      </option>
+                      <option value="AUTO_APPROVE">
+                        Auto-approve donor access requests
+                      </option>
+                    </select>
+                  </FormControl>
+                  <FormDescription>
+                    Controls whether donors who request access are automatically
+                    approved or need manual review by an admin.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="paymentInstructions"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Payment Instructions (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="e.g., Mail checks to 123 Main St... or Venmo @org-name..."
+                      rows={5}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Instructions shown to donors on how to submit donations
+                    (check, wire transfer, Venmo, etc.)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex gap-3 pt-4">
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Save Donor Settings
               </Button>
             </div>
           </form>
