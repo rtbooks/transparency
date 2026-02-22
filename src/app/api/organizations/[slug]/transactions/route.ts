@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
 import { AccountService } from '@/services/account.service';
-import { MAX_DATE } from '@/lib/temporal/temporal-utils';
+import { MAX_DATE, buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
 
 const createTransactionSchema = z.object({
@@ -41,13 +41,8 @@ export async function GET(
     }
 
     // Find organization and check access
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -57,7 +52,10 @@ export async function GET(
       );
     }
 
-    const orgUser = organization.organizationUsers[0];
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const orgUser = orgUsers[0];
     if (!orgUser) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
@@ -242,13 +240,8 @@ export async function POST(
     }
 
     // Find organization and check access
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -258,7 +251,10 @@ export async function POST(
       );
     }
 
-    const orgUser = organization.organizationUsers[0];
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const orgUser = orgUsers[0];
     if (!orgUser || orgUser.role === 'DONOR') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
@@ -269,11 +265,11 @@ export async function POST(
 
     // Verify both accounts exist and belong to the organization
     const [debitAccount, creditAccount] = await Promise.all([
-      prisma.account.findUnique({
-        where: { id: validatedData.debitAccountId },
+      prisma.account.findFirst({
+        where: buildCurrentVersionWhere({ id: validatedData.debitAccountId }),
       }),
-      prisma.account.findUnique({
-        where: { id: validatedData.creditAccountId },
+      prisma.account.findFirst({
+        where: buildCurrentVersionWhere({ id: validatedData.creditAccountId }),
       }),
     ]);
 

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { buildCurrentVersionWhere, MAX_DATE } from "@/lib/temporal/temporal-utils";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -10,10 +11,10 @@ export const metadata: Metadata = {
 
 async function getOrganizations() {
   const organizations = await prisma.organization.findMany({
-    where: {
+    where: buildCurrentVersionWhere({
       status: "ACTIVE",
-      verificationStatus: "VERIFIED", // Only show verified organizations
-    },
+      verificationStatus: "VERIFIED",
+    }),
     select: {
       id: true,
       name: true,
@@ -21,18 +22,27 @@ async function getOrganizations() {
       mission: true,
       ein: true,
       createdAt: true,
-      _count: {
-        select: {
-          transactions: true,
-        },
-      },
     },
     orderBy: {
       createdAt: "desc",
     },
   });
 
-  return organizations;
+  // Get transaction counts separately
+  const orgIds = organizations.map(o => o.id);
+  const txCounts = orgIds.length > 0
+    ? await prisma.transaction.groupBy({
+        by: ['organizationId'],
+        where: buildCurrentVersionWhere({ organizationId: { in: orgIds } }),
+        _count: true,
+      })
+    : [];
+  const txCountMap = new Map(txCounts.map(c => [c.organizationId, c._count]));
+
+  return organizations.map(org => ({
+    ...org,
+    _count: { transactions: txCountMap.get(org.id) || 0 },
+  }));
 }
 
 export default async function OrganizationsPage() {

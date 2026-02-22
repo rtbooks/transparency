@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,17 +15,44 @@ import { Building2, Users, Activity, Plus } from 'lucide-react';
 
 export default async function OrganizationsListPage() {
   const organizations = await prisma.organization.findMany({
+    where: buildCurrentVersionWhere({}),
     orderBy: { createdAt: 'desc' },
-    include: {
-      _count: {
-        select: {
-          organizationUsers: true,
-          transactions: true,
-          accounts: true,
-        },
-      },
-    },
   });
+
+  // Fetch counts separately since relations are removed
+  const orgIds = organizations.map(org => org.id);
+  const [orgUserCounts, transactionCounts, accountCounts] = orgIds.length > 0
+    ? await Promise.all([
+        prisma.organizationUser.groupBy({
+          by: ['organizationId'],
+          where: buildCurrentVersionWhere({ organizationId: { in: orgIds } }),
+          _count: true,
+        }),
+        prisma.transaction.groupBy({
+          by: ['organizationId'],
+          where: buildCurrentVersionWhere({ organizationId: { in: orgIds } }),
+          _count: true,
+        }),
+        prisma.account.groupBy({
+          by: ['organizationId'],
+          where: buildCurrentVersionWhere({ organizationId: { in: orgIds } }),
+          _count: true,
+        }),
+      ])
+    : [[], [], []];
+
+  const orgUserCountMap = new Map(orgUserCounts.map(c => [c.organizationId, c._count]));
+  const txCountMap = new Map(transactionCounts.map(c => [c.organizationId, c._count]));
+  const acctCountMap = new Map(accountCounts.map(c => [c.organizationId, c._count]));
+
+  const orgsWithCounts = organizations.map(org => ({
+    ...org,
+    _count: {
+      organizationUsers: orgUserCountMap.get(org.id) || 0,
+      transactions: txCountMap.get(org.id) || 0,
+      accounts: acctCountMap.get(org.id) || 0,
+    },
+  }));
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -83,7 +111,7 @@ export default async function OrganizationsListPage() {
                 </TableCell>
               </TableRow>
             ) : (
-              organizations.map((org) => (
+              orgsWithCounts.map((org) => (
                 <TableRow key={org.id}>
                   <TableCell>
                     <div>
@@ -151,14 +179,14 @@ export default async function OrganizationsListPage() {
       </div>
 
       {/* Summary Stats */}
-      {organizations.length > 0 && (
+      {orgsWithCounts.length > 0 && (
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-lg bg-white p-4 shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Organizations</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {organizations.length}
+                  {orgsWithCounts.length}
                 </p>
               </div>
               <Building2 className="h-8 w-8 text-blue-600" />
@@ -169,7 +197,7 @@ export default async function OrganizationsListPage() {
               <div>
                 <p className="text-sm text-gray-600">Total Users</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {organizations.reduce((sum, org) => sum + org._count.organizationUsers, 0)}
+                  {orgsWithCounts.reduce((sum, org) => sum + org._count.organizationUsers, 0)}
                 </p>
               </div>
               <Users className="h-8 w-8 text-green-600" />
@@ -180,7 +208,7 @@ export default async function OrganizationsListPage() {
               <div>
                 <p className="text-sm text-gray-600">Total Transactions</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {organizations.reduce((sum, org) => sum + org._count.transactions, 0)}
+                  {orgsWithCounts.reduce((sum, org) => sum + org._count.transactions, 0)}
                 </p>
               </div>
               <Activity className="h-8 w-8 text-purple-600" />

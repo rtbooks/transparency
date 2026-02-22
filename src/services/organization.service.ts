@@ -38,42 +38,47 @@ export async function createOrganization(
 ): Promise<Organization> {
   const now = new Date();
 
-  return await prisma.organization.create({
-    data: {
-      name: input.name,
-      slug: input.slug,
-      ein: input.ein,
-      mission: input.mission,
-      fiscalYearStart: input.fiscalYearStart,
-      officialWebsite: input.officialWebsite,
-      einVerifiedAt: input.ein ? now : null,
-      
-      // Temporal fields (initial version)
-      versionId: crypto.randomUUID(),
-      previousVersionId: null,
-      validFrom: now,
-      validTo: MAX_DATE,
-      systemFrom: now,
-      systemTo: MAX_DATE,
-      isDeleted: false,
-      changedBy: input.createdByUserId,
-      
-      // Create the founding user as ORG_ADMIN
-      organizationUsers: {
-        create: {
-          userId: input.createdByUserId,
-          role: 'ORG_ADMIN',
-          versionId: crypto.randomUUID(),
-          previousVersionId: null,
-          validFrom: now,
-          validTo: MAX_DATE,
-          systemFrom: now,
-          systemTo: MAX_DATE,
-          isDeleted: false,
-          changedBy: input.createdByUserId,
-        },
+  return await prisma.$transaction(async (tx) => {
+    const org = await tx.organization.create({
+      data: {
+        name: input.name,
+        slug: input.slug,
+        ein: input.ein,
+        mission: input.mission,
+        fiscalYearStart: input.fiscalYearStart,
+        officialWebsite: input.officialWebsite,
+        einVerifiedAt: input.ein ? now : null,
+        
+        // Temporal fields (initial version)
+        versionId: crypto.randomUUID(),
+        previousVersionId: null,
+        validFrom: now,
+        validTo: MAX_DATE,
+        systemFrom: now,
+        systemTo: MAX_DATE,
+        isDeleted: false,
+        changedBy: input.createdByUserId,
       },
-    },
+    });
+
+    // Create the founding user as ORG_ADMIN (separate query — no @relation)
+    await tx.organizationUser.create({
+      data: {
+        organizationId: org.id,
+        userId: input.createdByUserId,
+        role: 'ORG_ADMIN',
+        versionId: crypto.randomUUID(),
+        previousVersionId: null,
+        validFrom: now,
+        validTo: MAX_DATE,
+        systemFrom: now,
+        systemTo: MAX_DATE,
+        isDeleted: false,
+        changedBy: input.createdByUserId,
+      },
+    });
+
+    return org;
   });
 }
 
@@ -160,16 +165,25 @@ export async function isSlugAvailable(slug: string): Promise<boolean> {
 export async function getOrganizationsForUser(userId: string) {
   const orgUsers = await prisma.organizationUser.findMany({
     where: buildCurrentVersionWhere({ userId }),
-    include: {
-      organization: true,
-    },
   });
 
-  // Filter to only include current org versions
+  // Resolve organizations (bitemporal entities)
+  const orgIds = [...new Set(orgUsers.map(ou => ou.organizationId))];
+  const orgs = orgIds.length > 0
+    ? await prisma.organization.findMany({
+        where: {
+          id: { in: orgIds },
+          validTo: MAX_DATE,
+          isDeleted: false,
+        },
+      })
+    : [];
+  const orgMap = new Map(orgs.map(o => [o.id, o]));
+
   return orgUsers
-    .filter(ou => ou.organization.validTo.getTime() === MAX_DATE.getTime() && !ou.organization.isDeleted)
+    .filter(ou => orgMap.has(ou.organizationId))
     .map(ou => ({
-      ...ou.organization,
+      ...orgMap.get(ou.organizationId)!,
       role: ou.role,
     }));
 }

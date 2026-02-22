@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { editTransaction } from '@/services/transaction.service';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
 
 const editTransactionSchema = z.object({
@@ -39,20 +40,18 @@ export async function PATCH(
     }
 
     // Find org and check admin access
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
-    const orgUser = organization.organizationUsers[0];
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const orgUser = orgUsers[0];
     if (!orgUser || orgUser.role === 'DONOR') {
       return NextResponse.json({ error: 'Access denied. Only admins can edit transactions.' }, { status: 403 });
     }
@@ -63,13 +62,13 @@ export async function PATCH(
 
     // If changing accounts, verify they exist and belong to org
     if (validatedData.debitAccountId) {
-      const account = await prisma.account.findUnique({ where: { id: validatedData.debitAccountId } });
+      const account = await prisma.account.findFirst({ where: buildCurrentVersionWhere({ id: validatedData.debitAccountId }) });
       if (!account || account.organizationId !== organization.id) {
         return NextResponse.json({ error: 'Invalid debit account' }, { status: 400 });
       }
     }
     if (validatedData.creditAccountId) {
-      const account = await prisma.account.findUnique({ where: { id: validatedData.creditAccountId } });
+      const account = await prisma.account.findFirst({ where: buildCurrentVersionWhere({ id: validatedData.creditAccountId }) });
       if (!account || account.organizationId !== organization.id) {
         return NextResponse.json({ error: 'Invalid credit account' }, { status: 400 });
       }
@@ -113,20 +112,18 @@ export async function GET(
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
-    const orgUser = organization.organizationUsers[0];
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const orgUser = orgUsers[0];
     if (!orgUser) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }

@@ -2,6 +2,11 @@
  * Temporal Data Utilities
  * 
  * Helper functions for working with bi-temporal versioned entities.
+ * In the stable entity ID design:
+ *   - `versionId` is the row-level PK (unique per version)
+ *   - `id` is the stable entity identifier (shared across all versions)
+ *   - FK references store the stable `id`
+ *   - Current version: validTo = MAX_DATE and isDeleted = false
  */
 
 // Constants
@@ -86,4 +91,45 @@ export function buildBitemporalAsOfWhere(
     validTo: { gt: asOfDate },
     ...(options.includeDeleted ? {} : { isDeleted: false }),
   };
+}
+
+// ============================================================
+// Entity Resolution Helpers
+// These replace Prisma `include` for cross-entity bitemporal joins.
+// ============================================================
+
+/**
+ * Build a where clause to resolve a single entity by its stable ID (current version).
+ */
+export function buildEntityWhere(entityId: string, options?: { includeDeleted?: boolean }) {
+  return buildCurrentVersionWhere({ id: entityId }, options);
+}
+
+/**
+ * Build a where clause to resolve multiple entities by their stable IDs (current versions).
+ */
+export function buildEntitiesWhere(entityIds: string[], options?: { includeDeleted?: boolean }) {
+  return buildCurrentVersionWhere({ id: { in: entityIds } }, options);
+}
+
+/**
+ * Given an array of resolved entities and a key field name, build a Map<entityId, entity>
+ * for O(1) lookups when enriching related records.
+ */
+export function buildEntityMap<T extends { id: string }>(entities: T[]): Map<string, T> {
+  return new Map(entities.map(e => [e.id, e]));
+}
+
+/**
+ * Collect unique non-null entity IDs from an array of records for batch resolution.
+ */
+export function collectEntityIds<T>(records: T[], ...fields: ((r: T) => string | null | undefined)[]): string[] {
+  const ids = new Set<string>();
+  for (const record of records) {
+    for (const field of fields) {
+      const id = field(record);
+      if (id) ids.add(id);
+    }
+  }
+  return Array.from(ids);
 }

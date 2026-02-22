@@ -76,10 +76,10 @@ export async function editTransaction(
       parseFloat(current.amount.toString())
     );
 
-    // Create new version with updated fields
-    // Note: each version gets its own id (PK). Versions are linked via previousVersionId → versionId.
+    // Create new version with updated fields — preserves stable entity id
     const newTransaction = await tx.transaction.create({
       data: {
+        id: current.id, // Stable entity ID — never changes across versions
         organizationId: current.organizationId,
         transactionDate: input.transactionDate ? new Date(input.transactionDate) : current.transactionDate,
         amount: newAmount,
@@ -125,16 +125,12 @@ export async function editTransaction(
     // Apply new balance effects
     await updateAccountBalances(tx, newDebitAccountId, newCreditAccountId, newAmount);
 
-    // Migrate any BillPayment references from old transaction to new version
-    const billPayments = await tx.billPayment.findMany({
-      where: { transactionId: current.id },
-    });
-    if (billPayments.length > 0) {
-      await tx.billPayment.updateMany({
+    // With stable entity IDs, BillPayment.transactionId still points to the same entity.
+    // No FK migration needed. Just recalculate bill statuses if amount changed.
+    if (newAmount !== parseFloat(current.amount.toString())) {
+      const billPayments = await tx.billPayment.findMany({
         where: { transactionId: current.id },
-        data: { transactionId: newTransaction.id },
       });
-      // Recalculate affected bill statuses (amount may have changed)
       const billIds = [...new Set(billPayments.map(bp => bp.billId))];
       for (const billId of billIds) {
         await recalculateBillStatus(billId);
@@ -184,10 +180,10 @@ export async function voidTransaction(
       },
     });
 
-    // Create new voided version
-    // Note: each version gets its own id (PK). Versions are linked via previousVersionId → versionId.
+    // Create new voided version — preserves stable entity id
     const voidedTransaction = await tx.transaction.create({
       data: {
+        id: current.id, // Stable entity ID — never changes across versions
         organizationId: current.organizationId,
         transactionDate: current.transactionDate,
         amount: parseFloat(current.amount.toString()),
@@ -257,34 +253,16 @@ export async function voidTransaction(
 }
 
 /**
- * Get the full version history of a transaction by following the previousVersionId chain.
- * Each version has its own id (PK); versions are linked via previousVersionId → versionId.
+ * Get the full version history of a transaction.
+ * With stable entity IDs, all versions share the same id.
  * Returns versions ordered most recent first.
  */
 export async function getTransactionHistory(
   transactionId: string,
   organizationId: string
 ) {
-  type TxRecord = Awaited<ReturnType<typeof prisma.transaction.findFirst>>;
-  const versions: NonNullable<TxRecord>[] = [];
-
-  // Start with the given transaction
-  let current: TxRecord = await prisma.transaction.findFirst({
+  return prisma.transaction.findMany({
     where: { id: transactionId, organizationId },
+    orderBy: { validFrom: 'desc' },
   });
-
-  if (!current) return versions;
-  versions.push(current);
-
-  // Follow previousVersionId chain backwards
-  while (current?.previousVersionId) {
-    const previous: TxRecord = await prisma.transaction.findFirst({
-      where: { versionId: current.previousVersionId, organizationId },
-    });
-    if (!previous) break;
-    versions.push(previous);
-    current = previous;
-  }
-
-  return versions;
 }

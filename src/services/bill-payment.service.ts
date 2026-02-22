@@ -6,6 +6,7 @@
 import { prisma } from '@/lib/prisma';
 import { recalculateBillStatus } from '@/services/bill.service';
 import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import type { BillPayment } from '@/generated/prisma/client';
 
 export interface RecordPaymentInput {
@@ -34,7 +35,6 @@ export async function recordPayment(
 ): Promise<BillPayment> {
   const bill = await prisma.bill.findFirst({
     where: { id: input.billId, organizationId: input.organizationId },
-    include: { accrualTransaction: true },
   });
 
   if (!bill) {
@@ -50,19 +50,26 @@ export async function recordPayment(
     throw new Error(`Payment amount (${input.amount}) exceeds remaining balance (${remaining})`);
   }
 
+  // Resolve accrual transaction explicitly (bitemporal entity)
+  const accrualTransaction = bill.accrualTransactionId
+    ? await prisma.transaction.findFirst({
+        where: buildCurrentVersionWhere({ id: bill.accrualTransactionId }),
+      })
+    : null;
+
   // Derive AP/AR account from the accrual transaction
   // PAYABLE accrual: DR Expense, CR AP → payment reverses AP: DR AP, CR Cash
   // RECEIVABLE accrual: DR AR, CR Revenue → receipt reverses AR: DR Cash, CR AR
   let debitAccountId: string;
   let creditAccountId: string;
 
-  if (bill.accrualTransaction) {
+  if (accrualTransaction) {
     if (bill.direction === 'PAYABLE') {
-      debitAccountId = bill.accrualTransaction.creditAccountId; // AP account
+      debitAccountId = accrualTransaction.creditAccountId; // AP account
       creditAccountId = input.cashAccountId; // Cash/Bank
     } else {
       debitAccountId = input.cashAccountId; // Cash/Bank
-      creditAccountId = bill.accrualTransaction.debitAccountId; // AR account
+      creditAccountId = accrualTransaction.debitAccountId; // AR account
     }
   } else {
     // Fallback for bills created before accrual integration
@@ -123,7 +130,7 @@ export async function linkPayment(
       where: { id: input.billId, organizationId },
     }),
     prisma.transaction.findFirst({
-      where: { id: input.transactionId, organizationId },
+      where: buildCurrentVersionWhere({ id: input.transactionId, organizationId }),
     }),
   ]);
 

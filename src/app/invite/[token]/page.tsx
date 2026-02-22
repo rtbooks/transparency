@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { InviteSuccess } from './InviteSuccess';
 import { ROLE_LABELS } from '@/lib/auth/permissions';
 
@@ -31,7 +32,6 @@ export default async function InvitePage({ params }: InvitePageProps) {
   const invitation = await prisma.invitation.findUnique({
     where: { token },
     include: {
-      organization: true,
       invitedBy: {
         select: {
           name: true,
@@ -42,6 +42,15 @@ export default async function InvitePage({ params }: InvitePageProps) {
   });
 
   if (!invitation) {
+    notFound();
+  }
+
+  // Resolve organization separately (bitemporal)
+  const invitationOrganization = await prisma.organization.findFirst({
+    where: buildCurrentVersionWhere({ id: invitation.organizationId }),
+  });
+
+  if (!invitationOrganization) {
     notFound();
   }
 
@@ -126,18 +135,17 @@ export default async function InvitePage({ params }: InvitePageProps) {
 
   if (isAccepted) {
     // Invitation already accepted - redirect to organization
-    redirect(`/org/${invitation.organization.slug}/dashboard`);
+    redirect(`/org/${invitationOrganization.slug}/dashboard`);
   }
 
   // Check if user is already a member of this organization
-  const existingMembership = await prisma.organizationUser.findUnique({
-    where: {
-      userId_organizationId: {
-        userId: user.id,
-        organizationId: invitation.organizationId,
-      },
-    },
+  const existingMemberships = await prisma.organizationUser.findMany({
+    where: buildCurrentVersionWhere({
+      userId: user.id,
+      organizationId: invitation.organizationId,
+    }),
   });
+  const existingMembership = existingMemberships[0];
 
   if (existingMembership) {
     // User is already a member - mark invitation as accepted if not already
@@ -155,8 +163,8 @@ export default async function InvitePage({ params }: InvitePageProps) {
     // Show success message and redirect via client component
     return (
       <InviteSuccess
-        organizationSlug={invitation.organization.slug}
-        organizationName={invitation.organization.name}
+        organizationSlug={invitationOrganization.slug}
+        organizationName={invitationOrganization.name}
         role={ROLE_LABELS[existingMembership.role]}
       />
     );
@@ -227,8 +235,8 @@ export default async function InvitePage({ params }: InvitePageProps) {
     // Show success message and redirect via client component
     return (
       <InviteSuccess
-        organizationSlug={invitation.organization.slug}
-        organizationName={invitation.organization.name}
+        organizationSlug={invitationOrganization.slug}
+        organizationName={invitationOrganization.name}
         role={ROLE_LABELS[invitation.role]}
       />
     );

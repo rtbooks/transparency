@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import {
   recalculateAccountBalance,
   verifyAccountBalance,
@@ -36,13 +37,8 @@ export async function GET(
     }
 
     // Find organization and check access
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -52,7 +48,10 @@ export async function GET(
       );
     }
 
-    const orgUser = organization.organizationUsers[0];
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const orgUser = orgUsers[0];
     if (!orgUser || orgUser.role === 'DONOR') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
@@ -60,11 +59,11 @@ export async function GET(
     // Get all accounts and transactions
     const [accounts, transactions] = await Promise.all([
       prisma.account.findMany({
-        where: { organizationId: organization.id },
+        where: buildCurrentVersionWhere({ organizationId: organization.id }),
         orderBy: { code: 'asc' },
       }),
       prisma.transaction.findMany({
-        where: { organizationId: organization.id },
+        where: buildCurrentVersionWhere({ organizationId: organization.id }),
         orderBy: { transactionDate: 'asc' },
       }),
     ]);
@@ -151,13 +150,8 @@ export async function POST(
     }
 
     // Find organization and check access (must be ORG_ADMIN or PLATFORM_ADMIN)
-    const organization = await prisma.organization.findUnique({
-      where: { slug },
-      include: {
-        organizationUsers: {
-          where: { userId: user.id },
-        },
-      },
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
     });
 
     if (!organization) {
@@ -167,7 +161,10 @@ export async function POST(
       );
     }
 
-    const orgUser = organization.organizationUsers[0];
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+    const orgUser = orgUsers[0];
     if (!orgUser || orgUser.role !== 'ORG_ADMIN') {
       return NextResponse.json(
         { error: 'Only organization admins can fix balances' },
@@ -178,10 +175,10 @@ export async function POST(
     // Get all accounts and transactions
     const [accounts, transactions] = await Promise.all([
       prisma.account.findMany({
-        where: { organizationId: organization.id },
+        where: buildCurrentVersionWhere({ organizationId: organization.id }),
       }),
       prisma.transaction.findMany({
-        where: { organizationId: organization.id },
+        where: buildCurrentVersionWhere({ organizationId: organization.id }),
         orderBy: { transactionDate: 'asc' },
       }),
     ]);
@@ -206,7 +203,7 @@ export async function POST(
 
         if (balanceChanged) {
           await prisma.account.update({
-            where: { id: account.id },
+            where: { versionId: account.versionId },
             data: { currentBalance: calculatedBalance },
           });
         }

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 interface OrganizationPageProps {
   params: Promise<{ slug: string }>;
@@ -11,8 +12,8 @@ export default async function OrganizationPublicPage({
 }: OrganizationPageProps) {
   const { slug } = await params;
 
-  const organization = await prisma.organization.findUnique({
-    where: { slug },
+  const organization = await prisma.organization.findFirst({
+    where: buildCurrentVersionWhere({ slug }),
   });
 
   if (!organization || organization.verificationStatus !== 'VERIFIED') {

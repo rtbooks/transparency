@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 export type OrganizationAccessCheck = {
   organization: any;
@@ -24,20 +25,18 @@ export async function checkOrganizationAccess(
     throw new Error('User not found');
   }
 
-  const organization = await prisma.organization.findUnique({
-    where: { slug },
-    include: {
-      organizationUsers: {
-        where: { userId: user.id },
-      },
-    },
+  const organization = await prisma.organization.findFirst({
+    where: buildCurrentVersionWhere({ slug }),
   });
 
   if (!organization) {
     notFound();
   }
 
-  const userAccess = organization.organizationUsers[0];
+  const orgUsers = await prisma.organizationUser.findMany({
+    where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+  });
+  const userAccess = orgUsers[0] ?? null;
 
   return { organization, userAccess, user };
 }
