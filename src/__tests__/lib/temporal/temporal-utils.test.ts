@@ -30,6 +30,7 @@ describe('Temporal Utils', () => {
       const where = buildCurrentVersionWhere();
       
       expect(where).toHaveProperty('validTo', MAX_DATE);
+      expect(where).toHaveProperty('systemTo', MAX_DATE);
       expect(where).toHaveProperty('isDeleted', false);
     });
 
@@ -40,6 +41,7 @@ describe('Temporal Utils', () => {
       });
       
       expect(where).toHaveProperty('validTo', MAX_DATE);
+      expect(where).toHaveProperty('systemTo', MAX_DATE);
       expect(where).toHaveProperty('isDeleted', false);
       expect(where).toHaveProperty('organizationId', 'org-123');
       expect(where).toHaveProperty('isActive', true);
@@ -52,6 +54,7 @@ describe('Temporal Utils', () => {
       });
       
       expect(where).toHaveProperty('validTo', MAX_DATE);
+      expect(where).toHaveProperty('systemTo', MAX_DATE);
       expect(where).toHaveProperty('isDeleted', false);
       expect(where.name).toEqual({ contains: 'test' });
       expect(where.amount).toEqual({ gte: 100 });

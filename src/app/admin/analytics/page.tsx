@@ -84,11 +84,11 @@ export default async function AdminAnalyticsPage() {
   const [newOrgsLast30Days, newUsersLast30Days, newTransactionsLast30Days] =
     await Promise.all([
       prisma.organization.count({
-        where: {
+        where: buildCurrentVersionWhere({
           createdAt: {
             gte: thirtyDaysAgo,
           },
-        },
+        }),
       }),
       prisma.user.count({
         where: {
@@ -98,11 +98,11 @@ export default async function AdminAnalyticsPage() {
         },
       }),
       prisma.transaction.count({
-        where: {
+        where: buildCurrentVersionWhere({
           transactionDate: {
             gte: thirtyDaysAgo,
           },
-        },
+        }),
       }),
     ]);
 

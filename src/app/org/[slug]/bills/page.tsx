@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { buildCurrentVersionWhere } from "@/lib/temporal/temporal-utils";
 import { BillsPageClient } from "@/components/bills/BillsPageClient";
 import { OrganizationLayoutWrapper } from "@/components/navigation/OrganizationLayoutWrapper";
 import { checkOrganizationAccess, VerificationStatusMessage } from "@/lib/organization-access";
@@ -46,11 +47,9 @@ export default async function BillsPage({ params }: BillsPageProps) {
 
   // Fetch accounts for bill form account selectors
   const accounts = await prisma.account.findMany({
-    where: {
+    where: buildCurrentVersionWhere({
       organizationId: organization.id,
-      isDeleted: false,
-      validTo: { gt: new Date() },
-    },
+    }),
     select: { id: true, code: true, name: true, type: true },
     orderBy: [{ type: "asc" }, { code: "asc" }],
   });

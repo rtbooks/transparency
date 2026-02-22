@@ -243,10 +243,10 @@ describe('Balance Calculator', () => {
       // Verify both accounts were fetched sequentially
       expect(mockPrisma.account.findFirst).toHaveBeenCalledTimes(2);
       expect(mockPrisma.account.findFirst).toHaveBeenCalledWith({
-        where: { id: 'debit-account-id', validTo: MAX_DATE, isDeleted: false },
+        where: { id: 'debit-account-id', validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false },
       });
       expect(mockPrisma.account.findFirst).toHaveBeenCalledWith({
-        where: { id: 'credit-account-id', validTo: MAX_DATE, isDeleted: false },
+        where: { id: 'credit-account-id', validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false },
       });
 
       // Verify closeVersion was called (updateMany) for both accounts

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 /**
  * GET /api/organizations/[slug]/bills/aging
@@ -20,7 +21,7 @@ export async function GET(
     }
 
     const organization = await prisma.organization.findFirst({
-      where: { slug, isDeleted: false },
+      where: buildCurrentVersionWhere({ slug }),
       select: { id: true },
     });
 

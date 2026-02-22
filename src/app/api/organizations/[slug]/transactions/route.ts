@@ -168,7 +168,7 @@ export async function GET(
     const contactIds = [...new Set(transactions.map(t => t.contactId).filter(Boolean))] as string[];
     const contacts = contactIds.length > 0
       ? await prisma.contact.findMany({
-          where: { id: { in: contactIds } },
+          where: buildCurrentVersionWhere({ id: { in: contactIds } }),
           select: { id: true, name: true, type: true, roles: true },
         })
       : [];

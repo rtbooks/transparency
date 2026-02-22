@@ -45,7 +45,7 @@ async function updateSingleAccountBalance(
   now: Date
 ): Promise<number> {
   const account = await prisma.account.findFirst({
-    where: { id: accountId, validTo: MAX_DATE, isDeleted: false },
+    where: { id: accountId, validTo: MAX_DATE, systemTo: MAX_DATE, isDeleted: false },
   });
 
   if (!account) {

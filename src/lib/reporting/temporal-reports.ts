@@ -6,7 +6,7 @@
 import { prisma } from '@/lib/prisma';
 import type { Account, AccountType } from '@/generated/prisma/client';
 import type { Prisma } from '@/generated/prisma/client';
-import { buildEntitiesWhere, buildEntityMap } from '@/lib/temporal/temporal-utils';
+import { buildEntitiesWhere, buildEntityMap, MAX_DATE } from '@/lib/temporal/temporal-utils';
 
 interface BalanceSheetData {
   asOfDate: Date;
@@ -153,7 +153,7 @@ export async function generateIncomeStatement(
     orderBy: { code: 'asc' },
   });
 
-  // Get transactions within the date range
+  // Get transactions within the date range (current versions only)
   const transactions = await prisma.transaction.findMany({
     where: {
       organizationId,
@@ -161,6 +161,10 @@ export async function generateIncomeStatement(
         gte: startDate,
         lte: endDate,
       },
+      validTo: MAX_DATE,
+      systemTo: MAX_DATE,
+      isDeleted: false,
+      isVoided: false,
     },
     select: {
       amount: true,
@@ -242,7 +246,7 @@ export async function generateCashFlow(
 
   const cashAccountIds = cashAccounts.map((a) => a.id);
 
-  // Get all cash transactions in the period
+  // Get all cash transactions in the period (current versions only)
   const transactions = await prisma.transaction.findMany({
     where: {
       organizationId,
@@ -250,6 +254,10 @@ export async function generateCashFlow(
         gte: startDate,
         lte: endDate,
       },
+      validTo: MAX_DATE,
+      systemTo: MAX_DATE,
+      isDeleted: false,
+      isVoided: false,
       OR: [
         { debitAccountId: { in: cashAccountIds } },
         { creditAccountId: { in: cashAccountIds } },
