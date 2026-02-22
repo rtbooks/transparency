@@ -24,6 +24,10 @@ model Organization {
   logoUrl         String?  @map("logo_url")
   fiscalYearStart DateTime @default("2024-01-01T00:00:00Z") @map("fiscal_year_start")
 
+  // Donor settings
+  donorAccessMode     DonorAccessMode @default(REQUIRE_APPROVAL) @map("donor_access_mode")
+  paymentInstructions String?         @map("payment_instructions") @db.Text
+
   // Subscription & Status
   status           OrganizationStatus @default(ACTIVE)
   subscriptionTier SubscriptionTier   @default(FREE)
@@ -106,6 +110,7 @@ model User {
   donations       Transaction[]      @relation("DonorTransactions")
   contacts        Contact[]          @relation("UserContacts")
   invitationsSent Invitation[]       @relation("InvitationsSent")
+  accessRequests  AccessRequest[]    @relation("AccessRequests")
 
   @@map("users")
 }
@@ -473,6 +478,44 @@ enum InvitationStatus {
   ACCEPTED
   EXPIRED
   REVOKED
+}
+
+// ============================================
+// ACCESS REQUESTS (Donor self-service)
+// ============================================
+
+model AccessRequest {
+  id             String              @id @default(uuid())
+  organizationId String              @map("organization_id")
+  userId         String              @map("user_id")
+  status         AccessRequestStatus @default(PENDING)
+  message        String?             @db.Text
+
+  // Review
+  reviewedBy String?   @map("reviewed_by")
+  reviewedAt DateTime? @map("reviewed_at")
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation("AccessRequests", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId, status], name: "idx_access_request_org_status")
+  @@map("access_requests")
+}
+
+enum AccessRequestStatus {
+  PENDING
+  APPROVED
+  DENIED
+}
+
+enum DonorAccessMode {
+  AUTO_APPROVE
+  REQUIRE_APPROVAL
 }
 
 // ============================================

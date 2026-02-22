@@ -90,6 +90,11 @@ export type AuditLog = Prisma.AuditLogModel
  */
 export type Invitation = Prisma.InvitationModel
 /**
+ * Model AccessRequest
+ * 
+ */
+export type AccessRequest = Prisma.AccessRequestModel
+/**
  * Model Contact
  * 
  */

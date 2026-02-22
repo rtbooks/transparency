@@ -33,6 +33,8 @@ export type OrganizationMinAggregateOutputType = {
   mission: string | null
   logoUrl: string | null
   fiscalYearStart: Date | null
+  donorAccessMode: $Enums.DonorAccessMode | null
+  paymentInstructions: string | null
   status: $Enums.OrganizationStatus | null
   subscriptionTier: $Enums.SubscriptionTier | null
   verificationStatus: $Enums.VerificationStatus | null
@@ -64,6 +66,8 @@ export type OrganizationMaxAggregateOutputType = {
   mission: string | null
   logoUrl: string | null
   fiscalYearStart: Date | null
+  donorAccessMode: $Enums.DonorAccessMode | null
+  paymentInstructions: string | null
   status: $Enums.OrganizationStatus | null
   subscriptionTier: $Enums.SubscriptionTier | null
   verificationStatus: $Enums.VerificationStatus | null
@@ -95,6 +99,8 @@ export type OrganizationCountAggregateOutputType = {
   mission: number
   logoUrl: number
   fiscalYearStart: number
+  donorAccessMode: number
+  paymentInstructions: number
   status: number
   subscriptionTier: number
   verificationStatus: number
@@ -128,6 +134,8 @@ export type OrganizationMinAggregateInputType = {
   mission?: true
   logoUrl?: true
   fiscalYearStart?: true
+  donorAccessMode?: true
+  paymentInstructions?: true
   status?: true
   subscriptionTier?: true
   verificationStatus?: true
@@ -159,6 +167,8 @@ export type OrganizationMaxAggregateInputType = {
   mission?: true
   logoUrl?: true
   fiscalYearStart?: true
+  donorAccessMode?: true
+  paymentInstructions?: true
   status?: true
   subscriptionTier?: true
   verificationStatus?: true
@@ -190,6 +200,8 @@ export type OrganizationCountAggregateInputType = {
   mission?: true
   logoUrl?: true
   fiscalYearStart?: true
+  donorAccessMode?: true
+  paymentInstructions?: true
   status?: true
   subscriptionTier?: true
   verificationStatus?: true
@@ -294,6 +306,8 @@ export type OrganizationGroupByOutputType = {
   mission: string | null
   logoUrl: string | null
   fiscalYearStart: Date
+  donorAccessMode: $Enums.DonorAccessMode
+  paymentInstructions: string | null
   status: $Enums.OrganizationStatus
   subscriptionTier: $Enums.SubscriptionTier
   verificationStatus: $Enums.VerificationStatus
@@ -346,6 +360,8 @@ export type OrganizationWhereInput = {
   mission?: Prisma.StringNullableFilter<"Organization"> | string | null
   logoUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   fiscalYearStart?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  donorAccessMode?: Prisma.EnumDonorAccessModeFilter<"Organization"> | $Enums.DonorAccessMode
+  paymentInstructions?: Prisma.StringNullableFilter<"Organization"> | string | null
   status?: Prisma.EnumOrganizationStatusFilter<"Organization"> | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFilter<"Organization"> | $Enums.SubscriptionTier
   verificationStatus?: Prisma.EnumVerificationStatusFilter<"Organization"> | $Enums.VerificationStatus
@@ -377,6 +393,8 @@ export type OrganizationOrderByWithRelationInput = {
   mission?: Prisma.SortOrderInput | Prisma.SortOrder
   logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
+  donorAccessMode?: Prisma.SortOrder
+  paymentInstructions?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
   verificationStatus?: Prisma.SortOrder
@@ -412,6 +430,8 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   mission?: Prisma.StringNullableFilter<"Organization"> | string | null
   logoUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   fiscalYearStart?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  donorAccessMode?: Prisma.EnumDonorAccessModeFilter<"Organization"> | $Enums.DonorAccessMode
+  paymentInstructions?: Prisma.StringNullableFilter<"Organization"> | string | null
   status?: Prisma.EnumOrganizationStatusFilter<"Organization"> | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFilter<"Organization"> | $Enums.SubscriptionTier
   verificationStatus?: Prisma.EnumVerificationStatusFilter<"Organization"> | $Enums.VerificationStatus
@@ -443,6 +463,8 @@ export type OrganizationOrderByWithAggregationInput = {
   mission?: Prisma.SortOrderInput | Prisma.SortOrder
   logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
+  donorAccessMode?: Prisma.SortOrder
+  paymentInstructions?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
   verificationStatus?: Prisma.SortOrder
@@ -480,6 +502,8 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   mission?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   logoUrl?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   fiscalYearStart?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
+  donorAccessMode?: Prisma.EnumDonorAccessModeWithAggregatesFilter<"Organization"> | $Enums.DonorAccessMode
+  paymentInstructions?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   status?: Prisma.EnumOrganizationStatusWithAggregatesFilter<"Organization"> | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierWithAggregatesFilter<"Organization"> | $Enums.SubscriptionTier
   verificationStatus?: Prisma.EnumVerificationStatusWithAggregatesFilter<"Organization"> | $Enums.VerificationStatus
@@ -511,6 +535,8 @@ export type OrganizationCreateInput = {
   mission?: string | null
   logoUrl?: string | null
   fiscalYearStart?: Date | string
+  donorAccessMode?: $Enums.DonorAccessMode
+  paymentInstructions?: string | null
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
   verificationStatus?: $Enums.VerificationStatus
@@ -542,6 +568,8 @@ export type OrganizationUncheckedCreateInput = {
   mission?: string | null
   logoUrl?: string | null
   fiscalYearStart?: Date | string
+  donorAccessMode?: $Enums.DonorAccessMode
+  paymentInstructions?: string | null
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
   verificationStatus?: $Enums.VerificationStatus
@@ -573,6 +601,8 @@ export type OrganizationUpdateInput = {
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
+  paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
   verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
@@ -604,6 +634,8 @@ export type OrganizationUncheckedUpdateInput = {
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
+  paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
   verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
@@ -635,6 +667,8 @@ export type OrganizationCreateManyInput = {
   mission?: string | null
   logoUrl?: string | null
   fiscalYearStart?: Date | string
+  donorAccessMode?: $Enums.DonorAccessMode
+  paymentInstructions?: string | null
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
   verificationStatus?: $Enums.VerificationStatus
@@ -666,6 +700,8 @@ export type OrganizationUpdateManyMutationInput = {
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
+  paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
   verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
@@ -697,6 +733,8 @@ export type OrganizationUncheckedUpdateManyInput = {
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
+  paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
   verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
@@ -733,6 +771,8 @@ export type OrganizationCountOrderByAggregateInput = {
   mission?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
+  donorAccessMode?: Prisma.SortOrder
+  paymentInstructions?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
   verificationStatus?: Prisma.SortOrder
@@ -764,6 +804,8 @@ export type OrganizationMaxOrderByAggregateInput = {
   mission?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
+  donorAccessMode?: Prisma.SortOrder
+  paymentInstructions?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
   verificationStatus?: Prisma.SortOrder
@@ -795,6 +837,8 @@ export type OrganizationMinOrderByAggregateInput = {
   mission?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
+  donorAccessMode?: Prisma.SortOrder
+  paymentInstructions?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
   verificationStatus?: Prisma.SortOrder
@@ -829,6 +873,10 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type EnumDonorAccessModeFieldUpdateOperationsInput = {
+  set?: $Enums.DonorAccessMode
+}
+
 export type EnumOrganizationStatusFieldUpdateOperationsInput = {
   set?: $Enums.OrganizationStatus
 }
@@ -860,6 +908,8 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   mission?: boolean
   logoUrl?: boolean
   fiscalYearStart?: boolean
+  donorAccessMode?: boolean
+  paymentInstructions?: boolean
   status?: boolean
   subscriptionTier?: boolean
   verificationStatus?: boolean
@@ -891,6 +941,8 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   mission?: boolean
   logoUrl?: boolean
   fiscalYearStart?: boolean
+  donorAccessMode?: boolean
+  paymentInstructions?: boolean
   status?: boolean
   subscriptionTier?: boolean
   verificationStatus?: boolean
@@ -922,6 +974,8 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   mission?: boolean
   logoUrl?: boolean
   fiscalYearStart?: boolean
+  donorAccessMode?: boolean
+  paymentInstructions?: boolean
   status?: boolean
   subscriptionTier?: boolean
   verificationStatus?: boolean
@@ -953,6 +1007,8 @@ export type OrganizationSelectScalar = {
   mission?: boolean
   logoUrl?: boolean
   fiscalYearStart?: boolean
+  donorAccessMode?: boolean
+  paymentInstructions?: boolean
   status?: boolean
   subscriptionTier?: boolean
   verificationStatus?: boolean
@@ -975,7 +1031,7 @@ export type OrganizationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "fiscalYearStart" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "fiscalYearStart" | "donorAccessMode" | "paymentInstructions" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 
 export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Organization"
@@ -989,6 +1045,8 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     mission: string | null
     logoUrl: string | null
     fiscalYearStart: Date
+    donorAccessMode: $Enums.DonorAccessMode
+    paymentInstructions: string | null
     status: $Enums.OrganizationStatus
     subscriptionTier: $Enums.SubscriptionTier
     verificationStatus: $Enums.VerificationStatus
@@ -1440,6 +1498,8 @@ export interface OrganizationFieldRefs {
   readonly mission: Prisma.FieldRef<"Organization", 'String'>
   readonly logoUrl: Prisma.FieldRef<"Organization", 'String'>
   readonly fiscalYearStart: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly donorAccessMode: Prisma.FieldRef<"Organization", 'DonorAccessMode'>
+  readonly paymentInstructions: Prisma.FieldRef<"Organization", 'String'>
   readonly status: Prisma.FieldRef<"Organization", 'OrganizationStatus'>
   readonly subscriptionTier: Prisma.FieldRef<"Organization", 'SubscriptionTier'>
   readonly verificationStatus: Prisma.FieldRef<"Organization", 'VerificationStatus'>

@@ -108,6 +108,23 @@ export const InvitationStatus = {
 export type InvitationStatus = (typeof InvitationStatus)[keyof typeof InvitationStatus]
 
 
+export const AccessRequestStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  DENIED: 'DENIED'
+} as const
+
+export type AccessRequestStatus = (typeof AccessRequestStatus)[keyof typeof AccessRequestStatus]
+
+
+export const DonorAccessMode = {
+  AUTO_APPROVE: 'AUTO_APPROVE',
+  REQUIRE_APPROVAL: 'REQUIRE_APPROVAL'
+} as const
+
+export type DonorAccessMode = (typeof DonorAccessMode)[keyof typeof DonorAccessMode]
+
+
 export const ContactType = {
   INDIVIDUAL: 'INDIVIDUAL',
   ORGANIZATION: 'ORGANIZATION'
