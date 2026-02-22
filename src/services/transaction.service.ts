@@ -5,7 +5,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { updateAccountBalances, reverseAccountBalances } from '@/lib/accounting/balance-calculator';
-import { MAX_DATE } from '@/lib/temporal/temporal-utils';
+import { MAX_DATE, closeVersion } from '@/lib/temporal/temporal-utils';
 import { recalculateBillStatus } from '@/services/bill.service';
 
 export interface EditTransactionInput {
@@ -59,16 +59,9 @@ export async function editTransaction(
   const newCreditAccountId = input.creditAccountId ?? current.creditAccountId;
 
   return prisma.$transaction(async (tx) => {
-    // Close the old version
-    await tx.transaction.update({
-      where: { versionId: current.versionId },
-      data: {
-        validTo: now,
-        systemTo: now,
-      },
-    });
+    // Close the old version with optimistic lock
+    await closeVersion(tx.transaction, current.versionId, now, 'Transaction');
 
-    // Reverse old balance effects
     await reverseAccountBalances(
       tx,
       current.debitAccountId,
@@ -171,14 +164,8 @@ export async function voidTransaction(
   const now = new Date();
 
   return prisma.$transaction(async (tx) => {
-    // Close the old version
-    await tx.transaction.update({
-      where: { versionId: current.versionId },
-      data: {
-        validTo: now,
-        systemTo: now,
-      },
-    });
+    // Close the old version with optimistic lock
+    await closeVersion(tx.transaction, current.versionId, now, 'Transaction');
 
     // Create new voided version — preserves stable entity id
     const voidedTransaction = await tx.transaction.create({
