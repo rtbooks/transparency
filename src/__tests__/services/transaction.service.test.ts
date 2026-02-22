@@ -31,6 +31,7 @@ jest.mock('@/lib/accounting/balance-calculator', () => ({
 
 jest.mock('@/lib/temporal/temporal-utils', () => ({
   MAX_DATE: new Date('9999-12-31T23:59:59.999Z'),
+  closeVersion: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('@/services/bill.service', () => ({
@@ -39,6 +40,7 @@ jest.mock('@/services/bill.service', () => ({
 
 import { editTransaction, voidTransaction, getTransactionHistory } from '@/services/transaction.service';
 import { updateAccountBalances, reverseAccountBalances } from '@/lib/accounting/balance-calculator';
+import { closeVersion } from '@/lib/temporal/temporal-utils';
 import { prisma } from '@/lib/prisma';
 
 const mockPrisma = prisma as any;
@@ -116,15 +118,12 @@ describe('Transaction Service', () => {
         changeReason: 'Correction',
       }, 'user-2');
 
-      // Old version closed
-      expect(mockPrisma.transaction.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { versionId: 'version-1' },
-          data: expect.objectContaining({
-            validTo: expect.any(Date),
-            systemTo: expect.any(Date),
-          }),
-        })
+      // Old version closed via closeVersion
+      expect(closeVersion).toHaveBeenCalledWith(
+        mockPrisma.transaction,
+        'version-1',
+        expect.any(Date),
+        'Transaction'
       );
 
       // Reverse old balance effects
@@ -313,15 +312,12 @@ describe('Transaction Service', () => {
         voidReason: 'Duplicate entry',
       }, 'user-2');
 
-      // Old version closed
-      expect(mockPrisma.transaction.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { versionId: 'version-1' },
-          data: expect.objectContaining({
-            validTo: expect.any(Date),
-            systemTo: expect.any(Date),
-          }),
-        })
+      // Old version closed via closeVersion
+      expect(closeVersion).toHaveBeenCalledWith(
+        mockPrisma.transaction,
+        'version-1',
+        expect.any(Date),
+        'Transaction'
       );
 
       // New voided version created — includes stable entity id

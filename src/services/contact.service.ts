@@ -4,7 +4,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere, MAX_DATE } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere, MAX_DATE, closeVersion } from '@/lib/temporal/temporal-utils';
 import type { Contact } from '@/generated/prisma/client';
 
 export interface CreateContactInput {
@@ -86,14 +86,8 @@ export async function updateContact(
       throw new Error('Contact not found');
     }
 
-    // Close current version
-    await tx.contact.update({
-      where: { versionId: current.versionId },
-      data: {
-        validTo: now,
-        systemTo: now,
-      },
-    });
+    // Close current version with optimistic lock
+    await closeVersion(tx.contact, current.versionId, now, 'Contact');
 
     // Create new version with stable entity id
     return await tx.contact.create({
@@ -226,8 +220,11 @@ export async function deleteContact(
     throw new Error('Contact not found');
   }
 
-  await prisma.contact.update({
-    where: { versionId: current.versionId },
+  const result = await prisma.contact.updateMany({
+    where: {
+      versionId: current.versionId,
+      systemTo: MAX_DATE,
+    },
     data: {
       validTo: now,
       systemTo: now,
@@ -236,4 +233,9 @@ export async function deleteContact(
       deletedBy: userId,
     },
   });
+
+  if (result.count === 0) {
+    const { ConcurrentModificationError } = await import('@/lib/temporal/temporal-utils');
+    throw new ConcurrentModificationError('Contact', current.versionId);
+  }
 }

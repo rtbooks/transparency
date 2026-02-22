@@ -124,6 +124,77 @@ export function buildEntityMap<T extends { id: string }>(entities: T[]): Map<str
 /**
  * Collect unique non-null entity IDs from an array of records for batch resolution.
  */
+// ============================================================
+// Optimistic Locking
+// ============================================================
+
+export class ConcurrentModificationError extends Error {
+  constructor(modelName: string, versionId: string) {
+    super(`Concurrent modification detected on ${modelName} version ${versionId}. The record was modified by another process.`);
+    this.name = 'ConcurrentModificationError';
+  }
+}
+
+/**
+ * Close a bitemporal version row with optimistic locking.
+ * Uses systemTo = MAX_DATE as the lock condition — if another process
+ * already closed this version, the WHERE clause matches 0 rows.
+ * Throws ConcurrentModificationError if the version was already closed.
+ */
+export async function closeVersion(
+  prismaModel: any,
+  versionId: string,
+  now: Date,
+  modelName: string = 'record'
+): Promise<void> {
+  const result = await prismaModel.updateMany({
+    where: {
+      versionId,
+      systemTo: MAX_DATE,
+    },
+    data: {
+      validTo: now,
+      systemTo: now,
+    },
+  });
+
+  if (result.count === 0) {
+    throw new ConcurrentModificationError(modelName, versionId);
+  }
+}
+
+/**
+ * Create a new version of a bitemporal entity from an existing record.
+ * Copies all fields from the source, applies updates, and sets fresh temporal fields.
+ */
+export function buildNewVersionData<T extends TemporalFields>(
+  current: T,
+  updates: Partial<T>,
+  now: Date,
+  userId?: string | null,
+): Record<string, any> {
+  const { versionId: _vId, previousVersionId: _pvId, validFrom: _vf, validTo: _vt, systemFrom: _sf, systemTo: _st, ...rest } = current as any;
+  return {
+    ...rest,
+    ...updates,
+    id: current.id,
+    versionId: crypto.randomUUID(),
+    previousVersionId: current.versionId,
+    validFrom: now,
+    validTo: MAX_DATE,
+    systemFrom: now,
+    systemTo: MAX_DATE,
+    isDeleted: false,
+    deletedAt: null,
+    deletedBy: null,
+    changedBy: userId ?? null,
+  };
+}
+
+// ============================================================
+// Entity Resolution Helpers
+// ============================================================
+
 export function collectEntityIds<T>(records: T[], ...fields: ((r: T) => string | null | undefined)[]): string[] {
   const ids = new Set<string>();
   for (const record of records) {

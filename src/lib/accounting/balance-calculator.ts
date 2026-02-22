@@ -1,5 +1,5 @@
 import { AccountType } from '@/generated/prisma/client';
-import { MAX_DATE } from '@/lib/temporal/temporal-utils';
+import { MAX_DATE, closeVersion } from '@/lib/temporal/temporal-utils';
 
 /**
  * Calculate updated balance for an account based on a transaction
@@ -30,7 +30,60 @@ export function calculateNewBalance(
 }
 
 /**
- * Update balances for both accounts involved in a transaction
+ * Close an account version and create a new version with the updated balance.
+ * Uses optimistic locking via closeVersion() to detect concurrent modifications.
+ * 
+ * IMPORTANT: This function must be called within a Prisma $transaction so that
+ * the close + create is atomic. If a ConcurrentModificationError occurs, the
+ * entire DB transaction rolls back — the caller should retry the whole operation.
+ */
+async function updateSingleAccountBalance(
+  prisma: any,
+  accountId: string,
+  amount: number,
+  isDebit: boolean,
+  now: Date
+): Promise<number> {
+  const account = await prisma.account.findFirst({
+    where: { id: accountId, validTo: MAX_DATE, isDeleted: false },
+  });
+
+  if (!account) {
+    throw new Error(`Account ${accountId} not found`);
+  }
+
+  const newBalance = calculateNewBalance(account.currentBalance, amount, account.type, isDebit);
+
+  // Close current version with optimistic lock — if another process closed
+  // this version first, throws ConcurrentModificationError and the entire
+  // DB transaction rolls back (no partial updates possible)
+  await closeVersion(prisma.account, account.versionId, now, 'Account');
+
+  // Create new version with updated balance
+  const { versionId: _vId, ...rest } = account;
+  await prisma.account.create({
+    data: {
+      ...rest,
+      currentBalance: newBalance,
+      versionId: crypto.randomUUID(),
+      previousVersionId: account.versionId,
+      validFrom: now,
+      validTo: MAX_DATE,
+      systemFrom: now,
+      systemTo: MAX_DATE,
+    },
+  });
+
+  return newBalance;
+}
+
+/**
+ * Update balances for both accounts involved in a transaction.
+ * Creates new bitemporal versions for each account.
+ * 
+ * Must be called within a Prisma $transaction (all callers already do this).
+ * Both accounts are updated within the same DB transaction — if either fails,
+ * the entire transaction rolls back with no partial balance updates.
  */
 export async function updateAccountBalances(
   prisma: any,
@@ -55,36 +108,19 @@ export async function updateAccountBalances(
     debitAccount.type,
     true // This account is being debited
   );
+  const now = new Date();
 
-  const newCreditBalance = calculateNewBalance(
-    creditAccount.currentBalance,
-    amount,
-    creditAccount.type,
-    false // This account is being credited
-  );
-
-  // Update both accounts (using versionId as PK)
-  await Promise.all([
-    prisma.account.update({
-      where: { versionId: debitAccount.versionId },
-      data: { currentBalance: newDebitBalance },
-    }),
-    prisma.account.update({
-      where: { versionId: creditAccount.versionId },
-      data: { currentBalance: newCreditBalance },
-    }),
-  ]);
+  const newDebitBalance = await updateSingleAccountBalance(prisma, debitAccountId, amount, true, now);
+  const newCreditBalance = await updateSingleAccountBalance(prisma, creditAccountId, amount, false, now);
 
   return { newDebitBalance, newCreditBalance };
 }
 
 /**
  * Reverse the balance effects of a transaction on both accounts.
- * Used when editing or voiding a transaction.
+ * Creates new bitemporal versions for each account.
  * 
- * This is the inverse of updateAccountBalances:
- * - Reverses the debit on the debit account (applies a credit)
- * - Reverses the credit on the credit account (applies a debit)
+ * Must be called within a Prisma $transaction.
  */
 export async function reverseAccountBalances(
   prisma: any,
@@ -117,18 +153,11 @@ export async function reverseAccountBalances(
     creditAccount.type,
     true // Debit to reverse the original credit
   );
+  const now = new Date();
 
-  // Update both accounts (using versionId as PK)
-  await Promise.all([
-    prisma.account.update({
-      where: { versionId: debitAccount.versionId },
-      data: { currentBalance: newDebitBalance },
-    }),
-    prisma.account.update({
-      where: { versionId: creditAccount.versionId },
-      data: { currentBalance: newCreditBalance },
-    }),
-  ]);
+  // Reverse: credit the debit account, debit the credit account
+  const newDebitBalance = await updateSingleAccountBalance(prisma, debitAccountId, amount, false, now);
+  const newCreditBalance = await updateSingleAccountBalance(prisma, creditAccountId, amount, true, now);
 
   return { newDebitBalance, newCreditBalance };
 }
