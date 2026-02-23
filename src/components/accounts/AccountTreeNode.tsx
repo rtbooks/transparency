@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronRight, ChevronDown, Edit, Power, PowerOff } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronRight, ChevronDown, Edit, Power, PowerOff, AlertTriangle } from 'lucide-react';
 import { AccountTreeNode } from '@/lib/utils/account-tree';
 import { formatCurrency, getAccountTypeInfo } from '@/lib/utils/account-tree';
 import { Button } from '@/components/ui/button';
@@ -54,6 +54,28 @@ export function AccountTreeNodeComponent({
   const { toast } = useToast();
   const hasChildren = node.children.length > 0;
   const typeInfo = getAccountTypeInfo(node.type);
+
+  // Fetch projected balance for ASSET accounts
+  const [projectedBalance, setProjectedBalance] = useState<number | null>(null);
+  useEffect(() => {
+    if (node.type !== 'ASSET' || !node.isActive) return;
+    async function fetchProjected() {
+      try {
+        const res = await fetch(
+          `/api/organizations/${organizationSlug}/accounts/${node.id}/projected-balance`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data.pendingBillCount > 0) {
+            setProjectedBalance(data.projectedBalance);
+          }
+        }
+      } catch {
+        // Ignore
+      }
+    }
+    fetchProjected();
+  }, [node.id, node.type, node.isActive, organizationSlug]);
 
   const handleEditSuccess = () => {
     setEditDialogOpen(false);
@@ -154,6 +176,21 @@ export function AccountTreeNodeComponent({
           >
             {formatCurrency(node.currentBalance)}
           </span>
+
+          {/* Projected Balance Indicator (ASSET accounts with pending payables) */}
+          {projectedBalance !== null && (
+            <span
+              className={`min-w-[120px] text-right text-xs ${
+                projectedBalance >= 0 ? 'text-blue-600' : 'text-red-600'
+              }`}
+              title="Projected balance after pending payable bills"
+            >
+              {projectedBalance < 0 && (
+                <AlertTriangle className="mr-1 inline h-3 w-3" />
+              )}
+              Avail: {formatCurrency(projectedBalance)}
+            </span>
+          )}
 
           {/* Edit Button */}
           <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>

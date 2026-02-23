@@ -19,7 +19,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Pencil, Ban, DollarSign } from "lucide-react";
+import { Pencil, Ban, DollarSign, AlertTriangle } from "lucide-react";
 import { BillForm } from "./BillForm";
 import { BillPaymentForm } from "./BillPaymentForm";
 import { formatCurrency } from "@/lib/utils/account-tree";
@@ -49,6 +49,7 @@ interface BillDetailData {
     email: string | null;
   } | null;
   payments: Payment[];
+  fundingAccountId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -105,6 +106,13 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
   const [editing, setEditing] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [overdraftInfo, setOverdraftInfo] = useState<{
+    currentBalance: number;
+    pendingPayables: number;
+    projectedBalance: number;
+    isOverdraft: boolean;
+    accountName: string;
+  } | null>(null);
 
   const fetchDetail = useCallback(async () => {
     try {
@@ -139,6 +147,28 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
   useEffect(() => {
     fetchDetail();
   }, [fetchDetail]);
+
+  // Fetch overdraft info for PAYABLE bills with a funding account
+  useEffect(() => {
+    if (!detail?.fundingAccountId || detail.direction !== "PAYABLE" || detail.status === "PAID" || detail.status === "CANCELLED") {
+      setOverdraftInfo(null);
+      return;
+    }
+    async function fetchOverdraft() {
+      try {
+        const res = await fetch(
+          `/api/organizations/${organizationSlug}/accounts/${detail!.fundingAccountId}/projected-balance`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setOverdraftInfo(data);
+        }
+      } catch {
+        // Ignore
+      }
+    }
+    fetchOverdraft();
+  }, [detail, organizationSlug]);
 
   const handleCancel = async () => {
     if (!confirm("Are you sure you want to cancel this bill? This action cannot be undone.")) {
@@ -271,6 +301,23 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
             {progressPercent.toFixed(0)}% paid
           </div>
         </div>
+
+        {/* Overdraft Warning */}
+        {overdraftInfo && overdraftInfo.isOverdraft && (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Overdraft Warning:</strong> The funding account ({overdraftInfo.accountName})
+              has a projected balance of{" "}
+              <strong>{formatCurrency(overdraftInfo.projectedBalance)}</strong> after
+              accounting for all pending payables.
+              <span className="mt-1 block text-xs">
+                Current balance: {formatCurrency(overdraftInfo.currentBalance)} · 
+                Total pending payables: {formatCurrency(overdraftInfo.pendingPayables)}
+              </span>
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Details */}
         <div className="grid grid-cols-2 gap-4">
@@ -438,6 +485,7 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
                 (parseFloat(String(detail.amountPaid)) || 0)
               }
               accounts={accounts}
+              defaultCashAccountId={detail.fundingAccountId ?? undefined}
               onSuccess={() => {
                 setShowPaymentForm(false);
                 fetchDetail();

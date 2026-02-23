@@ -20,6 +20,7 @@ const createBillSchema = z.object({
   notes: z.string().nullable().optional(),
   liabilityOrAssetAccountId: z.string().uuid(),
   expenseOrRevenueAccountId: z.string().uuid(),
+  fundingAccountId: z.string().uuid().nullable().optional(),
 });
 
 export async function GET(
@@ -150,6 +151,14 @@ export async function POST(
       liabilityOrAssetAccountId: validated.liabilityOrAssetAccountId,
       expenseOrRevenueAccountId: validated.expenseOrRevenueAccountId,
     });
+
+    // Set funding account if provided (PAYABLE bills only)
+    if (validated.fundingAccountId && validated.direction === 'PAYABLE') {
+      await prisma.bill.update({
+        where: { id: bill.id },
+        data: { fundingAccountId: validated.fundingAccountId },
+      });
+    }
 
     return NextResponse.json(bill, { status: 201 });
   } catch (error) {
