@@ -23,6 +23,7 @@ import { Pencil, Ban, DollarSign, AlertTriangle } from "lucide-react";
 import { BillForm } from "./BillForm";
 import { BillPaymentForm } from "./BillPaymentForm";
 import { formatCurrency } from "@/lib/utils/account-tree";
+import { trackEvent } from "@/lib/analytics";
 
 interface Payment {
   id: string;
@@ -506,6 +507,10 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
               defaultCashAccountId={detail.fundingAccountId ?? undefined}
               onSuccess={() => {
                 setShowPaymentForm(false);
+                trackEvent('bill_paid', {
+                  amount: (parseFloat(String(detail.amount)) || 0) - (parseFloat(String(detail.amountPaid)) || 0),
+                  orgSlug: organizationSlug,
+                });
                 fetchDetail();
               }}
               onCancel={() => setShowPaymentForm(false)}

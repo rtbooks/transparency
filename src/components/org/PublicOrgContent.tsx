@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils/account-tree';
+import { trackEvent } from '@/lib/analytics';
 
 interface PublicOrgContentProps {
   organization: {
@@ -98,6 +99,7 @@ export function PublicOrgContent({
       }
 
       setDialogOpen(false);
+      trackEvent('access_requested', { orgSlug: organization.slug });
     } catch (error: any) {
       toast({
         title: 'Error',

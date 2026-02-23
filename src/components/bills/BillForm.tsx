@@ -7,6 +7,7 @@ import { Calendar as CalendarIcon, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { trackEvent } from "@/lib/analytics";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
@@ -195,6 +196,13 @@ export function BillForm({
         throw new Error(data.error || "Failed to save bill");
       }
 
+      if (!isEditing) {
+        trackEvent('bill_created', {
+          direction: String(formData.direction),
+          amount: Number(formData.amount),
+          orgSlug: organizationSlug,
+        });
+      }
       onSuccess();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
