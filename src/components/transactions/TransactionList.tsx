@@ -35,6 +35,7 @@ import { ChevronLeft, ChevronRight, Download, Search, Info, Pencil, Ban } from "
 import { format } from "date-fns";
 import { EditTransactionForm } from "./EditTransactionForm";
 import { VoidTransactionDialog } from "./VoidTransactionDialog";
+import { AttachmentSection } from "@/components/attachments/AttachmentSection";
 
 interface TransactionWithAccounts extends Transaction {
   debitAccount: Pick<Account, "id" | "code" | "name" | "type">;
@@ -576,6 +577,14 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
                   <span className="font-medium">ID:</span> {selectedTransaction.id.slice(0, 8)}...
                 </div>
               </div>
+
+              {/* Attachments */}
+              <AttachmentSection
+                organizationSlug={organizationSlug}
+                entityType="TRANSACTION"
+                entityId={selectedTransaction.id}
+                readOnly={selectedTransaction.isVoided}
+              />
 
               {/* Edit/Void action buttons - only for non-voided transactions */}
               {!selectedTransaction.isVoided && (

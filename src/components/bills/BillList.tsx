@@ -60,6 +60,8 @@ interface BillListProps {
   directionFilter?: "PAYABLE" | "RECEIVABLE";
   refreshKey?: number;
   accounts?: Account[];
+  openBillId?: string | null;
+  onBillOpened?: () => void;
 }
 
 const STATUS_OPTIONS = [
@@ -101,7 +103,7 @@ function getDirectionBadge(direction: Bill["direction"]) {
   );
 }
 
-export function BillList({ organizationSlug, directionFilter, refreshKey, accounts }: BillListProps) {
+export function BillList({ organizationSlug, directionFilter, refreshKey, accounts, openBillId, onBillOpened }: BillListProps) {
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -169,6 +171,32 @@ export function BillList({ organizationSlug, directionFilter, refreshKey, accoun
     setPage(1);
     fetchBills();
   };
+
+  // Open a specific bill when openBillId is set (e.g., after creation)
+  useEffect(() => {
+    if (!openBillId) return;
+    const billFromList = bills.find((b) => b.id === openBillId);
+    if (billFromList) {
+      setSelectedBill(billFromList);
+    } else {
+      // Bill may not be in the current page; create a minimal stub for BillDetail to fetch
+      setSelectedBill({
+        id: openBillId,
+        direction: "PAYABLE",
+        status: "DRAFT",
+        amount: 0,
+        amountPaid: 0,
+        description: null,
+        issueDate: new Date().toISOString(),
+        dueDate: new Date().toISOString(),
+        notes: null,
+        contact: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
+    onBillOpened?.();
+  }, [openBillId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRowClick = (bill: Bill) => {
     setSelectedBill(bill);
