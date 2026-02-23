@@ -34,6 +34,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { ContactSelector } from '@/components/contacts/ContactSelector';
+import { AttachmentSection } from '@/components/attachments/AttachmentSection';
 
 const editFormSchema = z.object({
   transactionDate: z.date(),
@@ -330,6 +331,13 @@ export function EditTransactionForm({
               <FormMessage />
             </FormItem>
           )}
+        />
+
+        {/* Attachments */}
+        <AttachmentSection
+          organizationSlug={organizationSlug}
+          entityType="TRANSACTION"
+          entityId={transaction.id}
         />
 
         {form.formState.errors.root && (

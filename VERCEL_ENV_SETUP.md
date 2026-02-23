@@ -181,7 +181,19 @@ Before deploying, verify you have:
 - [ ] `CLERK_SECRET_KEY`
 - [ ] All Clerk redirect URLs
 - [ ] Stripe keys (if using donations)
+- [ ] `BLOB_READ_WRITE_TOKEN` (Vercel Blob — file attachments)
 - [ ] `NODE_ENV=production`
+
+## Vercel Blob (File Attachments)
+
+Used for uploading receipts, invoices, and documents to transactions and bills.
+
+1. In your Vercel project, go to **Storage** → **Create Database** → **Blob**
+2. Connect it to your project — this auto-sets `BLOB_READ_WRITE_TOKEN`
+3. For local dev, copy the token to `.env.local`:
+   ```
+   BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
+   ```
 
 ## Preview Deployments
 

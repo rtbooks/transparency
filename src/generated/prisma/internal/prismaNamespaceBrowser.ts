@@ -65,7 +65,8 @@ export const ModelName = {
   Campaign: 'Campaign',
   Contact: 'Contact',
   Bill: 'Bill',
-  BillPayment: 'BillPayment'
+  BillPayment: 'BillPayment',
+  Attachment: 'Attachment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -422,6 +423,22 @@ export const BillPaymentScalarFieldEnum = {
 } as const
 
 export type BillPaymentScalarFieldEnum = (typeof BillPaymentScalarFieldEnum)[keyof typeof BillPaymentScalarFieldEnum]
+
+
+export const AttachmentScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  fileName: 'fileName',
+  fileSize: 'fileSize',
+  mimeType: 'mimeType',
+  blobUrl: 'blobUrl',
+  uploadedBy: 'uploadedBy',
+  uploadedAt: 'uploadedAt'
+} as const
+
+export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
 
 
 export const SortOrder = {
