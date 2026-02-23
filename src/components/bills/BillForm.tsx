@@ -57,7 +57,7 @@ interface BillFormProps {
     notes: string | null;
     fundingAccountId?: string | null;
   };
-  onSuccess: () => void;
+  onSuccess: (createdBillId?: string) => void;
   onCancel: () => void;
   defaultDirection?: "PAYABLE" | "RECEIVABLE";
 }
@@ -196,6 +196,8 @@ export function BillForm({
         throw new Error(data.error || "Failed to save bill");
       }
 
+      const savedBill = await response.json();
+
       if (!isEditing) {
         trackEvent('bill_created', {
           direction: String(formData.direction),
@@ -203,7 +205,7 @@ export function BillForm({
           orgSlug: organizationSlug,
         });
       }
-      onSuccess();
+      onSuccess(isEditing ? undefined : savedBill.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {

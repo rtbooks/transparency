@@ -690,3 +690,30 @@ model BillPayment {
   @@index([transactionId], name: "idx_billpayment_transaction")
   @@map("bill_payments")
 }
+
+// ============================================
+// FILE ATTACHMENTS (Vercel Blob)
+// ============================================
+
+model Attachment {
+  id             String @id @default(uuid())
+  organizationId String @map("organization_id")
+
+  // Polymorphic link to parent entity
+  entityType String @map("entity_type") // "TRANSACTION" | "BILL"
+  entityId   String @map("entity_id")
+
+  // File metadata
+  fileName String @map("file_name")
+  fileSize Int    @map("file_size") // bytes
+  mimeType String @map("mime_type")
+  blobUrl  String @map("blob_url")
+
+  // Audit
+  uploadedBy String?  @map("uploaded_by")
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+
+  @@index([organizationId, entityType, entityId], name: "idx_attachment_org_entity")
+  @@index([entityType, entityId], name: "idx_attachment_entity")
+  @@map("attachments")
+}

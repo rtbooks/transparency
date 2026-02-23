@@ -32,6 +32,7 @@ export function BillsPageClient({ organizationSlug, accounts }: BillsPageClientP
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [directionFilter, setDirectionFilter] = useState<DirectionFilter>("ALL");
+  const [openBillId, setOpenBillId] = useState<string | null>(null);
 
   const tabs: { label: string; value: DirectionFilter }[] = [
     { label: "All", value: "ALL" },
@@ -81,6 +82,8 @@ export function BillsPageClient({ organizationSlug, accounts }: BillsPageClientP
         directionFilter={directionFilter === "ALL" ? undefined : directionFilter}
         refreshKey={refreshKey}
         accounts={accounts}
+        openBillId={openBillId}
+        onBillOpened={() => setOpenBillId(null)}
       />
 
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
@@ -94,9 +97,12 @@ export function BillsPageClient({ organizationSlug, accounts }: BillsPageClientP
           <BillForm
             organizationSlug={organizationSlug}
             accounts={accounts}
-            onSuccess={() => {
+            onSuccess={(createdBillId) => {
               setShowAddDialog(false);
               setRefreshKey((k) => k + 1);
+              if (createdBillId) {
+                setOpenBillId(createdBillId);
+              }
             }}
             onCancel={() => setShowAddDialog(false)}
             defaultDirection={

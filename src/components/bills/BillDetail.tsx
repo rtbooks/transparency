@@ -24,6 +24,7 @@ import { BillForm } from "./BillForm";
 import { BillPaymentForm } from "./BillPaymentForm";
 import { formatCurrency } from "@/lib/utils/account-tree";
 import { trackEvent } from "@/lib/analytics";
+import { AttachmentSection } from "@/components/attachments/AttachmentSection";
 
 interface Payment {
   id: string;
@@ -422,6 +423,14 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
             <span className="font-medium">ID:</span> {detail.id.slice(0, 8)}...
           </div>
         </div>
+
+        {/* Attachments */}
+        <AttachmentSection
+          organizationSlug={organizationSlug}
+          entityType="BILL"
+          entityId={detail.id}
+          readOnly={detail.status === "CANCELLED"}
+        />
 
         {/* Actions */}
         <div className="flex gap-2 border-t pt-4">

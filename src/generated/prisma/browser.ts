@@ -92,3 +92,8 @@ export type Bill = Prisma.BillModel
  * 
  */
 export type BillPayment = Prisma.BillPaymentModel
+/**
+ * Model Attachment
+ * 
+ */
+export type Attachment = Prisma.AttachmentModel
