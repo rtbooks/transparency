@@ -6,7 +6,7 @@
 import { prisma } from '@/lib/prisma';
 import type { Account, AccountType } from '@/generated/prisma/client';
 import type { Prisma } from '@/generated/prisma/client';
-import { buildEntitiesWhere, buildEntityMap, MAX_DATE } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere, buildAsOfDateWhere, buildEntitiesWhere, buildEntityMap, MAX_DATE } from '@/lib/temporal/temporal-utils';
 
 interface BalanceSheetData {
   asOfDate: Date;
@@ -68,13 +68,11 @@ export async function generateBalanceSheet(
   organizationId: string,
   asOfDate: Date
 ): Promise<BalanceSheetData> {
-  // Get accounts as they existed on the date
+  // Get accounts as they existed on the date (bitemporal: valid-time + system-time)
   const accounts = await prisma.account.findMany({
     where: {
-      organizationId,
-      validFrom: { lte: asOfDate },
-      validTo: { gt: asOfDate },
-      isDeleted: false,
+      ...buildAsOfDateWhere(asOfDate, { organizationId }),
+      systemTo: MAX_DATE,
       isActive: true,
     },
     orderBy: { code: 'asc' },
@@ -84,6 +82,8 @@ export async function generateBalanceSheet(
   const assets = accounts.filter((a) => a.type === 'ASSET');
   const liabilities = accounts.filter((a) => a.type === 'LIABILITY');
   const equity = accounts.filter((a) => a.type === 'EQUITY');
+  const revenueAccounts = accounts.filter((a) => a.type === 'REVENUE');
+  const expenseAccounts = accounts.filter((a) => a.type === 'EXPENSE');
 
   // Further categorize assets (simplified - could be enhanced with account code ranges)
   const currentAssets = assets.filter((a) => 
@@ -119,9 +119,20 @@ export async function generateBalanceSheet(
     total: liabilities.reduce((sum, a) => sum + Number(a.currentBalance), 0),
   };
 
+  // Net income = Revenue balances - Expense balances (must be added to equity for A = L + E)
+  const revenueTotal = revenueAccounts.reduce((sum, a) => sum + Number(a.currentBalance), 0);
+  const expenseTotal = expenseAccounts.reduce((sum, a) => sum + Number(a.currentBalance), 0);
+  const netIncome = revenueTotal - expenseTotal;
+
+  const equityAccountsList = equity.map(mapAccount);
+  // Include net income as a synthetic line item so the equation balances
+  if (netIncome !== 0) {
+    equityAccountsList.push({ code: '', name: 'Current Period Net Income', balance: netIncome });
+  }
+
   const equityData = {
-    accounts: equity.map(mapAccount),
-    total: equity.reduce((sum, a) => sum + Number(a.currentBalance), 0),
+    accounts: equityAccountsList,
+    total: equity.reduce((sum, a) => sum + Number(a.currentBalance), 0) + netIncome,
   };
 
   return {
@@ -141,17 +152,20 @@ export async function generateIncomeStatement(
   startDate: Date,
   endDate: Date
 ): Promise<IncomeStatementData> {
-  // Get revenue and expense accounts that existed during the period
+  // Get current versions of revenue and expense accounts (no duplicates)
   const accounts = await prisma.account.findMany({
-    where: {
+    where: buildCurrentVersionWhere({
       organizationId,
-      validFrom: { lte: endDate },
-      validTo: { gt: startDate },
-      isDeleted: false,
       type: { in: ['REVENUE', 'EXPENSE'] },
-    },
+    }),
     orderBy: { code: 'asc' },
   });
+
+  // Build a lookup for account types so we can apply correct debit/credit logic
+  const accountTypeMap = new Map<string, AccountType>();
+  for (const acc of accounts) {
+    accountTypeMap.set(acc.id, acc.type);
+  }
 
   // Get transactions within the date range (current versions only)
   const transactions = await prisma.transaction.findMany({
@@ -173,21 +187,29 @@ export async function generateIncomeStatement(
     },
   });
 
-  // Calculate activity for each account
+  // Calculate activity per account using correct debit/credit rules:
+  // - EXPENSE accounts: debits increase (positive activity)
+  // - REVENUE accounts: credits increase (positive activity)
   const accountActivity = new Map<string, number>();
 
   transactions.forEach((tx) => {
     const amount = Number(tx.amount);
-    
-    // Debit increases assets/expenses, credit increases liabilities/equity/revenue
-    accountActivity.set(
-      tx.debitAccountId,
-      (accountActivity.get(tx.debitAccountId) || 0) + amount
-    );
-    accountActivity.set(
-      tx.creditAccountId,
-      (accountActivity.get(tx.creditAccountId) || 0) + amount
-    );
+
+    const debitType = accountTypeMap.get(tx.debitAccountId);
+    if (debitType === 'EXPENSE') {
+      accountActivity.set(
+        tx.debitAccountId,
+        (accountActivity.get(tx.debitAccountId) || 0) + amount
+      );
+    }
+
+    const creditType = accountTypeMap.get(tx.creditAccountId);
+    if (creditType === 'REVENUE') {
+      accountActivity.set(
+        tx.creditAccountId,
+        (accountActivity.get(tx.creditAccountId) || 0) + amount
+      );
+    }
   });
 
   const revenue = accounts.filter((a) => a.type === 'REVENUE');
@@ -228,16 +250,13 @@ export async function generateCashFlow(
   startDate: Date,
   endDate: Date
 ): Promise<CashFlowData> {
-  // Get cash accounts
+  // Get current cash accounts (no range-overlap duplicates)
   const cashAccounts = await prisma.account.findMany({
-    where: {
+    where: buildCurrentVersionWhere({
       organizationId,
-      validFrom: { lte: endDate },
-      validTo: { gt: startDate },
-      isDeleted: false,
       type: 'ASSET',
       code: { startsWith: '10' }, // Cash accounts typically 1000-1099
-    },
+    }),
   });
 
   if (cashAccounts.length === 0) {
@@ -245,6 +264,22 @@ export async function generateCashFlow(
   }
 
   const cashAccountIds = cashAccounts.map((a) => a.id);
+
+  // Get cash account versions as of startDate to determine beginning balance
+  const startDateAccounts = await prisma.account.findMany({
+    where: {
+      ...buildAsOfDateWhere(startDate, { organizationId }),
+      systemTo: MAX_DATE,
+      type: 'ASSET',
+      code: { startsWith: '10' },
+    },
+  });
+  // Deduplicate by stable id (take latest validFrom per id)
+  const startBalanceMap = new Map<string, number>();
+  for (const acc of startDateAccounts) {
+    startBalanceMap.set(acc.id, Number(acc.currentBalance));
+  }
+  const beginningBalance = Array.from(startBalanceMap.values()).reduce((sum, b) => sum + b, 0);
 
   // Get all cash transactions in the period (current versions only)
   const transactions = await prisma.transaction.findMany({
@@ -315,12 +350,6 @@ export async function generateCashFlow(
   const investingTotal = investing.reduce((sum, item) => sum + item.amount, 0);
   const financingTotal = financing.reduce((sum, item) => sum + item.amount, 0);
   const netChange = operatingTotal + investingTotal + financingTotal;
-
-  // Get beginning balance (as of start date)
-  const beginningBalance = cashAccounts.reduce((sum, acc) => {
-    // This is simplified - should query balance as of startDate
-    return sum + Number(acc.currentBalance);
-  }, 0) - netChange;
 
   return {
     startDate,
