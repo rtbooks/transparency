@@ -35,9 +35,11 @@ export interface CreateBillInput {
 
 export interface UpdateBillInput {
   description?: string;
+  issueDate?: Date | null;
   dueDate?: Date | null;
   notes?: string | null;
   status?: 'DRAFT' | 'PENDING' | 'PARTIAL' | 'PAID' | 'OVERDUE' | 'CANCELLED';
+  fundingAccountId?: string | null;
 }
 
 /**
@@ -132,9 +134,11 @@ export async function updateBill(
 
     const data: Record<string, unknown> = {};
     if (updates.description !== undefined) data.description = updates.description;
+    if (updates.issueDate !== undefined) data.issueDate = updates.issueDate;
     if (updates.dueDate !== undefined) data.dueDate = updates.dueDate;
     if (updates.notes !== undefined) data.notes = updates.notes;
     if (updates.status !== undefined) data.status = updates.status;
+    if (updates.fundingAccountId !== undefined) data.fundingAccountId = updates.fundingAccountId;
 
     return await tx.bill.update({
       where: { id },
@@ -149,13 +153,23 @@ export async function updateBill(
 export async function getBill(
   id: string,
   orgId: string
-): Promise<(Bill & { payments: (BillPayment & { transaction: Transaction | null })[] }) | null> {
+): Promise<(Bill & { contact: { id: string; name: string; email: string | null } | null; payments: (BillPayment & { transaction: Transaction | null })[] }) | null> {
   const bill = await prisma.bill.findFirst({
     where: { id, organizationId: orgId },
     include: { payments: true },
   });
 
   if (!bill) return null;
+
+  // Resolve contact (bitemporal entity)
+  let contact: { id: string; name: string; email: string | null } | null = null;
+  if (bill.contactId) {
+    const contactEntity = await prisma.contact.findFirst({
+      where: buildCurrentVersionWhere({ id: bill.contactId }),
+      select: { id: true, name: true, email: true },
+    });
+    contact = contactEntity ?? null;
+  }
 
   // Resolve transactions for each payment (bitemporal entities)
   const txnIds = bill.payments.map(p => p.transactionId);
@@ -169,7 +183,7 @@ export async function getBill(
     transaction: txnMap.get(p.transactionId) ?? null,
   }));
 
-  return { ...bill, payments: paymentsWithTxn };
+  return { ...bill, contact, payments: paymentsWithTxn };
 }
 
 /**

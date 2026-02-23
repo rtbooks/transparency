@@ -6,10 +6,12 @@ import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
 
 const updateBillSchema = z.object({
-  description: z.string().min(1).optional(),
+  description: z.string().min(1).nullable().optional(),
+  issueDate: z.string().nullable().optional(),
   dueDate: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
   status: z.enum(['DRAFT', 'PENDING', 'PARTIAL', 'PAID', 'OVERDUE', 'CANCELLED']).optional(),
+  fundingAccountId: z.string().uuid().nullable().optional(),
 });
 
 export async function GET(
@@ -106,6 +108,9 @@ export async function PATCH(
     }
 
     const updates: any = { ...validated };
+    if (validated.issueDate !== undefined) {
+      updates.issueDate = validated.issueDate ? new Date(validated.issueDate) : null;
+    }
     if (validated.dueDate !== undefined) {
       updates.dueDate = validated.dueDate ? new Date(validated.dueDate) : null;
     }
