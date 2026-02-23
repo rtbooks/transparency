@@ -26,7 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight, Search, Pencil } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, Pencil, UserCheck } from "lucide-react";
 import { ContactForm } from "./ContactForm";
 import { ContactTransactionHistory } from "./ContactTransactionHistory";
 
@@ -39,6 +39,7 @@ interface Contact {
   phone: string | null;
   address: string | null;
   notes: string | null;
+  userId: string | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -217,7 +218,14 @@ export function ContactList({ organizationSlug, refreshKey }: ContactListProps) 
                   className="cursor-pointer hover:bg-gray-50"
                   onClick={() => setSelectedContact(contact)}
                 >
-                  <TableCell className="font-medium">{contact.name}</TableCell>
+                  <TableCell className="font-medium">
+                    <span className="inline-flex items-center gap-1.5">
+                      {contact.name}
+                      {contact.userId && (
+                        <UserCheck className="h-3.5 w-3.5 text-blue-500" aria-label="Linked to platform user" />
+                      )}
+                    </span>
+                  </TableCell>
                   <TableCell className="text-sm text-gray-600">
                     {contact.type === "INDIVIDUAL" ? "Individual" : "Organization"}
                   </TableCell>
@@ -343,6 +351,16 @@ export function ContactList({ organizationSlug, refreshKey }: ContactListProps) 
                   </Badge>
                 </div>
               </div>
+
+              {selectedContact.userId && (
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Platform User</label>
+                  <div className="mt-1 flex items-center gap-2 rounded-lg border bg-blue-50 p-3 text-sm text-blue-700">
+                    <UserCheck className="h-4 w-4" />
+                    Linked to a platform user account
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4 text-xs text-gray-500">
                 <div>

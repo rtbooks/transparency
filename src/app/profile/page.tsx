@@ -155,6 +155,17 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
+  // Fetch the user's linked contact profiles across orgs
+  const contactProfiles = dbUserOrganizations.length > 0
+    ? await prisma.contact.findMany({
+        where: buildCurrentVersionWhere({
+          userId: dbUser.id,
+          organizationId: { in: dbUserOrganizations.map(ou => ou.organizationId) },
+        }),
+      })
+    : [];
+  const contactByOrgId = new Map(contactProfiles.map(c => [c.organizationId, c]));
+
   const navLinks = getPublicNavLinks();
 
   return (
@@ -195,21 +206,45 @@ export default async function ProfilePage() {
               Your Organizations
             </h2>
             <ul className="space-y-3">
-              {dbUserOrganizations.map((orgUser) => (
-                <li key={orgUser.id}>
-                  <a
-                    href={`/org/${orgUser.organization.slug}/dashboard`}
-                    className="block rounded-lg border border-gray-200 p-4 transition hover:border-gray-300 hover:bg-gray-50"
-                  >
-                    <div className="font-medium text-gray-900">
-                      {orgUser.organization.name}
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      Role: {orgUser.role}
-                    </div>
-                  </a>
-                </li>
-              ))}
+              {dbUserOrganizations.map((orgUser) => {
+                const contact = contactByOrgId.get(orgUser.organizationId);
+                return (
+                  <li key={orgUser.id}>
+                    <a
+                      href={`/org/${orgUser.organization.slug}/dashboard`}
+                      className="block rounded-lg border border-gray-200 p-4 transition hover:border-gray-300 hover:bg-gray-50"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium text-gray-900">
+                            {orgUser.organization.name}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            Role: {orgUser.role}
+                          </div>
+                        </div>
+                        {contact && (
+                          <div className="text-right">
+                            <div className="flex gap-1">
+                              {contact.roles.map((r: string) => (
+                                <span
+                                  key={r}
+                                  className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700"
+                                >
+                                  {r}
+                                </span>
+                              ))}
+                            </div>
+                            <div className="mt-0.5 text-xs text-gray-500">
+                              Contact: {contact.name}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}

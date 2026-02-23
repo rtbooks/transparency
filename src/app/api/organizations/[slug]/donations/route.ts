@@ -57,7 +57,21 @@ export async function GET(
 
     const contactIds = donorContacts.map(c => c.id);
 
-    // Build bill filter: donors see only their pledges, admins see all
+    // For admins, also find all donor-role contacts so we only show donation
+    // receivables (not reimbursement or other non-pledge receivables)
+    let donorContactIds = contactIds;
+    if (isAdmin) {
+      const allDonorContacts = await prisma.contact.findMany({
+        where: buildCurrentVersionWhere({
+          organizationId: organization.id,
+          roles: { has: 'DONOR' },
+        }),
+        select: { id: true },
+      });
+      donorContactIds = allDonorContacts.map(c => c.id);
+    }
+
+    // Build bill filter: only RECEIVABLE bills from donor contacts
     const billWhere: any = {
       organizationId: organization.id,
       direction: 'RECEIVABLE',
@@ -72,6 +86,12 @@ export async function GET(
         summary: { totalPledged: 0, totalPaid: 0, outstanding: 0 },
         paymentInstructions: organization.paymentInstructions,
       });
+    } else if (donorContactIds.length > 0) {
+      // Admin: only show receivables from donor contacts (pledges)
+      billWhere.contactId = { in: donorContactIds };
+    } else {
+      // No donor contacts exist at all
+      billWhere.contactId = { in: [] };
     }
 
     const pledges = await prisma.bill.findMany({

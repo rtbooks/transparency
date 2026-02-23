@@ -29,6 +29,7 @@ export interface UpdateContactInput {
   address?: string | null;
   notes?: string | null;
   isActive?: boolean;
+  userId?: string | null;
 }
 
 /**
@@ -101,7 +102,7 @@ export async function updateContact(
         phone: updates.phone !== undefined ? updates.phone : current.phone,
         address: updates.address !== undefined ? updates.address : current.address,
         notes: updates.notes !== undefined ? updates.notes : current.notes,
-        userId: current.userId,
+        userId: updates.userId !== undefined ? updates.userId : current.userId,
         isActive: updates.isActive ?? current.isActive,
 
         versionId: crypto.randomUUID(),
@@ -119,13 +120,15 @@ export async function updateContact(
 }
 
 /**
- * Find existing contact linked to a user in an org, or create one with DONOR role
+ * Find existing contact linked to a user in an org, or create one.
+ * Accepts optional roles (defaults to ['DONOR']).
  */
 export async function findOrCreateForUser(
   orgId: string,
   userId: string,
   name: string,
-  email?: string
+  email?: string,
+  roles?: ('DONOR' | 'VENDOR')[]
 ): Promise<Contact> {
   const existing = await prisma.contact.findFirst({
     where: buildCurrentVersionWhere({
@@ -141,7 +144,7 @@ export async function findOrCreateForUser(
   return await createContact({
     organizationId: orgId,
     name,
-    roles: ['DONOR'],
+    roles: roles ?? ['DONOR'],
     email: email ?? null,
     userId,
     createdBy: userId,
@@ -238,4 +241,61 @@ export async function deleteContact(
     const { ConcurrentModificationError } = await import('@/lib/temporal/temporal-utils');
     throw new ConcurrentModificationError('Contact', current.versionId);
   }
+}
+
+/**
+ * Get the current user's linked contact in an organization
+ */
+export async function getContactForUser(
+  orgId: string,
+  userId: string
+): Promise<Contact | null> {
+  return await prisma.contact.findFirst({
+    where: buildCurrentVersionWhere({
+      organizationId: orgId,
+      userId,
+    }),
+  });
+}
+
+/**
+ * Link a contact to a platform user.
+ * Validates that the user doesn't already have a linked contact in this org.
+ */
+export async function linkContactToUser(
+  orgId: string,
+  contactId: string,
+  userId: string,
+  changedBy: string
+): Promise<Contact> {
+  // Check if user already has a linked contact in this org
+  const existingLink = await prisma.contact.findFirst({
+    where: buildCurrentVersionWhere({
+      organizationId: orgId,
+      userId,
+    }),
+  });
+
+  if (existingLink && existingLink.id !== contactId) {
+    throw new Error(
+      `User is already linked to contact "${existingLink.name}" in this organization`
+    );
+  }
+
+  if (existingLink && existingLink.id === contactId) {
+    return existingLink; // Already linked to this contact
+  }
+
+  return await updateContact(contactId, orgId, { userId }, changedBy, 'Linked to platform user');
+}
+
+/**
+ * Unlink a contact from its platform user.
+ */
+export async function unlinkContactFromUser(
+  orgId: string,
+  contactId: string,
+  changedBy: string
+): Promise<Contact> {
+  return await updateContact(contactId, orgId, { userId: null }, changedBy, 'Unlinked from platform user');
 }

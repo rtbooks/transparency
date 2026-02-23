@@ -31,6 +31,7 @@ export function getOrganizationNavLinks(
       { label: 'Reports', href: `/org/${slug}/reports`, icon: 'BarChart3', section: 'Reporting' },
       { label: 'Planned Purchases', href: `/org/${slug}/planned-purchases`, icon: 'ShoppingCart', section: 'Reporting' },
       { label: 'Campaigns', href: `/org/${slug}/campaigns`, icon: 'Target', section: 'Fundraising' },
+      { label: 'My Donations', href: `/org/${slug}/donations`, icon: 'Heart', section: 'Fundraising' },
       { label: 'Users', href: `/org/${slug}/users`, icon: 'UserCog', section: 'Admin' },
       { label: 'Settings', href: `/org/${slug}/settings`, icon: 'Settings', section: 'Admin' },
     ];

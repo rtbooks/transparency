@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { createBill } from '@/services/bill.service';
+import { findOrCreateForUser } from '@/services/contact.service';
 import { z } from 'zod';
 
 const pledgeSchema = z.object({
@@ -58,30 +59,12 @@ export async function POST(
     const validated = pledgeSchema.parse(body);
 
     // Find or create donor's contact record
-    let contact = await prisma.contact.findFirst({
-      where: buildCurrentVersionWhere({
-        organizationId: organization.id,
-        userId: user.id,
-      }),
-    });
-
-    if (!contact) {
-      contact = await prisma.contact.create({
-        data: {
-          organizationId: organization.id,
-          userId: user.id,
-          name: user.name,
-          email: user.email,
-          type: 'INDIVIDUAL',
-          roles: ['DONOR'],
-          versionId: crypto.randomUUID(),
-          validFrom: new Date(),
-          validTo: new Date('9999-12-31T23:59:59.999Z'),
-          systemFrom: new Date(),
-          systemTo: new Date('9999-12-31T23:59:59.999Z'),
-        },
-      });
-    }
+    const contact = await findOrCreateForUser(
+      organization.id,
+      user.id,
+      user.name,
+      user.email
+    );
 
     // Find Accounts Receivable account
     const arAccount = await prisma.account.findFirst({
