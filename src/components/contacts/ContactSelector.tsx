@@ -12,6 +12,7 @@ interface Contact {
   type: string;
   roles: string[];
   email: string | null;
+  userId?: string | null;
 }
 
 interface ContactSelectorProps {
@@ -21,6 +22,8 @@ interface ContactSelectorProps {
   className?: string;
   placeholder?: string;
   roleFilter?: string;
+  /** If true, auto-suggest the current user's linked contact at the top */
+  suggestCurrentUser?: boolean;
 }
 
 export function ContactSelector({
@@ -30,6 +33,7 @@ export function ContactSelector({
   className,
   placeholder = "Search contacts...",
   roleFilter,
+  suggestCurrentUser = false,
 }: ContactSelectorProps) {
   const [search, setSearch] = useState("");
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -42,7 +46,17 @@ export function ContactSelector({
   const [newContactEmail, setNewContactEmail] = useState("");
   const [newContactType, setNewContactType] = useState<"INDIVIDUAL" | "ORGANIZATION">("INDIVIDUAL");
   const [createError, setCreateError] = useState<string | null>(null);
+  const [myContact, setMyContact] = useState<Contact | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Fetch the current user's linked contact for auto-suggest
+  useEffect(() => {
+    if (!suggestCurrentUser) return;
+    fetch(`/api/organizations/${organizationSlug}/contacts/me`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((c) => c && setMyContact(c))
+      .catch(() => {});
+  }, [organizationSlug, suggestCurrentUser]);
 
   const fetchContacts = useCallback(async (query: string) => {
     setLoading(true);
@@ -261,6 +275,27 @@ export function ContactSelector({
             </div>
           ) : (
             <>
+              {/* Auto-suggest current user's linked contact */}
+              {myContact && !search && !contacts.some((c) => c.id === myContact.id) && (
+                <div className="border-b px-3 py-2">
+                  <div className="mb-1 text-xs font-medium text-gray-400">Suggested</div>
+                  <div
+                    className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 hover:bg-blue-50"
+                    onClick={() => handleSelect(myContact)}
+                  >
+                    <User className="h-4 w-4 text-blue-500" />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">{myContact.name}</div>
+                      {myContact.email && (
+                        <div className="text-xs text-gray-500">{myContact.email}</div>
+                      )}
+                    </div>
+                    <Badge variant="outline" className="text-xs text-blue-600">
+                      You
+                    </Badge>
+                  </div>
+                </div>
+              )}
               {loading ? (
                 <div className="p-3 text-center text-sm text-gray-500">Searching...</div>
               ) : contacts.length === 0 ? (
@@ -284,6 +319,11 @@ export function ContactSelector({
                           <div className="text-xs text-gray-500">{c.email}</div>
                         )}
                       </div>
+                      {myContact && c.id === myContact.id && (
+                        <Badge variant="outline" className="text-xs text-blue-600">
+                          You
+                        </Badge>
+                      )}
                       {c.roles.map((r) => (
                         <Badge key={r} variant="outline" className="text-xs">
                           {r}
