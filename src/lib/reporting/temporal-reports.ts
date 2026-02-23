@@ -152,12 +152,16 @@ export async function generateIncomeStatement(
   startDate: Date,
   endDate: Date
 ): Promise<IncomeStatementData> {
-  // Get current versions of revenue and expense accounts (no duplicates)
+  // Get revenue/expense accounts as they existed at endDate (temporal lookup).
+  // This ensures prior-period reports show account names/status as of that time,
+  // not today's values. Also filters to active accounts only.
   const accounts = await prisma.account.findMany({
-    where: buildCurrentVersionWhere({
-      organizationId,
+    where: {
+      ...buildAsOfDateWhere(endDate, { organizationId }),
+      systemTo: MAX_DATE,
+      isActive: true,
       type: { in: ['REVENUE', 'EXPENSE'] },
-    }),
+    },
     orderBy: { code: 'asc' },
   });
 
@@ -250,12 +254,13 @@ export async function generateCashFlow(
   startDate: Date,
   endDate: Date
 ): Promise<CashFlowData> {
-  // Get current cash accounts (no range-overlap duplicates)
+  // Get current cash accounts (active only, no range-overlap duplicates)
   const cashAccounts = await prisma.account.findMany({
     where: buildCurrentVersionWhere({
       organizationId,
       type: 'ASSET',
       code: { startsWith: '10' }, // Cash accounts typically 1000-1099
+      isActive: true,
     }),
   });
 
@@ -270,6 +275,7 @@ export async function generateCashFlow(
     where: {
       ...buildAsOfDateWhere(startDate, { organizationId }),
       systemTo: MAX_DATE,
+      isActive: true,
       type: 'ASSET',
       code: { startsWith: '10' },
     },

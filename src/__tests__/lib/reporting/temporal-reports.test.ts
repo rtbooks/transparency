@@ -280,22 +280,21 @@ describe('Temporal Reporting', () => {
 // ── Bug-fix regression tests ───────────────────────────────
 
 describe('Income Statement - temporal query correctness', () => {
-  it('should use buildCurrentVersionWhere (no range-overlap duplicates)', async () => {
+  it('should use buildAsOfDateWhere with endDate for temporal account lookup', async () => {
     (prisma.account.findMany as jest.Mock).mockResolvedValue([]);
     (prisma.transaction.findMany as jest.Mock).mockResolvedValue([]);
 
-    await generateIncomeStatement(
-      'org-1',
-      new Date('2024-01-01'),
-      new Date('2024-03-31')
-    );
+    const endDate = new Date('2024-03-31');
+    await generateIncomeStatement('org-1', new Date('2024-01-01'), endDate);
 
     const accountQuery = (prisma.account.findMany as jest.Mock).mock.calls[0][0];
-    // Must filter by validTo = MAX_DATE and systemTo = MAX_DATE (current version only)
-    expect(accountQuery.where.validTo).toEqual(MAX_DATE);
+    // Must use as-of-date lookup: validFrom <= endDate, validTo > endDate
+    expect(accountQuery.where.validFrom).toEqual({ lte: endDate });
+    expect(accountQuery.where.validTo).toEqual({ gt: endDate });
+    // Must pin to latest system version
     expect(accountQuery.where.systemTo).toEqual(MAX_DATE);
-    // Must NOT use range queries like { lte: endDate } for validFrom
-    expect(accountQuery.where.validFrom).toBeUndefined();
+    // Must filter active accounts only
+    expect(accountQuery.where.isActive).toBe(true);
   });
 
   it('should return one entry per logical account (no duplicates)', async () => {
@@ -312,6 +311,36 @@ describe('Income Statement - temporal query correctness', () => {
 
     expect(result.revenue.accounts).toHaveLength(1);
     expect(result.revenue.accounts[0].name).toBe('Donations');
+  });
+
+  it('should show account names as they were at endDate (not current names)', async () => {
+    // Prior period: account was named "Donations" at endDate 2023-12-31
+    const priorAccount = makeAccount({
+      id: 'rev-1', code: '4000', name: 'Donations', type: 'REVENUE',
+    });
+    (prisma.account.findMany as jest.Mock).mockResolvedValue([priorAccount]);
+    (prisma.transaction.findMany as jest.Mock).mockResolvedValue([
+      { amount: { toString: () => '1000' }, debitAccountId: 'cash-1', creditAccountId: 'rev-1' },
+    ]);
+
+    const result = await generateIncomeStatement('org-1', new Date('2023-01-01'), new Date('2023-12-31'));
+
+    // Should show the name from the temporal lookup, not today's name
+    expect(result.revenue.accounts[0].name).toBe('Donations');
+    expect(result.revenue.accounts[0].amount).toBe(1000);
+  });
+
+  it('should exclude inactive accounts', async () => {
+    // The query includes isActive: true, so Prisma won't return inactive accounts.
+    // Simulate: only active accounts returned by mock
+    const activeAcc = makeAccount({ id: 'rev-1', code: '4000', name: 'Active Revenue', type: 'REVENUE' });
+    (prisma.account.findMany as jest.Mock).mockResolvedValue([activeAcc]);
+    (prisma.transaction.findMany as jest.Mock).mockResolvedValue([]);
+
+    const result = await generateIncomeStatement('org-1', new Date('2024-01-01'), new Date('2024-12-31'));
+
+    expect(result.revenue.accounts).toHaveLength(1);
+    expect(result.revenue.accounts[0].name).toBe('Active Revenue');
   });
 });
 
@@ -492,5 +521,26 @@ describe('Cash Flow - beginning balance', () => {
     expect(result.beginningBalance).toBe(10000);
     expect(result.netChange).toBe(5000);
     expect(result.endingBalance).toBe(15000);
+  });
+
+  it('should filter cash accounts by isActive', async () => {
+    (prisma.account.findMany as jest.Mock)
+      .mockResolvedValueOnce([
+        makeAccount({ id: 'cash', code: '1000', type: 'ASSET', currentBalance: { toString: () => '5000' } }),
+      ])
+      .mockResolvedValueOnce([
+        makeAccount({ id: 'cash', code: '1000', type: 'ASSET', currentBalance: { toString: () => '5000' } }),
+      ])
+      .mockResolvedValueOnce([]);
+    (prisma.transaction.findMany as jest.Mock).mockResolvedValue([]);
+
+    await generateCashFlow('org-1', new Date('2024-01-01'), new Date('2024-03-31'));
+
+    // First call (current cash accounts) must include isActive: true
+    const firstCall = (prisma.account.findMany as jest.Mock).mock.calls[0][0];
+    expect(firstCall.where.isActive).toBe(true);
+    // Second call (as-of-startDate) must include isActive: true
+    const secondCall = (prisma.account.findMany as jest.Mock).mock.calls[1][0];
+    expect(secondCall.where.isActive).toBe(true);
   });
 });
