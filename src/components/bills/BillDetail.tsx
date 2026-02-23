@@ -319,6 +319,21 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
           </Alert>
         )}
 
+        {/* Funding Account */}
+        {detail.direction === "PAYABLE" && (
+          <div>
+            <label className="text-sm font-medium text-gray-700">Funding Account</label>
+            <div className="mt-1 text-gray-900">
+              {detail.fundingAccountId && accounts
+                ? (() => {
+                    const acct = accounts.find(a => a.id === detail.fundingAccountId);
+                    return acct ? `${acct.code} – ${acct.name}` : "—";
+                  })()
+                : "Not assigned"}
+            </div>
+          </div>
+        )}
+
         {/* Details */}
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -445,6 +460,7 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
           </DialogHeader>
           <BillForm
             organizationSlug={organizationSlug}
+            accounts={accounts}
             bill={{
               id: detail.id,
               direction: detail.direction,
@@ -454,6 +470,7 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
               issueDate: detail.issueDate,
               dueDate: detail.dueDate,
               notes: detail.notes,
+              fundingAccountId: detail.fundingAccountId,
             }}
             onSuccess={() => {
               setEditing(false);

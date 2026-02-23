@@ -10,6 +10,7 @@ const updateBillSchema = z.object({
   dueDate: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
   status: z.enum(['DRAFT', 'PENDING', 'PARTIAL', 'PAID', 'OVERDUE', 'CANCELLED']).optional(),
+  fundingAccountId: z.string().uuid().nullable().optional(),
 });
 
 export async function GET(

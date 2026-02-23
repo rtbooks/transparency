@@ -54,6 +54,7 @@ interface BillFormProps {
     issueDate: string;
     dueDate: string;
     notes: string | null;
+    fundingAccountId?: string | null;
   };
   onSuccess: () => void;
   onCancel: () => void;
@@ -85,7 +86,7 @@ export function BillForm({
   const [notes, setNotes] = useState(bill?.notes ?? "");
   const [liabilityOrAssetAccountId, setLiabilityOrAssetAccountId] = useState("");
   const [expenseOrRevenueAccountId, setExpenseOrRevenueAccountId] = useState("");
-  const [fundingAccountId, setFundingAccountId] = useState("");
+  const [fundingAccountId, setFundingAccountId] = useState(bill?.fundingAccountId ?? "");
 
   // Overdraft check state
   const [overdraftWarning, setOverdraftWarning] = useState<{
@@ -157,7 +158,9 @@ export function BillForm({
       dueDate: dueDate ? dueDate.toISOString().slice(0, 10) : "",
       notes: notes.trim() || null,
       ...(isEditing ? {} : { liabilityOrAssetAccountId, expenseOrRevenueAccountId }),
-      ...(direction === "PAYABLE" && fundingAccountId ? { fundingAccountId } : {}),
+      ...(direction === "PAYABLE"
+        ? { fundingAccountId: fundingAccountId && fundingAccountId !== "__none__" ? fundingAccountId : null }
+        : {}),
     };
 
     const schema = isEditing
@@ -349,7 +352,7 @@ export function BillForm({
       )}
 
       {/* Funding Account (PAYABLE only) */}
-      {!isEditing && direction === "PAYABLE" && (
+      {direction === "PAYABLE" && (
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-700">
             Funding Account (Cash/Bank)
