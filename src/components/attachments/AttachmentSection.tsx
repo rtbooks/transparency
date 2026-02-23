@@ -116,6 +116,7 @@ export function AttachmentSection({
       <h4 className="text-sm font-medium">Attachments</h4>
       <AttachmentList
         attachments={attachments}
+        organizationSlug={organizationSlug}
         onDelete={readOnly ? undefined : handleDelete}
         deleting={deleting}
         readOnly={readOnly}

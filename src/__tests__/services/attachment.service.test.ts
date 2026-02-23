@@ -77,7 +77,7 @@ describe('uploadAttachment', () => {
     expect(put).toHaveBeenCalledWith(
       expect.stringContaining('attachments/org-123/transaction/txn-456/'),
       file,
-      { access: 'public', addRandomSuffix: true }
+      { access: 'private', addRandomSuffix: true }
     );
     expect(prisma.attachment.create).toHaveBeenCalledWith({
       data: expect.objectContaining({

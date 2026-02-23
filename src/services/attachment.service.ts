@@ -71,7 +71,7 @@ export async function uploadAttachment(
   const blob = await put(
     `attachments/${organizationId}/${entityType.toLowerCase()}/${entityId}/${file.name}`,
     file,
-    { access: 'public', addRandomSuffix: true }
+    { access: 'private', addRandomSuffix: true }
   );
 
   // Create database record

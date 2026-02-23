@@ -15,6 +15,7 @@ export interface AttachmentItem {
 
 interface AttachmentListProps {
   attachments: AttachmentItem[];
+  organizationSlug: string;
   onDelete?: (id: string) => void;
   deleting?: string | null;
   readOnly?: boolean;
@@ -22,6 +23,7 @@ interface AttachmentListProps {
 
 export function AttachmentList({
   attachments,
+  organizationSlug,
   onDelete,
   deleting,
   readOnly = false,
@@ -51,7 +53,7 @@ export function AttachmentList({
               </p>
             </div>
             <a
-              href={att.blobUrl}
+              href={`/api/organizations/${organizationSlug}/attachments/${att.id}/download`}
               target="_blank"
               rel="noopener noreferrer"
               className="shrink-0"
