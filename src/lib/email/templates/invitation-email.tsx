@@ -6,6 +6,7 @@ import {
   Heading,
   Hr,
   Html,
+  Link,
   Preview,
   Section,
   Text,
@@ -61,6 +62,13 @@ export function InvitationEmail({
               Accept Invitation
             </Button>
           </Section>
+
+          <Text style={smallText}>
+            If the button above doesn&apos;t work, copy and paste this link into your browser:
+          </Text>
+          <Text style={linkText}>
+            <Link href={inviteUrl} style={linkStyle}>{inviteUrl}</Link>
+          </Text>
 
           <Text style={smallText}>
             This invitation expires in {expiresInDays} day{expiresInDays !== 1 ? 's' : ''}.
@@ -141,7 +149,19 @@ const smallText = {
   fontSize: '13px',
   color: '#888888',
   lineHeight: '1.5',
+  margin: '0 0 8px',
+};
+
+const linkText = {
+  fontSize: '13px',
+  lineHeight: '1.5',
   margin: '0 0 16px',
+  wordBreak: 'break-all' as const,
+};
+
+const linkStyle = {
+  color: '#2563eb',
+  textDecoration: 'underline',
 };
 
 const hr = {
