@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/lib/analytics";
 
 interface Account {
   id: string;
@@ -182,6 +183,12 @@ export function CampaignForm({
         title: "Success",
         description: isEditing ? "Campaign updated." : "Campaign created.",
       });
+      if (!isEditing) {
+        trackEvent('campaign_created', {
+          orgSlug: organizationSlug,
+          goalAmount: targetAmount ? parseFloat(targetAmount) : undefined,
+        });
+      }
       onSuccess();
     } catch (error) {
       toast({

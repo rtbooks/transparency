@@ -36,6 +36,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { ContactSelector } from '@/components/contacts/ContactSelector';
 import { formatCurrency } from '@/lib/utils/account-tree';
+import { trackEvent } from '@/lib/analytics';
 import {
   TransactionType,
   getAccountTypesForTransaction,
@@ -214,6 +215,11 @@ export function RecordTransactionForm({
       toast({
         title: 'Transaction Recorded',
         description: `Successfully recorded ${values.type.toLowerCase()} transaction of $${values.amount.toFixed(2)}`,
+      });
+      trackEvent('transaction_created', {
+        amount: values.amount,
+        type: values.type,
+        orgSlug: organizationSlug,
       });
 
       router.refresh();

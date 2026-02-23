@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { trackEvent } from '@/lib/analytics';
 import {
   Form,
   FormControl,
@@ -98,6 +99,11 @@ export function NewPledgeFormClient({
       }
 
       setPledgeCreated(true);
+      trackEvent('pledge_created', {
+        amount: data.amount,
+        orgSlug: organizationSlug,
+        campaignId: selectedCampaignId || undefined,
+      });
       toast({
         title: 'Pledge Created!',
         description: 'Your donation pledge has been recorded.',

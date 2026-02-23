@@ -6,6 +6,7 @@ import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, L
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils/account-tree';
+import { trackEvent } from '@/lib/analytics';
 
 interface Payment {
   id: string;
@@ -123,6 +124,7 @@ export function DonationsPageClient({
       }
       setHasLinkedContact(true);
       setClaimable([]);
+      trackEvent('contact_linked', { orgSlug: organizationSlug });
       // Refresh donations now that we're linked
       setLoading(true);
       await fetchDonations();
