@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils/account-tree';
@@ -43,6 +43,14 @@ interface DonationsPageClientProps {
   organizationName: string;
 }
 
+interface ClaimableContact {
+  id: string;
+  name: string;
+  email: string | null;
+  roles: string[];
+  type: string;
+}
+
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   DRAFT: { label: 'Draft', variant: 'secondary' },
   PENDING: { label: 'Pending', variant: 'outline' },
@@ -59,22 +67,71 @@ export function DonationsPageClient({
   const [data, setData] = useState<DonationsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [claimable, setClaimable] = useState<ClaimableContact[]>([]);
+  const [claiming, setClaiming] = useState(false);
+  const [hasLinkedContact, setHasLinkedContact] = useState<boolean | null>(null);
+
+  const fetchDonations = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/organizations/${organizationSlug}/donations`);
+      if (!res.ok) throw new Error('Failed to load donations');
+      const json = await res.json();
+      setData(json);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [organizationSlug]);
 
   useEffect(() => {
-    async function fetchDonations() {
+    fetchDonations();
+  }, [fetchDonations]);
+
+  // Check if user has a linked contact; if not, look for claimable ones
+  useEffect(() => {
+    async function checkContactLink() {
       try {
-        const res = await fetch(`/api/organizations/${organizationSlug}/donations`);
-        if (!res.ok) throw new Error('Failed to load donations');
-        const json = await res.json();
-        setData(json);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+        const res = await fetch(`/api/organizations/${organizationSlug}/contacts/me`);
+        if (res.ok) {
+          setHasLinkedContact(true);
+        } else {
+          setHasLinkedContact(false);
+          const body = await res.json();
+          if (body.claimable && body.claimable.length > 0) {
+            setClaimable(body.claimable);
+          }
+        }
+      } catch {
+        // ignore
       }
     }
-    fetchDonations();
+    checkContactLink();
   }, [organizationSlug]);
+
+  const handleClaim = async (contactId: string) => {
+    setClaiming(true);
+    try {
+      const res = await fetch(`/api/organizations/${organizationSlug}/contacts/me`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactId }),
+      });
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.error || 'Failed to link contact');
+      }
+      setHasLinkedContact(true);
+      setClaimable([]);
+      // Refresh donations now that we're linked
+      setLoading(true);
+      await fetchDonations();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setClaiming(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -114,6 +171,55 @@ export function DonationsPageClient({
           </Button>
         </Link>
       </div>
+
+      {/* Claimable Contact Banner */}
+      {hasLinkedContact === false && claimable.length > 0 && (
+        <div className="mb-8 rounded-lg border border-blue-200 bg-blue-50 p-6">
+          <div className="flex items-start gap-3">
+            <UserCheck className="mt-0.5 h-5 w-5 text-blue-600" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-blue-900">
+                We found a contact matching your email
+              </h3>
+              <p className="mt-1 text-sm text-blue-800">
+                Link your account to see your donation history and manage your pledges.
+              </p>
+              <div className="mt-3 space-y-2">
+                {claimable.map((contact) => (
+                  <div
+                    key={contact.id}
+                    className="flex items-center justify-between rounded-md border border-blue-200 bg-white px-4 py-3"
+                  >
+                    <div>
+                      <div className="font-medium text-gray-900">{contact.name}</div>
+                      <div className="text-sm text-gray-500">{contact.email}</div>
+                      <div className="mt-1 flex gap-1">
+                        {contact.roles.map((r) => (
+                          <Badge key={r} variant="outline" className="text-xs">
+                            {r}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => handleClaim(contact.id)}
+                      disabled={claiming}
+                    >
+                      {claiming ? (
+                        <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                      ) : (
+                        <UserCheck className="mr-1 h-3 w-3" />
+                      )}
+                      Link to My Account
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Summary Cards */}
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
