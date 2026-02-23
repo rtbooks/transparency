@@ -152,16 +152,15 @@ export async function generateIncomeStatement(
   startDate: Date,
   endDate: Date
 ): Promise<IncomeStatementData> {
-  // Get revenue/expense accounts as they existed at endDate (temporal lookup).
-  // This ensures prior-period reports show account names/status as of that time,
-  // not today's values. Also filters to active accounts only.
+  // Get current versions of active revenue/expense accounts.
+  // Income statement is transaction-based, so we use current account definitions.
+  // An optional as-of-date filter could be added later for point-in-time views.
   const accounts = await prisma.account.findMany({
-    where: {
-      ...buildAsOfDateWhere(endDate, { organizationId }),
-      systemTo: MAX_DATE,
-      isActive: true,
+    where: buildCurrentVersionWhere({
+      organizationId,
       type: { in: ['REVENUE', 'EXPENSE'] },
-    },
+      isActive: true,
+    }),
     orderBy: { code: 'asc' },
   });
 

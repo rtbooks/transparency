@@ -280,18 +280,15 @@ describe('Temporal Reporting', () => {
 // ── Bug-fix regression tests ───────────────────────────────
 
 describe('Income Statement - temporal query correctness', () => {
-  it('should use buildAsOfDateWhere with endDate for temporal account lookup', async () => {
+  it('should use buildCurrentVersionWhere with isActive filter', async () => {
     (prisma.account.findMany as jest.Mock).mockResolvedValue([]);
     (prisma.transaction.findMany as jest.Mock).mockResolvedValue([]);
 
-    const endDate = new Date('2024-03-31');
-    await generateIncomeStatement('org-1', new Date('2024-01-01'), endDate);
+    await generateIncomeStatement('org-1', new Date('2024-01-01'), new Date('2024-03-31'));
 
     const accountQuery = (prisma.account.findMany as jest.Mock).mock.calls[0][0];
-    // Must use as-of-date lookup: validFrom <= endDate, validTo > endDate
-    expect(accountQuery.where.validFrom).toEqual({ lte: endDate });
-    expect(accountQuery.where.validTo).toEqual({ gt: endDate });
-    // Must pin to latest system version
+    // Must use current version (validTo = MAX_DATE, systemTo = MAX_DATE)
+    expect(accountQuery.where.validTo).toEqual(MAX_DATE);
     expect(accountQuery.where.systemTo).toEqual(MAX_DATE);
     // Must filter active accounts only
     expect(accountQuery.where.isActive).toBe(true);
@@ -311,23 +308,6 @@ describe('Income Statement - temporal query correctness', () => {
 
     expect(result.revenue.accounts).toHaveLength(1);
     expect(result.revenue.accounts[0].name).toBe('Donations');
-  });
-
-  it('should show account names as they were at endDate (not current names)', async () => {
-    // Prior period: account was named "Donations" at endDate 2023-12-31
-    const priorAccount = makeAccount({
-      id: 'rev-1', code: '4000', name: 'Donations', type: 'REVENUE',
-    });
-    (prisma.account.findMany as jest.Mock).mockResolvedValue([priorAccount]);
-    (prisma.transaction.findMany as jest.Mock).mockResolvedValue([
-      { amount: { toString: () => '1000' }, debitAccountId: 'cash-1', creditAccountId: 'rev-1' },
-    ]);
-
-    const result = await generateIncomeStatement('org-1', new Date('2023-01-01'), new Date('2023-12-31'));
-
-    // Should show the name from the temporal lookup, not today's name
-    expect(result.revenue.accounts[0].name).toBe('Donations');
-    expect(result.revenue.accounts[0].amount).toBe(1000);
   });
 
   it('should exclude inactive accounts', async () => {
