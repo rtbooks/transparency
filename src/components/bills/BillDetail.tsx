@@ -474,6 +474,7 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
             }}
             onSuccess={() => {
               setEditing(false);
+              fetchDetail();
               onRefresh();
             }}
             onCancel={() => setEditing(false)}
