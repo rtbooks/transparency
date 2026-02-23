@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Transaction, Account } from "@/generated/prisma/client";
 import { AsOfDatePicker } from "@/components/temporal";
 import {
@@ -30,9 +30,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { formatCurrency } from "@/lib/utils/account-tree";
-import { ChevronLeft, ChevronRight, Download, Search, Info, Pencil, Ban } from "lucide-react";
-import { format } from "date-fns";
+import { ChevronLeft, ChevronRight, Download, Search, Info, Pencil, Ban, MoreVertical, CalendarClock, Eye } from "lucide-react";
+import { format, subDays, subMonths, startOfDay } from "date-fns";
 import { EditTransactionForm } from "./EditTransactionForm";
 import { VoidTransactionDialog } from "./VoidTransactionDialog";
 import { AttachmentSection } from "@/components/attachments/AttachmentSection";
@@ -46,6 +53,42 @@ interface TransactionWithAccounts extends Transaction {
 interface TransactionListProps {
   organizationSlug: string;
   refreshKey?: number;
+}
+
+type PeriodKey = "30d" | "60d" | "90d" | "6m" | "12m" | "ytd" | "all" | "custom";
+
+const PERIOD_OPTIONS: { value: PeriodKey; label: string }[] = [
+  { value: "30d", label: "Last 30 days" },
+  { value: "60d", label: "Last 60 days" },
+  { value: "90d", label: "Last 90 days" },
+  { value: "6m", label: "Last 6 months" },
+  { value: "12m", label: "Last 12 months" },
+  { value: "ytd", label: "Year to date" },
+  { value: "all", label: "All time" },
+  { value: "custom", label: "Custom dates" },
+];
+
+function computePeriodDates(period: PeriodKey): { start: string; end: string } {
+  const today = startOfDay(new Date());
+  const end = format(today, "yyyy-MM-dd");
+  switch (period) {
+    case "30d":
+      return { start: format(subDays(today, 30), "yyyy-MM-dd"), end };
+    case "60d":
+      return { start: format(subDays(today, 60), "yyyy-MM-dd"), end };
+    case "90d":
+      return { start: format(subDays(today, 90), "yyyy-MM-dd"), end };
+    case "6m":
+      return { start: format(subMonths(today, 6), "yyyy-MM-dd"), end };
+    case "12m":
+      return { start: format(subMonths(today, 12), "yyyy-MM-dd"), end };
+    case "ytd":
+      return { start: `${today.getFullYear()}-01-01`, end };
+    case "all":
+      return { start: "", end: "" };
+    case "custom":
+      return { start: "", end: "" };
+  }
 }
 
 export function TransactionList({ organizationSlug, refreshKey }: TransactionListProps) {
@@ -64,10 +107,21 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
   // Filters
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [period, setPeriod] = useState<PeriodKey>("30d");
+  const [customStartDate, setCustomStartDate] = useState("");
+  const [customEndDate, setCustomEndDate] = useState("");
   const [asOfDate, setAsOfDate] = useState<Date | undefined>(undefined);
   const [showVoided, setShowVoided] = useState(false);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
+
+  // Compute effective start/end dates from period selection
+  const { startDate, endDate } = useMemo(() => {
+    if (period === "custom") {
+      return { startDate: customStartDate, endDate: customEndDate };
+    }
+    const { start, end } = computePeriodDates(period);
+    return { startDate: start, endDate: end };
+  }, [period, customStartDate, customEndDate]);
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -132,7 +186,7 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
 
   useEffect(() => {
     fetchTransactions();
-  }, [page, typeFilter, startDate, endDate, asOfDate, showVoided, refreshKey]); // refreshKey triggers re-fetch after a new transaction is recorded
+  }, [page, typeFilter, startDate, endDate, asOfDate, showVoided, refreshKey]);
 
   const handleSearch = () => {
     setPage(1); // Reset to first page
@@ -299,42 +353,93 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
           </Select>
         </div>
 
-        <div className="min-w-[150px]">
-          <label className="mb-2 block text-sm font-medium text-gray-700">Start Date</label>
-          <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        <div className="min-w-[170px]">
+          <label className="mb-2 block text-sm font-medium text-gray-700">Period</label>
+          <Select value={period} onValueChange={(v) => setPeriod(v as PeriodKey)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PERIOD_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <div className="min-w-[150px]">
-          <label className="mb-2 block text-sm font-medium text-gray-700">End Date</label>
-          <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-        </div>
+        {period === "custom" && (
+          <>
+            <div className="min-w-[150px]">
+              <label className="mb-2 block text-sm font-medium text-gray-700">Start Date</label>
+              <Input type="date" value={customStartDate} onChange={(e) => setCustomStartDate(e.target.value)} />
+            </div>
+            <div className="min-w-[150px]">
+              <label className="mb-2 block text-sm font-medium text-gray-700">End Date</label>
+              <Input type="date" value={customEndDate} onChange={(e) => setCustomEndDate(e.target.value)} />
+            </div>
+          </>
+        )}
 
-        <div className="min-w-[200px]">
-          <label className="mb-2 block text-sm font-medium text-gray-700">As Of Date</label>
-          <AsOfDatePicker
-            date={asOfDate}
-            onDateChange={setAsOfDate}
-            maxDate={new Date()}
-            className="w-full"
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Switch
-            id="show-voided"
-            checked={showVoided}
-            onCheckedChange={setShowVoided}
-          />
-          <label htmlFor="show-voided" className="text-sm text-gray-700">
-            Show voided
-          </label>
-        </div>
-
-        <Button onClick={handleExportCSV} variant="outline" size="sm" className="ml-auto">
-          <Download className="mr-2 h-4 w-4" />
-          Export CSV
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="ml-auto">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                setShowMoreOptions((prev) => !prev);
+              }}
+            >
+              <CalendarClock className="mr-2 h-4 w-4" />
+              As of date
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                setShowVoided((prev) => !prev);
+              }}
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              {showVoided ? "Hide voided" : "Show voided"}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={handleExportCSV}>
+              <Download className="mr-2 h-4 w-4" />
+              Export CSV
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
+
+      {/* As Of Date picker (shown when toggled from menu) */}
+      {showMoreOptions && (
+        <div className="flex items-end gap-4 rounded-lg border bg-white p-4">
+          <div className="min-w-[200px]">
+            <label className="mb-2 block text-sm font-medium text-gray-700">As Of Date</label>
+            <AsOfDatePicker
+              date={asOfDate}
+              onDateChange={setAsOfDate}
+              maxDate={new Date()}
+              className="w-full"
+            />
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setAsOfDate(undefined);
+              setShowMoreOptions(false);
+            }}
+          >
+            Clear &amp; close
+          </Button>
+        </div>
+      )}
 
       {/* Temporal Context Banner */}
       {temporalContext && temporalContext.isHistoricalView && (
