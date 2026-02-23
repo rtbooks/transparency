@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
@@ -19,13 +19,45 @@ export default async function InvitePage({ params }: InvitePageProps) {
     redirect(`/login?redirect_url=${encodeURIComponent(`/invite/${token}`)}`);
   }
 
-  // Find the user in our database
-  const user = await prisma.user.findUnique({
+  // Find or create the user in our database
+  let user = await prisma.user.findUnique({
     where: { authId: clerkUserId },
   });
 
   if (!user) {
-    redirect('/profile');
+    // New user — create DB record inline so they don't detour through /profile
+    const clerkUser = await currentUser();
+    if (!clerkUser) {
+      redirect(`/login?redirect_url=${encodeURIComponent(`/invite/${token}`)}`);
+    }
+
+    const userEmail = clerkUser.emailAddresses[0]?.emailAddress || '';
+    const adminEmails = process.env.PLATFORM_ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
+    const isPlatformAdmin = adminEmails.includes(userEmail.toLowerCase());
+
+    // Check for existing user by email (Clerk instance migration)
+    const existingByEmail = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (existingByEmail) {
+      user = await prisma.user.update({
+        where: { email: userEmail },
+        data: { authId: clerkUser.id, avatarUrl: clerkUser.imageUrl, isPlatformAdmin },
+      });
+    } else {
+      user = await prisma.user.create({
+        data: {
+          authId: clerkUser.id,
+          email: userEmail,
+          name: clerkUser.firstName && clerkUser.lastName
+            ? `${clerkUser.firstName} ${clerkUser.lastName}`
+            : clerkUser.username || 'User',
+          avatarUrl: clerkUser.imageUrl,
+          isPlatformAdmin,
+        },
+      });
+    }
   }
 
   // Find the invitation by token
@@ -170,46 +202,6 @@ export default async function InvitePage({ params }: InvitePageProps) {
     );
   }
 
-  // Check if the invited email matches the user's email
-  const emailMatches = user.email.toLowerCase() === invitation.email.toLowerCase();
-
-  if (!emailMatches) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
-          <div className="text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
-              <svg
-                className="h-6 w-6 text-orange-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Email Mismatch</h1>
-            <p className="mt-2 text-gray-600">
-              This invitation was sent to <strong>{invitation.email}</strong>
-            </p>
-            <p className="mt-1 text-gray-600">
-              but you are logged in as <strong>{user.email}</strong>
-            </p>
-            <p className="mt-4 text-sm text-gray-500">
-              Please log in with the invited email address or contact {invitation.invitedBy.name} 
-              to request an invitation for your current email.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // All checks passed - create the organization membership
   try {
     await prisma.$transaction(async (tx) => {
@@ -231,16 +223,22 @@ export default async function InvitePage({ params }: InvitePageProps) {
         },
       });
 
-      // Auto-link existing contact record if email matches
+      // Auto-link existing contact record by invitation email or user email
       if (invitation.role === 'DONOR') {
         const existingContact = await tx.contact.findFirst({
           where: buildCurrentVersionWhere({
             organizationId: invitation.organizationId,
-            email: user.email,
+            userId: null,
+            OR: [
+              { email: { equals: invitation.email, mode: 'insensitive' } },
+              ...(user.email.toLowerCase() !== invitation.email.toLowerCase()
+                ? [{ email: { equals: user.email, mode: 'insensitive' as const } }]
+                : []),
+            ],
           }),
         });
 
-        if (existingContact && !existingContact.userId) {
+        if (existingContact) {
           await tx.contact.update({
             where: { versionId: existingContact.versionId },
             data: { userId: user.id },
