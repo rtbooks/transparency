@@ -128,7 +128,10 @@ export async function POST(
       },
     });
 
-    const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite/${token}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL
+      || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : null)
+      || 'http://localhost:3000';
+    const inviteUrl = `${baseUrl}/invite/${token}`;
 
     // Send invitation email (await to ensure it completes before serverless freeze)
     const emailSent = await sendInvitationEmail({
