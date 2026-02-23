@@ -643,6 +643,9 @@ model Bill {
   // Accrual transaction created when bill is entered
   accrualTransactionId String? @unique @map("accrual_transaction_id")
 
+  // For PAYABLE bills: which cash/bank account will fund the payment
+  fundingAccountId String? @map("funding_account_id")
+
   // Metadata
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

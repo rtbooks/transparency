@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils/account-tree';
-import { DollarSign, TrendingUp, TrendingDown, ArrowRightLeft } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle } from 'lucide-react';
 
 interface AccountSummary {
   type: string;
@@ -31,6 +31,14 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
   const [recentTransactions, setRecentTransactions] = useState<RecentTransaction[]>([]);
   const [totalAccounts, setTotalAccounts] = useState(0);
   const [totalTransactions, setTotalTransactions] = useState(0);
+  const [overdraftAlerts, setOverdraftAlerts] = useState<Array<{
+    accountId: string;
+    accountName: string;
+    currentBalance: number;
+    pendingPayables: number;
+    projectedBalance: number;
+    pendingBillCount: number;
+  }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,9 +48,10 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
         setLoading(true);
         setError(null);
 
-        const [accountsRes, transactionsRes] = await Promise.all([
+        const [accountsRes, transactionsRes, overdraftRes] = await Promise.all([
           fetch(`/api/organizations/${organizationSlug}/accounts`),
           fetch(`/api/organizations/${organizationSlug}/transactions?limit=5`),
+          fetch(`/api/organizations/${organizationSlug}/overdraft-alerts`),
         ]);
 
         if (!accountsRes.ok || !transactionsRes.ok) {
@@ -66,6 +75,11 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
 
         setRecentTransactions(transactionsData.transactions || []);
         setTotalTransactions(transactionsData.pagination?.totalCount || 0);
+
+        if (overdraftRes.ok) {
+          const overdraftData = await overdraftRes.json();
+          setOverdraftAlerts(overdraftData.alerts || []);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -162,6 +176,47 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
             </Card>
           ))}
       </div>
+
+      {/* Overdraft Alerts */}
+      {overdraftAlerts.length > 0 && (
+        <Card className="border-red-200 bg-red-50">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg text-red-800">
+              <AlertTriangle className="h-5 w-5" />
+              Overdraft Risk
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-3 text-sm text-red-700">
+              The following accounts may go negative after pending payable bills are paid:
+            </p>
+            <div className="space-y-2">
+              {overdraftAlerts.map((alert) => (
+                <div
+                  key={alert.accountId}
+                  className="flex items-center justify-between rounded-md border border-red-200 bg-white p-3"
+                >
+                  <div>
+                    <div className="font-medium text-gray-900">{alert.accountName}</div>
+                    <div className="text-xs text-gray-500">
+                      {alert.pendingBillCount} pending bill{alert.pendingBillCount !== 1 ? 's' : ''} · 
+                      Payables: {formatCurrency(alert.pendingPayables)}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-gray-500">
+                      Balance: {formatCurrency(alert.currentBalance)}
+                    </div>
+                    <div className="text-sm font-bold text-red-600">
+                      Projected: {formatCurrency(alert.projectedBalance)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Account Summary by Type */}
       {accountSummary.length > 0 && (

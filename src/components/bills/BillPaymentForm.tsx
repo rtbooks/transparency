@@ -34,6 +34,7 @@ interface BillPaymentFormProps {
   direction: "PAYABLE" | "RECEIVABLE";
   amountRemaining: number;
   accounts: Account[];
+  defaultCashAccountId?: string;
   onSuccess: () => void;
   onCancel: () => void;
 }
@@ -50,12 +51,13 @@ export function BillPaymentForm({
   direction,
   amountRemaining,
   accounts,
+  defaultCashAccountId,
   onSuccess,
   onCancel,
 }: BillPaymentFormProps) {
   const [amount, setAmount] = useState(amountRemaining.toFixed(2));
   const [paymentDate, setPaymentDate] = useState<Date | undefined>(new Date());
-  const [cashAccountId, setCashAccountId] = useState("");
+  const [cashAccountId, setCashAccountId] = useState(defaultCashAccountId || "");
   const [description, setDescription] = useState("");
   const [referenceNumber, setReferenceNumber] = useState("");
   const [submitting, setSubmitting] = useState(false);

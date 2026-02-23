@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { z } from "zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -85,6 +85,15 @@ export function BillForm({
   const [notes, setNotes] = useState(bill?.notes ?? "");
   const [liabilityOrAssetAccountId, setLiabilityOrAssetAccountId] = useState("");
   const [expenseOrRevenueAccountId, setExpenseOrRevenueAccountId] = useState("");
+  const [fundingAccountId, setFundingAccountId] = useState("");
+
+  // Overdraft check state
+  const [overdraftWarning, setOverdraftWarning] = useState<{
+    currentBalance: number;
+    pendingPayables: number;
+    projectedBalance: number;
+    isOverdraft: boolean;
+  } | null>(null);
 
   // Filter accounts based on direction
   // PAYABLE: liability account (AP) + expense account
@@ -99,6 +108,36 @@ export function BillForm({
       ? a.type === "EXPENSE"
       : a.type === "REVENUE"
   );
+  const cashBankAccounts = (accounts ?? []).filter((a) => a.type === "ASSET");
+
+  // Check overdraft risk when funding account or amount changes
+  const checkOverdraft = useCallback(async () => {
+    if (direction !== "PAYABLE" || !fundingAccountId || !amount) {
+      setOverdraftWarning(null);
+      return;
+    }
+    const parsedAmount = parseFloat(amount);
+    if (!parsedAmount || parsedAmount <= 0) {
+      setOverdraftWarning(null);
+      return;
+    }
+    try {
+      const res = await fetch(
+        `/api/organizations/${organizationSlug}/accounts/${fundingAccountId}/projected-balance?additionalAmount=${parsedAmount}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setOverdraftWarning(data);
+      }
+    } catch {
+      // Ignore fetch errors
+    }
+  }, [direction, fundingAccountId, amount, organizationSlug]);
+
+  useEffect(() => {
+    const timer = setTimeout(checkOverdraft, 300);
+    return () => clearTimeout(timer);
+  }, [checkOverdraft]);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -118,6 +157,7 @@ export function BillForm({
       dueDate: dueDate ? dueDate.toISOString().slice(0, 10) : "",
       notes: notes.trim() || null,
       ...(isEditing ? {} : { liabilityOrAssetAccountId, expenseOrRevenueAccountId }),
+      ...(direction === "PAYABLE" && fundingAccountId ? { fundingAccountId } : {}),
     };
 
     const schema = isEditing
@@ -305,6 +345,54 @@ export function BillForm({
               <p className="mt-1 text-sm text-red-500">{validationErrors.expenseOrRevenueAccountId}</p>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Funding Account (PAYABLE only) */}
+      {!isEditing && direction === "PAYABLE" && (
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-700">
+            Funding Account (Cash/Bank)
+          </label>
+          <Select value={fundingAccountId} onValueChange={setFundingAccountId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select account to pay from..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__none__">None (decide later)</SelectItem>
+              {cashBankAccounts.map((acct) => (
+                <SelectItem key={acct.id} value={acct.id}>
+                  {acct.code} – {acct.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="mt-1 text-xs text-gray-500">
+            Which account will this bill be paid from? Used for overdraft projections.
+          </p>
+
+          {/* Overdraft Warning */}
+          {overdraftWarning && overdraftWarning.isOverdraft && (
+            <Alert variant="destructive" className="mt-3">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Overdraft Warning:</strong> Paying this bill from the selected account
+                would result in a negative projected balance of{" "}
+                <strong>${Math.abs(overdraftWarning.projectedBalance).toFixed(2)}</strong>.
+                <span className="mt-1 block text-xs">
+                  Current balance: ${overdraftWarning.currentBalance.toFixed(2)} · 
+                  Other pending payables: ${overdraftWarning.pendingPayables.toFixed(2)} · 
+                  This bill: ${parseFloat(amount || "0").toFixed(2)}
+                </span>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {overdraftWarning && !overdraftWarning.isOverdraft && fundingAccountId && fundingAccountId !== "__none__" && (
+            <div className="mt-2 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-xs text-green-800">
+              Projected balance after this bill: <strong>${overdraftWarning.projectedBalance.toFixed(2)}</strong>
+            </div>
+          )}
         </div>
       )}
 

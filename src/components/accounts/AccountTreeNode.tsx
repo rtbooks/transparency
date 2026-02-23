@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronRight, ChevronDown, Edit, Power, PowerOff } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronRight, ChevronDown, Edit, Power, PowerOff, AlertTriangle } from 'lucide-react';
 import { AccountTreeNode } from '@/lib/utils/account-tree';
 import { formatCurrency, getAccountTypeInfo } from '@/lib/utils/account-tree';
 import { Button } from '@/components/ui/button';
@@ -55,6 +55,28 @@ export function AccountTreeNodeComponent({
   const hasChildren = node.children.length > 0;
   const typeInfo = getAccountTypeInfo(node.type);
 
+  // Fetch projected balance for ASSET accounts
+  const [projectedBalance, setProjectedBalance] = useState<number | null>(null);
+  useEffect(() => {
+    if (node.type !== 'ASSET' || !node.isActive) return;
+    async function fetchProjected() {
+      try {
+        const res = await fetch(
+          `/api/organizations/${organizationSlug}/accounts/${node.id}/projected-balance`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data.pendingBillCount > 0) {
+            setProjectedBalance(data.projectedBalance);
+          }
+        }
+      } catch {
+        // Ignore
+      }
+    }
+    fetchProjected();
+  }, [node.id, node.type, node.isActive, organizationSlug]);
+
   const handleEditSuccess = () => {
     setEditDialogOpen(false);
     if (onAccountUpdated) {
@@ -100,18 +122,16 @@ export function AccountTreeNodeComponent({
   return (
     <div>
       <div
-        className={`flex items-center justify-between rounded-lg border bg-white p-3 hover:bg-gray-50 ${
+        className={`grid grid-cols-[1fr_auto] items-center gap-2 rounded-lg border bg-white p-3 hover:bg-gray-50 sm:grid-cols-[1fr_auto_auto_auto] ${
           level > 0 ? 'ml-6' : ''
         } ${!node.isActive ? 'border-gray-300 bg-gray-50 opacity-60' : 'border-gray-200'}`}
       >
-        <div className="flex flex-1 items-center gap-3">
-          {/* Expand/Collapse Button */}
+        {/* Left: Chevron + Code + Name */}
+        <div className="flex min-w-0 items-center gap-2">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className={`flex h-6 w-6 items-center justify-center rounded ${
-              hasChildren
-                ? 'hover:bg-gray-200'
-                : 'invisible'
+            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded ${
+              hasChildren ? 'hover:bg-gray-200' : 'invisible'
             }`}
             disabled={!hasChildren}
           >
@@ -123,39 +143,50 @@ export function AccountTreeNodeComponent({
               )
             )}
           </button>
-
-          {/* Account Code */}
-          <span className="min-w-[80px] font-mono text-sm font-medium text-gray-900">
+          <span className="shrink-0 font-mono text-sm font-medium text-gray-900">
             {node.code}
           </span>
-
-          {/* Account Name */}
-          <span className={`flex-1 text-sm font-medium ${node.isActive ? 'text-gray-900' : 'text-gray-500'}`}>
+          <span className={`truncate text-sm font-medium ${node.isActive ? 'text-gray-900' : 'text-gray-500'}`}>
             {node.name}
             {!node.isActive && (
-              <span className="ml-2 text-xs text-gray-400">(Inactive)</span>
+              <span className="ml-1 text-xs text-gray-400">(Inactive)</span>
             )}
           </span>
+        </div>
 
-          {/* Account Type */}
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-medium ${typeInfo.color} bg-gray-100`}
-          >
-            {typeInfo.label}
-          </span>
+        {/* Type Badge */}
+        <span
+          className={`hidden shrink-0 rounded-full px-3 py-1 text-xs font-medium sm:inline-block ${typeInfo.color} bg-gray-100`}
+        >
+          {typeInfo.label}
+        </span>
 
-          {/* Balance */}
+        {/* Balance Column — stacks balance + projected */}
+        <div className="flex flex-col items-end justify-center">
           <span
-            className={`min-w-[120px] text-right text-sm font-semibold ${
-              Number(node.currentBalance) >= 0
-                ? 'text-green-600'
-                : 'text-red-600'
+            className={`whitespace-nowrap text-sm font-semibold ${
+              Number(node.currentBalance) >= 0 ? 'text-green-600' : 'text-red-600'
             }`}
           >
             {formatCurrency(node.currentBalance)}
           </span>
+          {projectedBalance !== null && (
+            <span
+              className={`whitespace-nowrap text-xs ${
+                projectedBalance >= 0 ? 'text-blue-600' : 'text-red-600'
+              }`}
+              title="Projected balance after pending payable bills"
+            >
+              {projectedBalance < 0 && (
+                <AlertTriangle className="mr-0.5 inline h-3 w-3" />
+              )}
+              Avail: {formatCurrency(projectedBalance)}
+            </span>
+          )}
+        </div>
 
-          {/* Edit Button */}
+        {/* Action Buttons */}
+        <div className="flex shrink-0 items-center gap-1">
           <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -186,12 +217,11 @@ export function AccountTreeNodeComponent({
             </DialogContent>
           </Dialog>
 
-          {/* Toggle Active/Inactive Button */}
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="h-8 w-8 p-0"
                 disabled={isToggling}
               >
