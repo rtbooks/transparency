@@ -45,10 +45,11 @@ export default async function BillsPage({ params }: BillsPageProps) {
     return verificationMessage;
   }
 
-  // Fetch accounts for bill form account selectors
+  // Fetch active accounts for bill form account selectors
   const accounts = await prisma.account.findMany({
     where: buildCurrentVersionWhere({
       organizationId: organization.id,
+      isActive: true,
     }),
     select: { id: true, code: true, name: true, type: true },
     orderBy: [{ type: "asc" }, { code: "asc" }],

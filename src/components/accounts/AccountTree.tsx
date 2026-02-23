@@ -5,8 +5,6 @@ import { AccountTreeNode, buildAccountTree } from '@/lib/utils/account-tree';
 import { AccountTreeNodeComponent } from './AccountTreeNode';
 import { Account } from '@/generated/prisma/client';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -15,9 +13,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { CreateAccountForm } from '@/components/forms/CreateAccountForm';
 import { ApplyTemplateDialog } from './ApplyTemplateDialog';
-import { Plus } from 'lucide-react';
+import { Plus, MoreVertical, Eye, EyeOff } from 'lucide-react';
 
 interface AccountTreeProps {
   organizationSlug: string;
@@ -99,19 +103,7 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
             Manage your organization&apos;s chart of accounts.
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          {/* Show Inactive Toggle */}
-          <div className="flex items-center gap-2">
-            <Switch
-              id="show-inactive"
-              checked={showInactive}
-              onCheckedChange={setShowInactive}
-            />
-            <Label htmlFor="show-inactive" className="text-sm text-gray-600 cursor-pointer">
-              Show inactive
-            </Label>
-          </div>
-          
+        <div className="flex items-center gap-2">
           {/* Use Template Button (only if no accounts) */}
           <ApplyTemplateDialog
             organizationSlug={organizationSlug}
@@ -148,6 +140,24 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
               />
             </DialogContent>
           </Dialog>
+
+          {/* Options Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setShowInactive(!showInactive)}>
+                {showInactive ? (
+                  <><EyeOff className="mr-2 h-4 w-4" /> Hide inactive accounts</>
+                ) : (
+                  <><Eye className="mr-2 h-4 w-4" /> Show inactive accounts</>
+                )}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

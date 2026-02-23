@@ -222,6 +222,7 @@ export async function getAccountsByType(
     where: buildCurrentVersionWhere({
       organizationId,
       type,
+      isActive: true,
     }),
     orderBy: { code: 'asc' },
   });
