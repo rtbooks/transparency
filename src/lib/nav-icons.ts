@@ -10,6 +10,7 @@ import {
   Settings,
   Heart,
   Target,
+  Megaphone,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -25,6 +26,7 @@ const iconMap: Record<string, LucideIcon> = {
   Settings,
   Heart,
   Target,
+  Megaphone,
 };
 
 export function getNavIcon(name?: string): LucideIcon | undefined {
