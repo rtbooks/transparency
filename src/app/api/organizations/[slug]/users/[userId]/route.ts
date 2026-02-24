@@ -7,7 +7,7 @@ import { OrganizationUserService } from '@/services/organization-user.service';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 const updateRoleSchema = z.object({
-  role: z.enum(['DONOR', 'ORG_ADMIN', 'PLATFORM_ADMIN', 'PUBLIC']),
+  role: z.enum(['SUPPORTER', 'ORG_ADMIN', 'PLATFORM_ADMIN', 'PUBLIC']),
 });
 
 export async function PATCH(
@@ -54,7 +54,7 @@ export async function PATCH(
       }),
     });
 
-    if (!currentUserAccess || currentUserAccess.role === 'DONOR') {
+    if (!currentUserAccess || currentUserAccess.role === 'SUPPORTER') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
@@ -152,7 +152,7 @@ export async function DELETE(
       }),
     });
 
-    if (!currentUserAccess || currentUserAccess.role === 'DONOR') {
+    if (!currentUserAccess || currentUserAccess.role === 'SUPPORTER') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 

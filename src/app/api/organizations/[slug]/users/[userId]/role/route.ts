@@ -7,7 +7,7 @@ import { OrganizationUserService } from '@/services/organization-user.service';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 const updateRoleSchema = z.object({
-  role: z.enum(['DONOR', 'ORG_ADMIN', 'PLATFORM_ADMIN', 'PUBLIC']),
+  role: z.enum(['SUPPORTER', 'ORG_ADMIN', 'PLATFORM_ADMIN', 'PUBLIC']),
 });
 
 export async function PATCH(
@@ -59,7 +59,7 @@ export async function PATCH(
     });
     
     // Platform admins can modify roles, otherwise need ORG_ADMIN or higher
-    const canManageRoles = currentUser.isPlatformAdmin || (currentUserAccess && currentUserAccess.role !== 'DONOR');
+    const canManageRoles = currentUser.isPlatformAdmin || (currentUserAccess && currentUserAccess.role !== 'SUPPORTER');
     
     if (!canManageRoles) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });

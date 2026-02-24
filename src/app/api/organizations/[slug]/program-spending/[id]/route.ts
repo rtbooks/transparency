@@ -107,7 +107,7 @@ export async function PATCH(
       return NextResponse.json({ error: ctx.error }, { status: ctx.status });
     }
 
-    if (ctx.orgUser.role === 'DONOR') {
+    if (ctx.orgUser.role === 'SUPPORTER') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
@@ -172,7 +172,7 @@ export async function DELETE(
       return NextResponse.json({ error: ctx.error }, { status: ctx.status });
     }
 
-    if (ctx.orgUser.role === 'DONOR') {
+    if (ctx.orgUser.role === 'SUPPORTER') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 

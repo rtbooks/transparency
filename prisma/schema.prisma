@@ -123,7 +123,7 @@ model OrganizationUser {
   id             String   @default(uuid())
   userId         String   @map("user_id")
   organizationId String   @map("organization_id")
-  role           UserRole @default(DONOR)
+  role           UserRole @default(SUPPORTER)
 
   // Donor preferences
   anonymousDonor   Boolean @default(false) @map("anonymous_donor")
@@ -160,7 +160,7 @@ model OrganizationUser {
 enum UserRole {
   PLATFORM_ADMIN
   ORG_ADMIN
-  DONOR
+  SUPPORTER
   PUBLIC
 }
 
@@ -447,7 +447,7 @@ model Invitation {
   id             String   @id @default(uuid())
   organizationId String   @map("organization_id")
   email          String
-  role           UserRole @default(DONOR)
+  role           UserRole @default(SUPPORTER)
   token          String   @unique
 
   invitedById String @map("invited_by_id")

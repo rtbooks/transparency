@@ -9,7 +9,7 @@ import crypto from 'crypto';
 
 const inviteSchema = z.object({
   email: z.string().email(),
-  role: z.enum(['DONOR', 'ORG_ADMIN']),
+  role: z.enum(['SUPPORTER', 'ORG_ADMIN']),
 });
 
 export async function POST(

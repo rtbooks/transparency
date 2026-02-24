@@ -40,7 +40,7 @@ export type SubscriptionTier = (typeof SubscriptionTier)[keyof typeof Subscripti
 export const UserRole = {
   PLATFORM_ADMIN: 'PLATFORM_ADMIN',
   ORG_ADMIN: 'ORG_ADMIN',
-  DONOR: 'DONOR',
+  SUPPORTER: 'SUPPORTER',
   PUBLIC: 'PUBLIC'
 } as const
 

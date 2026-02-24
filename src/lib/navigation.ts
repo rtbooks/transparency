@@ -12,7 +12,7 @@ export function getOrganizationNavLinks(
   role: UserRole
 ): NavLink[] {
   // DONOR role gets limited nav
-  if (role === 'DONOR') {
+  if (role === 'SUPPORTER') {
     return [
       { label: 'Dashboard', href: `/org/${slug}/dashboard`, icon: 'LayoutDashboard' },
       { label: 'Reports', href: `/org/${slug}/reports`, icon: 'BarChart3' },

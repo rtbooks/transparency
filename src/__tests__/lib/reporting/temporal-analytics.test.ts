@@ -9,7 +9,7 @@ describe('Temporal Analytics', () => {
         {
           userId: 'user-123',
           previousVersionId: null,
-          role: 'DONOR',
+          role: 'SUPPORTER',
           isDeleted: false,
         },
       ];
@@ -23,7 +23,7 @@ describe('Temporal Analytics', () => {
         {
           userId: 'user-123',
           previousVersionId: 'prev-v',
-          role: 'DONOR',
+          role: 'SUPPORTER',
           isDeleted: true,
         },
       ];
@@ -37,7 +37,7 @@ describe('Temporal Analytics', () => {
         {
           userId: 'user-123',
           versionId: 'v1',
-          role: 'DONOR',
+          role: 'SUPPORTER',
           isDeleted: false,
         },
         {
