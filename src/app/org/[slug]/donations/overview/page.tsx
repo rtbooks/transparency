@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
+import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
 import { AllDonationsPageClient } from '@/components/donations/AllDonationsPageClient';
 
 export default async function DonationsOverviewPage({
@@ -16,24 +16,39 @@ export default async function DonationsOverviewPage({
     redirect('/sign-in');
   }
 
-  const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-  if (!user) redirect('/sign-in');
+  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId, false);
 
-  const organization = await prisma.organization.findFirst({
-    where: buildCurrentVersionWhere({ slug }),
-  });
-  if (!organization) redirect('/');
+  if (!userAccess && !user.isPlatformAdmin) {
+    return (
+      <OrganizationLayoutWrapper organizationSlug={slug}>
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900">Access Denied</h1>
+            <p className="mt-2 text-gray-600">
+              You need to be a member of this organization to view donations.
+            </p>
+          </div>
+        </div>
+      </OrganizationLayoutWrapper>
+    );
+  }
 
-  // Verify membership
-  const orgUsers = await prisma.organizationUser.findMany({
-    where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+  const verificationMessage = VerificationStatusMessage({
+    status: organization.verificationStatus,
+    organizationName: organization.name,
+    notes: organization.verificationNotes,
   });
-  if (!orgUsers[0]) redirect('/');
+
+  if (verificationMessage) {
+    return verificationMessage;
+  }
 
   return (
-    <AllDonationsPageClient
-      organizationSlug={slug}
-      organizationName={organization.name}
-    />
+    <OrganizationLayoutWrapper organizationSlug={slug}>
+      <AllDonationsPageClient
+        organizationSlug={slug}
+        organizationName={organization.name}
+      />
+    </OrganizationLayoutWrapper>
   );
 }

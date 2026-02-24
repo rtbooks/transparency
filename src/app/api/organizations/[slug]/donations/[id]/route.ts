@@ -73,11 +73,11 @@ export async function PATCH(
     const validated = updateDonationSchema.parse(body);
 
     if (validated.cancel) {
-      const cancelled = await cancelDonation(id, organization.id, user.id);
+      const cancelled = await cancelDonation(id, organization.id, user.id, isAdmin);
       return NextResponse.json(cancelled);
     }
 
-    const updates: any = {};
+    const updates: any = { isAdmin };
     if (validated.amount !== undefined) updates.amount = validated.amount;
     if (validated.description !== undefined) updates.description = validated.description;
     if (validated.donorMessage !== undefined) updates.donorMessage = validated.donorMessage;

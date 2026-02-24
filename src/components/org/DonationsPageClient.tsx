@@ -41,6 +41,7 @@ interface DonationsData {
     outstanding: number;
   };
   paymentInstructions: string | null;
+  isAdmin?: boolean;
 }
 
 interface DonationsPageClientProps {
@@ -143,8 +144,13 @@ export function DonationsPageClient({
     }
   };
 
-  const canModifyDonation = (donation: DonationItem) =>
-    donation.status === 'PLEDGED' && donation.amountReceived === 0;
+  const canModifyDonation = (donation: DonationItem) => {
+    if (donation.status === 'CANCELLED' || donation.status === 'RECEIVED') return false;
+    // Admins can edit any non-terminal donation
+    if (data?.isAdmin) return true;
+    // Regular users can only edit their own pledged donations with no payments
+    return donation.status === 'PLEDGED' && donation.amountReceived === 0;
+  };
 
   const openEditDialog = (donation: DonationItem) => {
     setEditingDonation(donation);

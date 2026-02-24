@@ -36,6 +36,7 @@ export interface UpdateDonationInput {
   description?: string;
   donorMessage?: string;
   dueDate?: Date | null;
+  isAdmin?: boolean;
 }
 
 export interface DonationWithDetails extends Donation {
@@ -211,7 +212,7 @@ export async function updateDonation(
     throw new Error(`Cannot modify a donation that is ${donation.status.toLowerCase()}`);
   }
 
-  if (Number(donation.amountReceived) > 0) {
+  if (!updates.isAdmin && Number(donation.amountReceived) > 0) {
     throw new Error('Cannot modify a donation that has received payments');
   }
 
@@ -280,7 +281,8 @@ export async function updateDonation(
 export async function cancelDonation(
   donationId: string,
   organizationId: string,
-  cancelledBy: string
+  cancelledBy: string,
+  isAdmin: boolean = false
 ): Promise<Donation> {
   const donation = await prisma.donation.findFirst({
     where: { id: donationId, organizationId },
@@ -294,7 +296,7 @@ export async function cancelDonation(
     throw new Error(`Cannot cancel a donation that is ${donation.status.toLowerCase()}`);
   }
 
-  if (Number(donation.amountReceived) > 0) {
+  if (!isAdmin && Number(donation.amountReceived) > 0) {
     throw new Error('Cannot cancel a donation that has received payments. Contact the organization admin for assistance.');
   }
 
