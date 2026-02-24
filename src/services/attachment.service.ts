@@ -19,7 +19,7 @@ export const ALLOWED_MIME_TYPES = [
 export const MAX_FILE_SIZE = 250 * 1024; // 250 KB
 export const MAX_ATTACHMENTS_PER_ENTITY = 10;
 
-export type AttachmentEntityType = 'TRANSACTION' | 'BILL';
+export type AttachmentEntityType = 'TRANSACTION' | 'BILL' | 'PROGRAM_SPENDING';
 
 // ── Validation ─────────────────────────────────────────────
 

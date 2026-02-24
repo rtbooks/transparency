@@ -9,7 +9,7 @@ import {
   type AttachmentEntityType,
 } from '@/services/attachment.service';
 
-const VALID_ENTITY_TYPES: AttachmentEntityType[] = ['TRANSACTION', 'BILL'];
+const VALID_ENTITY_TYPES: AttachmentEntityType[] = ['TRANSACTION', 'BILL', 'PROGRAM_SPENDING'];
 
 export async function GET(
   request: NextRequest,
