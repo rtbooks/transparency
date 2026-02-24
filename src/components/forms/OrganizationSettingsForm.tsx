@@ -35,7 +35,6 @@ const organizationSettingsSchema = z.object({
   ein: z.string().optional(),
   mission: z.string().optional(),
   fiscalYearStart: z.date(),
-  logoUrl: z.string().optional(),
   primaryColor: z.string().regex(HEX_COLOR_REGEX, 'Must be a valid hex color').optional().or(z.literal('')),
   accentColor: z.string().regex(HEX_COLOR_REGEX, 'Must be a valid hex color').optional().or(z.literal('')),
   donorAccessMode: z.enum(['AUTO_APPROVE', 'REQUIRE_APPROVAL']),
@@ -56,7 +55,9 @@ export function OrganizationSettingsForm({
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-  const [currentLogoUrl, setCurrentLogoUrl] = useState(organization.logoUrl || '');
+  const [currentLogoUrl, setCurrentLogoUrl] = useState(
+    organization.logoUrl ? `/api/organizations/${organization.slug}/logo` : ''
+  );
 
   const form = useForm<OrganizationSettingsData>({
     resolver: zodResolver(organizationSettingsSchema),
@@ -65,7 +66,6 @@ export function OrganizationSettingsForm({
       ein: organization.ein || '',
       mission: organization.mission || '',
       fiscalYearStart: new Date(organization.fiscalYearStart),
-      logoUrl: organization.logoUrl || '',
       primaryColor: organization.primaryColor || '',
       accentColor: organization.accentColor || '',
       donorAccessMode: organization.donorAccessMode || 'REQUIRE_APPROVAL',
@@ -106,7 +106,6 @@ export function OrganizationSettingsForm({
           ein: data.ein || null,
           mission: data.mission || null,
           fiscalYearStart: data.fiscalYearStart.toISOString(),
-          logoUrl: data.logoUrl || null,
           primaryColor: data.primaryColor || null,
           accentColor: data.accentColor || null,
           donorAccessMode: data.donorAccessMode,
@@ -162,7 +161,6 @@ export function OrganizationSettingsForm({
 
       const { logoUrl } = await response.json();
       setCurrentLogoUrl(logoUrl);
-      form.setValue('logoUrl', logoUrl);
       toast({ title: 'Logo uploaded', description: 'Organization logo has been updated.' });
       router.refresh();
     } catch (error) {
@@ -186,7 +184,6 @@ export function OrganizationSettingsForm({
       if (!response.ok) throw new Error('Failed to remove logo');
 
       setCurrentLogoUrl('');
-      form.setValue('logoUrl', '');
       toast({ title: 'Logo removed' });
       router.refresh();
     } catch (error) {

@@ -8,6 +8,64 @@ import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 const MAX_LOGO_SIZE = 500 * 1024; // 500KB
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
 
+/**
+ * GET - Proxy endpoint to serve org logo from private Vercel Blob store.
+ * Authenticates user and verifies org membership before streaming the image.
+ */
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const { slug } = await params;
+    const { userId: clerkUserId } = await auth();
+
+    if (!clerkUserId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const organization = await findOrganizationBySlug(slug);
+    if (!organization || !organization.logoUrl) {
+      return NextResponse.json({ error: 'Logo not found' }, { status: 404 });
+    }
+
+    const userAccess = await prisma.organizationUser.findFirst({
+      where: buildCurrentVersionWhere({ userId: user.id, organizationId: organization.id }),
+    });
+    if (!userAccess) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
+    // Fetch the logo from the private blob store
+    const blobResponse = await fetch(organization.logoUrl, {
+      headers: {
+        Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
+      },
+    });
+
+    if (!blobResponse.ok) {
+      return NextResponse.json({ error: 'Logo not found' }, { status: 404 });
+    }
+
+    const contentType = blobResponse.headers.get('content-type') || 'image/png';
+
+    return new NextResponse(blobResponse.body, {
+      headers: {
+        'Content-Type': contentType,
+        'Cache-Control': 'private, max-age=3600',
+      },
+    });
+  } catch (error) {
+    console.error('Error serving logo:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -68,16 +126,18 @@ export async function POST(
       }
     }
 
-    // Upload to Vercel Blob
+    // Upload to Vercel Blob (private store)
     const blob = await put(`logos/${organization.id}/${file.name}`, file, {
-      access: 'public',
+      access: 'private',
       contentType: file.type,
     });
 
-    // Update organization with new logo URL
+    // Store the blob URL; clients use the proxy endpoint to display it
     await updateOrganization(organization.id, { logoUrl: blob.url }, user.id);
 
-    return NextResponse.json({ logoUrl: blob.url });
+    // Return the proxy URL for immediate display
+    const proxyUrl = `/api/organizations/${slug}/logo`;
+    return NextResponse.json({ logoUrl: proxyUrl });
   } catch (error) {
     console.error('Error uploading logo:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

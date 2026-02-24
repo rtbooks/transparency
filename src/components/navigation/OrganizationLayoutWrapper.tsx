@@ -37,7 +37,7 @@ export async function OrganizationLayoutWrapper({
         orgTheme = {
           primaryColor: org.primaryColor,
           accentColor: org.accentColor,
-          logoUrl: org.logoUrl,
+          logoUrl: org.logoUrl ? `/api/organizations/${organizationSlug}/logo` : null,
         };
 
         const orgUsers = await prisma.organizationUser.findMany({
