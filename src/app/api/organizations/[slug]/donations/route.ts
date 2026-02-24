@@ -154,14 +154,27 @@ export async function POST(
       user.email
     );
 
-    // Find Accounts Receivable account
-    const arAccount = await prisma.account.findFirst({
-      where: buildCurrentVersionWhere({
-        organizationId: organization.id,
-        type: 'ASSET',
-        name: { contains: 'Receivable' },
-      }),
-    });
+    // Find Accounts Receivable account — prefer org-configured, then auto-detect
+    let arAccount;
+    if (organization.donationsArAccountId) {
+      arAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({
+          id: organization.donationsArAccountId,
+          organizationId: organization.id,
+          isActive: true,
+        }),
+      });
+    }
+    if (!arAccount) {
+      arAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({
+          organizationId: organization.id,
+          type: 'ASSET',
+          name: { contains: 'Receivable' },
+          isActive: true,
+        }),
+      });
+    }
 
     if (!arAccount) {
       return NextResponse.json(

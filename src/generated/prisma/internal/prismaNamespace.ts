@@ -1731,6 +1731,7 @@ export const OrganizationScalarFieldEnum = {
   donorAccessMode: 'donorAccessMode',
   paymentInstructions: 'paymentInstructions',
   donationsAccountId: 'donationsAccountId',
+  donationsArAccountId: 'donationsArAccountId',
   publicTransparency: 'publicTransparency',
   status: 'status',
   subscriptionTier: 'subscriptionTier',

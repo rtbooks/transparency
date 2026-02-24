@@ -366,6 +366,53 @@ export async function recordDonationPayment(
   });
 }
 
+/**
+ * Sync a Donation's status from its linked Bill after a bill payment is recorded.
+ * Called from the bills payment API to keep donation status in sync.
+ * No-op if the bill has no linked donation.
+ */
+export async function syncDonationFromBill(billId: string): Promise<void> {
+  const donation = await prisma.donation.findFirst({
+    where: { billId },
+  });
+
+  if (!donation) return; // Bill has no linked donation — nothing to sync
+
+  const bill = await prisma.bill.findUnique({
+    where: { id: billId },
+  });
+
+  if (!bill) return;
+
+  const amountPaid = Number(bill.amountPaid);
+  const totalAmount = Number(donation.amount);
+  const isFullyPaid = amountPaid >= totalAmount;
+
+  let newStatus: string = donation.status;
+  if (bill.status === 'CANCELLED') {
+    newStatus = 'CANCELLED';
+  } else if (isFullyPaid) {
+    newStatus = 'RECEIVED';
+  } else if (amountPaid > 0) {
+    newStatus = 'PARTIAL';
+  }
+
+  // Only update if something changed
+  if (
+    newStatus !== donation.status ||
+    amountPaid !== Number(donation.amountReceived)
+  ) {
+    await prisma.donation.update({
+      where: { id: donation.id },
+      data: {
+        amountReceived: amountPaid as unknown as Prisma.Decimal,
+        status: newStatus as any,
+        receivedDate: isFullyPaid ? (donation.receivedDate ?? new Date()) : null,
+      },
+    });
+  }
+}
+
 // ── Queries ─────────────────────────────────────────────────────────────
 
 /**

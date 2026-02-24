@@ -38,6 +38,7 @@ export type OrganizationMinAggregateOutputType = {
   donorAccessMode: $Enums.DonorAccessMode | null
   paymentInstructions: string | null
   donationsAccountId: string | null
+  donationsArAccountId: string | null
   publicTransparency: boolean | null
   status: $Enums.OrganizationStatus | null
   subscriptionTier: $Enums.SubscriptionTier | null
@@ -75,6 +76,7 @@ export type OrganizationMaxAggregateOutputType = {
   donorAccessMode: $Enums.DonorAccessMode | null
   paymentInstructions: string | null
   donationsAccountId: string | null
+  donationsArAccountId: string | null
   publicTransparency: boolean | null
   status: $Enums.OrganizationStatus | null
   subscriptionTier: $Enums.SubscriptionTier | null
@@ -112,6 +114,7 @@ export type OrganizationCountAggregateOutputType = {
   donorAccessMode: number
   paymentInstructions: number
   donationsAccountId: number
+  donationsArAccountId: number
   publicTransparency: number
   status: number
   subscriptionTier: number
@@ -151,6 +154,7 @@ export type OrganizationMinAggregateInputType = {
   donorAccessMode?: true
   paymentInstructions?: true
   donationsAccountId?: true
+  donationsArAccountId?: true
   publicTransparency?: true
   status?: true
   subscriptionTier?: true
@@ -188,6 +192,7 @@ export type OrganizationMaxAggregateInputType = {
   donorAccessMode?: true
   paymentInstructions?: true
   donationsAccountId?: true
+  donationsArAccountId?: true
   publicTransparency?: true
   status?: true
   subscriptionTier?: true
@@ -225,6 +230,7 @@ export type OrganizationCountAggregateInputType = {
   donorAccessMode?: true
   paymentInstructions?: true
   donationsAccountId?: true
+  donationsArAccountId?: true
   publicTransparency?: true
   status?: true
   subscriptionTier?: true
@@ -335,6 +341,7 @@ export type OrganizationGroupByOutputType = {
   donorAccessMode: $Enums.DonorAccessMode
   paymentInstructions: string | null
   donationsAccountId: string | null
+  donationsArAccountId: string | null
   publicTransparency: boolean
   status: $Enums.OrganizationStatus
   subscriptionTier: $Enums.SubscriptionTier
@@ -393,6 +400,7 @@ export type OrganizationWhereInput = {
   donorAccessMode?: Prisma.EnumDonorAccessModeFilter<"Organization"> | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.StringNullableFilter<"Organization"> | string | null
   donationsAccountId?: Prisma.StringNullableFilter<"Organization"> | string | null
+  donationsArAccountId?: Prisma.StringNullableFilter<"Organization"> | string | null
   publicTransparency?: Prisma.BoolFilter<"Organization"> | boolean
   status?: Prisma.EnumOrganizationStatusFilter<"Organization"> | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFilter<"Organization"> | $Enums.SubscriptionTier
@@ -430,6 +438,7 @@ export type OrganizationOrderByWithRelationInput = {
   donorAccessMode?: Prisma.SortOrder
   paymentInstructions?: Prisma.SortOrderInput | Prisma.SortOrder
   donationsAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
+  donationsArAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   publicTransparency?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
@@ -471,6 +480,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   donorAccessMode?: Prisma.EnumDonorAccessModeFilter<"Organization"> | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.StringNullableFilter<"Organization"> | string | null
   donationsAccountId?: Prisma.StringNullableFilter<"Organization"> | string | null
+  donationsArAccountId?: Prisma.StringNullableFilter<"Organization"> | string | null
   publicTransparency?: Prisma.BoolFilter<"Organization"> | boolean
   status?: Prisma.EnumOrganizationStatusFilter<"Organization"> | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFilter<"Organization"> | $Enums.SubscriptionTier
@@ -508,6 +518,7 @@ export type OrganizationOrderByWithAggregationInput = {
   donorAccessMode?: Prisma.SortOrder
   paymentInstructions?: Prisma.SortOrderInput | Prisma.SortOrder
   donationsAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
+  donationsArAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   publicTransparency?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
@@ -551,6 +562,7 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   donorAccessMode?: Prisma.EnumDonorAccessModeWithAggregatesFilter<"Organization"> | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   donationsAccountId?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  donationsArAccountId?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   publicTransparency?: Prisma.BoolWithAggregatesFilter<"Organization"> | boolean
   status?: Prisma.EnumOrganizationStatusWithAggregatesFilter<"Organization"> | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierWithAggregatesFilter<"Organization"> | $Enums.SubscriptionTier
@@ -588,6 +600,7 @@ export type OrganizationCreateInput = {
   donorAccessMode?: $Enums.DonorAccessMode
   paymentInstructions?: string | null
   donationsAccountId?: string | null
+  donationsArAccountId?: string | null
   publicTransparency?: boolean
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
@@ -625,6 +638,7 @@ export type OrganizationUncheckedCreateInput = {
   donorAccessMode?: $Enums.DonorAccessMode
   paymentInstructions?: string | null
   donationsAccountId?: string | null
+  donationsArAccountId?: string | null
   publicTransparency?: boolean
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
@@ -662,6 +676,7 @@ export type OrganizationUpdateInput = {
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donationsArAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTransparency?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
@@ -699,6 +714,7 @@ export type OrganizationUncheckedUpdateInput = {
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donationsArAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTransparency?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
@@ -736,6 +752,7 @@ export type OrganizationCreateManyInput = {
   donorAccessMode?: $Enums.DonorAccessMode
   paymentInstructions?: string | null
   donationsAccountId?: string | null
+  donationsArAccountId?: string | null
   publicTransparency?: boolean
   status?: $Enums.OrganizationStatus
   subscriptionTier?: $Enums.SubscriptionTier
@@ -773,6 +790,7 @@ export type OrganizationUpdateManyMutationInput = {
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donationsArAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTransparency?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
@@ -810,6 +828,7 @@ export type OrganizationUncheckedUpdateManyInput = {
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donationsArAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publicTransparency?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
   subscriptionTier?: Prisma.EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
@@ -852,6 +871,7 @@ export type OrganizationCountOrderByAggregateInput = {
   donorAccessMode?: Prisma.SortOrder
   paymentInstructions?: Prisma.SortOrder
   donationsAccountId?: Prisma.SortOrder
+  donationsArAccountId?: Prisma.SortOrder
   publicTransparency?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
@@ -889,6 +909,7 @@ export type OrganizationMaxOrderByAggregateInput = {
   donorAccessMode?: Prisma.SortOrder
   paymentInstructions?: Prisma.SortOrder
   donationsAccountId?: Prisma.SortOrder
+  donationsArAccountId?: Prisma.SortOrder
   publicTransparency?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
@@ -926,6 +947,7 @@ export type OrganizationMinOrderByAggregateInput = {
   donorAccessMode?: Prisma.SortOrder
   paymentInstructions?: Prisma.SortOrder
   donationsAccountId?: Prisma.SortOrder
+  donationsArAccountId?: Prisma.SortOrder
   publicTransparency?: Prisma.SortOrder
   status?: Prisma.SortOrder
   subscriptionTier?: Prisma.SortOrder
@@ -1001,6 +1023,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   donorAccessMode?: boolean
   paymentInstructions?: boolean
   donationsAccountId?: boolean
+  donationsArAccountId?: boolean
   publicTransparency?: boolean
   status?: boolean
   subscriptionTier?: boolean
@@ -1038,6 +1061,7 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   donorAccessMode?: boolean
   paymentInstructions?: boolean
   donationsAccountId?: boolean
+  donationsArAccountId?: boolean
   publicTransparency?: boolean
   status?: boolean
   subscriptionTier?: boolean
@@ -1075,6 +1099,7 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   donorAccessMode?: boolean
   paymentInstructions?: boolean
   donationsAccountId?: boolean
+  donationsArAccountId?: boolean
   publicTransparency?: boolean
   status?: boolean
   subscriptionTier?: boolean
@@ -1112,6 +1137,7 @@ export type OrganizationSelectScalar = {
   donorAccessMode?: boolean
   paymentInstructions?: boolean
   donationsAccountId?: boolean
+  donationsArAccountId?: boolean
   publicTransparency?: boolean
   status?: boolean
   subscriptionTier?: boolean
@@ -1135,7 +1161,7 @@ export type OrganizationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "primaryColor" | "accentColor" | "fiscalYearStart" | "donorAccessMode" | "paymentInstructions" | "donationsAccountId" | "publicTransparency" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "primaryColor" | "accentColor" | "fiscalYearStart" | "donorAccessMode" | "paymentInstructions" | "donationsAccountId" | "donationsArAccountId" | "publicTransparency" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 
 export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Organization"
@@ -1154,6 +1180,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     donorAccessMode: $Enums.DonorAccessMode
     paymentInstructions: string | null
     donationsAccountId: string | null
+    donationsArAccountId: string | null
     publicTransparency: boolean
     status: $Enums.OrganizationStatus
     subscriptionTier: $Enums.SubscriptionTier
@@ -1611,6 +1638,7 @@ export interface OrganizationFieldRefs {
   readonly donorAccessMode: Prisma.FieldRef<"Organization", 'DonorAccessMode'>
   readonly paymentInstructions: Prisma.FieldRef<"Organization", 'String'>
   readonly donationsAccountId: Prisma.FieldRef<"Organization", 'String'>
+  readonly donationsArAccountId: Prisma.FieldRef<"Organization", 'String'>
   readonly publicTransparency: Prisma.FieldRef<"Organization", 'Boolean'>
   readonly status: Prisma.FieldRef<"Organization", 'OrganizationStatus'>
   readonly subscriptionTier: Prisma.FieldRef<"Organization", 'SubscriptionTier'>

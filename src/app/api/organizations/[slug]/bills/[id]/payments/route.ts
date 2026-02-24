@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { recordPayment, linkPayment } from '@/services/bill-payment.service';
 import { recalculateBillStatus } from '@/services/bill.service';
+import { syncDonationFromBill } from '@/services/donation.service';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
 
@@ -102,6 +103,9 @@ export async function POST(
 
     // Recalculate bill status after payment
     await recalculateBillStatus(billId);
+
+    // Sync linked donation status (no-op if bill has no donation)
+    await syncDonationFromBill(billId);
 
     return NextResponse.json(billPayment, { status: 201 });
   } catch (error) {

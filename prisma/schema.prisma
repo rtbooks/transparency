@@ -27,9 +27,10 @@ model Organization {
   fiscalYearStart DateTime @default("2024-01-01T00:00:00Z") @map("fiscal_year_start")
 
   // Donor settings
-  donorAccessMode     DonorAccessMode @default(REQUIRE_APPROVAL) @map("donor_access_mode")
-  paymentInstructions String?         @map("payment_instructions") @db.Text
-  donationsAccountId  String?         @map("donations_account_id") // Stable entity ID of the designated Revenue account
+  donorAccessMode       DonorAccessMode @default(REQUIRE_APPROVAL) @map("donor_access_mode")
+  paymentInstructions   String?         @map("payment_instructions") @db.Text
+  donationsAccountId    String?         @map("donations_account_id")    // Stable entity ID of the designated Revenue account
+  donationsArAccountId  String?         @map("donations_ar_account_id") // Stable entity ID of the designated Accounts Receivable account
 
   // Public transparency — when true, unauthenticated visitors can see financial summaries
   publicTransparency Boolean @default(false) @map("public_transparency")

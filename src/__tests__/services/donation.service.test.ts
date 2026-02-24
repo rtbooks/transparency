@@ -40,6 +40,9 @@ jest.mock('@/lib/prisma', () => ({
       update: jest.fn(),
       aggregate: jest.fn(),
     },
+    bill: {
+      findUnique: jest.fn(),
+    },
     contact: {
       findMany: jest.fn(),
     },
@@ -62,6 +65,7 @@ import {
   updateDonation,
   cancelDonation,
   recordDonationPayment,
+  syncDonationFromBill,
   getCampaignDonationSummary,
   type CreateDonationInput,
 } from '@/services/donation.service';
@@ -444,6 +448,100 @@ describe('Donation Service', () => {
         _sum: { amount: true, amountReceived: true },
         _count: { id: true },
       });
+    });
+  });
+
+  // ── syncDonationFromBill ───────────────────────────────────────────────
+
+  describe('syncDonationFromBill', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should be a no-op when bill has no linked donation', async () => {
+      (prisma.donation.findFirst as jest.Mock).mockResolvedValue(null);
+
+      await syncDonationFromBill('bill-1');
+
+      expect(prisma.donation.findFirst).toHaveBeenCalledWith({
+        where: { billId: 'bill-1' },
+      });
+      expect(prisma.donation.update).not.toHaveBeenCalled();
+    });
+
+    it('should update donation to PARTIAL when bill is partially paid', async () => {
+      (prisma.donation.findFirst as jest.Mock).mockResolvedValue({
+        id: 'don-1',
+        billId: 'bill-1',
+        amount: 500,
+        amountReceived: 0,
+        status: 'PLEDGED',
+        receivedDate: null,
+      });
+      (prisma.bill.findUnique as jest.Mock).mockResolvedValue({
+        id: 'bill-1',
+        amount: 500,
+        amountPaid: 200,
+        status: 'PARTIAL',
+      });
+
+      await syncDonationFromBill('bill-1');
+
+      expect(prisma.donation.update).toHaveBeenCalledWith({
+        where: { id: 'don-1' },
+        data: expect.objectContaining({
+          status: 'PARTIAL',
+          receivedDate: null,
+        }),
+      });
+    });
+
+    it('should update donation to RECEIVED when bill is fully paid', async () => {
+      (prisma.donation.findFirst as jest.Mock).mockResolvedValue({
+        id: 'don-1',
+        billId: 'bill-1',
+        amount: 500,
+        amountReceived: 200,
+        status: 'PARTIAL',
+        receivedDate: null,
+      });
+      (prisma.bill.findUnique as jest.Mock).mockResolvedValue({
+        id: 'bill-1',
+        amount: 500,
+        amountPaid: 500,
+        status: 'PAID',
+      });
+
+      await syncDonationFromBill('bill-1');
+
+      expect(prisma.donation.update).toHaveBeenCalledWith({
+        where: { id: 'don-1' },
+        data: expect.objectContaining({
+          status: 'RECEIVED',
+          receivedDate: expect.any(Date),
+        }),
+      });
+    });
+
+    it('should not update donation when nothing changed', async () => {
+      (prisma.donation.findFirst as jest.Mock).mockResolvedValue({
+        id: 'don-1',
+        billId: 'bill-1',
+        amount: 500,
+        amountReceived: 200,
+        status: 'PARTIAL',
+        receivedDate: null,
+      });
+      (prisma.bill.findUnique as jest.Mock).mockResolvedValue({
+        id: 'bill-1',
+        amount: 500,
+        amountPaid: 200,
+        status: 'PARTIAL',
+      });
+
+      await syncDonationFromBill('bill-1');
+
+      expect(prisma.donation.update).not.toHaveBeenCalled();
     });
   });
 });
