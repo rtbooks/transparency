@@ -136,6 +136,13 @@ export async function GET(
     // Get total count for pagination
     const totalCount = await prisma.transaction.count({ where });
 
+    // Compute period total (sum of amounts matching current filters)
+    const aggregate = await prisma.transaction.aggregate({
+      where,
+      _sum: { amount: true },
+    });
+    const periodTotal = Number(aggregate._sum.amount) || 0;
+
     // Fetch transactions (without account includes for now)
     const transactions = await prisma.transaction.findMany({
       where,
@@ -204,6 +211,7 @@ export async function GET(
         totalPages: Math.ceil(totalCount / limit),
         hasMore: page * limit < totalCount,
       },
+      periodTotal,
       temporalContext: asOfDate ? {
         asOfDate: asOfDate.toISOString(),
         isHistoricalView: true,

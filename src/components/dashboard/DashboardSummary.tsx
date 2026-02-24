@@ -1,15 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils/account-tree';
-import { DollarSign, TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle, Landmark } from 'lucide-react';
 
-interface AccountSummary {
+interface AccountData {
   type: string;
-  total: number;
-  count: number;
+  currentBalance: number;
 }
 
 interface RecentTransaction {
@@ -27,10 +26,10 @@ interface DashboardSummaryProps {
 }
 
 export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
-  const [accountSummary, setAccountSummary] = useState<AccountSummary[]>([]);
+  const [accounts, setAccounts] = useState<AccountData[]>([]);
   const [recentTransactions, setRecentTransactions] = useState<RecentTransaction[]>([]);
-  const [totalAccounts, setTotalAccounts] = useState(0);
-  const [totalTransactions, setTotalTransactions] = useState(0);
+  const [last30dRevenue, setLast30dRevenue] = useState(0);
+  const [last30dExpenses, setLast30dExpenses] = useState(0);
   const [overdraftAlerts, setOverdraftAlerts] = useState<Array<{
     accountId: string;
     accountName: string;
@@ -42,39 +41,50 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const thirtyDaysAgo = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 30);
+    return d.toISOString().split('T')[0];
+  }, []);
+
+  const today = useMemo(() => new Date().toISOString().split('T')[0], []);
+
   useEffect(() => {
     async function fetchData() {
       try {
         setLoading(true);
         setError(null);
 
-        const [accountsRes, transactionsRes, overdraftRes] = await Promise.all([
+        const [accountsRes, recentTxRes, revenueTxRes, expenseTxRes, overdraftRes] = await Promise.all([
           fetch(`/api/organizations/${organizationSlug}/accounts`),
-          fetch(`/api/organizations/${organizationSlug}/transactions?limit=5`),
+          fetch(`/api/organizations/${organizationSlug}/transactions?limit=10`),
+          fetch(`/api/organizations/${organizationSlug}/transactions?type=INCOME&startDate=${thirtyDaysAgo}&endDate=${today}&limit=1`),
+          fetch(`/api/organizations/${organizationSlug}/transactions?type=EXPENSE&startDate=${thirtyDaysAgo}&endDate=${today}&limit=1`),
           fetch(`/api/organizations/${organizationSlug}/overdraft-alerts`),
         ]);
 
-        if (!accountsRes.ok || !transactionsRes.ok) {
+        if (!accountsRes.ok || !recentTxRes.ok) {
           throw new Error('Failed to fetch dashboard data');
         }
 
-        const accounts = await accountsRes.json();
-        const transactionsData = await transactionsRes.json();
+        setAccounts(await accountsRes.json());
 
-        // Summarize accounts by type
-        const summaryMap: Record<string, AccountSummary> = {};
-        for (const account of accounts) {
-          if (!summaryMap[account.type]) {
-            summaryMap[account.type] = { type: account.type, total: 0, count: 0 };
-          }
-          summaryMap[account.type].count += 1;
-          summaryMap[account.type].total += Number(account.currentBalance) || 0;
+        const recentData = await recentTxRes.json();
+        setRecentTransactions(recentData.transactions || []);
+
+        // Extract totals from pagination metadata
+        if (revenueTxRes.ok) {
+          const revData = await revenueTxRes.json();
+          const revTxs = revData.transactions || [];
+          // Sum amounts from all revenue transactions in the period
+          // We only got 1 page — use a separate sum approach
+          setLast30dRevenue(revData.periodTotal ?? revTxs.reduce((s: number, t: RecentTransaction) => s + Number(t.amount), 0));
         }
-        setAccountSummary(Object.values(summaryMap));
-        setTotalAccounts(accounts.length);
-
-        setRecentTransactions(transactionsData.transactions || []);
-        setTotalTransactions(transactionsData.pagination?.totalCount || 0);
+        if (expenseTxRes.ok) {
+          const expData = await expenseTxRes.json();
+          const expTxs = expData.transactions || [];
+          setLast30dExpenses(expData.periodTotal ?? expTxs.reduce((s: number, t: RecentTransaction) => s + Number(t.amount), 0));
+        }
 
         if (overdraftRes.ok) {
           const overdraftData = await overdraftRes.json();
@@ -88,7 +98,16 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
     }
 
     fetchData();
-  }, [organizationSlug]);
+  }, [organizationSlug, thirtyDaysAgo, today]);
+
+  const totalAssets = useMemo(
+    () => accounts.filter(a => a.type === 'ASSET').reduce((s, a) => s + Number(a.currentBalance), 0),
+    [accounts]
+  );
+  const totalLiabilities = useMemo(
+    () => accounts.filter(a => a.type === 'LIABILITY').reduce((s, a) => s + Number(a.currentBalance), 0),
+    [accounts]
+  );
 
   const getTransactionTypeBadge = (type: string) => {
     const variants: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'outline'; label: string }> = {
@@ -98,15 +117,6 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
     };
     const config = variants[type] || { variant: 'outline' as const, label: type };
     return <Badge variant={config.variant}>{config.label}</Badge>;
-  };
-
-  const getAccountTypeIcon = (type: string) => {
-    switch (type) {
-      case 'REVENUE': return <TrendingUp className="h-4 w-4 text-green-600" />;
-      case 'EXPENSE': return <TrendingDown className="h-4 w-4 text-red-600" />;
-      case 'ASSET': return <DollarSign className="h-4 w-4 text-blue-600" />;
-      default: return <ArrowRightLeft className="h-4 w-4 text-gray-600" />;
-    }
   };
 
   if (loading) {
@@ -133,48 +143,55 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Accounts</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalAccounts}</div>
+            <div className="text-2xl font-bold">{formatCurrency(totalAssets)}</div>
             <p className="text-xs text-muted-foreground">
-              {accountSummary.length} account type{accountSummary.length !== 1 ? 's' : ''}
+              Current balance
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Transactions</CardTitle>
-            <ArrowRightLeft className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Total Liabilities</CardTitle>
+            <Landmark className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalTransactions}</div>
+            <div className="text-2xl font-bold">{formatCurrency(totalLiabilities)}</div>
             <p className="text-xs text-muted-foreground">
-              All time
+              Current balance
             </p>
           </CardContent>
         </Card>
 
-        {accountSummary
-          .filter(s => s.type === 'REVENUE' || s.type === 'EXPENSE')
-          .map(summary => (
-            <Card key={summary.type}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {summary.type === 'REVENUE' ? 'Revenue Accounts' : 'Expense Accounts'}
-                </CardTitle>
-                {getAccountTypeIcon(summary.type)}
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{formatCurrency(summary.total)}</div>
-                <p className="text-xs text-muted-foreground">
-                  {summary.count} account{summary.count !== 1 ? 's' : ''}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+            <TrendingUp className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-700">{formatCurrency(last30dRevenue)}</div>
+            <p className="text-xs text-muted-foreground">
+              Last 30 days
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Expenses</CardTitle>
+            <TrendingDown className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-700">{formatCurrency(last30dExpenses)}</div>
+            <p className="text-xs text-muted-foreground">
+              Last 30 days
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Overdraft Alerts */}
@@ -210,35 +227,6 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
                     <div className="text-sm font-bold text-red-600">
                       Projected: {formatCurrency(alert.projectedBalance)}
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Account Summary by Type */}
-      {accountSummary.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Accounts by Type</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {accountSummary.map(summary => (
-                <div key={summary.type} className="flex items-center justify-between rounded-lg border p-3">
-                  <div className="flex items-center gap-3">
-                    {getAccountTypeIcon(summary.type)}
-                    <div>
-                      <div className="font-medium">{summary.type}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {summary.count} account{summary.count !== 1 ? 's' : ''}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right font-semibold">
-                    {formatCurrency(summary.total)}
                   </div>
                 </div>
               ))}
