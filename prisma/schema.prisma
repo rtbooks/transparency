@@ -31,6 +31,9 @@ model Organization {
   paymentInstructions String?         @map("payment_instructions") @db.Text
   donationsAccountId  String?         @map("donations_account_id") // Stable entity ID of the designated Revenue account
 
+  // Public transparency — when true, unauthenticated visitors can see financial summaries
+  publicTransparency Boolean @default(false) @map("public_transparency")
+
   // Subscription & Status
   status           OrganizationStatus @default(ACTIVE)
   subscriptionTier SubscriptionTier   @default(FREE)

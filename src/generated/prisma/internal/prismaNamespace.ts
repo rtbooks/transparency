@@ -1656,6 +1656,7 @@ export const OrganizationScalarFieldEnum = {
   donorAccessMode: 'donorAccessMode',
   paymentInstructions: 'paymentInstructions',
   donationsAccountId: 'donationsAccountId',
+  publicTransparency: 'publicTransparency',
   status: 'status',
   subscriptionTier: 'subscriptionTier',
   verificationStatus: 'verificationStatus',
@@ -2087,6 +2088,13 @@ export type ListEnumDonorAccessModeFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'OrganizationStatus'
  */
 export type EnumOrganizationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrganizationStatus'>
@@ -2125,13 +2133,6 @@ export type EnumVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'VerificationStatus[]'
  */
 export type ListEnumVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
