@@ -158,6 +158,12 @@ export async function PATCH(
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
     }
     console.error('Error updating pledge:', error);
+    if (error?.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'The pledge or its linked transaction could not be found. It may have been modified or deleted.' },
+        { status: 404 }
+      );
+    }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

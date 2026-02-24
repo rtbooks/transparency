@@ -158,22 +158,8 @@ export async function getCampaignById(
 async function getCampaignProgress(
   campaign: Campaign
 ): Promise<{ amountRaised: number; progressPercent: number | null; donationCount: number }> {
-  // Find all RECEIVABLE bills whose accrual transaction credits the campaign's account
-  // The bill's accrual transaction for RECEIVABLE: DR AR, CR Revenue (campaign account)
-  // We need to find transactions where creditAccountId = campaign.accountId
-  const result = await prisma.bill.aggregate({
-    where: {
-      organizationId: campaign.organizationId,
-      direction: 'RECEIVABLE',
-      // Match bills whose accrual transaction credits the campaign account
-      // Since bills track the contact, we need to look at the linked transaction
-      status: { notIn: ['CANCELLED', 'DRAFT'] },
-    },
-    _sum: { amount: true },
-    _count: { id: true },
-  });
-
-  // More precise: query transactions that credit this specific account
+  // Sum INCOME transactions that credit the campaign's account (accrual entries from pledges/donations).
+  // Payment transactions are type TRANSFER and won't match.
   const txResult = await prisma.transaction.aggregate({
     where: buildCurrentVersionWhere({
       organizationId: campaign.organizationId,
