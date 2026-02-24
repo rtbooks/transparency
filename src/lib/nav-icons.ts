@@ -9,6 +9,7 @@ import {
   UserCog,
   Settings,
   Heart,
+  HandHeart,
   Target,
   Megaphone,
 } from 'lucide-react';
@@ -25,6 +26,7 @@ const iconMap: Record<string, LucideIcon> = {
   UserCog,
   Settings,
   Heart,
+  HandHeart,
   Target,
   Megaphone,
 };

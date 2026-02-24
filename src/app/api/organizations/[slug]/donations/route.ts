@@ -47,6 +47,10 @@ export async function GET(
 
     const isAdmin = user.isPlatformAdmin || orgUser.role === 'ORG_ADMIN';
 
+    // Check if requesting org-wide view (any member can see, but only their own are editable)
+    const { searchParams } = new URL(request.url);
+    const viewAll = searchParams.get('view') === 'all';
+
     // Find the donor's contact record(s) in this organization
     const donorContacts = await prisma.contact.findMany({
       where: buildCurrentVersionWhere({
@@ -57,41 +61,25 @@ export async function GET(
 
     const contactIds = donorContacts.map(c => c.id);
 
-    // For admins, show all donor-role contacts' pledges PLUS their own
-    let donorContactIds = contactIds;
-    if (isAdmin) {
-      const allDonorContacts = await prisma.contact.findMany({
-        where: buildCurrentVersionWhere({
-          organizationId: organization.id,
-          roles: { has: 'DONOR' },
-        }),
-        select: { id: true },
-      });
-      // Merge admin's own contact IDs with all donor contact IDs
-      const allIds = new Set([...contactIds, ...allDonorContacts.map(c => c.id)]);
-      donorContactIds = [...allIds];
-    }
-
-    // Build bill filter: only RECEIVABLE bills from relevant contacts
+    // Build bill filter: only RECEIVABLE bills
     const billWhere: any = {
       organizationId: organization.id,
       direction: 'RECEIVABLE',
     };
 
-    if (!isAdmin && contactIds.length > 0) {
+    if (viewAll) {
+      // Org-wide view: show all receivable bills (pledges/donations)
+      // No contactId filter — show everything
+    } else if (contactIds.length > 0) {
+      // Personal view: show only the current user's pledges
       billWhere.contactId = { in: contactIds };
-    } else if (!isAdmin) {
-      // Donor with no linked contact — return empty
+    } else {
+      // User has no linked contact — return empty for personal view
       return NextResponse.json({
         pledges: [],
         summary: { totalPledged: 0, totalPaid: 0, outstanding: 0 },
         paymentInstructions: organization.paymentInstructions,
       });
-    } else if (donorContactIds.length > 0) {
-      billWhere.contactId = { in: donorContactIds };
-    } else {
-      // No donor contacts exist at all
-      billWhere.contactId = { in: [] };
     }
 
     const pledges = await prisma.bill.findMany({
@@ -172,6 +160,8 @@ export async function GET(
         outstanding: totalPledged - totalPaid,
       },
       paymentInstructions: organization.paymentInstructions,
+      isAdmin,
+      userContactIds: contactIds,
     });
   } catch (error) {
     console.error('Error fetching donations:', error);
