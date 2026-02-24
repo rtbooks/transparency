@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 const linkSchema = z.object({
   transactionId: z.string().uuid(),
-  amount: z.number().positive(),
+  amount: z.union([z.number(), z.string().transform(Number)]).pipe(z.number().positive()),
 });
 
 export async function GET(
