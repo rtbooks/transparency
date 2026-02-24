@@ -63,12 +63,14 @@ export async function GET(
     const limit = parseInt(searchParams.get('limit') || '25');
     const direction = searchParams.get('direction') || undefined;
     const status = searchParams.get('status') || undefined;
+    const statusNotIn = searchParams.get('statusNotIn') || undefined;
     const contactId = searchParams.get('contactId') || undefined;
     const search = searchParams.get('search') || undefined;
 
     const result = await listBills(organization.id, {
       direction,
       status,
+      statusNotIn: statusNotIn?.split(','),
       contactId,
       search,
       page,

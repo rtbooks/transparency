@@ -21,6 +21,7 @@ export function CampaignsPageClient({ organizationSlug }: CampaignsPageClientPro
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [donationsAccountId, setDonationsAccountId] = useState<string | null>(null);
+  const [configLoaded, setConfigLoaded] = useState(false);
 
   const fetchDonationsAccount = useCallback(async () => {
     try {
@@ -31,6 +32,8 @@ export function CampaignsPageClient({ organizationSlug }: CampaignsPageClientPro
       }
     } catch (e) {
       // Ignore
+    } finally {
+      setConfigLoaded(true);
     }
   }, [organizationSlug]);
 
@@ -49,15 +52,15 @@ export function CampaignsPageClient({ organizationSlug }: CampaignsPageClientPro
         </div>
         <Button
           onClick={() => setShowAddDialog(true)}
-          disabled={!donationsAccountId}
-          title={!donationsAccountId ? "Set a Donations Account in Settings first" : undefined}
+          disabled={configLoaded && !donationsAccountId}
+          title={configLoaded && !donationsAccountId ? "Set a Donations Account in Settings first" : undefined}
         >
           <Plus className="mr-2 h-4 w-4" />
           New Campaign
         </Button>
       </div>
 
-      {!donationsAccountId && (
+      {configLoaded && !donationsAccountId && (
         <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
           <div className="flex items-start gap-3">
             <Target className="mt-0.5 h-5 w-5 text-amber-600" />

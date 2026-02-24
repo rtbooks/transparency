@@ -119,7 +119,10 @@ export async function GET(
         where.transactionDate.gte = new Date(startDate);
       }
       if (endDate) {
-        where.transactionDate.lte = new Date(endDate);
+        // End of day: include all transactions on the end date
+        const endOfDay = new Date(endDate);
+        endOfDay.setUTCHours(23, 59, 59, 999);
+        where.transactionDate.lte = endOfDay;
       }
     }
 
@@ -132,6 +135,13 @@ export async function GET(
 
     // Get total count for pagination
     const totalCount = await prisma.transaction.count({ where });
+
+    // Compute period total (sum of amounts matching current filters)
+    const aggregate = await prisma.transaction.aggregate({
+      where,
+      _sum: { amount: true },
+    });
+    const periodTotal = Number(aggregate._sum.amount) || 0;
 
     // Fetch transactions (without account includes for now)
     const transactions = await prisma.transaction.findMany({
@@ -201,6 +211,7 @@ export async function GET(
         totalPages: Math.ceil(totalCount / limit),
         hasMore: page * limit < totalCount,
       },
+      periodTotal,
       temporalContext: asOfDate ? {
         asOfDate: asOfDate.toISOString(),
         isHistoricalView: true,

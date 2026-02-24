@@ -76,8 +76,9 @@ export async function recordPayment(
     throw new Error('Bill has no accrual transaction — cannot determine AP/AR account');
   }
 
-  // Determine transaction type based on bill direction
-  const transactionType = bill.direction === 'PAYABLE' ? 'EXPENSE' : 'INCOME';
+  // Payment transactions move money between balance sheet accounts (Cash ↔ AP/AR),
+  // so they are transfers, not income/expense.
+  const transactionType = 'TRANSFER';
 
   return await prisma.$transaction(async (tx) => {
     // Create the transaction
@@ -89,7 +90,7 @@ export async function recordPayment(
         type: transactionType as any,
         debitAccountId,
         creditAccountId,
-        description: input.description || `Payment for bill ${bill.id.slice(0, 8)}`,
+        description: input.description || `Payment: ${bill.description}`,
         referenceNumber: input.referenceNumber ?? null,
         paymentMethod: 'OTHER',
         contactId: bill.contactId,

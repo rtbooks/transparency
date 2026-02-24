@@ -58,13 +58,22 @@ interface Account {
 interface BillListProps {
   organizationSlug: string;
   directionFilter?: "PAYABLE" | "RECEIVABLE";
+  onDirectionChange?: (value: "ALL" | "PAYABLE" | "RECEIVABLE") => void;
+  directionValue?: "ALL" | "PAYABLE" | "RECEIVABLE";
   refreshKey?: number;
   accounts?: Account[];
   openBillId?: string | null;
   onBillOpened?: () => void;
 }
 
+const DIRECTION_OPTIONS = [
+  { value: "ALL", label: "All Directions" },
+  { value: "PAYABLE", label: "Payables" },
+  { value: "RECEIVABLE", label: "Receivables" },
+];
+
 const STATUS_OPTIONS = [
+  { value: "outstanding", label: "Outstanding" },
   { value: "all", label: "All Statuses" },
   { value: "DRAFT", label: "Draft" },
   { value: "PENDING", label: "Pending" },
@@ -103,7 +112,7 @@ function getDirectionBadge(direction: Bill["direction"]) {
   );
 }
 
-export function BillList({ organizationSlug, directionFilter, refreshKey, accounts, openBillId, onBillOpened }: BillListProps) {
+export function BillList({ organizationSlug, directionFilter, onDirectionChange, directionValue, refreshKey, accounts, openBillId, onBillOpened }: BillListProps) {
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -111,7 +120,7 @@ export function BillList({ organizationSlug, directionFilter, refreshKey, accoun
 
   // Filters
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("outstanding");
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -132,7 +141,9 @@ export function BillList({ organizationSlug, directionFilter, refreshKey, accoun
       if (directionFilter) {
         params.append("direction", directionFilter);
       }
-      if (statusFilter && statusFilter !== "all") {
+      if (statusFilter === "outstanding") {
+        params.append("statusNotIn", "PAID,CANCELLED");
+      } else if (statusFilter && statusFilter !== "all") {
         params.append("status", statusFilter);
       }
       if (search) {
@@ -235,6 +246,22 @@ export function BillList({ organizationSlug, directionFilter, refreshKey, accoun
               <Search className="h-4 w-4" />
             </Button>
           </div>
+        </div>
+
+        <div className="min-w-[150px]">
+          <label className="mb-2 block text-sm font-medium text-gray-700">Direction</label>
+          <Select value={directionValue || "ALL"} onValueChange={(v) => onDirectionChange?.(v as "ALL" | "PAYABLE" | "RECEIVABLE")}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {DIRECTION_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="min-w-[150px]">

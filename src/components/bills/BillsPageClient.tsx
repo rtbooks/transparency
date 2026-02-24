@@ -34,17 +34,11 @@ export function BillsPageClient({ organizationSlug, accounts }: BillsPageClientP
   const [directionFilter, setDirectionFilter] = useState<DirectionFilter>("ALL");
   const [openBillId, setOpenBillId] = useState<string | null>(null);
 
-  const tabs: { label: string; value: DirectionFilter }[] = [
-    { label: "All", value: "ALL" },
-    { label: "Payables", value: "PAYABLE" },
-    { label: "Receivables", value: "RECEIVABLE" },
-  ];
-
   return (
     <>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Bills &amp; Pledges</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Bills</h1>
           <p className="mt-2 text-gray-600">
             Track payables owed by your organization and receivables owed to you.
           </p>
@@ -60,26 +54,11 @@ export function BillsPageClient({ organizationSlug, accounts }: BillsPageClientP
         <AgingSummary organizationSlug={organizationSlug} />
       </div>
 
-      {/* Direction Tabs */}
-      <div className="mb-6 flex gap-1 rounded-lg border bg-white p-1">
-        {tabs.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setDirectionFilter(tab.value)}
-            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-              directionFilter === tab.value
-                ? "bg-gray-900 text-white"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
       <BillList
         organizationSlug={organizationSlug}
         directionFilter={directionFilter === "ALL" ? undefined : directionFilter}
+        onDirectionChange={setDirectionFilter}
+        directionValue={directionFilter}
         refreshKey={refreshKey}
         accounts={accounts}
         openBillId={openBillId}
