@@ -255,7 +255,7 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
                       <div className="truncate font-medium">{tx.description}</div>
                       <div className="text-sm text-muted-foreground">
                         {new Date(tx.transactionDate).toLocaleDateString()} &middot;{' '}
-                        {tx.debitAccount.name} → {tx.creditAccount.name}
+                        {tx.creditAccount.name} → {tx.debitAccount.name}
                       </div>
                     </div>
                   </div>
