@@ -19,6 +19,7 @@ const updateOrganizationSchema = z.object({
   donorAccessMode: z.enum(['AUTO_APPROVE', 'REQUIRE_APPROVAL']).optional(),
   paymentInstructions: z.string().nullable().optional(),
   donationsAccountId: z.string().nullable().optional(),
+  donationsArAccountId: z.string().nullable().optional(),
   publicTransparency: z.boolean().optional(),
 });
 
@@ -145,6 +146,7 @@ export async function PATCH(
     if (validatedData.donorAccessMode !== undefined) updates.donorAccessMode = validatedData.donorAccessMode;
     if (validatedData.paymentInstructions !== undefined) updates.paymentInstructions = validatedData.paymentInstructions;
     if (validatedData.donationsAccountId !== undefined) updates.donationsAccountId = validatedData.donationsAccountId;
+    if (validatedData.donationsArAccountId !== undefined) updates.donationsArAccountId = validatedData.donationsArAccountId;
     if (validatedData.publicTransparency !== undefined) updates.publicTransparency = validatedData.publicTransparency;
 
     // Update organization (creates new version with audit trail)

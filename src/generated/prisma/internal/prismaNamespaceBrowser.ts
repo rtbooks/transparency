@@ -63,6 +63,7 @@ export const ModelName = {
   Invitation: 'Invitation',
   AccessRequest: 'AccessRequest',
   Campaign: 'Campaign',
+  Donation: 'Donation',
   Contact: 'Contact',
   Bill: 'Bill',
   BillPayment: 'BillPayment',
@@ -99,6 +100,7 @@ export const OrganizationScalarFieldEnum = {
   donorAccessMode: 'donorAccessMode',
   paymentInstructions: 'paymentInstructions',
   donationsAccountId: 'donationsAccountId',
+  donationsArAccountId: 'donationsArAccountId',
   publicTransparency: 'publicTransparency',
   status: 'status',
   subscriptionTier: 'subscriptionTier',
@@ -359,6 +361,32 @@ export const CampaignScalarFieldEnum = {
 } as const
 
 export type CampaignScalarFieldEnum = (typeof CampaignScalarFieldEnum)[keyof typeof CampaignScalarFieldEnum]
+
+
+export const DonationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  contactId: 'contactId',
+  type: 'type',
+  status: 'status',
+  amount: 'amount',
+  amountReceived: 'amountReceived',
+  description: 'description',
+  donorMessage: 'donorMessage',
+  isAnonymous: 'isAnonymous',
+  isTaxDeductible: 'isTaxDeductible',
+  donationDate: 'donationDate',
+  receivedDate: 'receivedDate',
+  dueDate: 'dueDate',
+  campaignId: 'campaignId',
+  transactionId: 'transactionId',
+  billId: 'billId',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DonationScalarFieldEnum = (typeof DonationScalarFieldEnum)[keyof typeof DonationScalarFieldEnum]
 
 
 export const ContactScalarFieldEnum = {

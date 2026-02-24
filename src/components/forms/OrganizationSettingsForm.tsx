@@ -41,6 +41,7 @@ const organizationSettingsSchema = z.object({
   donorAccessMode: z.enum(['AUTO_APPROVE', 'REQUIRE_APPROVAL']),
   paymentInstructions: z.string().optional(),
   donationsAccountId: z.string().nullable().optional(),
+  donationsArAccountId: z.string().nullable().optional(),
   publicTransparency: z.boolean(),
 });
 
@@ -73,22 +74,29 @@ export function OrganizationSettingsForm({
       donorAccessMode: organization.donorAccessMode || 'REQUIRE_APPROVAL',
       paymentInstructions: organization.paymentInstructions || '',
       donationsAccountId: organization.donationsAccountId || null,
+      donationsArAccountId: organization.donationsArAccountId || null,
       publicTransparency: organization.publicTransparency ?? false,
     },
   });
 
-  // Fetch Revenue accounts for donations account dropdown
+  // Fetch accounts for donation settings dropdowns
   const [revenueAccounts, setRevenueAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
+  const [arAccounts, setArAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
   useEffect(() => {
     async function fetchAccounts() {
       try {
         const res = await fetch(`/api/organizations/${organization.slug}/accounts`);
         if (res.ok) {
           const data = await res.json();
-          const accounts = (data.accounts || data || []).filter(
+          const allAccounts = data.accounts || data || [];
+          const revenue = allAccounts.filter(
             (a: any) => a.type === 'REVENUE' && !a.parentAccountId
           );
-          setRevenueAccounts(accounts.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
+          const asset = allAccounts.filter(
+            (a: any) => a.type === 'ASSET' && a.isActive
+          );
+          setRevenueAccounts(revenue.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
+          setArAccounts(asset.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
         }
       } catch (e) {
         console.error('Failed to load accounts:', e);
@@ -114,6 +122,7 @@ export function OrganizationSettingsForm({
           donorAccessMode: data.donorAccessMode,
           paymentInstructions: data.paymentInstructions || null,
           donationsAccountId: data.donationsAccountId || null,
+          donationsArAccountId: data.donationsArAccountId || null,
           publicTransparency: data.publicTransparency,
         }),
       });
@@ -399,6 +408,35 @@ export function OrganizationSettingsForm({
                   <FormDescription>
                     Designate a top-level Revenue account for donations. Child
                     accounts under it can be used as fundraising campaigns.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="donationsArAccountId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Accounts Receivable Account</FormLabel>
+                  <FormControl>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      value={field.value || ''}
+                      onChange={(e) => field.onChange(e.target.value || null)}
+                    >
+                      <option value="">None (auto-detect)</option>
+                      {arAccounts.map((acct) => (
+                        <option key={acct.id} value={acct.id}>
+                          {acct.code} - {acct.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormDescription>
+                    The asset account used to track outstanding pledge receivables.
+                    When not set, the system looks for an account containing &quot;Receivable&quot;.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

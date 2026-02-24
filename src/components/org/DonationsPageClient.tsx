@@ -2,32 +2,13 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils/account-tree';
 import { trackEvent } from '@/lib/analytics';
-import { useToast } from '@/hooks/use-toast';
 
 interface Payment {
   id: string;
@@ -36,28 +17,31 @@ interface Payment {
   notes?: string | null;
 }
 
-interface Pledge {
+interface DonationItem {
   id: string;
   contactName: string;
   amount: number;
-  amountPaid: number;
-  description: string;
+  amountReceived: number;
+  description: string | null;
   status: string;
-  issueDate: string;
+  type: string;
+  donationDate: string;
   dueDate?: string | null;
   payments: Payment[];
   campaignName?: string | null;
   campaignId?: string | null;
+  donorMessage?: string | null;
 }
 
 interface DonationsData {
-  pledges: Pledge[];
+  donations: DonationItem[];
   summary: {
     totalPledged: number;
     totalPaid: number;
     outstanding: number;
   };
   paymentInstructions: string | null;
+  isAdmin?: boolean;
 }
 
 interface DonationsPageClientProps {
@@ -74,11 +58,9 @@ interface ClaimableContact {
 }
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-  DRAFT: { label: 'Draft', variant: 'secondary' },
-  PENDING: { label: 'Pending', variant: 'outline' },
-  PARTIAL: { label: 'Partially Paid', variant: 'default' },
-  PAID: { label: 'Paid', variant: 'default' },
-  OVERDUE: { label: 'Overdue', variant: 'destructive' },
+  PLEDGED: { label: 'Pledged', variant: 'outline' },
+  PARTIAL: { label: 'Partially Received', variant: 'default' },
+  RECEIVED: { label: 'Received', variant: 'default' },
   CANCELLED: { label: 'Cancelled', variant: 'secondary' },
 };
 
@@ -92,16 +74,19 @@ export function DonationsPageClient({
   const [claimable, setClaimable] = useState<ClaimableContact[]>([]);
   const [claiming, setClaiming] = useState(false);
   const [hasLinkedContact, setHasLinkedContact] = useState<boolean | null>(null);
-  const { toast } = useToast();
-
-  // Edit/Cancel state
-  const [editingPledge, setEditingPledge] = useState<Pledge | null>(null);
+  const [editingDonation, setEditingDonation] = useState<DonationItem | null>(null);
   const [editAmount, setEditAmount] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editDueDate, setEditDueDate] = useState('');
-  const [editSubmitting, setEditSubmitting] = useState(false);
-  const [cancellingPledgeId, setCancellingPledgeId] = useState<string | null>(null);
-  const [cancelSubmitting, setCancelSubmitting] = useState(false);
+  const [cancellingDonationId, setCancellingDonationId] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [payingDonation, setPayingDonation] = useState<DonationItem | null>(null);
+  const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
+  const [paymentCashAccountId, setPaymentCashAccountId] = useState('');
+  const [paymentDescription, setPaymentDescription] = useState('');
+  const [paymentNotes, setPaymentNotes] = useState('');
+  const [cashAccounts, setCashAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
 
   const fetchDonations = useCallback(async () => {
     try {
@@ -166,92 +151,137 @@ export function DonationsPageClient({
     }
   };
 
-  const canModifyPledge = (pledge: Pledge) =>
-    (pledge.status === 'PENDING' || pledge.status === 'DRAFT') &&
-    pledge.amountPaid === 0 &&
-    pledge.payments.length === 0;
-
-  const openEditDialog = (pledge: Pledge) => {
-    setEditingPledge(pledge);
-    setEditAmount(String(pledge.amount));
-    setEditDescription(pledge.description);
-    setEditDueDate(pledge.dueDate ? pledge.dueDate.split('T')[0] : '');
+  const canModifyDonation = (donation: DonationItem) => {
+    if (donation.status === 'CANCELLED' || donation.status === 'RECEIVED') return false;
+    // Admins can edit any non-terminal donation
+    if (data?.isAdmin) return true;
+    // Regular users can only edit their own pledged donations with no payments
+    return donation.status === 'PLEDGED' && donation.amountReceived === 0;
   };
 
-  const handleEditSubmit = async () => {
-    if (!editingPledge) return;
-    setEditSubmitting(true);
+  const isAdmin = data?.isAdmin ?? false;
+
+  // Fetch cash/bank accounts for payment dialog (admin only)
+  useEffect(() => {
+    if (!isAdmin) return;
+    async function fetchCashAccounts() {
+      try {
+        const res = await fetch(`/api/organizations/${organizationSlug}/accounts`);
+        if (res.ok) {
+          const json = await res.json();
+          const accounts = (json.accounts || json || []).filter(
+            (a: any) => a.type === 'ASSET' && a.isActive
+          );
+          setCashAccounts(accounts.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
+          if (accounts.length > 0) setPaymentCashAccountId(accounts[0].id);
+        }
+      } catch { /* ignore */ }
+    }
+    fetchCashAccounts();
+  }, [organizationSlug, isAdmin]);
+
+  const openPaymentDialog = (donation: DonationItem) => {
+    const remaining = donation.amount - donation.amountReceived;
+    setPayingDonation(donation);
+    setPaymentAmount(remaining.toFixed(2));
+    setPaymentDate(new Date().toISOString().split('T')[0]);
+    setPaymentDescription('');
+    setPaymentNotes('');
+  };
+
+  const handlePaymentSubmit = async () => {
+    if (!payingDonation || !paymentCashAccountId) return;
+    setActionLoading(true);
     try {
-      const updates: Record<string, unknown> = {};
-      const newAmount = parseFloat(editAmount);
-      if (!isNaN(newAmount) && newAmount !== editingPledge.amount) {
-        updates.amount = newAmount;
-      }
-      if (editDescription !== editingPledge.description) {
-        updates.description = editDescription;
-      }
-      const originalDue = editingPledge.dueDate ? editingPledge.dueDate.split('T')[0] : '';
-      if (editDueDate !== originalDue) {
-        updates.dueDate = editDueDate || null;
-      }
-
-      if (Object.keys(updates).length === 0) {
-        setEditingPledge(null);
-        return;
-      }
-
       const res = await fetch(
-        `/api/organizations/${organizationSlug}/donations/pledge/${editingPledge.id}`,
+        `/api/organizations/${organizationSlug}/donations/${payingDonation.id}/payment`,
         {
-          method: 'PATCH',
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updates),
+          body: JSON.stringify({
+            amount: parseFloat(paymentAmount),
+            transactionDate: paymentDate,
+            cashAccountId: paymentCashAccountId,
+            description: paymentDescription || undefined,
+            notes: paymentNotes || undefined,
+          }),
         }
       );
-
       if (!res.ok) {
         const body = await res.json();
-        throw new Error(body.error || 'Failed to update pledge');
+        throw new Error(body.error || 'Failed to record payment');
       }
-
-      toast({ title: 'Pledge updated', description: 'Your pledge has been updated successfully.' });
-      trackEvent('pledge_updated', { orgSlug: organizationSlug });
-      setEditingPledge(null);
+      setPayingDonation(null);
       setLoading(true);
       await fetchDonations();
     } catch (err: any) {
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+      setError(err.message);
     } finally {
-      setEditSubmitting(false);
+      setActionLoading(false);
     }
   };
 
-  const handleCancel = async (pledgeId: string) => {
-    setCancelSubmitting(true);
+  const openEditDialog = (donation: DonationItem) => {
+    setEditingDonation(donation);
+    setEditAmount(String(donation.amount));
+    setEditDescription(donation.description || '');
+    setEditDueDate(donation.dueDate ? donation.dueDate.split('T')[0] : '');
+  };
+
+  const handleEditSubmit = async () => {
+    if (!editingDonation) return;
+    setActionLoading(true);
     try {
       const res = await fetch(
-        `/api/organizations/${organizationSlug}/donations/pledge/${pledgeId}`,
+        `/api/organizations/${organizationSlug}/donations/${editingDonation.id}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: parseFloat(editAmount),
+            description: editDescription,
+            dueDate: editDueDate || null,
+          }),
+        }
+      );
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.error || 'Failed to update donation');
+      }
+      trackEvent('pledge_updated', { orgSlug: organizationSlug });
+      setEditingDonation(null);
+      setLoading(true);
+      await fetchDonations();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancel = async (donationId: string) => {
+    setActionLoading(true);
+    try {
+      const res = await fetch(
+        `/api/organizations/${organizationSlug}/donations/${donationId}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ cancel: true }),
         }
       );
-
       if (!res.ok) {
         const body = await res.json();
-        throw new Error(body.error || 'Failed to cancel pledge');
+        throw new Error(body.error || 'Failed to cancel donation');
       }
-
-      toast({ title: 'Pledge cancelled', description: 'Your pledge has been cancelled.' });
       trackEvent('pledge_cancelled', { orgSlug: organizationSlug });
-      setCancellingPledgeId(null);
+      setCancellingDonationId(null);
       setLoading(true);
       await fetchDonations();
     } catch (err: any) {
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+      setError(err.message);
     } finally {
-      setCancelSubmitting(false);
+      setActionLoading(false);
     }
   };
 
@@ -276,7 +306,7 @@ export function DonationsPageClient({
 
   if (!data) return null;
 
-  const { pledges, summary, paymentInstructions } = data;
+  const { donations, summary, paymentInstructions } = data;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -286,10 +316,10 @@ export function DonationsPageClient({
           <h1 className="text-3xl font-bold text-gray-900">My Donations</h1>
           <p className="mt-1 text-gray-600">{organizationName}</p>
         </div>
-        <Link href={`/org/${organizationSlug}/donations/new`}>
+        <Link href={`/org/${organizationSlug}/my-donations/new`}>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            New Pledge
+            New Donation
           </Button>
         </Link>
       </div>
@@ -388,88 +418,102 @@ export function DonationsPageClient({
         </div>
       )}
 
-      {/* Pledge List */}
-      {pledges.length === 0 ? (
+      {/* Donation List */}
+      {donations.length === 0 ? (
         <div className="rounded-lg border bg-white p-12 text-center">
           <DollarSign className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-4 text-lg font-medium text-gray-900">
-            No pledges yet
+            No donations yet
           </h3>
           <p className="mt-2 text-gray-600">
-            Create a pledge to get started with your donation.
+            Create a donation or pledge to get started.
           </p>
-          <Link href={`/org/${organizationSlug}/donations/new`}>
+          <Link href={`/org/${organizationSlug}/my-donations/new`}>
             <Button className="mt-4">
               <Plus className="mr-2 h-4 w-4" />
-              Create Pledge
+              New Donation
             </Button>
           </Link>
         </div>
       ) : (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900">Your Pledges</h2>
-          {pledges.map((pledge) => {
-            const config = statusConfig[pledge.status] || statusConfig.PENDING;
+          <h2 className="text-xl font-semibold text-gray-900">Your Donations</h2>
+          {donations.map((donation) => {
+            const config = statusConfig[donation.status] || statusConfig.PLEDGED;
             return (
-              <div key={pledge.id} className="rounded-lg border bg-white p-6">
+              <div key={donation.id} className="rounded-lg border bg-white p-6">
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-3">
                       <h3 className="font-semibold text-gray-900">
-                        {formatCurrency(pledge.amount)}
+                        {formatCurrency(donation.amount)}
                       </h3>
                       <Badge variant={config.variant}>{config.label}</Badge>
                     </div>
-                    <p className="mt-1 text-sm text-gray-600">{pledge.description}</p>
-                    {pledge.campaignName && (
+                    {donation.description && (
+                      <p className="mt-1 text-sm text-gray-600">{donation.description}</p>
+                    )}
+                    {donation.campaignName && (
                       <div className="mt-1 flex items-center gap-1">
                         <Target className="h-3 w-3 text-green-600" />
                         <span className="text-xs font-medium text-green-700">
-                          {pledge.campaignName}
+                          {donation.campaignName}
                         </span>
                       </div>
                     )}
                     <p className="mt-1 text-xs text-gray-500">
-                      Pledged on {new Date(pledge.issueDate).toLocaleDateString()}
-                      {pledge.dueDate && (
-                        <> · Due {new Date(pledge.dueDate).toLocaleDateString()}</>
+                      Pledged on{' '}
+                      {new Date(donation.donationDate).toLocaleDateString()}
+                      {donation.dueDate && (
+                        <> · Due {new Date(donation.dueDate).toLocaleDateString()}</>
                       )}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-600">
-                      Paid: {formatCurrency(pledge.amountPaid)} / {formatCurrency(pledge.amount)}
+                      Received: {formatCurrency(donation.amountReceived)} / {formatCurrency(donation.amount)}
                     </p>
-                    {canModifyPledge(pledge) && (
-                      <div className="mt-2 flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openEditDialog(pledge)}
-                        >
-                          <Pencil className="mr-1 h-3 w-3" />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => setCancellingPledgeId(pledge.id)}
-                        >
-                          <X className="mr-1 h-3 w-3" />
-                          Cancel
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+                      {canModifyDonation(donation) && (
+                        <div className="mt-2 flex justify-end gap-2">
+                          {isAdmin && (donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                              onClick={() => openPaymentDialog(donation)}
+                            >
+                              <CreditCard className="mr-1 h-3 w-3" />
+                              Record Payment
+                            </Button>
+                          )}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditDialog(donation)}
+                          >
+                            <Pencil className="mr-1 h-3 w-3" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => setCancellingDonationId(donation.id)}
+                          >
+                            <X className="mr-1 h-3 w-3" />
+                            Cancel
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                 </div>
 
                 {/* Payment history */}
-                {pledge.payments.length > 0 && (
+                {donation.payments.length > 0 && (
                   <div className="mt-4 border-t pt-4">
                     <p className="mb-2 text-sm font-medium text-gray-700">Payments</p>
                     <div className="space-y-2">
-                      {pledge.payments.map((payment) => (
+                      {donation.payments.map((payment) => (
                         <div
                           key={payment.id}
                           className="flex items-center justify-between text-sm"
@@ -491,77 +535,156 @@ export function DonationsPageClient({
         </div>
       )}
 
-      {/* Edit Pledge Dialog */}
-      <Dialog open={!!editingPledge} onOpenChange={(open) => !open && setEditingPledge(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit Pledge</DialogTitle>
-            <DialogDescription>
-              Update your pledge details. You can only edit pledges that have not received payments.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Amount ($)</label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0.01"
-                value={editAmount}
-                onChange={(e) => setEditAmount(e.target.value)}
-              />
+      {/* Edit Dialog */}
+      {editingDonation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">Edit Pledge</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Amount ($)</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  value={editAmount}
+                  onChange={(e) => setEditAmount(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Description</label>
+                <Textarea
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Due Date (Optional)</label>
+                <Input
+                  type="date"
+                  value={editDueDate}
+                  onChange={(e) => setEditDueDate(e.target.value)}
+                />
+              </div>
             </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Description</label>
-              <Textarea
-                value={editDescription}
-                onChange={(e) => setEditDescription(e.target.value)}
-                rows={3}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Target Date (optional)</label>
-              <Input
-                type="date"
-                value={editDueDate}
-                onChange={(e) => setEditDueDate(e.target.value)}
-              />
+            <div className="mt-6 flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setEditingDonation(null)} disabled={actionLoading}>
+                Cancel
+              </Button>
+              <Button onClick={handleEditSubmit} disabled={actionLoading}>
+                {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+              </Button>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingPledge(null)} disabled={editSubmitting}>
-              Cancel
-            </Button>
-            <Button onClick={handleEditSubmit} disabled={editSubmitting}>
-              {editSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
-      {/* Cancel Pledge Confirmation */}
-      <AlertDialog open={!!cancellingPledgeId} onOpenChange={(open) => !open && setCancellingPledgeId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Cancel Pledge</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to cancel this pledge? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={cancelSubmitting}>Keep Pledge</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700"
-              disabled={cancelSubmitting}
-              onClick={() => cancellingPledgeId && handleCancel(cancellingPledgeId)}
-            >
-              {cancelSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Yes, Cancel Pledge
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Cancel Confirmation */}
+      {cancellingDonationId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-sm rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">Cancel Donation?</h3>
+            <p className="mb-6 text-sm text-gray-600">
+              This will cancel your pledge and reverse the accounting entry. This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setCancellingDonationId(null)} disabled={actionLoading}>
+                Keep Pledge
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => handleCancel(cancellingDonationId)}
+                disabled={actionLoading}
+              >
+                {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Yes, Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Record Payment Dialog */}
+      {payingDonation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="mb-1 text-lg font-semibold text-gray-900">Record Payment</h3>
+            <p className="mb-4 text-sm text-gray-600">
+              {formatCurrency(payingDonation.amountReceived)} of {formatCurrency(payingDonation.amount)} received
+            </p>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Amount ($)</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  max={payingDonation.amount - payingDonation.amountReceived}
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(e.target.value)}
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Remaining: {formatCurrency(payingDonation.amount - payingDonation.amountReceived)}
+                </p>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Transaction Date</label>
+                <Input
+                  type="date"
+                  value={paymentDate}
+                  onChange={(e) => setPaymentDate(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Cash / Bank Account</label>
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  value={paymentCashAccountId}
+                  onChange={(e) => setPaymentCashAccountId(e.target.value)}
+                >
+                  {cashAccounts.length === 0 && <option value="">No accounts available</option>}
+                  {cashAccounts.map((acct) => (
+                    <option key={acct.id} value={acct.id}>
+                      {acct.code} - {acct.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Description (Optional)</label>
+                <Input
+                  value={paymentDescription}
+                  onChange={(e) => setPaymentDescription(e.target.value)}
+                  placeholder="e.g., Check #1234"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Notes (Optional)</label>
+                <Textarea
+                  value={paymentNotes}
+                  onChange={(e) => setPaymentNotes(e.target.value)}
+                  rows={2}
+                  placeholder="Internal notes about this payment"
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setPayingDonation(null)} disabled={actionLoading}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handlePaymentSubmit}
+                disabled={actionLoading || !paymentCashAccountId || !paymentAmount}
+              >
+                {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Record Payment
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

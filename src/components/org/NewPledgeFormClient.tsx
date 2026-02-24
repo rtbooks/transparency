@@ -22,13 +22,14 @@ import { Loader2, CheckCircle, Target } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils/account-tree';
 
-const pledgeSchema = z.object({
+const donationSchema = z.object({
   amount: z.number().positive('Amount must be positive'),
   description: z.string().min(1, 'Please provide a description'),
+  donorMessage: z.string().optional(),
   dueDate: z.string().optional(),
 });
 
-type PledgeFormData = z.infer<typeof pledgeSchema>;
+type DonationFormData = z.infer<typeof donationSchema>;
 
 interface NewPledgeFormClientProps {
   organizationSlug: string;
@@ -44,7 +45,7 @@ export function NewPledgeFormClient({
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pledgeCreated, setPledgeCreated] = useState(false);
+  const [donationCreated, setDonationCreated] = useState(false);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
@@ -66,27 +67,30 @@ export function NewPledgeFormClient({
     fetchCampaigns();
   }, [organizationSlug]);
 
-  const form = useForm<PledgeFormData>({
-    resolver: zodResolver(pledgeSchema),
+  const form = useForm<DonationFormData>({
+    resolver: zodResolver(donationSchema),
     defaultValues: {
       amount: 0,
       description: '',
+      donorMessage: '',
       dueDate: '',
     },
   });
 
-  const onSubmit = async (data: PledgeFormData) => {
+  const onSubmit = async (data: DonationFormData) => {
     try {
       setIsSubmitting(true);
 
       const response = await fetch(
-        `/api/organizations/${organizationSlug}/donations/pledge`,
+        `/api/organizations/${organizationSlug}/donations`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            type: 'PLEDGE',
             amount: data.amount,
             description: data.description,
+            donorMessage: data.donorMessage || undefined,
             dueDate: data.dueDate || null,
             campaignId: selectedCampaignId || null,
           }),
@@ -95,11 +99,12 @@ export function NewPledgeFormClient({
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create pledge');
+        throw new Error(error.error || 'Failed to create donation');
       }
 
-      setPledgeCreated(true);
-      trackEvent('pledge_created', {
+      setDonationCreated(true);
+      trackEvent('donation_created', {
+        type: 'PLEDGE',
         amount: data.amount,
         orgSlug: organizationSlug,
         campaignId: selectedCampaignId || undefined,
@@ -109,11 +114,11 @@ export function NewPledgeFormClient({
         description: 'Your donation pledge has been recorded.',
       });
     } catch (error) {
-      console.error('Error creating pledge:', error);
+      console.error('Error creating donation:', error);
       toast({
         title: 'Error',
         description:
-          error instanceof Error ? error.message : 'Failed to create pledge',
+          error instanceof Error ? error.message : 'Failed to create donation',
         variant: 'destructive',
       });
     } finally {
@@ -121,7 +126,7 @@ export function NewPledgeFormClient({
     }
   };
 
-  if (pledgeCreated) {
+  if (donationCreated) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="rounded-lg border bg-white p-8 text-center">
@@ -155,12 +160,12 @@ export function NewPledgeFormClient({
           <div className="mt-6 flex justify-center gap-3">
             <Button
               variant="outline"
-              onClick={() => router.push(`/org/${organizationSlug}/donations`)}
+              onClick={() => router.push(`/org/${organizationSlug}/my-donations`)}
             >
               View My Donations
             </Button>
-            <Button onClick={() => setPledgeCreated(false)}>
-              Create Another Pledge
+            <Button onClick={() => setDonationCreated(false)}>
+              Create Another
             </Button>
           </div>
         </div>
@@ -246,7 +251,7 @@ export function NewPledgeFormClient({
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pledge Amount ($)</FormLabel>
+                  <FormLabel>Amount ($)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -273,7 +278,7 @@ export function NewPledgeFormClient({
                   <FormLabel>Description / Purpose</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="e.g., Annual giving pledge, Capital campaign contribution..."
+                      placeholder="e.g., Annual giving, Capital campaign contribution..."
                       rows={3}
                       {...field}
                     />
@@ -281,6 +286,24 @@ export function NewPledgeFormClient({
                   <FormDescription>
                     Briefly describe the purpose of your donation
                   </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="donorMessage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Personal Message (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="A message to the organization..."
+                      rows={2}
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -307,7 +330,7 @@ export function NewPledgeFormClient({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push(`/org/${organizationSlug}/donations`)}
+                onClick={() => router.push(`/org/${organizationSlug}/my-donations`)}
                 disabled={isSubmitting}
               >
                 Cancel

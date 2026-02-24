@@ -27,9 +27,10 @@ model Organization {
   fiscalYearStart DateTime @default("2024-01-01T00:00:00Z") @map("fiscal_year_start")
 
   // Donor settings
-  donorAccessMode     DonorAccessMode @default(REQUIRE_APPROVAL) @map("donor_access_mode")
-  paymentInstructions String?         @map("payment_instructions") @db.Text
-  donationsAccountId  String?         @map("donations_account_id") // Stable entity ID of the designated Revenue account
+  donorAccessMode       DonorAccessMode @default(REQUIRE_APPROVAL) @map("donor_access_mode")
+  paymentInstructions   String?         @map("payment_instructions") @db.Text
+  donationsAccountId    String?         @map("donations_account_id")    // Stable entity ID of the designated Revenue account
+  donationsArAccountId  String?         @map("donations_ar_account_id") // Stable entity ID of the designated Accounts Receivable account
 
   // Public transparency — when true, unauthenticated visitors can see financial summaries
   publicTransparency Boolean @default(false) @map("public_transparency")
@@ -535,6 +536,9 @@ model Campaign {
   createdAt      DateTime       @default(now()) @map("created_at")
   updatedAt      DateTime       @updatedAt @map("updated_at")
 
+  // Relations
+  donations      Donation[]
+
   @@unique([organizationId, accountId])
   @@index([organizationId, status], name: "idx_campaign_org_status")
   @@map("campaigns")
@@ -544,6 +548,68 @@ enum CampaignStatus {
   ACTIVE
   PAUSED
   COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// DONATIONS
+// ============================================
+
+model Donation {
+  id               String         @id @default(uuid())
+  organizationId   String         @map("organization_id")
+  contactId        String         @map("contact_id") // Stable entity ID (bitemporal Contact)
+
+  // Classification
+  type             DonationType   @default(ONE_TIME)
+  status           DonationStatus @default(PLEDGED)
+
+  // Amounts
+  amount           Decimal        @db.Decimal(12, 2)
+  amountReceived   Decimal        @default(0) @map("amount_received") @db.Decimal(12, 2)
+
+  // Details
+  description      String?        @db.Text
+  donorMessage     String?        @map("donor_message") @db.Text
+  isAnonymous      Boolean        @default(false) @map("is_anonymous")
+  isTaxDeductible  Boolean        @default(true) @map("is_tax_deductible")
+
+  // Dates
+  donationDate     DateTime       @map("donation_date")
+  receivedDate     DateTime?      @map("received_date")
+  dueDate          DateTime?      @map("due_date")
+
+  // Campaign attribution
+  campaignId       String?        @map("campaign_id")
+
+  // Accounting links (entity IDs — transactions are bitemporal)
+  transactionId    String?        @unique @map("transaction_id")
+  billId           String?        @unique @map("bill_id") // Only for pledges → Bill for A/R lifecycle
+
+  // Metadata
+  createdBy        String?        @map("created_by")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  campaign         Campaign?      @relation(fields: [campaignId], references: [id])
+
+  @@index([organizationId, status], name: "idx_donation_org_status")
+  @@index([organizationId, campaignId], name: "idx_donation_org_campaign")
+  @@index([contactId], name: "idx_donation_contact")
+  @@index([billId], name: "idx_donation_bill")
+  @@map("donations")
+}
+
+enum DonationType {
+  ONE_TIME
+  PLEDGE
+}
+
+enum DonationStatus {
+  PLEDGED
+  PARTIAL
+  RECEIVED
   CANCELLED
 }
 
