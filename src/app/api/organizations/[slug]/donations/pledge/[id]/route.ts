@@ -98,10 +98,15 @@ export async function PATCH(
 
         // Reverse the accrual transaction if it exists
         if (bill.accrualTransactionId) {
-          await tx.transaction.update({
-            where: { versionId: bill.accrualTransactionId },
-            data: { isDeleted: true, deletedAt: new Date(), deletedBy: user.id },
+          const accrualTx = await tx.transaction.findFirst({
+            where: buildCurrentVersionWhere({ id: bill.accrualTransactionId }),
           });
+          if (accrualTx) {
+            await tx.transaction.update({
+              where: { versionId: accrualTx.versionId },
+              data: { isDeleted: true, deletedAt: new Date(), deletedBy: user.id },
+            });
+          }
         }
 
         return updated;
@@ -125,10 +130,15 @@ export async function PATCH(
 
         // Also update the accrual transaction to keep accounting consistent
         if (bill.accrualTransactionId) {
-          await tx.transaction.update({
-            where: { versionId: bill.accrualTransactionId },
-            data: { amount: validated.amount as unknown as Prisma.Decimal },
+          const accrualTx = await tx.transaction.findFirst({
+            where: buildCurrentVersionWhere({ id: bill.accrualTransactionId }),
           });
+          if (accrualTx) {
+            await tx.transaction.update({
+              where: { versionId: accrualTx.versionId },
+              data: { amount: validated.amount as unknown as Prisma.Decimal },
+            });
+          }
         }
       }
 
