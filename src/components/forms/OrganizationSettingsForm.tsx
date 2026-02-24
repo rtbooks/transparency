@@ -24,9 +24,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { CalendarIcon, Loader2, Upload } from 'lucide-react';
+import { CalendarIcon, Loader2, Upload, X, Palette } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+
+const HEX_COLOR_REGEX = /^#[0-9a-fA-F]{6}$/;
 
 const organizationSettingsSchema = z.object({
   name: z.string().min(3, 'Organization name must be at least 3 characters'),
@@ -34,6 +36,8 @@ const organizationSettingsSchema = z.object({
   mission: z.string().optional(),
   fiscalYearStart: z.date(),
   logoUrl: z.string().optional(),
+  primaryColor: z.string().regex(HEX_COLOR_REGEX, 'Must be a valid hex color').optional().or(z.literal('')),
+  accentColor: z.string().regex(HEX_COLOR_REGEX, 'Must be a valid hex color').optional().or(z.literal('')),
   donorAccessMode: z.enum(['AUTO_APPROVE', 'REQUIRE_APPROVAL']),
   paymentInstructions: z.string().optional(),
   donationsAccountId: z.string().nullable().optional(),
@@ -51,6 +55,8 @@ export function OrganizationSettingsForm({
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [currentLogoUrl, setCurrentLogoUrl] = useState(organization.logoUrl || '');
 
   const form = useForm<OrganizationSettingsData>({
     resolver: zodResolver(organizationSettingsSchema),
@@ -60,6 +66,8 @@ export function OrganizationSettingsForm({
       mission: organization.mission || '',
       fiscalYearStart: new Date(organization.fiscalYearStart),
       logoUrl: organization.logoUrl || '',
+      primaryColor: organization.primaryColor || '',
+      accentColor: organization.accentColor || '',
       donorAccessMode: organization.donorAccessMode || 'REQUIRE_APPROVAL',
       paymentInstructions: organization.paymentInstructions || '',
       donationsAccountId: organization.donationsAccountId || null,
@@ -99,6 +107,8 @@ export function OrganizationSettingsForm({
           mission: data.mission || null,
           fiscalYearStart: data.fiscalYearStart.toISOString(),
           logoUrl: data.logoUrl || null,
+          primaryColor: data.primaryColor || null,
+          accentColor: data.accentColor || null,
           donorAccessMode: data.donorAccessMode,
           paymentInstructions: data.paymentInstructions || null,
           donationsAccountId: data.donationsAccountId || null,
@@ -128,6 +138,61 @@ export function OrganizationSettingsForm({
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploadingLogo(true);
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`/api/organizations/${organization.slug}/logo`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to upload logo');
+      }
+
+      const { logoUrl } = await response.json();
+      setCurrentLogoUrl(logoUrl);
+      form.setValue('logoUrl', logoUrl);
+      toast({ title: 'Logo uploaded', description: 'Organization logo has been updated.' });
+      router.refresh();
+    } catch (error) {
+      toast({
+        title: 'Upload failed',
+        description: error instanceof Error ? error.message : 'Failed to upload logo',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+
+  const handleLogoRemove = async () => {
+    try {
+      setIsUploadingLogo(true);
+      const response = await fetch(`/api/organizations/${organization.slug}/logo`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to remove logo');
+
+      setCurrentLogoUrl('');
+      form.setValue('logoUrl', '');
+      toast({ title: 'Logo removed' });
+      router.refresh();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to remove logo', variant: 'destructive' });
+    } finally {
+      setIsUploadingLogo(false);
     }
   };
 
@@ -373,44 +438,161 @@ export function OrganizationSettingsForm({
         </Form>
       </div>
 
-      {/* Logo Upload Section */}
+      {/* Branding Section */}
       <div className="rounded-lg border bg-white p-6">
         <h2 className="mb-6 text-xl font-semibold text-gray-900">
-          Organization Logo
+          <Palette className="mr-2 inline-block h-5 w-5" />
+          Branding
         </h2>
 
-        <div className="space-y-4">
-          {organization.logoUrl ? (
+        {/* Logo Upload */}
+        <div className="mb-6 space-y-4">
+          <label className="block text-sm font-medium text-gray-700">Organization Logo</label>
+          {currentLogoUrl ? (
             <div className="flex items-center gap-4">
               <img
-                src={organization.logoUrl}
+                src={currentLogoUrl}
                 alt={organization.name}
-                className="h-20 w-20 rounded-lg border object-cover"
+                className="h-20 w-20 rounded-lg border object-contain bg-white"
               />
-              <div>
-                <p className="text-sm font-medium text-gray-900">
-                  Current Logo
-                </p>
-                <p className="text-sm text-gray-600">{organization.logoUrl}</p>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-900">Current Logo</p>
+                <div className="flex gap-2">
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                      onChange={handleLogoUpload}
+                      className="hidden"
+                      disabled={isUploadingLogo}
+                    />
+                    <span className="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                      <Upload className="h-3.5 w-3.5" />
+                      Replace
+                    </span>
+                  </label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogoRemove}
+                    disabled={isUploadingLogo}
+                  >
+                    <X className="mr-1 h-3.5 w-3.5" />
+                    Remove
+                  </Button>
+                </div>
               </div>
             </div>
           ) : (
-            <div className="flex h-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
-              <div className="text-center">
-                <Upload className="mx-auto h-8 w-8 text-gray-400" />
-                <p className="mt-2 text-sm text-gray-600">No logo uploaded</p>
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                onChange={handleLogoUpload}
+                className="hidden"
+                disabled={isUploadingLogo}
+              />
+              <div className="flex h-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition-colors hover:border-gray-400 hover:bg-gray-100">
+                <div className="text-center">
+                  {isUploadingLogo ? (
+                    <Loader2 className="mx-auto h-8 w-8 animate-spin text-gray-400" />
+                  ) : (
+                    <Upload className="mx-auto h-8 w-8 text-gray-400" />
+                  )}
+                  <p className="mt-2 text-sm text-gray-600">
+                    {isUploadingLogo ? 'Uploading...' : 'Click to upload logo'}
+                  </p>
+                  <p className="text-xs text-gray-500">PNG, JPEG, WebP, or SVG · Max 500KB</p>
+                </div>
+              </div>
+            </label>
+          )}
+        </div>
+
+        {/* Theme Colors */}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="primaryColor"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Primary Color</FormLabel>
+                    <FormDescription>Used for navigation accents and active states</FormDescription>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={field.value || '#3b82f6'}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        className="h-10 w-10 cursor-pointer rounded border p-0.5"
+                      />
+                      <FormControl>
+                        <Input
+                          placeholder="#3b82f6"
+                          {...field}
+                          className="font-mono"
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="accentColor"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Accent Color</FormLabel>
+                    <FormDescription>Used for highlights and interactive elements</FormDescription>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={field.value || '#2563eb'}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        className="h-10 w-10 cursor-pointer rounded border p-0.5"
+                      />
+                      <FormControl>
+                        <Input
+                          placeholder="#2563eb"
+                          {...field}
+                          className="font-mono"
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Live preview */}
+            <div className="rounded-lg border bg-gray-50 p-4">
+              <p className="mb-3 text-xs font-medium uppercase tracking-wider text-gray-500">Preview</p>
+              <div className="flex items-center gap-3 rounded-md p-3" style={{ backgroundColor: `${form.watch('primaryColor') || '#3b82f6'}15` }}>
+                {currentLogoUrl && (
+                  <img src={currentLogoUrl} alt="" className="h-8 w-8 rounded object-contain" />
+                )}
+                <span className="text-sm font-medium" style={{ color: form.watch('primaryColor') || '#3b82f6' }}>
+                  {organization.name}
+                </span>
+                <span className="ml-auto text-xs" style={{ color: form.watch('accentColor') || '#2563eb' }}>
+                  Active Link
+                </span>
               </div>
             </div>
-          )}
 
-          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-            <p className="text-sm text-blue-800">
-              <strong>Coming soon:</strong> Logo upload functionality will be
-              available in the next update. You can manually set a logo URL
-              above for now.
-            </p>
-          </div>
-        </div>
+            <div className="flex justify-end">
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Branding
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
 
       {/* Danger Zone */}

@@ -22,6 +22,8 @@ model Organization {
   ein             String? // Tax ID / EIN
   mission         String?  @db.Text
   logoUrl         String?  @map("logo_url")
+  primaryColor    String?  @map("primary_color")   // Hex color for nav accent (e.g. "#3b82f6")
+  accentColor     String?  @map("accent_color")    // Hex color for highlights/links
   fiscalYearStart DateTime @default("2024-01-01T00:00:00Z") @map("fiscal_year_start")
 
   // Donor settings

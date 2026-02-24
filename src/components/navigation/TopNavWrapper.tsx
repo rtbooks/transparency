@@ -7,11 +7,13 @@ import { buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap, MAX_DATE 
 interface TopNavWrapperProps {
   organizationSlug?: string;
   navLinks: NavLink[];
+  orgTheme?: { primaryColor?: string | null; accentColor?: string | null; logoUrl?: string | null };
 }
 
 export async function TopNavWrapper({
   organizationSlug,
   navLinks,
+  orgTheme,
 }: TopNavWrapperProps) {
   const { userId: clerkUserId } = await auth();
 
@@ -110,6 +112,7 @@ export async function TopNavWrapper({
       organizationContext={organizationContext}
       userOrganizations={userOrganizations}
       navLinks={navLinks}
+      orgLogoUrl={orgTheme?.logoUrl}
     />
   );
 }
