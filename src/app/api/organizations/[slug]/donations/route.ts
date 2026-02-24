@@ -57,8 +57,7 @@ export async function GET(
 
     const contactIds = donorContacts.map(c => c.id);
 
-    // For admins, also find all donor-role contacts so we only show donation
-    // receivables (not reimbursement or other non-pledge receivables)
+    // For admins, show all donor-role contacts' pledges PLUS their own
     let donorContactIds = contactIds;
     if (isAdmin) {
       const allDonorContacts = await prisma.contact.findMany({
@@ -68,10 +67,12 @@ export async function GET(
         }),
         select: { id: true },
       });
-      donorContactIds = allDonorContacts.map(c => c.id);
+      // Merge admin's own contact IDs with all donor contact IDs
+      const allIds = new Set([...contactIds, ...allDonorContacts.map(c => c.id)]);
+      donorContactIds = [...allIds];
     }
 
-    // Build bill filter: only RECEIVABLE bills from donor contacts
+    // Build bill filter: only RECEIVABLE bills from relevant contacts
     const billWhere: any = {
       organizationId: organization.id,
       direction: 'RECEIVABLE',
@@ -87,7 +88,6 @@ export async function GET(
         paymentInstructions: organization.paymentInstructions,
       });
     } else if (donorContactIds.length > 0) {
-      // Admin: only show receivables from donor contacts (pledges)
       billWhere.contactId = { in: donorContactIds };
     } else {
       // No donor contacts exist at all

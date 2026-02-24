@@ -130,6 +130,8 @@ export async function findOrCreateForUser(
   email?: string,
   roles?: ('DONOR' | 'VENDOR')[]
 ): Promise<Contact> {
+  const requiredRoles = roles ?? ['DONOR'];
+
   const existing = await prisma.contact.findFirst({
     where: buildCurrentVersionWhere({
       organizationId: orgId,
@@ -138,13 +140,25 @@ export async function findOrCreateForUser(
   });
 
   if (existing) {
+    // Ensure required roles are present (e.g., admin creating a pledge needs DONOR role)
+    const currentRoles = existing.roles as string[];
+    const missingRoles = requiredRoles.filter(r => !currentRoles.includes(r));
+    if (missingRoles.length > 0) {
+      return await updateContact(
+        existing.id,
+        orgId,
+        { roles: [...currentRoles, ...missingRoles] as ('DONOR' | 'VENDOR')[] },
+        userId,
+        `Added roles: ${missingRoles.join(', ')}`
+      );
+    }
     return existing;
   }
 
   return await createContact({
     organizationId: orgId,
     name,
-    roles: roles ?? ['DONOR'],
+    roles: requiredRoles,
     email: email ?? null,
     userId,
     createdBy: userId,
