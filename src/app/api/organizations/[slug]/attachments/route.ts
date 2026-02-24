@@ -103,7 +103,7 @@ export async function POST(
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // DONOR role cannot upload
+    // SUPPORTER role cannot upload
     if (orgUsers[0].role === 'SUPPORTER') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }

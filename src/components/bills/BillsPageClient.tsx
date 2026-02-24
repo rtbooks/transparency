@@ -26,9 +26,10 @@ interface Account {
 interface BillsPageClientProps {
   organizationSlug: string;
   accounts: Account[];
+  canEdit?: boolean;
 }
 
-export function BillsPageClient({ organizationSlug, accounts }: BillsPageClientProps) {
+export function BillsPageClient({ organizationSlug, accounts, canEdit = true }: BillsPageClientProps) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [directionFilter, setDirectionFilter] = useState<DirectionFilter>("ALL");
@@ -43,10 +44,12 @@ export function BillsPageClient({ organizationSlug, accounts }: BillsPageClientP
             Track payables owed by your organization and receivables owed to you.
           </p>
         </div>
-        <Button onClick={() => setShowAddDialog(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Create Bill
-        </Button>
+        {canEdit && (
+          <Button onClick={() => setShowAddDialog(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create Bill
+          </Button>
+        )}
       </div>
 
       {/* Aging Summary */}
@@ -65,31 +68,33 @@ export function BillsPageClient({ organizationSlug, accounts }: BillsPageClientP
         onBillOpened={() => setOpenBillId(null)}
       />
 
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Create Bill</DialogTitle>
-            <DialogDescription>
-              Create a new bill or pledge for your organization.
-            </DialogDescription>
-          </DialogHeader>
-          <BillForm
-            organizationSlug={organizationSlug}
-            accounts={accounts}
-            onSuccess={(createdBillId) => {
-              setShowAddDialog(false);
-              setRefreshKey((k) => k + 1);
-              if (createdBillId) {
-                setOpenBillId(createdBillId);
+      {canEdit && (
+        <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+          <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create Bill</DialogTitle>
+              <DialogDescription>
+                Create a new bill or pledge for your organization.
+              </DialogDescription>
+            </DialogHeader>
+            <BillForm
+              organizationSlug={organizationSlug}
+              accounts={accounts}
+              onSuccess={(createdBillId) => {
+                setShowAddDialog(false);
+                setRefreshKey((k) => k + 1);
+                if (createdBillId) {
+                  setOpenBillId(createdBillId);
+                }
+              }}
+              onCancel={() => setShowAddDialog(false)}
+              defaultDirection={
+                directionFilter === "ALL" ? undefined : directionFilter
               }
-            }}
-            onCancel={() => setShowAddDialog(false)}
-            defaultDirection={
-              directionFilter === "ALL" ? undefined : directionFilter
-            }
-          />
-        </DialogContent>
-      </Dialog>
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

@@ -15,9 +15,10 @@ import { Plus } from "lucide-react";
 
 interface ContactsPageClientProps {
   organizationSlug: string;
+  canEdit?: boolean;
 }
 
-export function ContactsPageClient({ organizationSlug }: ContactsPageClientProps) {
+export function ContactsPageClient({ organizationSlug, canEdit = true }: ContactsPageClientProps) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAddDialog, setShowAddDialog] = useState(false);
 
@@ -30,32 +31,36 @@ export function ContactsPageClient({ organizationSlug }: ContactsPageClientProps
             Manage your organization&apos;s donors, vendors, and other contacts.
           </p>
         </div>
-        <Button onClick={() => setShowAddDialog(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Contact
-        </Button>
+        {canEdit && (
+          <Button onClick={() => setShowAddDialog(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Contact
+          </Button>
+        )}
       </div>
 
       <ContactList organizationSlug={organizationSlug} refreshKey={refreshKey} />
 
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Add Contact</DialogTitle>
-            <DialogDescription>
-              Create a new contact for your organization.
-            </DialogDescription>
-          </DialogHeader>
-          <ContactForm
-            organizationSlug={organizationSlug}
-            onSuccess={() => {
-              setShowAddDialog(false);
-              setRefreshKey((k) => k + 1);
-            }}
-            onCancel={() => setShowAddDialog(false)}
-          />
-        </DialogContent>
-      </Dialog>
+      {canEdit && (
+        <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add Contact</DialogTitle>
+              <DialogDescription>
+                Create a new contact for your organization.
+              </DialogDescription>
+            </DialogHeader>
+            <ContactForm
+              organizationSlug={organizationSlug}
+              onSuccess={() => {
+                setShowAddDialog(false);
+                setRefreshKey((k) => k + 1);
+              }}
+              onCancel={() => setShowAddDialog(false)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

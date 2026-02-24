@@ -22,7 +22,7 @@ export default async function CampaignsPage({ params }: CampaignsPageProps) {
     false
   );
 
-  if (!userAccess || (userAccess.role !== "ORG_ADMIN" && !user.isPlatformAdmin)) {
+  if (!userAccess) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -32,6 +32,8 @@ export default async function CampaignsPage({ params }: CampaignsPageProps) {
       </div>
     );
   }
+
+  const canEdit = userAccess.role === "ORG_ADMIN" || user.isPlatformAdmin;
 
   const verificationMessage = VerificationStatusMessage({
     status: organization.verificationStatus,
@@ -47,7 +49,7 @@ export default async function CampaignsPage({ params }: CampaignsPageProps) {
     <OrganizationLayoutWrapper organizationSlug={slug}>
       <div className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <CampaignsPageClient organizationSlug={slug} />
+          <CampaignsPageClient organizationSlug={slug} canEdit={canEdit} />
         </div>
       </div>
     </OrganizationLayoutWrapper>

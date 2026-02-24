@@ -24,7 +24,7 @@ export default async function BillsPage({ params }: BillsPageProps) {
     false
   );
 
-  if (!userAccess || (userAccess.role !== "ORG_ADMIN" && !user.isPlatformAdmin)) {
+  if (!userAccess) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -34,6 +34,8 @@ export default async function BillsPage({ params }: BillsPageProps) {
       </div>
     );
   }
+
+  const canEdit = userAccess.role === "ORG_ADMIN" || user.isPlatformAdmin;
 
   const verificationMessage = VerificationStatusMessage({
     status: organization.verificationStatus,
@@ -59,7 +61,7 @@ export default async function BillsPage({ params }: BillsPageProps) {
     <OrganizationLayoutWrapper organizationSlug={slug}>
       <div className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <BillsPageClient organizationSlug={slug} accounts={accounts} />
+          <BillsPageClient organizationSlug={slug} accounts={accounts} canEdit={canEdit} />
         </div>
       </div>
     </OrganizationLayoutWrapper>
