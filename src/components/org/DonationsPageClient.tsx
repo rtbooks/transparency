@@ -380,9 +380,6 @@ export function DonationsPageClient({
                         {formatCurrency(donation.amount)}
                       </h3>
                       <Badge variant={config.variant}>{config.label}</Badge>
-                      {donation.type === 'ONE_TIME' && (
-                        <Badge variant="secondary">One-Time</Badge>
-                      )}
                     </div>
                     {donation.description && (
                       <p className="mt-1 text-sm text-gray-600">{donation.description}</p>
@@ -396,18 +393,17 @@ export function DonationsPageClient({
                       </div>
                     )}
                     <p className="mt-1 text-xs text-gray-500">
-                      {donation.type === 'ONE_TIME' ? 'Donated' : 'Pledged'} on{' '}
+                      Pledged on{' '}
                       {new Date(donation.donationDate).toLocaleDateString()}
                       {donation.dueDate && (
                         <> · Due {new Date(donation.dueDate).toLocaleDateString()}</>
                       )}
                     </p>
                   </div>
-                  {donation.type === 'PLEDGE' && (
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">
-                        Received: {formatCurrency(donation.amountReceived)} / {formatCurrency(donation.amount)}
-                      </p>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600">
+                      Received: {formatCurrency(donation.amountReceived)} / {formatCurrency(donation.amount)}
+                    </p>
                       {canModifyDonation(donation) && (
                         <div className="mt-2 flex justify-end gap-2">
                           <Button
@@ -430,7 +426,6 @@ export function DonationsPageClient({
                         </div>
                       )}
                     </div>
-                  )}
                 </div>
 
                 {/* Payment history */}
