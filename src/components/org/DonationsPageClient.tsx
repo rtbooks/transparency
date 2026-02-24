@@ -247,7 +247,7 @@ export function DonationsPageClient({
           <h1 className="text-3xl font-bold text-gray-900">My Donations</h1>
           <p className="mt-1 text-gray-600">{organizationName}</p>
         </div>
-        <Link href={`/org/${organizationSlug}/donations/new`}>
+        <Link href={`/org/${organizationSlug}/my-donations/new`}>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             New Donation
@@ -359,7 +359,7 @@ export function DonationsPageClient({
           <p className="mt-2 text-gray-600">
             Create a donation or pledge to get started.
           </p>
-          <Link href={`/org/${organizationSlug}/donations/new`}>
+          <Link href={`/org/${organizationSlug}/my-donations/new`}>
             <Button className="mt-4">
               <Plus className="mr-2 h-4 w-4" />
               New Donation

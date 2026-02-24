@@ -1,19 +1,21 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
-import { AllDonationsPageClient } from '@/components/donations/AllDonationsPageClient';
+import { DonationsPageClient } from '@/components/org/DonationsPageClient';
 
-export default async function DonationsOverviewPage({
-  params,
-}: {
+interface DonationsPageProps {
   params: Promise<{ slug: string }>;
-}) {
+}
+
+export default async function DonationsPage({ params }: DonationsPageProps) {
   const { slug } = await params;
   const { userId: clerkUserId } = await auth();
 
   if (!clerkUserId) {
-    redirect('/sign-in');
+    redirect('/login');
   }
 
   const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId, false);
@@ -45,7 +47,7 @@ export default async function DonationsOverviewPage({
 
   return (
     <OrganizationLayoutWrapper organizationSlug={slug}>
-      <AllDonationsPageClient
+      <DonationsPageClient
         organizationSlug={slug}
         organizationName={organization.name}
       />

@@ -163,7 +163,7 @@ export function NewPledgeFormClient({
           <div className="mt-6 flex justify-center gap-3">
             <Button
               variant="outline"
-              onClick={() => router.push(`/org/${organizationSlug}/donations`)}
+              onClick={() => router.push(`/org/${organizationSlug}/my-donations`)}
             >
               View My Donations
             </Button>
@@ -374,7 +374,7 @@ export function NewPledgeFormClient({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push(`/org/${organizationSlug}/donations`)}
+                onClick={() => router.push(`/org/${organizationSlug}/my-donations`)}
                 disabled={isSubmitting}
               >
                 Cancel
