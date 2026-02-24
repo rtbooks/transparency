@@ -26,18 +26,23 @@ interface PublicOrgContentProps {
     mission: string | null;
     ein: string | null;
     donorAccessMode: string;
+    publicTransparency?: boolean;
   };
   financials: {
     transactionCount: number;
     totalRevenue: number;
     totalExpenses: number;
   };
+  campaigns?: Array<{ id: string; name: string; targetAmount: number | null; status: string }>;
+  programSpending?: Array<{ id: string; title: string; amount: number; status: string }>;
   userState: 'anonymous' | 'member' | 'pending_request' | 'can_request';
 }
 
 export function PublicOrgContent({
   organization,
   financials,
+  campaigns: serverCampaigns,
+  programSpending,
   userState,
 }: PublicOrgContentProps) {
   const router = useRouter();
@@ -46,9 +51,11 @@ export function PublicOrgContent({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentUserState, setCurrentUserState] = useState(userState);
-  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [campaigns, setCampaigns] = useState<any[]>(serverCampaigns || []);
 
+  // Only fetch client-side if server didn't provide campaigns (non-transparent mode)
   useEffect(() => {
+    if (serverCampaigns) return; // Already have server data
     async function fetchCampaigns() {
       try {
         const res = await fetch(`/api/organizations/${organization.slug}/campaigns`);
@@ -61,7 +68,9 @@ export function PublicOrgContent({
       }
     }
     fetchCampaigns();
-  }, [organization.slug]);
+  }, [organization.slug, serverCampaigns]);
+
+  const showFinancials = organization.publicTransparency || userState === 'member';
 
   const netIncome = financials.totalRevenue - financials.totalExpenses;
 
@@ -132,34 +141,38 @@ export function PublicOrgContent({
           )}
         </div>
 
-        {/* Financial Summary */}
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <div className="rounded-lg border bg-white p-6 text-center">
-            <TrendingUp className="mx-auto h-8 w-8 text-green-600" />
-            <p className="mt-2 text-sm text-gray-600">Total Revenue</p>
-            <p className="text-2xl font-bold text-gray-900">
-              {formatCurrency(financials.totalRevenue)}
-            </p>
-          </div>
-          <div className="rounded-lg border bg-white p-6 text-center">
-            <TrendingDown className="mx-auto h-8 w-8 text-red-600" />
-            <p className="mt-2 text-sm text-gray-600">Total Expenses</p>
-            <p className="text-2xl font-bold text-gray-900">
-              {formatCurrency(financials.totalExpenses)}
-            </p>
-          </div>
-          <div className="rounded-lg border bg-white p-6 text-center">
-            <DollarSign className="mx-auto h-8 w-8 text-blue-600" />
-            <p className="mt-2 text-sm text-gray-600">Net Income</p>
-            <p className={`text-2xl font-bold ${netIncome >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-              {formatCurrency(netIncome)}
-            </p>
-          </div>
-        </div>
+        {/* Financial Summary — shown when transparency is on or user is a member */}
+        {showFinancials && (
+          <>
+            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
+              <div className="rounded-lg border bg-white p-6 text-center">
+                <TrendingUp className="mx-auto h-8 w-8 text-green-600" />
+                <p className="mt-2 text-sm text-gray-600">Total Revenue</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatCurrency(financials.totalRevenue)}
+                </p>
+              </div>
+              <div className="rounded-lg border bg-white p-6 text-center">
+                <TrendingDown className="mx-auto h-8 w-8 text-red-600" />
+                <p className="mt-2 text-sm text-gray-600">Total Expenses</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatCurrency(financials.totalExpenses)}
+                </p>
+              </div>
+              <div className="rounded-lg border bg-white p-6 text-center">
+                <DollarSign className="mx-auto h-8 w-8 text-blue-600" />
+                <p className="mt-2 text-sm text-gray-600">Net Income</p>
+                <p className={`text-2xl font-bold ${netIncome >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                  {formatCurrency(netIncome)}
+                </p>
+              </div>
+            </div>
 
-        <p className="mt-4 text-center text-sm text-gray-500">
-          {financials.transactionCount} transactions recorded
-        </p>
+            <p className="mt-4 text-center text-sm text-gray-500">
+              {financials.transactionCount} transactions recorded
+            </p>
+          </>
+        )}
 
         {/* Active Campaigns */}
         {campaigns.length > 0 && (
@@ -205,6 +218,35 @@ export function PublicOrgContent({
                       {campaign.donationCount} donation{campaign.donationCount !== 1 ? 's' : ''}
                     </p>
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Program Spending — shown when transparency is on */}
+        {organization.publicTransparency && programSpending && programSpending.length > 0 && (
+          <div className="mt-12">
+            <h2 className="mb-6 text-center text-2xl font-bold text-gray-900">
+              Program Spending
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {programSpending.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-lg border bg-white p-5 shadow-sm"
+                >
+                  <h3 className="font-semibold text-gray-900">{item.title}</h3>
+                  <p className="mt-2 text-lg font-bold text-gray-900">
+                    {formatCurrency(item.amount)}
+                  </p>
+                  <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                    item.status === 'PURCHASED' ? 'bg-green-100 text-green-700' :
+                    item.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
+                    'bg-blue-100 text-blue-700'
+                  }`}>
+                    {item.status}
+                  </span>
                 </div>
               ))}
             </div>

@@ -35,7 +35,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const inviteSchema = z.object({
   email: z.string().email('Invalid email address'),
-  role: z.enum(['DONOR', 'ORG_ADMIN']),
+  role: z.enum(['SUPPORTER', 'ORG_ADMIN']),
 });
 
 type InviteFormData = z.infer<typeof inviteSchema>;
@@ -60,7 +60,7 @@ export function InviteUserDialog({
     resolver: zodResolver(inviteSchema),
     defaultValues: {
       email: '',
-      role: 'DONOR',
+      role: 'SUPPORTER',
     },
   });
 
@@ -153,11 +153,11 @@ export function InviteUserDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="DONOR">
+                      <SelectItem value="SUPPORTER">
                         <div>
-                          <div className="font-medium">Donor</div>
+                          <div className="font-medium">Supporter</div>
                           <div className="text-xs text-gray-500">
-                            Can make donations and view public data
+                            Can view all organization data and make donations
                           </div>
                         </div>
                       </SelectItem>

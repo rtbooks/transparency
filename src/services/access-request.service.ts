@@ -192,7 +192,7 @@ async function createDonorMembership(
     data: {
       userId,
       organizationId,
-      role: 'DONOR',
+      role: 'SUPPORTER',
     },
   });
 

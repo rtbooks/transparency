@@ -56,7 +56,7 @@ export function UserList({
         return 'bg-purple-100 text-purple-800';
       case 'ORG_ADMIN':
         return 'bg-blue-100 text-blue-800';
-      case 'DONOR':
+      case 'SUPPORTER':
         return 'bg-green-100 text-green-800';
       case 'PUBLIC':
         return 'bg-gray-100 text-gray-800';
@@ -69,7 +69,7 @@ export function UserList({
     // Platform admins can manage anyone
     if (currentUserRole === 'PLATFORM_ADMIN') return true;
     
-    // Org admins can manage donors and other org admins (but not platform admins)
+    // Org admins can manage supporters and other org admins (but not platform admins)
     if (currentUserRole === 'ORG_ADMIN' && userRole !== 'PLATFORM_ADMIN') return true;
     
     return false;

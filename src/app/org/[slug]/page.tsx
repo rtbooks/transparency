@@ -22,7 +22,7 @@ export default async function OrganizationPublicPage({
     notFound();
   }
 
-  // Get financial summary (public transparency data)
+  // Get basic financial summary (always fetched for member display)
   const [transactionCount, totalRevenue, totalExpenses] = await Promise.all([
     prisma.transaction.count({
       where: buildCurrentVersionWhere({ organizationId: organization.id }),
@@ -36,6 +36,38 @@ export default async function OrganizationPublicPage({
       _sum: { amount: true },
     }),
   ]);
+
+  // Fetch additional public data when transparency is enabled
+  let campaigns: Array<{ id: string; name: string; targetAmount: number | null; status: string }> = [];
+  let programSpending: Array<{ id: string; title: string; amount: number; status: string }> = [];
+
+  if (organization.publicTransparency) {
+    const [campaignRows, spendingRows] = await Promise.all([
+      prisma.campaign.findMany({
+        where: { organizationId: organization.id, status: 'ACTIVE' },
+        select: { id: true, name: true, targetAmount: true, status: true },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      }),
+      prisma.programSpending.findMany({
+        where: buildCurrentVersionWhere({ organizationId: organization.id }),
+        select: { id: true, title: true, estimatedAmount: true, status: true },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      }),
+    ]);
+
+    campaigns = campaignRows.map(c => ({
+      ...c,
+      targetAmount: c.targetAmount ? Number(c.targetAmount) : null,
+      status: c.status,
+    }));
+
+    programSpending = spendingRows.map(s => ({
+      ...s,
+      amount: Number(s.estimatedAmount),
+    }));
+  }
 
   // Check auth state for access request CTA
   const { userId: clerkUserId } = await auth();
@@ -72,12 +104,15 @@ export default async function OrganizationPublicPage({
           mission: organization.mission,
           ein: organization.ein,
           donorAccessMode: organization.donorAccessMode,
+          publicTransparency: organization.publicTransparency,
         }}
         financials={{
           transactionCount,
           totalRevenue: Number(totalRevenue._sum.amount || 0),
           totalExpenses: Number(totalExpenses._sum.amount || 0),
         }}
+        campaigns={campaigns}
+        programSpending={programSpending}
         userState={userState}
       />
     </OrganizationLayoutWrapper>

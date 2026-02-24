@@ -25,9 +25,10 @@ import { Plus, MoreVertical, Eye, EyeOff } from 'lucide-react';
 
 interface AccountTreeProps {
   organizationSlug: string;
+  canEdit?: boolean;
 }
 
-export function AccountTree({ organizationSlug }: AccountTreeProps) {
+export function AccountTree({ organizationSlug, canEdit = true }: AccountTreeProps) {
   const [accounts, setAccounts] = useState<AccountTreeNode[]>([]);
   const [flatAccounts, setFlatAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
@@ -104,42 +105,46 @@ export function AccountTree({ organizationSlug }: AccountTreeProps) {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {/* Use Template Button (only if no accounts) */}
-          <ApplyTemplateDialog
-            organizationSlug={organizationSlug}
-            hasExistingAccounts={flatAccounts.length > 0}
-            onSuccess={fetchAccounts}
-          />
-          
-          {/* Add Account Button */}
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Account
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Create New Account</DialogTitle>
-                <DialogDescription>
-                  Add a new account to your chart of accounts.
-                </DialogDescription>
-              </DialogHeader>
-              <CreateAccountForm
+          {canEdit && (
+            <>
+              {/* Use Template Button (only if no accounts) */}
+              <ApplyTemplateDialog
                 organizationSlug={organizationSlug}
-                accounts={flatAccounts.map(a => ({
-                  id: a.id,
-                  code: a.code,
-                  name: a.name,
-                  type: a.type,
-                  parentAccountId: a.parentAccountId
-                }))}
-                onSuccess={handleSuccess}
-                onCancel={() => setDialogOpen(false)}
+                hasExistingAccounts={flatAccounts.length > 0}
+                onSuccess={fetchAccounts}
               />
-            </DialogContent>
-          </Dialog>
+          
+              {/* Add Account Button */}
+              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Account
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Create New Account</DialogTitle>
+                    <DialogDescription>
+                      Add a new account to your chart of accounts.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <CreateAccountForm
+                    organizationSlug={organizationSlug}
+                    accounts={flatAccounts.map(a => ({
+                      id: a.id,
+                      code: a.code,
+                      name: a.name,
+                      type: a.type,
+                      parentAccountId: a.parentAccountId
+                    }))}
+                    onSuccess={handleSuccess}
+                    onCancel={() => setDialogOpen(false)}
+                  />
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
 
           {/* Options Menu */}
           <DropdownMenu>

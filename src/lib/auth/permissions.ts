@@ -11,7 +11,7 @@ import { UserRole } from '@/generated/prisma/client';
  */
 export const ROLE_HIERARCHY: Record<UserRole, number> = {
   PUBLIC: 0,
-  DONOR: 1,
+  SUPPORTER: 1,
   ORG_ADMIN: 2,
   PLATFORM_ADMIN: 3,
 };
@@ -40,15 +40,15 @@ export function isPlatformAdmin(role: UserRole): boolean {
 /**
  * Get all roles that a user can assign to others
  * - PLATFORM_ADMIN can assign any role
- * - ORG_ADMIN can assign DONOR or ORG_ADMIN
- * - DONOR cannot assign any roles
+ * - ORG_ADMIN can assign SUPPORTER or ORG_ADMIN
+ * - SUPPORTER cannot assign any roles
  */
 export function getAssignableRoles(userRole: UserRole): UserRole[] {
   if (isPlatformAdmin(userRole)) {
-    return ['DONOR', 'ORG_ADMIN', 'PLATFORM_ADMIN'];
+    return ['SUPPORTER', 'ORG_ADMIN', 'PLATFORM_ADMIN'];
   }
   if (isOrgAdmin(userRole)) {
-    return ['DONOR', 'ORG_ADMIN'];
+    return ['SUPPORTER', 'ORG_ADMIN'];
   }
   return [];
 }
@@ -66,7 +66,7 @@ export function canModifyRole(
     return true;
   }
 
-  // Org admins can modify DONOR and ORG_ADMIN roles
+  // Org admins can modify SUPPORTER and ORG_ADMIN roles
   if (isOrgAdmin(modifierRole)) {
     return (
       targetRole !== 'PLATFORM_ADMIN' &&
@@ -83,7 +83,7 @@ export function canModifyRole(
  */
 export const ROLE_LABELS: Record<UserRole, string> = {
   PUBLIC: 'Public',
-  DONOR: 'Donor',
+  SUPPORTER: 'Supporter',
   ORG_ADMIN: 'Organization Administrator',
   PLATFORM_ADMIN: 'Platform Administrator',
 };
@@ -93,7 +93,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
  */
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
   PUBLIC: 'Can view public financial information only',
-  DONOR: 'Can view public financial information and make donations',
+  SUPPORTER: 'Can view public financial information and make donations',
   ORG_ADMIN: 'Can manage organization settings, accounts, and transactions',
   PLATFORM_ADMIN: 'Full system access across all organizations',
 };
@@ -179,7 +179,7 @@ export function getRolePermissions(role: UserRole): RolePermissions {
         viewPublicDashboard: true,
       };
 
-    case 'DONOR':
+    case 'SUPPORTER':
       return {
         viewOrganization: true,
         editOrganization: false,

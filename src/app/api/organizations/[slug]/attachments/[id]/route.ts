@@ -86,8 +86,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // DONOR role cannot delete
-    if (orgUsers[0].role === 'DONOR') {
+    // SUPPORTER role cannot delete
+    if (orgUsers[0].role === 'SUPPORTER') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 

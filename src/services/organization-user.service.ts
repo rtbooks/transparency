@@ -37,7 +37,7 @@ export async function createOrganizationUser(
     data: {
       userId: input.userId,
       organizationId: input.organizationId,
-      role: input.role || 'DONOR',
+      role: input.role || 'SUPPORTER',
       anonymousDonor: input.anonymousDonor ?? false,
       showInHighlights: input.showInHighlights ?? true,
       
@@ -193,7 +193,7 @@ export async function getActiveDonors(
   return await prisma.organizationUser.findMany({
     where: buildCurrentVersionWhere({
       organizationId,
-      role: 'DONOR',
+      role: 'SUPPORTER',
       showInHighlights: true,
       anonymousDonor: false,
     }),

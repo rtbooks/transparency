@@ -52,7 +52,7 @@ export async function GET(
       where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
     });
     const orgUser = orgUsers[0];
-    if (!orgUser || orgUser.role === 'DONOR') {
+    if (!orgUser) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 

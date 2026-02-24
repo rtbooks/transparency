@@ -15,9 +15,10 @@ import { CampaignForm } from "./CampaignForm";
 
 interface CampaignsPageClientProps {
   organizationSlug: string;
+  canEdit?: boolean;
 }
 
-export function CampaignsPageClient({ organizationSlug }: CampaignsPageClientProps) {
+export function CampaignsPageClient({ organizationSlug, canEdit = true }: CampaignsPageClientProps) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [donationsAccountId, setDonationsAccountId] = useState<string | null>(null);
@@ -50,17 +51,19 @@ export function CampaignsPageClient({ organizationSlug }: CampaignsPageClientPro
             Manage fundraising campaigns for your organization.
           </p>
         </div>
-        <Button
-          onClick={() => setShowAddDialog(true)}
-          disabled={configLoaded && !donationsAccountId}
-          title={configLoaded && !donationsAccountId ? "Set a Donations Account in Settings first" : undefined}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          New Campaign
-        </Button>
+        {canEdit && (
+          <Button
+            onClick={() => setShowAddDialog(true)}
+            disabled={configLoaded && !donationsAccountId}
+            title={configLoaded && !donationsAccountId ? "Set a Donations Account in Settings first" : undefined}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            New Campaign
+          </Button>
+        )}
       </div>
 
-      {configLoaded && !donationsAccountId && (
+      {canEdit && configLoaded && !donationsAccountId && (
         <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
           <div className="flex items-start gap-3">
             <Target className="mt-0.5 h-5 w-5 text-amber-600" />
@@ -89,26 +92,28 @@ export function CampaignsPageClient({ organizationSlug }: CampaignsPageClientPro
         refreshKey={refreshKey}
       />
 
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Create Campaign</DialogTitle>
-            <DialogDescription>
-              Create a new fundraising campaign. A child Revenue account will be
-              linked for tracking donations to this campaign.
-            </DialogDescription>
-          </DialogHeader>
-          <CampaignForm
-            organizationSlug={organizationSlug}
-            donationsAccountId={donationsAccountId}
-            onSuccess={() => {
-              setShowAddDialog(false);
-              setRefreshKey((k) => k + 1);
-            }}
-            onCancel={() => setShowAddDialog(false)}
-          />
-        </DialogContent>
-      </Dialog>
+      {canEdit && (
+        <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create Campaign</DialogTitle>
+              <DialogDescription>
+                Create a new fundraising campaign. A child Revenue account will be
+                linked for tracking donations to this campaign.
+              </DialogDescription>
+            </DialogHeader>
+            <CampaignForm
+              organizationSlug={organizationSlug}
+              donationsAccountId={donationsAccountId}
+              onSuccess={() => {
+                setShowAddDialog(false);
+                setRefreshKey((k) => k + 1);
+              }}
+              onCancel={() => setShowAddDialog(false)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

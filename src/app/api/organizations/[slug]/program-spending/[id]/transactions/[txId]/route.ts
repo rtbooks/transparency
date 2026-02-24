@@ -28,7 +28,7 @@ export async function DELETE(
       where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
     });
     const orgUser = orgUsers[0];
-    if (!orgUser || orgUser.role === 'DONOR') {
+    if (!orgUser || orgUser.role === 'SUPPORTER') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 

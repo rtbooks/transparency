@@ -224,7 +224,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
       });
 
       // Auto-link existing contact record by invitation email or user email
-      if (invitation.role === 'DONOR') {
+      if (invitation.role === 'SUPPORTER') {
         const existingContact = await tx.contact.findFirst({
           where: buildCurrentVersionWhere({
             organizationId: invitation.organizationId,

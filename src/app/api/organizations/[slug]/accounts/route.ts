@@ -127,7 +127,7 @@ export async function POST(
       }),
     });
 
-    if (!orgUser || orgUser.role === 'DONOR') {
+    if (!orgUser || orgUser.role === 'SUPPORTER') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 

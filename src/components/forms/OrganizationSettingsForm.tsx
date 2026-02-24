@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
@@ -40,6 +41,7 @@ const organizationSettingsSchema = z.object({
   donorAccessMode: z.enum(['AUTO_APPROVE', 'REQUIRE_APPROVAL']),
   paymentInstructions: z.string().optional(),
   donationsAccountId: z.string().nullable().optional(),
+  publicTransparency: z.boolean(),
 });
 
 type OrganizationSettingsData = z.infer<typeof organizationSettingsSchema>;
@@ -71,6 +73,7 @@ export function OrganizationSettingsForm({
       donorAccessMode: organization.donorAccessMode || 'REQUIRE_APPROVAL',
       paymentInstructions: organization.paymentInstructions || '',
       donationsAccountId: organization.donationsAccountId || null,
+      publicTransparency: organization.publicTransparency ?? false,
     },
   });
 
@@ -111,6 +114,7 @@ export function OrganizationSettingsForm({
           donorAccessMode: data.donorAccessMode,
           paymentInstructions: data.paymentInstructions || null,
           donationsAccountId: data.donationsAccountId || null,
+          publicTransparency: data.publicTransparency,
         }),
       });
 
@@ -419,6 +423,28 @@ export function OrganizationSettingsForm({
                     (check, wire transfer, Venmo, etc.)
                   </FormDescription>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="publicTransparency"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Public Transparency</FormLabel>
+                    <FormDescription>
+                      When enabled, unauthenticated visitors can view financial summaries,
+                      active campaigns, and program spending on your public page.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />

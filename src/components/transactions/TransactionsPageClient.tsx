@@ -6,9 +6,10 @@ import { RecordTransactionButton } from "./RecordTransactionButton";
 
 interface TransactionsPageClientProps {
   organizationSlug: string;
+  canEdit?: boolean;
 }
 
-export function TransactionsPageClient({ organizationSlug }: TransactionsPageClientProps) {
+export function TransactionsPageClient({ organizationSlug, canEdit = true }: TransactionsPageClientProps) {
   const [refreshKey, setRefreshKey] = useState(0);
 
   return (
@@ -20,10 +21,12 @@ export function TransactionsPageClient({ organizationSlug }: TransactionsPageCli
             View, search, and export your organization&apos;s transaction history.
           </p>
         </div>
-        <RecordTransactionButton
-          organizationSlug={organizationSlug}
-          onTransactionCreated={() => setRefreshKey((k) => k + 1)}
-        />
+        {canEdit && (
+          <RecordTransactionButton
+            organizationSlug={organizationSlug}
+            onTransactionCreated={() => setRefreshKey((k) => k + 1)}
+          />
+        )}
       </div>
 
       <TransactionList organizationSlug={organizationSlug} refreshKey={refreshKey} />

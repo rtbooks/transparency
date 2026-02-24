@@ -43,7 +43,7 @@ export default async function UsersPage({ params }: UsersPageProps) {
   const userAccess = userOrgUsers[0];
   
   // Only ORG_ADMIN and PLATFORM_ADMIN can access user management
-  if (!userAccess || userAccess.role === 'DONOR' || userAccess.role === 'PUBLIC') {
+  if (!userAccess || userAccess.role === 'SUPPORTER' || userAccess.role === 'PUBLIC') {
     return (
       <OrganizationLayoutWrapper organizationSlug={slug}>
         <div className="flex min-h-screen items-center justify-center">
