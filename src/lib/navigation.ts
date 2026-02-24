@@ -22,6 +22,7 @@ export function getOrganizationNavLinks(
       { label: 'Reports', href: `/org/${slug}/reports`, icon: 'BarChart3', section: 'Reporting' },
       { label: 'Program Spending', href: `/org/${slug}/program-spending`, icon: 'Target', section: 'Reporting' },
       { label: 'Campaigns', href: `/org/${slug}/campaigns`, icon: 'Megaphone', section: 'Fundraising' },
+      { label: 'Donations', href: `/org/${slug}/donations/overview`, icon: 'HandHeart', section: 'Fundraising' },
       { label: 'My Donations', href: `/org/${slug}/donations`, icon: 'Heart', section: 'Fundraising' },
     ];
   }
@@ -37,6 +38,7 @@ export function getOrganizationNavLinks(
       { label: 'Reports', href: `/org/${slug}/reports`, icon: 'BarChart3', section: 'Reporting' },
       { label: 'Program Spending', href: `/org/${slug}/program-spending`, icon: 'Target', section: 'Reporting' },
       { label: 'Campaigns', href: `/org/${slug}/campaigns`, icon: 'Megaphone', section: 'Fundraising' },
+      { label: 'Donations', href: `/org/${slug}/donations/overview`, icon: 'HandHeart', section: 'Fundraising' },
       { label: 'My Donations', href: `/org/${slug}/donations`, icon: 'Heart', section: 'Fundraising' },
       { label: 'Users', href: `/org/${slug}/users`, icon: 'UserCog', section: 'Admin' },
       { label: 'Settings', href: `/org/${slug}/settings`, icon: 'Settings', section: 'Admin' },
