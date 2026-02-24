@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { LinkTransactionDialog } from './LinkTransactionDialog';
-import { AttachmentSection } from '@/components/attachments/AttachmentSection';
+import { ImageGallery, isImageAttachment } from './ImageGallery';
+import { AttachmentList, type AttachmentItem } from '@/components/attachments/AttachmentList';
+import { FileUploadZone } from '@/components/attachments/FileUploadZone';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -86,6 +88,10 @@ export function ProgramSpendingDetail({
   const [editing, setEditing] = useState(false);
   const [showLinkDialog, setShowLinkDialog] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [attachments, setAttachments] = useState<AttachmentItem[]>([]);
+  const [attachmentsLoading, setAttachmentsLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   // Edit form state
   const [editTitle, setEditTitle] = useState('');
@@ -118,6 +124,66 @@ export function ProgramSpendingDetail({
   useEffect(() => {
     fetchItem();
   }, [fetchItem]);
+
+  // Attachment management
+  const fetchAttachments = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `/api/organizations/${organizationSlug}/attachments?entityType=PROGRAM_SPENDING&entityId=${itemId}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setAttachments(data.attachments ?? []);
+      }
+    } catch {
+      // non-critical
+    } finally {
+      setAttachmentsLoading(false);
+    }
+  }, [organizationSlug, itemId]);
+
+  useEffect(() => {
+    fetchAttachments();
+  }, [fetchAttachments]);
+
+  const handleUpload = useCallback(async (file: File) => {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('entityType', 'PROGRAM_SPENDING');
+      formData.append('entityId', itemId);
+      const res = await fetch(
+        `/api/organizations/${organizationSlug}/attachments`,
+        { method: 'POST', body: formData }
+      );
+      if (!res.ok) throw new Error((await res.json()).error || 'Upload failed');
+      const newAtt = await res.json();
+      setAttachments((prev) => [newAtt, ...prev]);
+      toast({ title: 'Uploaded', description: file.name });
+    } catch (err) {
+      toast({ title: 'Upload failed', description: err instanceof Error ? err.message : 'Unknown error', variant: 'destructive' });
+    } finally {
+      setUploading(false);
+    }
+  }, [organizationSlug, itemId, toast]);
+
+  const handleDeleteAttachment = useCallback(async (attachmentId: string) => {
+    setDeleting(attachmentId);
+    try {
+      const res = await fetch(
+        `/api/organizations/${organizationSlug}/attachments/${attachmentId}`,
+        { method: 'DELETE' }
+      );
+      if (!res.ok) throw new Error('Delete failed');
+      setAttachments((prev) => prev.filter((a) => a.id !== attachmentId));
+      toast({ title: 'Deleted', description: 'Attachment removed' });
+    } catch {
+      toast({ title: 'Error', description: 'Failed to delete', variant: 'destructive' });
+    } finally {
+      setDeleting(null);
+    }
+  }, [organizationSlug, toast]);
 
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -388,15 +454,42 @@ export function ProgramSpendingDetail({
         )}
       </div>
 
-      {/* Attachments */}
+      {/* Image Gallery */}
+      {!attachmentsLoading && attachments.some(isImageAttachment) && (
+        <div className="space-y-3">
+          <h3 className="font-medium">Photos</h3>
+          <ImageGallery
+            attachments={attachments}
+            organizationSlug={organizationSlug}
+            onDelete={canEdit ? handleDeleteAttachment : undefined}
+            readOnly={!canEdit}
+          />
+        </div>
+      )}
+
+      {/* Non-image Attachments */}
       <div className="space-y-3">
         <h3 className="font-medium">Attachments</h3>
-        <AttachmentSection
-          organizationSlug={organizationSlug}
-          entityType="PROGRAM_SPENDING"
-          entityId={itemId}
-          readOnly={!canEdit}
-        />
+        {attachmentsLoading ? (
+          <p className="text-sm text-muted-foreground py-2">Loading attachments...</p>
+        ) : (
+          <>
+            <AttachmentList
+              attachments={attachments.filter((a) => !isImageAttachment(a))}
+              organizationSlug={organizationSlug}
+              onDelete={canEdit ? handleDeleteAttachment : undefined}
+              deleting={deleting}
+              readOnly={!canEdit}
+            />
+            {canEdit && (
+              <FileUploadZone
+                onFileSelected={handleUpload}
+                uploading={uploading}
+                disabled={attachments.length >= 10}
+              />
+            )}
+          </>
+        )}
       </div>
 
       {/* Link Transaction Dialog */}
