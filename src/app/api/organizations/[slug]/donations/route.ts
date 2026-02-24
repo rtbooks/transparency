@@ -253,7 +253,7 @@ export async function POST(
     // Default dueDate to 1 week from now for pledges when not specified
     let dueDate: Date | null = null;
     if (validated.dueDate) {
-      dueDate = new Date(validated.dueDate + 'T12:00:00');
+      dueDate = new Date(validated.dueDate.length === 10 ? validated.dueDate + 'T12:00:00' : validated.dueDate);
     } else if (validated.type === 'PLEDGE') {
       dueDate = new Date();
       dueDate.setDate(dueDate.getDate() + 7);
