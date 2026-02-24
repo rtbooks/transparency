@@ -32,6 +32,8 @@ export type OrganizationMinAggregateOutputType = {
   ein: string | null
   mission: string | null
   logoUrl: string | null
+  primaryColor: string | null
+  accentColor: string | null
   fiscalYearStart: Date | null
   donorAccessMode: $Enums.DonorAccessMode | null
   paymentInstructions: string | null
@@ -66,6 +68,8 @@ export type OrganizationMaxAggregateOutputType = {
   ein: string | null
   mission: string | null
   logoUrl: string | null
+  primaryColor: string | null
+  accentColor: string | null
   fiscalYearStart: Date | null
   donorAccessMode: $Enums.DonorAccessMode | null
   paymentInstructions: string | null
@@ -100,6 +104,8 @@ export type OrganizationCountAggregateOutputType = {
   ein: number
   mission: number
   logoUrl: number
+  primaryColor: number
+  accentColor: number
   fiscalYearStart: number
   donorAccessMode: number
   paymentInstructions: number
@@ -136,6 +142,8 @@ export type OrganizationMinAggregateInputType = {
   ein?: true
   mission?: true
   logoUrl?: true
+  primaryColor?: true
+  accentColor?: true
   fiscalYearStart?: true
   donorAccessMode?: true
   paymentInstructions?: true
@@ -170,6 +178,8 @@ export type OrganizationMaxAggregateInputType = {
   ein?: true
   mission?: true
   logoUrl?: true
+  primaryColor?: true
+  accentColor?: true
   fiscalYearStart?: true
   donorAccessMode?: true
   paymentInstructions?: true
@@ -204,6 +214,8 @@ export type OrganizationCountAggregateInputType = {
   ein?: true
   mission?: true
   logoUrl?: true
+  primaryColor?: true
+  accentColor?: true
   fiscalYearStart?: true
   donorAccessMode?: true
   paymentInstructions?: true
@@ -311,6 +323,8 @@ export type OrganizationGroupByOutputType = {
   ein: string | null
   mission: string | null
   logoUrl: string | null
+  primaryColor: string | null
+  accentColor: string | null
   fiscalYearStart: Date
   donorAccessMode: $Enums.DonorAccessMode
   paymentInstructions: string | null
@@ -366,6 +380,8 @@ export type OrganizationWhereInput = {
   ein?: Prisma.StringNullableFilter<"Organization"> | string | null
   mission?: Prisma.StringNullableFilter<"Organization"> | string | null
   logoUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
+  primaryColor?: Prisma.StringNullableFilter<"Organization"> | string | null
+  accentColor?: Prisma.StringNullableFilter<"Organization"> | string | null
   fiscalYearStart?: Prisma.DateTimeFilter<"Organization"> | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFilter<"Organization"> | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.StringNullableFilter<"Organization"> | string | null
@@ -400,6 +416,8 @@ export type OrganizationOrderByWithRelationInput = {
   ein?: Prisma.SortOrderInput | Prisma.SortOrder
   mission?: Prisma.SortOrderInput | Prisma.SortOrder
   logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  primaryColor?: Prisma.SortOrderInput | Prisma.SortOrder
+  accentColor?: Prisma.SortOrderInput | Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
   donorAccessMode?: Prisma.SortOrder
   paymentInstructions?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -438,6 +456,8 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   ein?: Prisma.StringNullableFilter<"Organization"> | string | null
   mission?: Prisma.StringNullableFilter<"Organization"> | string | null
   logoUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
+  primaryColor?: Prisma.StringNullableFilter<"Organization"> | string | null
+  accentColor?: Prisma.StringNullableFilter<"Organization"> | string | null
   fiscalYearStart?: Prisma.DateTimeFilter<"Organization"> | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFilter<"Organization"> | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.StringNullableFilter<"Organization"> | string | null
@@ -472,6 +492,8 @@ export type OrganizationOrderByWithAggregationInput = {
   ein?: Prisma.SortOrderInput | Prisma.SortOrder
   mission?: Prisma.SortOrderInput | Prisma.SortOrder
   logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  primaryColor?: Prisma.SortOrderInput | Prisma.SortOrder
+  accentColor?: Prisma.SortOrderInput | Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
   donorAccessMode?: Prisma.SortOrder
   paymentInstructions?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -512,6 +534,8 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   ein?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   mission?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   logoUrl?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  primaryColor?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  accentColor?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   fiscalYearStart?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeWithAggregatesFilter<"Organization"> | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
@@ -546,6 +570,8 @@ export type OrganizationCreateInput = {
   ein?: string | null
   mission?: string | null
   logoUrl?: string | null
+  primaryColor?: string | null
+  accentColor?: string | null
   fiscalYearStart?: Date | string
   donorAccessMode?: $Enums.DonorAccessMode
   paymentInstructions?: string | null
@@ -580,6 +606,8 @@ export type OrganizationUncheckedCreateInput = {
   ein?: string | null
   mission?: string | null
   logoUrl?: string | null
+  primaryColor?: string | null
+  accentColor?: string | null
   fiscalYearStart?: Date | string
   donorAccessMode?: $Enums.DonorAccessMode
   paymentInstructions?: string | null
@@ -614,6 +642,8 @@ export type OrganizationUpdateInput = {
   ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primaryColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accentColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -648,6 +678,8 @@ export type OrganizationUncheckedUpdateInput = {
   ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primaryColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accentColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -682,6 +714,8 @@ export type OrganizationCreateManyInput = {
   ein?: string | null
   mission?: string | null
   logoUrl?: string | null
+  primaryColor?: string | null
+  accentColor?: string | null
   fiscalYearStart?: Date | string
   donorAccessMode?: $Enums.DonorAccessMode
   paymentInstructions?: string | null
@@ -716,6 +750,8 @@ export type OrganizationUpdateManyMutationInput = {
   ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primaryColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accentColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -750,6 +786,8 @@ export type OrganizationUncheckedUpdateManyInput = {
   ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primaryColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accentColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
   paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -789,6 +827,8 @@ export type OrganizationCountOrderByAggregateInput = {
   ein?: Prisma.SortOrder
   mission?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
+  primaryColor?: Prisma.SortOrder
+  accentColor?: Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
   donorAccessMode?: Prisma.SortOrder
   paymentInstructions?: Prisma.SortOrder
@@ -823,6 +863,8 @@ export type OrganizationMaxOrderByAggregateInput = {
   ein?: Prisma.SortOrder
   mission?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
+  primaryColor?: Prisma.SortOrder
+  accentColor?: Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
   donorAccessMode?: Prisma.SortOrder
   paymentInstructions?: Prisma.SortOrder
@@ -857,6 +899,8 @@ export type OrganizationMinOrderByAggregateInput = {
   ein?: Prisma.SortOrder
   mission?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
+  primaryColor?: Prisma.SortOrder
+  accentColor?: Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
   donorAccessMode?: Prisma.SortOrder
   paymentInstructions?: Prisma.SortOrder
@@ -929,6 +973,8 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   ein?: boolean
   mission?: boolean
   logoUrl?: boolean
+  primaryColor?: boolean
+  accentColor?: boolean
   fiscalYearStart?: boolean
   donorAccessMode?: boolean
   paymentInstructions?: boolean
@@ -963,6 +1009,8 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   ein?: boolean
   mission?: boolean
   logoUrl?: boolean
+  primaryColor?: boolean
+  accentColor?: boolean
   fiscalYearStart?: boolean
   donorAccessMode?: boolean
   paymentInstructions?: boolean
@@ -997,6 +1045,8 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   ein?: boolean
   mission?: boolean
   logoUrl?: boolean
+  primaryColor?: boolean
+  accentColor?: boolean
   fiscalYearStart?: boolean
   donorAccessMode?: boolean
   paymentInstructions?: boolean
@@ -1031,6 +1081,8 @@ export type OrganizationSelectScalar = {
   ein?: boolean
   mission?: boolean
   logoUrl?: boolean
+  primaryColor?: boolean
+  accentColor?: boolean
   fiscalYearStart?: boolean
   donorAccessMode?: boolean
   paymentInstructions?: boolean
@@ -1057,7 +1109,7 @@ export type OrganizationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "fiscalYearStart" | "donorAccessMode" | "paymentInstructions" | "donationsAccountId" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "primaryColor" | "accentColor" | "fiscalYearStart" | "donorAccessMode" | "paymentInstructions" | "donationsAccountId" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 
 export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Organization"
@@ -1070,6 +1122,8 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     ein: string | null
     mission: string | null
     logoUrl: string | null
+    primaryColor: string | null
+    accentColor: string | null
     fiscalYearStart: Date
     donorAccessMode: $Enums.DonorAccessMode
     paymentInstructions: string | null
@@ -1524,6 +1578,8 @@ export interface OrganizationFieldRefs {
   readonly ein: Prisma.FieldRef<"Organization", 'String'>
   readonly mission: Prisma.FieldRef<"Organization", 'String'>
   readonly logoUrl: Prisma.FieldRef<"Organization", 'String'>
+  readonly primaryColor: Prisma.FieldRef<"Organization", 'String'>
+  readonly accentColor: Prisma.FieldRef<"Organization", 'String'>
   readonly fiscalYearStart: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly donorAccessMode: Prisma.FieldRef<"Organization", 'DonorAccessMode'>
   readonly paymentInstructions: Prisma.FieldRef<"Organization", 'String'>

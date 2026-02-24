@@ -80,16 +80,21 @@ export function OrgSidebar({ navLinks, className }: OrgSidebarProps) {
                       "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                       collapsed && "justify-center px-2",
                       isActive
-                        ? "bg-blue-50 text-blue-700"
+                        ? "org-nav-active"
                         : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                     )}
+                    style={isActive ? {
+                      backgroundColor: 'var(--org-primary-bg, rgb(239 246 255))',
+                      color: 'var(--org-primary, rgb(29 78 216))',
+                    } : undefined}
                   >
                     {Icon && (
                       <Icon
                         className={cn(
                           "h-4 w-4 shrink-0",
-                          isActive ? "text-blue-700" : "text-gray-400"
+                          !isActive && "text-gray-400"
                         )}
+                        style={isActive ? { color: 'var(--org-primary, rgb(29 78 216))' } : undefined}
                       />
                     )}
                     {!collapsed && <span>{link.label}</span>}

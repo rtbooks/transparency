@@ -1650,6 +1650,8 @@ export const OrganizationScalarFieldEnum = {
   ein: 'ein',
   mission: 'mission',
   logoUrl: 'logoUrl',
+  primaryColor: 'primaryColor',
+  accentColor: 'accentColor',
   fiscalYearStart: 'fiscalYearStart',
   donorAccessMode: 'donorAccessMode',
   paymentInstructions: 'paymentInstructions',

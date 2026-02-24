@@ -14,6 +14,8 @@ const updateOrganizationSchema = z.object({
   mission: z.string().nullable().optional(),
   fiscalYearStart: z.string().datetime().optional(),
   logoUrl: z.string().nullable().optional(),
+  primaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Must be a valid hex color').nullable().optional(),
+  accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Must be a valid hex color').nullable().optional(),
   donorAccessMode: z.enum(['AUTO_APPROVE', 'REQUIRE_APPROVAL']).optional(),
   paymentInstructions: z.string().nullable().optional(),
   donationsAccountId: z.string().nullable().optional(),
@@ -137,6 +139,8 @@ export async function PATCH(
       updates.fiscalYearStart = new Date(validatedData.fiscalYearStart);
     }
     if (validatedData.logoUrl !== undefined) updates.logoUrl = validatedData.logoUrl;
+    if (validatedData.primaryColor !== undefined) updates.primaryColor = validatedData.primaryColor;
+    if (validatedData.accentColor !== undefined) updates.accentColor = validatedData.accentColor;
     if (validatedData.donorAccessMode !== undefined) updates.donorAccessMode = validatedData.donorAccessMode;
     if (validatedData.paymentInstructions !== undefined) updates.paymentInstructions = validatedData.paymentInstructions;
     if (validatedData.donationsAccountId !== undefined) updates.donationsAccountId = validatedData.donationsAccountId;

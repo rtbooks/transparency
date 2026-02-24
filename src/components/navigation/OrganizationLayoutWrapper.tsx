@@ -20,6 +20,7 @@ export async function OrganizationLayoutWrapper({
 
   // Determine navigation links based on user's role
   let navLinks: NavLink[] = [{ label: 'Dashboard', href: `/org/${organizationSlug}` }];
+  let orgTheme: { primaryColor?: string | null; accentColor?: string | null; logoUrl?: string | null } = {};
 
   if (clerkUserId) {
     const user = await prisma.user.findUnique({
@@ -33,6 +34,12 @@ export async function OrganizationLayoutWrapper({
       });
 
       if (org) {
+        orgTheme = {
+          primaryColor: org.primaryColor,
+          accentColor: org.accentColor,
+          logoUrl: org.logoUrl ? `/api/organizations/${organizationSlug}/logo` : null,
+        };
+
         const orgUsers = await prisma.organizationUser.findMany({
           where: buildCurrentVersionWhere({ organizationId: org.id, userId: user.id }),
         });
@@ -45,13 +52,24 @@ export async function OrganizationLayoutWrapper({
     }
   }
 
+  // Build CSS custom properties for org theme
+  const themeStyle: Record<string, string> = {};
+  if (orgTheme.primaryColor) {
+    themeStyle['--org-primary'] = orgTheme.primaryColor;
+    // Compute a light background tint (8% opacity equivalent)
+    themeStyle['--org-primary-bg'] = `${orgTheme.primaryColor}14`;
+  }
+  if (orgTheme.accentColor) {
+    themeStyle['--org-accent'] = orgTheme.accentColor;
+  }
+
   return (
-    <>
-      <TopNavWrapper organizationSlug={organizationSlug} navLinks={navLinks} />
+    <div style={themeStyle as React.CSSProperties}>
+      <TopNavWrapper organizationSlug={organizationSlug} navLinks={navLinks} orgTheme={orgTheme} />
       <div className="flex">
         <OrgSidebarWrapper navLinks={navLinks} />
         <main className="min-h-[calc(100vh-4rem)] flex-1 overflow-auto">{children}</main>
       </div>
-    </>
+    </div>
   );
 }

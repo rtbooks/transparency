@@ -31,6 +31,7 @@ interface TopNavProps {
     role: string;
   }>;
   navLinks: NavLink[];
+  orgLogoUrl?: string | null;
 }
 
 export function TopNav({
@@ -38,6 +39,7 @@ export function TopNav({
   organizationContext,
   userOrganizations = [],
   navLinks,
+  orgLogoUrl,
 }: TopNavProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -82,6 +84,13 @@ export function TopNav({
                     />
                   ) : (
                     <div className="flex items-center gap-2 rounded-md bg-gray-100 px-3 py-1.5">
+                      {orgLogoUrl && (
+                        <img
+                          src={orgLogoUrl}
+                          alt=""
+                          className="h-5 w-5 rounded object-contain"
+                        />
+                      )}
                       <span className="text-sm font-medium text-gray-900">
                         {organizationContext.name}
                       </span>
@@ -94,20 +103,27 @@ export function TopNav({
             {/* Center: Desktop Navigation Links — only when NOT in org context */}
             {!isOrgContext && navLinks.length > 0 && (
               <div className="hidden items-center gap-1 md:flex">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={cn(
-                      "rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                      pathname === link.href
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {navLinks.map((link) => {
+                  const active = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={cn(
+                        "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                        active
+                          ? "org-nav-active"
+                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                      )}
+                      style={active ? {
+                        backgroundColor: 'var(--org-primary-bg, rgb(239 246 255))',
+                        color: 'var(--org-primary, rgb(29 78 216))',
+                      } : undefined}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
               </div>
             )}
 
@@ -147,21 +163,28 @@ export function TopNav({
         {!isOrgContext && mobileMenuOpen && (
           <div className="border-t bg-white md:hidden">
             <div className="space-y-1 px-4 pb-3 pt-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={cn(
-                    "block rounded-md px-3 py-2 text-base font-medium",
-                    pathname === link.href
-                      ? "bg-blue-50 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const active = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(
+                      "block rounded-md px-3 py-2 text-base font-medium",
+                      active
+                        ? "org-nav-active"
+                        : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    )}
+                    style={active ? {
+                      backgroundColor: 'var(--org-primary-bg, rgb(239 246 255))',
+                      color: 'var(--org-primary, rgb(29 78 216))',
+                    } : undefined}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
 
               {!user && (
                 <div className="mt-4 flex flex-col gap-2 border-t pt-4">
