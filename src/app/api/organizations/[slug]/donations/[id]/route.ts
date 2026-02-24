@@ -81,7 +81,7 @@ export async function PATCH(
     if (validated.amount !== undefined) updates.amount = validated.amount;
     if (validated.description !== undefined) updates.description = validated.description;
     if (validated.donorMessage !== undefined) updates.donorMessage = validated.donorMessage;
-    if (validated.dueDate !== undefined) updates.dueDate = validated.dueDate ? new Date(validated.dueDate) : null;
+    if (validated.dueDate !== undefined) updates.dueDate = validated.dueDate ? new Date(validated.dueDate + 'T12:00:00') : null;
 
     const updated = await updateDonation(id, organization.id, updates);
     return NextResponse.json(updated);

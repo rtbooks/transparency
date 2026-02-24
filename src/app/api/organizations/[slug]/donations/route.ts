@@ -250,6 +250,15 @@ export async function POST(
       cashAccountId = cashAccount.id;
     }
 
+    // Default dueDate to 1 week from now for pledges when not specified
+    let dueDate: Date | null = null;
+    if (validated.dueDate) {
+      dueDate = new Date(validated.dueDate + 'T12:00:00');
+    } else if (validated.type === 'PLEDGE') {
+      dueDate = new Date();
+      dueDate.setDate(dueDate.getDate() + 7);
+    }
+
     const input = {
       organizationId: organization.id,
       contactId: contact.id,
@@ -259,7 +268,7 @@ export async function POST(
       donorMessage: validated.donorMessage,
       isAnonymous: validated.isAnonymous,
       donationDate: new Date(),
-      dueDate: validated.dueDate ? new Date(validated.dueDate) : null,
+      dueDate,
       campaignId,
       arAccountId: arAccount.id,
       revenueAccountId: revenueAccount.id,

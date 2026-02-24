@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { recordDonationPayment } from '@/services/donation.service';
 import { recordPayment } from '@/services/bill-payment.service';
+import { recalculateBillStatus } from '@/services/bill.service';
 import { z } from 'zod';
 
 const paymentSchema = z.object({
@@ -81,13 +82,16 @@ export async function POST(
       billId: donation.billId,
       organizationId: organization.id,
       amount: validated.amount,
-      transactionDate: new Date(validated.transactionDate),
+      transactionDate: new Date(validated.transactionDate + 'T12:00:00'),
       cashAccountId: validated.cashAccountId,
       description: validated.description,
       referenceNumber: validated.referenceNumber,
       notes: validated.notes,
       createdBy: user.id,
     });
+
+    // Recalculate bill status (amountPaid, status) from linked transactions
+    await recalculateBillStatus(donation.billId);
 
     // Update the donation's received amount and status
     await recordDonationPayment(id, organization.id, validated.amount);

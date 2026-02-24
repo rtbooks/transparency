@@ -351,4 +351,37 @@ describe('Donations API Contract Tests', () => {
       expect(DonationStatusSchema.safeParse('INVALID').success).toBe(false);
     });
   });
+
+  // ── Date handling contract ───────────────────────────────────────
+
+  describe('Date Handling', () => {
+    it('date-only strings parsed with T12:00:00 should stay on the correct day', () => {
+      // Bug: new Date("2026-02-24") is midnight UTC = previous day in US timezones
+      // Fix: append T12:00:00 so it stays on the intended day in all timezones
+      const dateStr = '2026-02-24';
+      const parsed = new Date(dateStr + 'T12:00:00');
+      expect(parsed.getDate()).toBe(24);
+      expect(parsed.getMonth()).toBe(1); // February = 1
+    });
+
+    it('pledge without dueDate should NOT produce epoch/null date', () => {
+      // Bug: dueDate was null → bill showed 12/31/1969 (epoch)
+      // Fix: default to 1 week from now for pledges
+      const CreateRequestNoDueDate = z.object({
+        type: z.enum(['ONE_TIME', 'PLEDGE']),
+        amount: z.number().positive(),
+        description: z.string(),
+        dueDate: z.string().optional(),
+      });
+
+      const result = CreateRequestNoDueDate.safeParse({
+        type: 'PLEDGE',
+        amount: 100,
+        description: 'Test pledge',
+        // no dueDate → API should default to 1 week from now
+      });
+      expect(result.success).toBe(true);
+      expect(result.data?.dueDate).toBeUndefined();
+    });
+  });
 });

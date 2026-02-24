@@ -93,7 +93,7 @@ export async function POST(
       billId,
       organizationId: organization.id,
       amount: validated.amount,
-      transactionDate: new Date(validated.transactionDate),
+      transactionDate: new Date(validated.transactionDate + 'T12:00:00'),
       cashAccountId: validated.cashAccountId,
       description: validated.description,
       referenceNumber: validated.referenceNumber ?? null,
