@@ -44,12 +44,13 @@ describe('Temporal Immutability Migration', () => {
   });
 
   it('should only allow temporal closing fields to be updated', () => {
-    // The trigger allows these 5 columns to change
+    // The trigger allows these 6 columns to change
     expect(migrationSql).toContain("'valid_to'");
     expect(migrationSql).toContain("'system_to'");
     expect(migrationSql).toContain("'is_deleted'");
     expect(migrationSql).toContain("'deleted_at'");
     expect(migrationSql).toContain("'deleted_by'");
+    expect(migrationSql).toContain("'updated_at'");
   });
 
   it('should raise an exception when non-temporal columns are modified', () => {

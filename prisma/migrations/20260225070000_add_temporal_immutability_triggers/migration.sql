@@ -23,7 +23,7 @@ BEGIN
     FROM information_schema.columns
     WHERE table_schema = TG_TABLE_SCHEMA
       AND table_name   = TG_TABLE_NAME
-      AND column_name NOT IN ('valid_to', 'system_to', 'is_deleted', 'deleted_at', 'deleted_by')
+      AND column_name NOT IN ('valid_to', 'system_to', 'is_deleted', 'deleted_at', 'deleted_by', 'updated_at')
   LOOP
     EXECUTE format('SELECT ($1).%I::text', col) INTO old_val USING OLD;
     EXECUTE format('SELECT ($1).%I::text', col) INTO new_val USING NEW;
