@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -80,6 +80,13 @@ export function DonationsPageClient({
   const [editDueDate, setEditDueDate] = useState('');
   const [cancellingDonationId, setCancellingDonationId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [payingDonation, setPayingDonation] = useState<DonationItem | null>(null);
+  const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
+  const [paymentCashAccountId, setPaymentCashAccountId] = useState('');
+  const [paymentDescription, setPaymentDescription] = useState('');
+  const [paymentNotes, setPaymentNotes] = useState('');
+  const [cashAccounts, setCashAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
 
   const fetchDonations = useCallback(async () => {
     try {
@@ -150,6 +157,68 @@ export function DonationsPageClient({
     if (data?.isAdmin) return true;
     // Regular users can only edit their own pledged donations with no payments
     return donation.status === 'PLEDGED' && donation.amountReceived === 0;
+  };
+
+  const isAdmin = data?.isAdmin ?? false;
+
+  // Fetch cash/bank accounts for payment dialog (admin only)
+  useEffect(() => {
+    if (!isAdmin) return;
+    async function fetchCashAccounts() {
+      try {
+        const res = await fetch(`/api/organizations/${organizationSlug}/accounts`);
+        if (res.ok) {
+          const json = await res.json();
+          const accounts = (json.accounts || json || []).filter(
+            (a: any) => a.type === 'ASSET' && a.isActive
+          );
+          setCashAccounts(accounts.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
+          if (accounts.length > 0) setPaymentCashAccountId(accounts[0].id);
+        }
+      } catch { /* ignore */ }
+    }
+    fetchCashAccounts();
+  }, [organizationSlug, isAdmin]);
+
+  const openPaymentDialog = (donation: DonationItem) => {
+    const remaining = donation.amount - donation.amountReceived;
+    setPayingDonation(donation);
+    setPaymentAmount(remaining.toFixed(2));
+    setPaymentDate(new Date().toISOString().split('T')[0]);
+    setPaymentDescription('');
+    setPaymentNotes('');
+  };
+
+  const handlePaymentSubmit = async () => {
+    if (!payingDonation || !paymentCashAccountId) return;
+    setActionLoading(true);
+    try {
+      const res = await fetch(
+        `/api/organizations/${organizationSlug}/donations/${payingDonation.id}/payment`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: parseFloat(paymentAmount),
+            transactionDate: paymentDate,
+            cashAccountId: paymentCashAccountId,
+            description: paymentDescription || undefined,
+            notes: paymentNotes || undefined,
+          }),
+        }
+      );
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.error || 'Failed to record payment');
+      }
+      setPayingDonation(null);
+      setLoading(true);
+      await fetchDonations();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const openEditDialog = (donation: DonationItem) => {
@@ -406,6 +475,17 @@ export function DonationsPageClient({
                     </p>
                       {canModifyDonation(donation) && (
                         <div className="mt-2 flex justify-end gap-2">
+                          {isAdmin && (donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                              onClick={() => openPaymentDialog(donation)}
+                            >
+                              <CreditCard className="mr-1 h-3 w-3" />
+                              Record Payment
+                            </Button>
+                          )}
                           <Button
                             variant="outline"
                             size="sm"
@@ -520,6 +600,86 @@ export function DonationsPageClient({
               >
                 {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Yes, Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Record Payment Dialog */}
+      {payingDonation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="mb-1 text-lg font-semibold text-gray-900">Record Payment</h3>
+            <p className="mb-4 text-sm text-gray-600">
+              {formatCurrency(payingDonation.amountReceived)} of {formatCurrency(payingDonation.amount)} received
+            </p>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Amount ($)</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  max={payingDonation.amount - payingDonation.amountReceived}
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(e.target.value)}
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Remaining: {formatCurrency(payingDonation.amount - payingDonation.amountReceived)}
+                </p>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Transaction Date</label>
+                <Input
+                  type="date"
+                  value={paymentDate}
+                  onChange={(e) => setPaymentDate(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Cash / Bank Account</label>
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  value={paymentCashAccountId}
+                  onChange={(e) => setPaymentCashAccountId(e.target.value)}
+                >
+                  {cashAccounts.length === 0 && <option value="">No accounts available</option>}
+                  {cashAccounts.map((acct) => (
+                    <option key={acct.id} value={acct.id}>
+                      {acct.code} - {acct.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Description (Optional)</label>
+                <Input
+                  value={paymentDescription}
+                  onChange={(e) => setPaymentDescription(e.target.value)}
+                  placeholder="e.g., Check #1234"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Notes (Optional)</label>
+                <Textarea
+                  value={paymentNotes}
+                  onChange={(e) => setPaymentNotes(e.target.value)}
+                  rows={2}
+                  placeholder="Internal notes about this payment"
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setPayingDonation(null)} disabled={actionLoading}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handlePaymentSubmit}
+                disabled={actionLoading || !paymentCashAccountId || !paymentAmount}
+              >
+                {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Record Payment
               </Button>
             </div>
           </div>
