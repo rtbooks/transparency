@@ -2,8 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2 } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils/account-tree';
 import { trackEvent } from '@/lib/analytics';
@@ -71,6 +73,12 @@ export function DonationsPageClient({
   const [claimable, setClaimable] = useState<ClaimableContact[]>([]);
   const [claiming, setClaiming] = useState(false);
   const [hasLinkedContact, setHasLinkedContact] = useState<boolean | null>(null);
+  const [editingDonation, setEditingDonation] = useState<DonationItem | null>(null);
+  const [editAmount, setEditAmount] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editDueDate, setEditDueDate] = useState('');
+  const [cancellingDonationId, setCancellingDonationId] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const fetchDonations = useCallback(async () => {
     try {
@@ -132,6 +140,73 @@ export function DonationsPageClient({
       setError(err.message);
     } finally {
       setClaiming(false);
+    }
+  };
+
+  const canModifyDonation = (donation: DonationItem) =>
+    donation.status === 'PLEDGED' && donation.amountReceived === 0;
+
+  const openEditDialog = (donation: DonationItem) => {
+    setEditingDonation(donation);
+    setEditAmount(String(donation.amount));
+    setEditDescription(donation.description || '');
+    setEditDueDate(donation.dueDate ? donation.dueDate.split('T')[0] : '');
+  };
+
+  const handleEditSubmit = async () => {
+    if (!editingDonation) return;
+    setActionLoading(true);
+    try {
+      const res = await fetch(
+        `/api/organizations/${organizationSlug}/donations/${editingDonation.id}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: parseFloat(editAmount),
+            description: editDescription,
+            dueDate: editDueDate || null,
+          }),
+        }
+      );
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.error || 'Failed to update donation');
+      }
+      trackEvent('pledge_updated', { orgSlug: organizationSlug });
+      setEditingDonation(null);
+      setLoading(true);
+      await fetchDonations();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancel = async (donationId: string) => {
+    setActionLoading(true);
+    try {
+      const res = await fetch(
+        `/api/organizations/${organizationSlug}/donations/${donationId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cancel: true }),
+        }
+      );
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.error || 'Failed to cancel donation');
+      }
+      trackEvent('pledge_cancelled', { orgSlug: organizationSlug });
+      setCancellingDonationId(null);
+      setLoading(true);
+      await fetchDonations();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -327,6 +402,27 @@ export function DonationsPageClient({
                       <p className="text-sm text-gray-600">
                         Received: {formatCurrency(donation.amountReceived)} / {formatCurrency(donation.amount)}
                       </p>
+                      {canModifyDonation(donation) && (
+                        <div className="mt-2 flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditDialog(donation)}
+                          >
+                            <Pencil className="mr-1 h-3 w-3" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => setCancellingDonationId(donation.id)}
+                          >
+                            <X className="mr-1 h-3 w-3" />
+                            Cancel
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -355,6 +451,77 @@ export function DonationsPageClient({
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Edit Dialog */}
+      {editingDonation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">Edit Pledge</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Amount ($)</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  value={editAmount}
+                  onChange={(e) => setEditAmount(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Description</label>
+                <Textarea
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Due Date (Optional)</label>
+                <Input
+                  type="date"
+                  value={editDueDate}
+                  onChange={(e) => setEditDueDate(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setEditingDonation(null)} disabled={actionLoading}>
+                Cancel
+              </Button>
+              <Button onClick={handleEditSubmit} disabled={actionLoading}>
+                {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Confirmation */}
+      {cancellingDonationId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-sm rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">Cancel Donation?</h3>
+            <p className="mb-6 text-sm text-gray-600">
+              This will cancel your pledge and reverse the accounting entry. This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setCancellingDonationId(null)} disabled={actionLoading}>
+                Keep Pledge
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => handleCancel(cancellingDonationId)}
+                disabled={actionLoading}
+              >
+                {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Yes, Cancel
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
