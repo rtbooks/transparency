@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 
 export async function POST(
   request: NextRequest,
@@ -90,12 +90,11 @@ export async function POST(
       }
     }
 
-    // Toggle the isActive status
-    const updatedAccount = await prisma.account.update({
-      where: { versionId: existingAccount.versionId },
-      data: {
-        isActive: !existingAccount.isActive,
-      },
+    // Toggle the isActive status (temporal: close old version, create new)
+    const now = new Date();
+    await closeVersion(prisma.account, existingAccount.versionId, now, 'account');
+    const updatedAccount = await prisma.account.create({
+      data: buildNewVersionData(existingAccount, { isActive: !existingAccount.isActive } as any, now) as any,
     });
 
     return NextResponse.json(updatedAccount);

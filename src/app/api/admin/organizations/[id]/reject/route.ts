@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { buildCurrentVersionWhere } from "@/lib/temporal/temporal-utils";
+import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from "@/lib/temporal/temporal-utils";
 
 const rejectSchema = z.object({
   reason: z.string().min(1, "Rejection reason is required"),
@@ -50,13 +50,14 @@ export async function POST(
       return NextResponse.json({ error: "Organization not found" }, { status: 404 });
     }
 
-    // Update organization to VERIFICATION_FAILED status
-    const organization = await prisma.organization.update({
-      where: { versionId: org.versionId },
-      data: {
+    // Update organization to VERIFICATION_FAILED status (temporal: close old version, create new)
+    const now = new Date();
+    await closeVersion(prisma.organization, org.versionId, now, "organization");
+    const organization = await prisma.organization.create({
+      data: buildNewVersionData(org, {
         verificationStatus: "VERIFICATION_FAILED",
         verificationNotes: reason,
-      },
+      } as any, now) as any,
     });
 
     // TODO: Send rejection email to organization admin

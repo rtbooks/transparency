@@ -6,7 +6,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
-import { MAX_DATE, buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap } from '@/lib/temporal/temporal-utils';
+import { MAX_DATE, buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 import type { Donation, Bill } from '@/generated/prisma/client';
 import type { Prisma } from '@/generated/prisma/client';
 
@@ -238,9 +238,10 @@ export async function updateDonation(
           where: buildCurrentVersionWhere({ id: donation.transactionId }),
         });
         if (accrualTx) {
-          await tx.transaction.update({
-            where: { versionId: accrualTx.versionId },
-            data: { amount: updates.amount as unknown as Prisma.Decimal },
+          const now = new Date();
+          await closeVersion(tx.transaction, accrualTx.versionId, now, 'transaction');
+          await tx.transaction.create({
+            data: buildNewVersionData(accrualTx, { amount: updates.amount as unknown as Prisma.Decimal } as any, now) as any,
           });
         }
       }
@@ -307,14 +308,13 @@ export async function cancelDonation(
         where: buildCurrentVersionWhere({ id: donation.transactionId }),
       });
       if (accrualTx) {
-        await tx.transaction.update({
-          where: { versionId: accrualTx.versionId },
-          data: { isDeleted: true, deletedAt: new Date(), deletedBy: cancelledBy },
+        const now = new Date();
+        await tx.transaction.updateMany({
+          where: { versionId: accrualTx.versionId, systemTo: MAX_DATE },
+          data: { validTo: now, systemTo: now, isDeleted: true, deletedAt: now, deletedBy: cancelledBy },
         });
       }
     }
-
-    // Cancel the linked bill
     if (donation.billId) {
       await tx.bill.update({
         where: { id: donation.billId },

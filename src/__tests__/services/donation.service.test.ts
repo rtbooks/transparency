@@ -20,6 +20,7 @@ const mockTx = {
     create: jest.fn(),
     findFirst: jest.fn(),
     update: jest.fn(),
+    updateMany: jest.fn().mockResolvedValue({ count: 1 }),
   },
   bill: {
     create: jest.fn(),
@@ -265,7 +266,8 @@ describe('Donation Service', () => {
       const accrualTx = { id: 'txn-1', versionId: 'v-txn-1', amount: 500 };
       (prisma.donation.findFirst as jest.Mock).mockResolvedValue({ ...baseDonation });
       mockTx.transaction.findFirst.mockResolvedValue(accrualTx);
-      mockTx.transaction.update.mockResolvedValue({});
+      mockTx.transaction.updateMany.mockResolvedValue({ count: 1 });
+      mockTx.transaction.create.mockResolvedValue({});
       mockTx.bill.update.mockResolvedValue({});
       mockTx.donation.update.mockResolvedValue({ ...baseDonation, amount: 750 });
 
@@ -273,11 +275,19 @@ describe('Donation Service', () => {
 
       expect(result.amount).toBe(750);
 
-      // Transaction amount updated
-      expect(mockTx.transaction.update).toHaveBeenCalledWith({
-        where: { versionId: 'v-txn-1' },
-        data: { amount: 750 },
-      });
+      // Old version closed (closeVersion uses updateMany)
+      expect(mockTx.transaction.updateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ versionId: 'v-txn-1' }),
+        })
+      );
+
+      // New version created with updated amount
+      expect(mockTx.transaction.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ amount: 750 }),
+        })
+      );
 
       // Bill amount updated
       expect(mockTx.bill.update).toHaveBeenCalledWith(
@@ -319,7 +329,7 @@ describe('Donation Service', () => {
       const accrualTx = { id: 'txn-1', versionId: 'v-txn-1' };
       (prisma.donation.findFirst as jest.Mock).mockResolvedValue({ ...baseDonation });
       mockTx.transaction.findFirst.mockResolvedValue(accrualTx);
-      mockTx.transaction.update.mockResolvedValue({});
+      mockTx.transaction.updateMany.mockResolvedValue({ count: 1 });
       mockTx.bill.update.mockResolvedValue({});
       mockTx.donation.update.mockResolvedValue({ ...baseDonation, status: 'CANCELLED' });
 
@@ -327,14 +337,16 @@ describe('Donation Service', () => {
 
       expect(result.status).toBe('CANCELLED');
 
-      // Soft-delete transaction
-      expect(mockTx.transaction.update).toHaveBeenCalledWith({
-        where: { versionId: 'v-txn-1' },
-        data: expect.objectContaining({
-          isDeleted: true,
-          deletedBy: 'admin-1',
-        }),
-      });
+      // Soft-delete transaction (temporal: updateMany with closing fields)
+      expect(mockTx.transaction.updateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ versionId: 'v-txn-1' }),
+          data: expect.objectContaining({
+            isDeleted: true,
+            deletedBy: 'admin-1',
+          }),
+        })
+      );
 
       // Cancel bill
       expect(mockTx.bill.update).toHaveBeenCalledWith({

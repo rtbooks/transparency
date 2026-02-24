@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere, closeVersion, buildNewVersionData, MAX_DATE } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
 import type { Prisma } from '@/generated/prisma/client';
 
@@ -102,9 +102,10 @@ export async function PATCH(
             where: buildCurrentVersionWhere({ id: bill.accrualTransactionId }),
           });
           if (accrualTx) {
-            await tx.transaction.update({
-              where: { versionId: accrualTx.versionId },
-              data: { isDeleted: true, deletedAt: new Date(), deletedBy: user.id },
+            const now = new Date();
+            await tx.transaction.updateMany({
+              where: { versionId: accrualTx.versionId, systemTo: MAX_DATE },
+              data: { validTo: now, systemTo: now, isDeleted: true, deletedAt: now, deletedBy: user.id },
             });
           }
         }
@@ -134,9 +135,10 @@ export async function PATCH(
             where: buildCurrentVersionWhere({ id: bill.accrualTransactionId }),
           });
           if (accrualTx) {
-            await tx.transaction.update({
-              where: { versionId: accrualTx.versionId },
-              data: { amount: validated.amount as unknown as Prisma.Decimal },
+            const now = new Date();
+            await closeVersion(tx.transaction, accrualTx.versionId, now, 'transaction');
+            await tx.transaction.create({
+              data: buildNewVersionData(accrualTx, { amount: validated.amount as unknown as Prisma.Decimal } as any, now) as any,
             });
           }
         }
