@@ -288,4 +288,67 @@ describe('Donations API Contract Tests', () => {
       expect(result.success).toBe(false);
     });
   });
+
+  // ── Organization account configuration contract ──────────────────
+
+  describe('Org Account Settings Schema', () => {
+    const OrgUpdateSchema = z.object({
+      donationsAccountId: z.string().nullable().optional(),
+      donationsArAccountId: z.string().nullable().optional(),
+    });
+
+    it('should accept donationsArAccountId for configuring A/R account', () => {
+      expect(
+        OrgUpdateSchema.safeParse({ donationsArAccountId: 'acct-uuid' }).success
+      ).toBe(true);
+    });
+
+    it('should accept null donationsArAccountId to clear it', () => {
+      expect(
+        OrgUpdateSchema.safeParse({ donationsArAccountId: null }).success
+      ).toBe(true);
+    });
+
+    it('should accept both account IDs together', () => {
+      expect(
+        OrgUpdateSchema.safeParse({
+          donationsAccountId: 'revenue-uuid',
+          donationsArAccountId: 'ar-uuid',
+        }).success
+      ).toBe(true);
+    });
+  });
+
+  // ── Bill-to-Donation sync contract ───────────────────────────────
+
+  describe('Bill Payment → Donation Sync', () => {
+    it('payment response should include bill payment fields', () => {
+      const BillPaymentResponseSchema = z.object({
+        id: z.string(),
+        billId: z.string(),
+        transactionId: z.string(),
+        notes: z.string().nullable(),
+        createdAt: z.string(),
+      });
+
+      const mockResponse = {
+        id: 'bp-1',
+        billId: 'bill-1',
+        transactionId: 'txn-1',
+        notes: null,
+        createdAt: '2026-02-25T00:00:00.000Z',
+      };
+
+      expect(BillPaymentResponseSchema.safeParse(mockResponse).success).toBe(true);
+    });
+
+    it('donation status values should be valid after sync', () => {
+      const DonationStatusSchema = z.enum(['PLEDGED', 'PARTIAL', 'RECEIVED', 'CANCELLED']);
+
+      expect(DonationStatusSchema.safeParse('PARTIAL').success).toBe(true);
+      expect(DonationStatusSchema.safeParse('RECEIVED').success).toBe(true);
+      expect(DonationStatusSchema.safeParse('CANCELLED').success).toBe(true);
+      expect(DonationStatusSchema.safeParse('INVALID').success).toBe(false);
+    });
+  });
 });
