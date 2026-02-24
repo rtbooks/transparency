@@ -6,7 +6,7 @@
 import { prisma } from '@/lib/prisma';
 import { TemporalRepository } from '@/lib/temporal/temporal-repository';
 import { buildCurrentVersionWhere, MAX_DATE } from '@/lib/temporal/temporal-utils';
-import type { ProgramSpending, SpendingStatus, SpendingPriority, Prisma } from '@/generated/prisma/client';
+import type { ProgramSpending, SpendingStatus, Prisma } from '@/generated/prisma/client';
 
 const spendingRepo = new TemporalRepository<ProgramSpending>(prisma, 'programSpending');
 
@@ -16,7 +16,6 @@ export interface CreateProgramSpendingInput {
   description: string;
   estimatedAmount: Prisma.Decimal;
   targetDate?: Date | null;
-  priority?: SpendingPriority;
   createdByUserId: string;
 }
 
@@ -26,7 +25,6 @@ export interface UpdateProgramSpendingInput {
   estimatedAmount?: Prisma.Decimal;
   targetDate?: Date | null;
   status?: SpendingStatus;
-  priority?: SpendingPriority;
   completedAt?: Date | null;
 }
 
@@ -45,7 +43,6 @@ export async function createProgramSpending(
       description: input.description,
       estimatedAmount: input.estimatedAmount,
       targetDate: input.targetDate,
-      priority: input.priority || 'MEDIUM',
       status: 'PLANNED',
       createdBy: input.createdByUserId,
       
@@ -93,14 +90,13 @@ export async function findProgramSpendingByStatus(
       status,
     }),
     orderBy: [
-      { priority: 'desc' },
       { targetDate: 'asc' },
     ],
   });
 }
 
 /**
- * Find active (planned or in-progress) spending items
+ * Find active (planned) spending items
  */
 export async function findActiveProgramSpending(
   organizationId: string
@@ -108,12 +104,9 @@ export async function findActiveProgramSpending(
   return await prisma.programSpending.findMany({
     where: buildCurrentVersionWhere({
       organizationId,
-      status: {
-        in: ['PLANNED', 'IN_PROGRESS'],
-      },
+      status: 'PLANNED',
     }),
     orderBy: [
-      { priority: 'desc' },
       { targetDate: 'asc' },
     ],
   });
@@ -140,7 +133,7 @@ export async function updateSpendingStatus(
 ): Promise<ProgramSpending> {
   const updates: UpdateProgramSpendingInput = { status };
   
-  if (status === 'COMPLETED') {
+  if (status === 'PURCHASED') {
     updates.completedAt = new Date();
   }
   
@@ -253,7 +246,7 @@ export async function getSpendingStatistics(organizationId: string) {
   
   // Get actual totals for completed items
   const completedIds = items
-    .filter(p => p.status === 'COMPLETED')
+    .filter(p => p.status === 'PURCHASED')
     .map(p => p.id);
   
   let totalActual = 0;
@@ -268,11 +261,10 @@ export async function getSpendingStatistics(organizationId: string) {
   return {
     total: items.length,
     planned: items.filter(p => p.status === 'PLANNED').length,
-    inProgress: items.filter(p => p.status === 'IN_PROGRESS').length,
-    completed: items.filter(p => p.status === 'COMPLETED').length,
+    purchased: items.filter(p => p.status === 'PURCHASED').length,
     cancelled: items.filter(p => p.status === 'CANCELLED').length,
     totalEstimated: items
-      .filter(p => ['PLANNED', 'IN_PROGRESS'].includes(p.status))
+      .filter(p => p.status === 'PLANNED')
       .reduce((sum, p) => sum + Number(p.estimatedAmount), 0),
     totalActual,
   };

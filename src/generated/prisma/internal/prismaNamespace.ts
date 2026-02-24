@@ -1803,7 +1803,6 @@ export const ProgramSpendingScalarFieldEnum = {
   estimatedAmount: 'estimatedAmount',
   targetDate: 'targetDate',
   status: 'status',
-  priority: 'priority',
   completedAt: 'completedAt',
   previousVersionId: 'previousVersionId',
   validFrom: 'validFrom',
@@ -2217,20 +2216,6 @@ export type EnumSpendingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$P
  * Reference to a field of type 'SpendingStatus[]'
  */
 export type ListEnumSpendingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SpendingStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'SpendingPriority'
- */
-export type EnumSpendingPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SpendingPriority'>
-    
-
-
-/**
- * Reference to a field of type 'SpendingPriority[]'
- */
-export type ListEnumSpendingPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SpendingPriority[]'>
     
 
 

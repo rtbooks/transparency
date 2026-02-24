@@ -11,7 +11,6 @@ const createSchema = z.object({
   description: z.string().default(''),
   estimatedAmount: z.number().positive(),
   targetDate: z.string().nullable().optional(),
-  priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).optional(),
 });
 
 export async function GET(
@@ -51,7 +50,7 @@ export async function GET(
 
     let items;
     if (status) {
-      items = await findProgramSpendingByStatus(organization.id, status as 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED');
+      items = await findProgramSpendingByStatus(organization.id, status as 'PLANNED' | 'PURCHASED' | 'CANCELLED');
     } else {
       items = await findProgramSpendingByOrganization(organization.id);
     }
@@ -135,7 +134,6 @@ export async function POST(
       description: validated.description,
       estimatedAmount: validated.estimatedAmount as unknown as Prisma.Decimal,
       targetDate: validated.targetDate ? new Date(validated.targetDate) : null,
-      priority: validated.priority,
       createdByUserId: user.id,
     });
 

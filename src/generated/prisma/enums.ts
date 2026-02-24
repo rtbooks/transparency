@@ -81,21 +81,11 @@ export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
 
 export const SpendingStatus = {
   PLANNED: 'PLANNED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  COMPLETED: 'COMPLETED',
+  PURCHASED: 'PURCHASED',
   CANCELLED: 'CANCELLED'
 } as const
 
 export type SpendingStatus = (typeof SpendingStatus)[keyof typeof SpendingStatus]
-
-
-export const SpendingPriority = {
-  HIGH: 'HIGH',
-  MEDIUM: 'MEDIUM',
-  LOW: 'LOW'
-} as const
-
-export type SpendingPriority = (typeof SpendingPriority)[keyof typeof SpendingPriority]
 
 
 export const InvitationStatus = {

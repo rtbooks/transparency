@@ -43,7 +43,6 @@ export type ProgramSpendingMinAggregateOutputType = {
   estimatedAmount: runtime.Decimal | null
   targetDate: Date | null
   status: $Enums.SpendingStatus | null
-  priority: $Enums.SpendingPriority | null
   completedAt: Date | null
   previousVersionId: string | null
   validFrom: Date | null
@@ -68,7 +67,6 @@ export type ProgramSpendingMaxAggregateOutputType = {
   estimatedAmount: runtime.Decimal | null
   targetDate: Date | null
   status: $Enums.SpendingStatus | null
-  priority: $Enums.SpendingPriority | null
   completedAt: Date | null
   previousVersionId: string | null
   validFrom: Date | null
@@ -93,7 +91,6 @@ export type ProgramSpendingCountAggregateOutputType = {
   estimatedAmount: number
   targetDate: number
   status: number
-  priority: number
   completedAt: number
   previousVersionId: number
   validFrom: number
@@ -128,7 +125,6 @@ export type ProgramSpendingMinAggregateInputType = {
   estimatedAmount?: true
   targetDate?: true
   status?: true
-  priority?: true
   completedAt?: true
   previousVersionId?: true
   validFrom?: true
@@ -153,7 +149,6 @@ export type ProgramSpendingMaxAggregateInputType = {
   estimatedAmount?: true
   targetDate?: true
   status?: true
-  priority?: true
   completedAt?: true
   previousVersionId?: true
   validFrom?: true
@@ -178,7 +173,6 @@ export type ProgramSpendingCountAggregateInputType = {
   estimatedAmount?: true
   targetDate?: true
   status?: true
-  priority?: true
   completedAt?: true
   previousVersionId?: true
   validFrom?: true
@@ -290,7 +284,6 @@ export type ProgramSpendingGroupByOutputType = {
   estimatedAmount: runtime.Decimal
   targetDate: Date | null
   status: $Enums.SpendingStatus
-  priority: $Enums.SpendingPriority
   completedAt: Date | null
   previousVersionId: string | null
   validFrom: Date
@@ -338,7 +331,6 @@ export type ProgramSpendingWhereInput = {
   estimatedAmount?: Prisma.DecimalFilter<"ProgramSpending"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   targetDate?: Prisma.DateTimeNullableFilter<"ProgramSpending"> | Date | string | null
   status?: Prisma.EnumSpendingStatusFilter<"ProgramSpending"> | $Enums.SpendingStatus
-  priority?: Prisma.EnumSpendingPriorityFilter<"ProgramSpending"> | $Enums.SpendingPriority
   completedAt?: Prisma.DateTimeNullableFilter<"ProgramSpending"> | Date | string | null
   previousVersionId?: Prisma.StringNullableFilter<"ProgramSpending"> | string | null
   validFrom?: Prisma.DateTimeFilter<"ProgramSpending"> | Date | string
@@ -363,7 +355,6 @@ export type ProgramSpendingOrderByWithRelationInput = {
   estimatedAmount?: Prisma.SortOrder
   targetDate?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  priority?: Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
   validFrom?: Prisma.SortOrder
@@ -392,7 +383,6 @@ export type ProgramSpendingWhereUniqueInput = Prisma.AtLeast<{
   estimatedAmount?: Prisma.DecimalFilter<"ProgramSpending"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   targetDate?: Prisma.DateTimeNullableFilter<"ProgramSpending"> | Date | string | null
   status?: Prisma.EnumSpendingStatusFilter<"ProgramSpending"> | $Enums.SpendingStatus
-  priority?: Prisma.EnumSpendingPriorityFilter<"ProgramSpending"> | $Enums.SpendingPriority
   completedAt?: Prisma.DateTimeNullableFilter<"ProgramSpending"> | Date | string | null
   previousVersionId?: Prisma.StringNullableFilter<"ProgramSpending"> | string | null
   validFrom?: Prisma.DateTimeFilter<"ProgramSpending"> | Date | string
@@ -417,7 +407,6 @@ export type ProgramSpendingOrderByWithAggregationInput = {
   estimatedAmount?: Prisma.SortOrder
   targetDate?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  priority?: Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   previousVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
   validFrom?: Prisma.SortOrder
@@ -450,7 +439,6 @@ export type ProgramSpendingScalarWhereWithAggregatesInput = {
   estimatedAmount?: Prisma.DecimalWithAggregatesFilter<"ProgramSpending"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   targetDate?: Prisma.DateTimeNullableWithAggregatesFilter<"ProgramSpending"> | Date | string | null
   status?: Prisma.EnumSpendingStatusWithAggregatesFilter<"ProgramSpending"> | $Enums.SpendingStatus
-  priority?: Prisma.EnumSpendingPriorityWithAggregatesFilter<"ProgramSpending"> | $Enums.SpendingPriority
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ProgramSpending"> | Date | string | null
   previousVersionId?: Prisma.StringNullableWithAggregatesFilter<"ProgramSpending"> | string | null
   validFrom?: Prisma.DateTimeWithAggregatesFilter<"ProgramSpending"> | Date | string
@@ -475,7 +463,6 @@ export type ProgramSpendingCreateInput = {
   estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   targetDate?: Date | string | null
   status?: $Enums.SpendingStatus
-  priority?: $Enums.SpendingPriority
   completedAt?: Date | string | null
   previousVersionId?: string | null
   validFrom?: Date | string
@@ -500,7 +487,6 @@ export type ProgramSpendingUncheckedCreateInput = {
   estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   targetDate?: Date | string | null
   status?: $Enums.SpendingStatus
-  priority?: $Enums.SpendingPriority
   completedAt?: Date | string | null
   previousVersionId?: string | null
   validFrom?: Date | string
@@ -525,7 +511,6 @@ export type ProgramSpendingUpdateInput = {
   estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSpendingStatusFieldUpdateOperationsInput | $Enums.SpendingStatus
-  priority?: Prisma.EnumSpendingPriorityFieldUpdateOperationsInput | $Enums.SpendingPriority
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -550,7 +535,6 @@ export type ProgramSpendingUncheckedUpdateInput = {
   estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSpendingStatusFieldUpdateOperationsInput | $Enums.SpendingStatus
-  priority?: Prisma.EnumSpendingPriorityFieldUpdateOperationsInput | $Enums.SpendingPriority
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -575,7 +559,6 @@ export type ProgramSpendingCreateManyInput = {
   estimatedAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   targetDate?: Date | string | null
   status?: $Enums.SpendingStatus
-  priority?: $Enums.SpendingPriority
   completedAt?: Date | string | null
   previousVersionId?: string | null
   validFrom?: Date | string
@@ -600,7 +583,6 @@ export type ProgramSpendingUpdateManyMutationInput = {
   estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSpendingStatusFieldUpdateOperationsInput | $Enums.SpendingStatus
-  priority?: Prisma.EnumSpendingPriorityFieldUpdateOperationsInput | $Enums.SpendingPriority
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -625,7 +607,6 @@ export type ProgramSpendingUncheckedUpdateManyInput = {
   estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   targetDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSpendingStatusFieldUpdateOperationsInput | $Enums.SpendingStatus
-  priority?: Prisma.EnumSpendingPriorityFieldUpdateOperationsInput | $Enums.SpendingPriority
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   previousVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -655,7 +636,6 @@ export type ProgramSpendingCountOrderByAggregateInput = {
   estimatedAmount?: Prisma.SortOrder
   targetDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  priority?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
@@ -684,7 +664,6 @@ export type ProgramSpendingMaxOrderByAggregateInput = {
   estimatedAmount?: Prisma.SortOrder
   targetDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  priority?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
@@ -709,7 +688,6 @@ export type ProgramSpendingMinOrderByAggregateInput = {
   estimatedAmount?: Prisma.SortOrder
   targetDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  priority?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
   previousVersionId?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
@@ -733,10 +711,6 @@ export type EnumSpendingStatusFieldUpdateOperationsInput = {
   set?: $Enums.SpendingStatus
 }
 
-export type EnumSpendingPriorityFieldUpdateOperationsInput = {
-  set?: $Enums.SpendingPriority
-}
-
 
 
 export type ProgramSpendingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -748,7 +722,6 @@ export type ProgramSpendingSelect<ExtArgs extends runtime.Types.Extensions.Inter
   estimatedAmount?: boolean
   targetDate?: boolean
   status?: boolean
-  priority?: boolean
   completedAt?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
@@ -773,7 +746,6 @@ export type ProgramSpendingSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   estimatedAmount?: boolean
   targetDate?: boolean
   status?: boolean
-  priority?: boolean
   completedAt?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
@@ -798,7 +770,6 @@ export type ProgramSpendingSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   estimatedAmount?: boolean
   targetDate?: boolean
   status?: boolean
-  priority?: boolean
   completedAt?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
@@ -823,7 +794,6 @@ export type ProgramSpendingSelectScalar = {
   estimatedAmount?: boolean
   targetDate?: boolean
   status?: boolean
-  priority?: boolean
   completedAt?: boolean
   previousVersionId?: boolean
   validFrom?: boolean
@@ -839,7 +809,7 @@ export type ProgramSpendingSelectScalar = {
   createdBy?: boolean
 }
 
-export type ProgramSpendingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "organizationId" | "title" | "description" | "estimatedAmount" | "targetDate" | "status" | "priority" | "completedAt" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt" | "createdBy", ExtArgs["result"]["programSpending"]>
+export type ProgramSpendingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "organizationId" | "title" | "description" | "estimatedAmount" | "targetDate" | "status" | "completedAt" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt" | "createdBy", ExtArgs["result"]["programSpending"]>
 
 export type $ProgramSpendingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProgramSpending"
@@ -853,7 +823,6 @@ export type $ProgramSpendingPayload<ExtArgs extends runtime.Types.Extensions.Int
     estimatedAmount: runtime.Decimal
     targetDate: Date | null
     status: $Enums.SpendingStatus
-    priority: $Enums.SpendingPriority
     completedAt: Date | null
     previousVersionId: string | null
     validFrom: Date
@@ -1298,7 +1267,6 @@ export interface ProgramSpendingFieldRefs {
   readonly estimatedAmount: Prisma.FieldRef<"ProgramSpending", 'Decimal'>
   readonly targetDate: Prisma.FieldRef<"ProgramSpending", 'DateTime'>
   readonly status: Prisma.FieldRef<"ProgramSpending", 'SpendingStatus'>
-  readonly priority: Prisma.FieldRef<"ProgramSpending", 'SpendingPriority'>
   readonly completedAt: Prisma.FieldRef<"ProgramSpending", 'DateTime'>
   readonly previousVersionId: Prisma.FieldRef<"ProgramSpending", 'String'>
   readonly validFrom: Prisma.FieldRef<"ProgramSpending", 'DateTime'>

@@ -16,9 +16,7 @@ const SpendingItemSchema = z.object({
   actualTotal: z.number(),
   transactionCount: z.number(),
   targetDate: z.string().nullable(),
-  status: z.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
-  priority: z.enum(['HIGH', 'MEDIUM', 'LOW']),
-  completedAt: z.string().nullable(),
+  status: z.enum(['PLANNED', 'PURCHASED', 'CANCELLED']),
   createdAt: z.string(),
 });
 
@@ -50,8 +48,7 @@ const DetailResponseSchema = SpendingItemSchema.extend({
 const StatisticsResponseSchema = z.object({
   total: z.number(),
   planned: z.number(),
-  inProgress: z.number(),
-  completed: z.number(),
+  purchased: z.number(),
   cancelled: z.number(),
   totalEstimated: z.number(),
   totalActual: z.number(),
@@ -63,7 +60,6 @@ const CreateRequestSchema = z.object({
   description: z.string(),
   estimatedAmount: z.number().positive(),
   targetDate: z.string().nullable().optional(),
-  priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).optional(),
 });
 
 // Request schema for update endpoint (PATCH)
@@ -72,8 +68,7 @@ const UpdateRequestSchema = z.object({
   description: z.string().optional(),
   estimatedAmount: z.number().positive().optional(),
   targetDate: z.string().nullable().optional(),
-  priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).optional(),
-  status: z.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
+  status: z.enum(['PLANNED', 'PURCHASED', 'CANCELLED']).optional(),
 });
 
 // Link transaction request schema
@@ -95,9 +90,7 @@ describe('Program Spending API Contract', () => {
           actualTotal: 2500,
           transactionCount: 2,
           targetDate: '2026-06-01T00:00:00.000Z',
-          status: 'IN_PROGRESS' as const,
-          priority: 'HIGH' as const,
-          completedAt: null,
+          status: 'PURCHASED' as const,
           createdAt: '2026-01-15T10:00:00.000Z',
         },
         {
@@ -110,8 +103,6 @@ describe('Program Spending API Contract', () => {
           transactionCount: 0,
           targetDate: null,
           status: 'PLANNED' as const,
-          priority: 'MEDIUM' as const,
-          completedAt: null,
           createdAt: '2026-02-01T10:00:00.000Z',
         },
       ],
@@ -161,9 +152,7 @@ describe('Program Spending API Contract', () => {
       actualTotal: 2500,
       transactionCount: 2,
       targetDate: '2026-06-01T00:00:00.000Z',
-      status: 'IN_PROGRESS' as const,
-      priority: 'HIGH' as const,
-      completedAt: null,
+      status: 'PURCHASED' as const,
       createdAt: '2026-01-15T10:00:00.000Z',
       linkedTransactions: [
         {
@@ -213,8 +202,7 @@ describe('Program Spending API Contract', () => {
       const mockStats = {
         total: 10,
         planned: 3,
-        inProgress: 4,
-        completed: 2,
+        purchased: 6,
         cancelled: 1,
         totalEstimated: 25000,
         totalActual: 12000,
@@ -227,8 +215,7 @@ describe('Program Spending API Contract', () => {
       const result = StatisticsResponseSchema.safeParse({
         total: 10,
         planned: 3,
-        inProgress: 4,
-        completed: 2,
+        purchased: 6,
         cancelled: 1,
         totalEstimated: 25000,
       });
@@ -243,7 +230,6 @@ describe('Program Spending API Contract', () => {
         description: 'Seeds and tools',
         estimatedAmount: 5000,
         targetDate: '2026-06-01',
-        priority: 'HIGH',
       });
       expect(result.success).toBe(true);
     });
@@ -275,15 +261,6 @@ describe('Program Spending API Contract', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should FAIL with invalid priority', () => {
-      const result = CreateRequestSchema.safeParse({
-        title: 'Test',
-        description: '',
-        estimatedAmount: 100,
-        priority: 'URGENT',
-      });
-      expect(result.success).toBe(false);
-    });
   });
 
   describe('Update Request Schema', () => {
@@ -293,7 +270,7 @@ describe('Program Spending API Contract', () => {
     });
 
     it('should accept status change', () => {
-      const result = UpdateRequestSchema.safeParse({ status: 'IN_PROGRESS' });
+      const result = UpdateRequestSchema.safeParse({ status: 'PURCHASED' });
       expect(result.success).toBe(true);
     });
 

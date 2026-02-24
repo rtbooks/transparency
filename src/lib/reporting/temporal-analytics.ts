@@ -232,8 +232,7 @@ export async function getSpendingStatisticsOverTime(
 ): Promise<Array<{
   date: Date;
   planned: number;
-  inProgress: number;
-  completed: number;
+  purchased: number;
   cancelled: number;
   totalEstimated: number;
 }>> {
@@ -264,8 +263,7 @@ export async function getSpendingStatisticsOverTime(
   return Array.from(dateMap.entries()).map(([dateStr, dayVersions]) => {
     const counts = {
       planned: 0,
-      inProgress: 0,
-      completed: 0,
+      purchased: 0,
       cancelled: 0,
       totalEstimated: 0,
     };
@@ -278,12 +276,8 @@ export async function getSpendingStatisticsOverTime(
           counts.planned++;
           counts.totalEstimated += Number(version.estimatedAmount);
           break;
-        case 'IN_PROGRESS':
-          counts.inProgress++;
-          counts.totalEstimated += Number(version.estimatedAmount);
-          break;
-        case 'COMPLETED':
-          counts.completed++;
+        case 'PURCHASED':
+          counts.purchased++;
           break;
         case 'CANCELLED':
           counts.cancelled++;

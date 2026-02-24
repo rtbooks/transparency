@@ -6,13 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 interface ProgramSpendingFormProps {
   organizationSlug: string;
@@ -21,7 +14,6 @@ interface ProgramSpendingFormProps {
     description: string;
     estimatedAmount: number;
     targetDate: string | null;
-    priority: 'HIGH' | 'MEDIUM' | 'LOW';
   };
   onSuccess: (id?: string) => void;
   onCancel: () => void;
@@ -42,9 +34,6 @@ export function ProgramSpendingForm({
   );
   const [targetDate, setTargetDate] = useState(
     initialData?.targetDate ? initialData.targetDate.split('T')[0] : ''
-  );
-  const [priority, setPriority] = useState<'HIGH' | 'MEDIUM' | 'LOW'>(
-    initialData?.priority || 'MEDIUM'
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,7 +62,6 @@ export function ProgramSpendingForm({
             description: description.trim(),
             estimatedAmount: amount,
             targetDate: targetDate || null,
-            priority,
           }),
         }
       );
@@ -144,20 +132,6 @@ export function ProgramSpendingForm({
             onChange={(e) => setTargetDate(e.target.value)}
           />
         </div>
-      </div>
-
-      <div>
-        <Label>Priority</Label>
-        <Select value={priority} onValueChange={(v) => setPriority(v as 'HIGH' | 'MEDIUM' | 'LOW')}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="HIGH">High</SelectItem>
-            <SelectItem value="MEDIUM">Medium</SelectItem>
-            <SelectItem value="LOW">Low</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="flex justify-end gap-2 pt-2">

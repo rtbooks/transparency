@@ -24,7 +24,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import {
-  ArrowRight,
   Edit2,
   Link2,
   Trash2,
@@ -53,8 +52,7 @@ interface SpendingDetail {
   estimatedAmount: number;
   actualTotal: number;
   targetDate: string | null;
-  status: 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  status: 'PLANNED' | 'PURCHASED' | 'CANCELLED';
   completedAt: string | null;
   createdAt: string;
   linkedTransactions: LinkedTransaction[];
@@ -70,8 +68,7 @@ interface ProgramSpendingDetailProps {
 
 const STATUS_COLORS: Record<string, string> = {
   PLANNED: 'bg-slate-100 text-slate-800',
-  IN_PROGRESS: 'bg-blue-100 text-blue-800',
-  COMPLETED: 'bg-green-100 text-green-800',
+  PURCHASED: 'bg-green-100 text-green-800',
   CANCELLED: 'bg-gray-100 text-gray-500',
 };
 
@@ -98,7 +95,6 @@ export function ProgramSpendingDetail({
   const [editDescription, setEditDescription] = useState('');
   const [editAmount, setEditAmount] = useState('');
   const [editTargetDate, setEditTargetDate] = useState('');
-  const [editPriority, setEditPriority] = useState<'HIGH' | 'MEDIUM' | 'LOW'>('MEDIUM');
 
   const fetchItem = useCallback(async () => {
     try {
@@ -113,7 +109,6 @@ export function ProgramSpendingDetail({
       setEditDescription(data.description);
       setEditAmount(data.estimatedAmount.toString());
       setEditTargetDate(data.targetDate ? data.targetDate.split('T')[0] : '');
-      setEditPriority(data.priority);
     } catch {
       toast({ title: 'Error', description: 'Failed to load details', variant: 'destructive' });
     } finally {
@@ -223,7 +218,6 @@ export function ProgramSpendingDetail({
             description: editDescription.trim(),
             estimatedAmount: parseFloat(editAmount),
             targetDate: editTargetDate || null,
-            priority: editPriority,
           }),
         }
       );
@@ -322,17 +316,6 @@ export function ProgramSpendingDetail({
               <Input id="edit-date" type="date" value={editTargetDate} onChange={(e) => setEditTargetDate(e.target.value)} />
             </div>
           </div>
-          <div>
-            <Label>Priority</Label>
-            <Select value={editPriority} onValueChange={(v) => setEditPriority(v as 'HIGH' | 'MEDIUM' | 'LOW')}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="HIGH">High</SelectItem>
-                <SelectItem value="MEDIUM">Medium</SelectItem>
-                <SelectItem value="LOW">Low</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setEditing(false)}>Cancel</Button>
             <Button onClick={handleSaveEdit} disabled={actionLoading}>
@@ -361,9 +344,6 @@ export function ProgramSpendingDetail({
                 <span className="font-medium">Target Date:</span>{' '}
                 {item.targetDate ? new Date(item.targetDate).toLocaleDateString() : '—'}
               </div>
-              <div>
-                <span className="font-medium">Priority:</span> {item.priority}
-              </div>
             </div>
 
             {/* Progress Bar */}
@@ -388,14 +368,9 @@ export function ProgramSpendingDetail({
                 <Edit2 className="mr-1 h-3 w-3" /> Edit
               </Button>
               {item.status === 'PLANNED' && (
-                <Button size="sm" onClick={() => handleStatusChange('IN_PROGRESS')} disabled={actionLoading}>
-                  <ArrowRight className="mr-1 h-3 w-3" /> Start
-                </Button>
-              )}
-              {(item.status === 'PLANNED' || item.status === 'IN_PROGRESS') && (
                 <>
-                  <Button size="sm" variant="secondary" onClick={() => handleStatusChange('COMPLETED')} disabled={actionLoading}>
-                    Complete
+                  <Button size="sm" onClick={() => handleStatusChange('PURCHASED')} disabled={actionLoading}>
+                    Mark Purchased
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => handleStatusChange('CANCELLED')} disabled={actionLoading}>
                     <X className="mr-1 h-3 w-3" /> Cancel
@@ -414,7 +389,7 @@ export function ProgramSpendingDetail({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="font-medium">Linked Transactions ({item.linkedTransactions.length})</h3>
-          {canEdit && item.status !== 'CANCELLED' && item.status !== 'COMPLETED' && (
+          {canEdit && item.status !== 'CANCELLED' && item.status !== 'PURCHASED' && (
             <Button variant="outline" size="sm" onClick={() => setShowLinkDialog(true)}>
               <Link2 className="mr-1 h-3 w-3" /> Link Transaction
             </Button>

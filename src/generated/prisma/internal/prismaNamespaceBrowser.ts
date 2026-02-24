@@ -246,7 +246,6 @@ export const ProgramSpendingScalarFieldEnum = {
   estimatedAmount: 'estimatedAmount',
   targetDate: 'targetDate',
   status: 'status',
-  priority: 'priority',
   completedAt: 'completedAt',
   previousVersionId: 'previousVersionId',
   validFrom: 'validFrom',

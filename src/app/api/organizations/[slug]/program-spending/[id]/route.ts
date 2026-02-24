@@ -17,8 +17,7 @@ const updateSchema = z.object({
   description: z.string().optional(),
   estimatedAmount: z.number().positive().optional(),
   targetDate: z.string().nullable().optional(),
-  priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).optional(),
-  status: z.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
+  status: z.enum(['PLANNED', 'PURCHASED', 'CANCELLED']).optional(),
 });
 
 async function getAuthContext(slug: string) {
@@ -135,7 +134,6 @@ export async function PATCH(
     if (validated.description !== undefined) updateData.description = validated.description;
     if (validated.estimatedAmount !== undefined) updateData.estimatedAmount = validated.estimatedAmount as unknown as Prisma.Decimal;
     if (validated.targetDate !== undefined) updateData.targetDate = validated.targetDate ? new Date(validated.targetDate) : null;
-    if (validated.priority !== undefined) updateData.priority = validated.priority;
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json({

@@ -63,7 +63,6 @@ describe('ProgramSpending Service', () => {
         description: 'Supplies for community garden',
         estimatedAmount: 5000,
         targetDate: new Date('2026-06-01'),
-        priority: 'MEDIUM',
         status: 'PLANNED',
         createdBy: 'user-1',
       };
@@ -76,7 +75,6 @@ describe('ProgramSpending Service', () => {
         description: 'Supplies for community garden',
         estimatedAmount: 5000 as unknown as import('@/generated/prisma/client').Prisma.Decimal,
         targetDate: new Date('2026-06-01'),
-        priority: 'MEDIUM',
         createdByUserId: 'user-1',
       });
 
@@ -87,32 +85,13 @@ describe('ProgramSpending Service', () => {
           title: 'Community Garden',
           description: 'Supplies for community garden',
           status: 'PLANNED',
-          priority: 'MEDIUM',
-        }),
-      });
-    });
-
-    it('should default priority to MEDIUM', async () => {
-      (prisma.programSpending.create as jest.Mock).mockResolvedValue({ id: 'ps-2' });
-
-      await createProgramSpending({
-        organizationId: 'org-1',
-        title: 'Test',
-        description: '',
-        estimatedAmount: 100 as unknown as import('@/generated/prisma/client').Prisma.Decimal,
-        createdByUserId: 'user-1',
-      });
-
-      expect(prisma.programSpending.create).toHaveBeenCalledWith({
-        data: expect.objectContaining({
-          priority: 'MEDIUM',
         }),
       });
     });
   });
 
   describe('findProgramSpendingByStatus', () => {
-    it('should filter by status and sort by priority desc, targetDate asc', async () => {
+    it('should filter by status and sort by targetDate asc', async () => {
       (prisma.programSpending.findMany as jest.Mock).mockResolvedValue([]);
 
       await findProgramSpendingByStatus('org-1', 'PLANNED');
@@ -123,7 +102,6 @@ describe('ProgramSpending Service', () => {
           status: 'PLANNED',
         }),
         orderBy: [
-          { priority: 'desc' },
           { targetDate: 'asc' },
         ],
       });
@@ -131,14 +109,14 @@ describe('ProgramSpending Service', () => {
   });
 
   describe('findActiveProgramSpending', () => {
-    it('should return only PLANNED and IN_PROGRESS items', async () => {
+    it('should return only PLANNED items', async () => {
       (prisma.programSpending.findMany as jest.Mock).mockResolvedValue([]);
 
       await findActiveProgramSpending('org-1');
 
       expect(prisma.programSpending.findMany).toHaveBeenCalledWith({
         where: expect.objectContaining({
-          status: { in: ['PLANNED', 'IN_PROGRESS'] },
+          status: 'PLANNED',
         }),
         orderBy: expect.any(Array),
       });
@@ -238,9 +216,8 @@ describe('ProgramSpending Service', () => {
     it('should return correct counts and totals', async () => {
       const mockItems = [
         { id: 'ps-1', status: 'PLANNED', estimatedAmount: 1000 },
-        { id: 'ps-2', status: 'IN_PROGRESS', estimatedAmount: 2000 },
-        { id: 'ps-3', status: 'COMPLETED', estimatedAmount: 500 },
-        { id: 'ps-4', status: 'CANCELLED', estimatedAmount: 300 },
+        { id: 'ps-2', status: 'PURCHASED', estimatedAmount: 2000 },
+        { id: 'ps-3', status: 'CANCELLED', estimatedAmount: 300 },
       ];
 
       // getSpendingStatistics calls findProgramSpendingByOrganization
@@ -271,11 +248,10 @@ describe('ProgramSpending Service', () => {
       const stats = await getSpendingStatistics('org-1');
 
       expect(stats.planned).toBe(1);
-      expect(stats.inProgress).toBe(1);
-      expect(stats.completed).toBe(1);
+      expect(stats.purchased).toBe(1);
       expect(stats.cancelled).toBe(1);
-      expect(stats.total).toBe(4);
-      expect(stats.totalEstimated).toBe(3000); // PLANNED + IN_PROGRESS
+      expect(stats.total).toBe(3);
+      expect(stats.totalEstimated).toBe(1000); // Only PLANNED
     });
   });
 });

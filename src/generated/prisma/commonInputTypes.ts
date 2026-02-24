@@ -318,13 +318,6 @@ export type EnumSpendingStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumSpendingStatusFilter<$PrismaModel> | $Enums.SpendingStatus
 }
 
-export type EnumSpendingPriorityFilter<$PrismaModel = never> = {
-  equals?: $Enums.SpendingPriority | Prisma.EnumSpendingPriorityFieldRefInput<$PrismaModel>
-  in?: $Enums.SpendingPriority[] | Prisma.ListEnumSpendingPriorityFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SpendingPriority[] | Prisma.ListEnumSpendingPriorityFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSpendingPriorityFilter<$PrismaModel> | $Enums.SpendingPriority
-}
-
 export type EnumSpendingStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.SpendingStatus | Prisma.EnumSpendingStatusFieldRefInput<$PrismaModel>
   in?: $Enums.SpendingStatus[] | Prisma.ListEnumSpendingStatusFieldRefInput<$PrismaModel>
@@ -333,16 +326,6 @@ export type EnumSpendingStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSpendingStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSpendingStatusFilter<$PrismaModel>
-}
-
-export type EnumSpendingPriorityWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.SpendingPriority | Prisma.EnumSpendingPriorityFieldRefInput<$PrismaModel>
-  in?: $Enums.SpendingPriority[] | Prisma.ListEnumSpendingPriorityFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SpendingPriority[] | Prisma.ListEnumSpendingPriorityFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSpendingPriorityWithAggregatesFilter<$PrismaModel> | $Enums.SpendingPriority
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumSpendingPriorityFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumSpendingPriorityFilter<$PrismaModel>
 }
 
 export type JsonNullableFilter<$PrismaModel = never> =
@@ -869,13 +852,6 @@ export type NestedEnumSpendingStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumSpendingStatusFilter<$PrismaModel> | $Enums.SpendingStatus
 }
 
-export type NestedEnumSpendingPriorityFilter<$PrismaModel = never> = {
-  equals?: $Enums.SpendingPriority | Prisma.EnumSpendingPriorityFieldRefInput<$PrismaModel>
-  in?: $Enums.SpendingPriority[] | Prisma.ListEnumSpendingPriorityFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SpendingPriority[] | Prisma.ListEnumSpendingPriorityFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSpendingPriorityFilter<$PrismaModel> | $Enums.SpendingPriority
-}
-
 export type NestedEnumSpendingStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.SpendingStatus | Prisma.EnumSpendingStatusFieldRefInput<$PrismaModel>
   in?: $Enums.SpendingStatus[] | Prisma.ListEnumSpendingStatusFieldRefInput<$PrismaModel>
@@ -884,16 +860,6 @@ export type NestedEnumSpendingStatusWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSpendingStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSpendingStatusFilter<$PrismaModel>
-}
-
-export type NestedEnumSpendingPriorityWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.SpendingPriority | Prisma.EnumSpendingPriorityFieldRefInput<$PrismaModel>
-  in?: $Enums.SpendingPriority[] | Prisma.ListEnumSpendingPriorityFieldRefInput<$PrismaModel>
-  notIn?: $Enums.SpendingPriority[] | Prisma.ListEnumSpendingPriorityFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumSpendingPriorityWithAggregatesFilter<$PrismaModel> | $Enums.SpendingPriority
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumSpendingPriorityFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumSpendingPriorityFilter<$PrismaModel>
 }
 
 export type NestedJsonNullableFilter<$PrismaModel = never> =

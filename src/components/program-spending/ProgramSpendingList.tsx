@@ -36,8 +36,7 @@ interface SpendingItem {
   actualTotal: number;
   transactionCount: number;
   targetDate: string | null;
-  status: 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  status: 'PLANNED' | 'PURCHASED' | 'CANCELLED';
   completedAt: string | null;
   createdAt: string;
 }
@@ -45,8 +44,7 @@ interface SpendingItem {
 interface Statistics {
   total: number;
   planned: number;
-  inProgress: number;
-  completed: number;
+  purchased: number;
   cancelled: number;
   totalEstimated: number;
   totalActual: number;
@@ -64,21 +62,13 @@ interface ProgramSpendingListProps {
 const STATUS_OPTIONS = [
   { value: 'ALL', label: 'All Statuses' },
   { value: 'PLANNED', label: 'Planned' },
-  { value: 'IN_PROGRESS', label: 'In Progress' },
-  { value: 'COMPLETED', label: 'Completed' },
+  { value: 'PURCHASED', label: 'Purchased' },
   { value: 'CANCELLED', label: 'Cancelled' },
 ];
 
-const PRIORITY_COLORS: Record<string, string> = {
-  HIGH: 'bg-red-100 text-red-800',
-  MEDIUM: 'bg-yellow-100 text-yellow-800',
-  LOW: 'bg-blue-100 text-blue-800',
-};
-
 const STATUS_COLORS: Record<string, string> = {
   PLANNED: 'bg-slate-100 text-slate-800',
-  IN_PROGRESS: 'bg-blue-100 text-blue-800',
-  COMPLETED: 'bg-green-100 text-green-800',
+  PURCHASED: 'bg-green-100 text-green-800',
   CANCELLED: 'bg-gray-100 text-gray-500',
 };
 
@@ -174,18 +164,10 @@ export function ProgramSpendingList({
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">In Progress</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Purchased</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.inProgress}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.completed}</div>
+              <div className="text-2xl font-bold">{stats.purchased}</div>
               <p className="text-xs text-muted-foreground">
                 {formatCurrency(stats.totalActual)} spent
               </p>
@@ -249,7 +231,6 @@ export function ProgramSpendingList({
               <TableHeader>
                 <TableRow>
                   <TableHead>Title</TableHead>
-                  <TableHead>Priority</TableHead>
                   <TableHead className="text-right">Estimated</TableHead>
                   <TableHead className="text-right">Actual</TableHead>
                   <TableHead>Progress</TableHead>
@@ -265,11 +246,6 @@ export function ProgramSpendingList({
                     onClick={() => setSelectedId(item.id)}
                   >
                     <TableCell className="font-medium">{item.title}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={PRIORITY_COLORS[item.priority]}>
-                        {item.priority}
-                      </Badge>
-                    </TableCell>
                     <TableCell className="text-right">
                       {formatCurrency(item.estimatedAmount)}
                     </TableCell>

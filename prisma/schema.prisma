@@ -335,7 +335,6 @@ model ProgramSpending {
 
   // Status
   status   SpendingStatus   @default(PLANNED)
-  priority SpendingPriority @default(MEDIUM)
 
   // Completion
   completedAt DateTime? @map("completed_at")
@@ -383,15 +382,8 @@ model ProgramSpendingTransaction {
 
 enum SpendingStatus {
   PLANNED
-  IN_PROGRESS
-  COMPLETED
+  PURCHASED
   CANCELLED
-}
-
-enum SpendingPriority {
-  HIGH
-  MEDIUM
-  LOW
 }
 
 // ============================================
