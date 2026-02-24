@@ -65,6 +65,7 @@ interface BillListProps {
 }
 
 const STATUS_OPTIONS = [
+  { value: "outstanding", label: "Outstanding" },
   { value: "all", label: "All Statuses" },
   { value: "DRAFT", label: "Draft" },
   { value: "PENDING", label: "Pending" },
@@ -111,7 +112,7 @@ export function BillList({ organizationSlug, directionFilter, refreshKey, accoun
 
   // Filters
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("outstanding");
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -132,7 +133,9 @@ export function BillList({ organizationSlug, directionFilter, refreshKey, accoun
       if (directionFilter) {
         params.append("direction", directionFilter);
       }
-      if (statusFilter && statusFilter !== "all") {
+      if (statusFilter === "outstanding") {
+        params.append("statusNotIn", "PAID,CANCELLED");
+      } else if (statusFilter && statusFilter !== "all") {
         params.append("status", statusFilter);
       }
       if (search) {

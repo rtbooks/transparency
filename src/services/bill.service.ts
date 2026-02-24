@@ -194,6 +194,7 @@ export async function listBills(
   options?: {
     direction?: string;
     status?: string;
+    statusNotIn?: string[];
     contactId?: string;
     search?: string;
     page?: number;
@@ -208,6 +209,7 @@ export async function listBills(
     organizationId: orgId,
     ...(options?.direction && { direction: options.direction }),
     ...(options?.status && { status: options.status }),
+    ...(options?.statusNotIn && { status: { notIn: options.statusNotIn } }),
     ...(options?.contactId && { contactId: options.contactId }),
     ...(options?.search && {
       description: { contains: options.search, mode: 'insensitive' },
