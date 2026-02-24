@@ -1,7 +1,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 import { InviteSuccess } from './InviteSuccess';
 import { ROLE_LABELS } from '@/lib/auth/permissions';
 
@@ -239,9 +239,10 @@ export default async function InvitePage({ params }: InvitePageProps) {
         });
 
         if (existingContact) {
-          await tx.contact.update({
-            where: { versionId: existingContact.versionId },
-            data: { userId: user.id },
+          const now = new Date();
+          await closeVersion(tx.contact, existingContact.versionId, now, 'contact');
+          await tx.contact.create({
+            data: buildNewVersionData(existingContact, { userId: user.id } as any, now) as any,
           });
         }
       }

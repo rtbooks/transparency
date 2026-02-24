@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 import { getTemplate } from '@/lib/templates/account-templates';
 
 export async function POST(
@@ -105,9 +105,10 @@ export async function POST(
             where: buildCurrentVersionWhere({ id: accountId }),
           });
           if (acctToUpdate) {
-            await prisma.account.update({
-              where: { versionId: acctToUpdate.versionId },
-              data: { parentAccountId: parentId },
+            const now = new Date();
+            await closeVersion(prisma.account, acctToUpdate.versionId, now, 'account');
+            await prisma.account.create({
+              data: buildNewVersionData(acctToUpdate, { parentAccountId: parentId } as any, now) as any,
             });
           }
         }

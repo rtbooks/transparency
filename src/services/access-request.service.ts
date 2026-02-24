@@ -5,7 +5,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 import type { AccessRequest, PrismaClient } from '@/generated/prisma/client';
 
 export interface CreateAccessRequestInput {
@@ -207,10 +207,11 @@ async function createDonorMembership(
     });
 
     if (existingContact && !existingContact.userId) {
-      // Link the existing contact to the platform user
-      await tx.contact.update({
-        where: { versionId: existingContact.versionId },
-        data: { userId },
+      // Link the existing contact to the platform user (temporal: close old version, create new)
+      const now = new Date();
+      await closeVersion(tx.contact, existingContact.versionId, now, 'contact');
+      await tx.contact.create({
+        data: buildNewVersionData(existingContact, { userId } as any, now) as any,
       });
     }
   }

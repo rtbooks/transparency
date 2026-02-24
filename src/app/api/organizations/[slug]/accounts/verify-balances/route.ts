@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 import {
   recalculateAccountBalance,
   verifyAccountBalance,
@@ -202,9 +202,10 @@ export async function POST(
         const balanceChanged = Math.abs(oldBalance - calculatedBalance) >= 0.01;
 
         if (balanceChanged) {
-          await prisma.account.update({
-            where: { versionId: account.versionId },
-            data: { currentBalance: calculatedBalance },
+          const now = new Date();
+          await closeVersion(prisma.account, account.versionId, now, 'account');
+          await prisma.account.create({
+            data: buildNewVersionData(account, { currentBalance: calculatedBalance } as any, now) as any,
           });
         }
 
