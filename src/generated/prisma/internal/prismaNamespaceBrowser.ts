@@ -56,8 +56,8 @@ export const ModelName = {
   OrganizationUser: 'OrganizationUser',
   Account: 'Account',
   Transaction: 'Transaction',
-  PlannedPurchase: 'PlannedPurchase',
-  PurchaseImage: 'PurchaseImage',
+  ProgramSpending: 'ProgramSpending',
+  ProgramSpendingTransaction: 'ProgramSpendingTransaction',
   BankAccount: 'BankAccount',
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
@@ -237,7 +237,7 @@ export const TransactionScalarFieldEnum = {
 export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
 
 
-export const PlannedPurchaseScalarFieldEnum = {
+export const ProgramSpendingScalarFieldEnum = {
   versionId: 'versionId',
   id: 'id',
   organizationId: 'organizationId',
@@ -245,11 +245,8 @@ export const PlannedPurchaseScalarFieldEnum = {
   description: 'description',
   estimatedAmount: 'estimatedAmount',
   targetDate: 'targetDate',
-  category: 'category',
   status: 'status',
   priority: 'priority',
-  actualTransactionId: 'actualTransactionId',
-  actualAmount: 'actualAmount',
   completedAt: 'completedAt',
   previousVersionId: 'previousVersionId',
   validFrom: 'validFrom',
@@ -265,18 +262,19 @@ export const PlannedPurchaseScalarFieldEnum = {
   createdBy: 'createdBy'
 } as const
 
-export type PlannedPurchaseScalarFieldEnum = (typeof PlannedPurchaseScalarFieldEnum)[keyof typeof PlannedPurchaseScalarFieldEnum]
+export type ProgramSpendingScalarFieldEnum = (typeof ProgramSpendingScalarFieldEnum)[keyof typeof ProgramSpendingScalarFieldEnum]
 
 
-export const PurchaseImageScalarFieldEnum = {
+export const ProgramSpendingTransactionScalarFieldEnum = {
   id: 'id',
-  plannedPurchaseId: 'plannedPurchaseId',
-  url: 'url',
-  caption: 'caption',
-  uploadedAt: 'uploadedAt'
+  programSpendingId: 'programSpendingId',
+  transactionId: 'transactionId',
+  amount: 'amount',
+  linkedAt: 'linkedAt',
+  linkedBy: 'linkedBy'
 } as const
 
-export type PurchaseImageScalarFieldEnum = (typeof PurchaseImageScalarFieldEnum)[keyof typeof PurchaseImageScalarFieldEnum]
+export type ProgramSpendingTransactionScalarFieldEnum = (typeof ProgramSpendingTransactionScalarFieldEnum)[keyof typeof ProgramSpendingTransactionScalarFieldEnum]
 
 
 export const BankAccountScalarFieldEnum = {

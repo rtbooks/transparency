@@ -79,23 +79,23 @@ export const PaymentMethod = {
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
 
 
-export const PurchaseStatus = {
+export const SpendingStatus = {
   PLANNED: 'PLANNED',
   IN_PROGRESS: 'IN_PROGRESS',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED'
 } as const
 
-export type PurchaseStatus = (typeof PurchaseStatus)[keyof typeof PurchaseStatus]
+export type SpendingStatus = (typeof SpendingStatus)[keyof typeof SpendingStatus]
 
 
-export const PurchasePriority = {
+export const SpendingPriority = {
   HIGH: 'HIGH',
   MEDIUM: 'MEDIUM',
   LOW: 'LOW'
 } as const
 
-export type PurchasePriority = (typeof PurchasePriority)[keyof typeof PurchasePriority]
+export type SpendingPriority = (typeof SpendingPriority)[keyof typeof SpendingPriority]
 
 
 export const InvitationStatus = {

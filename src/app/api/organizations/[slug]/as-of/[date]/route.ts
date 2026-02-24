@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { OrganizationService } from '@/services/organization.service';
 import { AccountService } from '@/services/account.service';
-import { PlannedPurchaseService } from '@/services/planned-purchase.service';
+import { ProgramSpendingService } from '@/services/program-spending.service';
 
 export async function GET(
   request: NextRequest,
@@ -39,8 +39,8 @@ export async function GET(
     // Get accounts as of date
     const accounts = await AccountService.findAsOf(organization.id, asOfDate);
 
-    // Get planned purchases as of date
-    const plannedPurchases = await PlannedPurchaseService.findAsOf(
+    // Get program spending as of date
+    const programSpending = await ProgramSpendingService.findAsOf(
       organization.id,
       asOfDate
     );
@@ -63,12 +63,12 @@ export async function GET(
           validTo: acc.validTo,
         },
       })),
-      plannedPurchases: plannedPurchases.map((pp) => ({
-        ...pp,
+      programSpending: programSpending.map((ps) => ({
+        ...ps,
         versionMetadata: {
-          versionId: pp.versionId,
-          validFrom: pp.validFrom,
-          validTo: pp.validTo,
+          versionId: ps.versionId,
+          validFrom: ps.validFrom,
+          validTo: ps.validTo,
         },
       })),
     });
