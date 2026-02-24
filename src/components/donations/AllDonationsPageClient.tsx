@@ -325,7 +325,7 @@ export function AllDonationsPageClient({
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border bg-white">
+        <div className="overflow-x-auto rounded-lg border bg-white">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -372,9 +372,9 @@ export function AllDonationsPageClient({
                       {new Date(donation.donationDate).toLocaleDateString()}
                     </td>
                     {isAdmin && (
-                      <td className="whitespace-nowrap px-6 py-4 text-sm">
+                      <td className="px-6 py-4 text-sm">
                         {canRecordPayment(donation) && (
-                          <div className="flex gap-1">
+                          <div className="flex gap-1 whitespace-nowrap">
                             <Button
                               variant="ghost"
                               size="sm"
