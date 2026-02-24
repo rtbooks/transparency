@@ -119,7 +119,10 @@ export async function GET(
         where.transactionDate.gte = new Date(startDate);
       }
       if (endDate) {
-        where.transactionDate.lte = new Date(endDate);
+        // End of day: include all transactions on the end date
+        const endOfDay = new Date(endDate);
+        endOfDay.setUTCHours(23, 59, 59, 999);
+        where.transactionDate.lte = endOfDay;
       }
     }
 
