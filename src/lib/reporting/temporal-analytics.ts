@@ -25,14 +25,13 @@ interface MembershipChange {
   changedBy?: string;
 }
 
-interface PurchaseTimeline {
+interface SpendingTimeline {
   id: string;
   description: string;
   events: Array<{
     date: Date;
     status: string;
     estimatedAmount?: number;
-    actualAmount?: number;
     changedBy?: string;
   }>;
 }
@@ -195,51 +194,49 @@ export async function getMembershipChanges(
 }
 
 /**
- * Get planned purchase timeline
+ * Get program spending timeline
  */
-export async function getPurchaseTimeline(
-  purchaseId: string
-): Promise<PurchaseTimeline> {
-  const versions = await prisma.plannedPurchase.findMany({
-    where: { id: purchaseId },
+export async function getSpendingTimeline(
+  spendingId: string
+): Promise<SpendingTimeline> {
+  const versions = await prisma.programSpending.findMany({
+    where: { id: spendingId },
     orderBy: { systemFrom: 'asc' },
   });
 
   if (versions.length === 0) {
-    throw new Error('Planned purchase not found');
+    throw new Error('Program spending not found');
   }
 
   const firstVersion = versions[0];
 
   return {
-    id: purchaseId,
+    id: spendingId,
     description: firstVersion.description,
     events: versions.map((version) => ({
       date: version.systemFrom,
       status: version.status,
       estimatedAmount: version.estimatedAmount ? Number(version.estimatedAmount) : undefined,
-      actualAmount: version.actualAmount ? Number(version.actualAmount) : undefined,
       changedBy: version.changedBy || undefined,
     })),
   };
 }
 
 /**
- * Get purchase statistics over time
+ * Get spending statistics over time
  */
-export async function getPurchaseStatisticsOverTime(
+export async function getSpendingStatisticsOverTime(
   organizationId: string,
   startDate: Date,
   endDate: Date
 ): Promise<Array<{
   date: Date;
   planned: number;
-  inProgress: number;
-  completed: number;
+  purchased: number;
   cancelled: number;
   totalEstimated: number;
 }>> {
-  const versions = await prisma.plannedPurchase.findMany({
+  const versions = await prisma.programSpending.findMany({
     where: {
       organizationId,
       systemFrom: {
@@ -266,8 +263,7 @@ export async function getPurchaseStatisticsOverTime(
   return Array.from(dateMap.entries()).map(([dateStr, dayVersions]) => {
     const counts = {
       planned: 0,
-      inProgress: 0,
-      completed: 0,
+      purchased: 0,
       cancelled: 0,
       totalEstimated: 0,
     };
@@ -280,12 +276,8 @@ export async function getPurchaseStatisticsOverTime(
           counts.planned++;
           counts.totalEstimated += Number(version.estimatedAmount);
           break;
-        case 'IN_PROGRESS':
-          counts.inProgress++;
-          counts.totalEstimated += Number(version.estimatedAmount);
-          break;
-        case 'COMPLETED':
-          counts.completed++;
+        case 'PURCHASED':
+          counts.purchased++;
           break;
         case 'CANCELLED':
           counts.cancelled++;

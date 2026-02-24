@@ -7,7 +7,7 @@ import { AttachmentList, type AttachmentItem } from './AttachmentList';
 
 interface AttachmentSectionProps {
   organizationSlug: string;
-  entityType: 'TRANSACTION' | 'BILL';
+  entityType: 'TRANSACTION' | 'BILL' | 'PROGRAM_SPENDING';
   entityId: string;
   readOnly?: boolean;
 }

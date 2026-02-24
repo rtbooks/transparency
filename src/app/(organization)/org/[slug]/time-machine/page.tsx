@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Building, CreditCard, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
-import type { Organization, Account, PlannedPurchase } from '@/generated/prisma/client';
+import type { Organization, Account, ProgramSpending } from '@/generated/prisma/client';
 
 interface TimeMachinePageProps {
   params: {
@@ -37,7 +37,7 @@ interface HistoricalState {
       validTo: Date;
     };
   }>;
-  plannedPurchases: Array<PlannedPurchase & {
+  programSpending: Array<ProgramSpending & {
     versionMetadata: {
       versionId: string;
       validFrom: Date;
@@ -222,33 +222,33 @@ export default function TimeMachinePage({ params }: TimeMachinePageProps) {
             </CardContent>
           </Card>
 
-          {/* Planned Purchases */}
+          {/* Program Spending */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <DollarSign className="h-5 w-5" />
-                Planned Purchases ({historicalData.plannedPurchases.length})
+                Program Spending ({historicalData.programSpending.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {historicalData.plannedPurchases.length === 0 ? (
+              {historicalData.programSpending.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No planned purchases existed on this date
+                  No program spending existed on this date
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {historicalData.plannedPurchases.map((purchase) => (
+                  {historicalData.programSpending.map((item) => (
                     <div
-                      key={purchase.versionId}
+                      key={item.versionId}
                       className="flex items-center justify-between rounded-lg border p-3"
                     >
                       <div>
-                        <p className="font-medium">{purchase.description}</p>
+                        <p className="font-medium">{item.title}</p>
                         <p className="text-sm text-muted-foreground">
-                          Estimated: ${Number(purchase.estimatedAmount).toFixed(2)}
+                          Estimated: ${Number(item.estimatedAmount).toFixed(2)}
                         </p>
                       </div>
-                      <Badge>{purchase.status}</Badge>
+                      <Badge>{item.status}</Badge>
                     </div>
                   ))}
                 </div>

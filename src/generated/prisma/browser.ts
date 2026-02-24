@@ -43,15 +43,15 @@ export type Account = Prisma.AccountModel
  */
 export type Transaction = Prisma.TransactionModel
 /**
- * Model PlannedPurchase
+ * Model ProgramSpending
  * 
  */
-export type PlannedPurchase = Prisma.PlannedPurchaseModel
+export type ProgramSpending = Prisma.ProgramSpendingModel
 /**
- * Model PurchaseImage
+ * Model ProgramSpendingTransaction
  * 
  */
-export type PurchaseImage = Prisma.PurchaseImageModel
+export type ProgramSpendingTransaction = Prisma.ProgramSpendingTransactionModel
 /**
  * Model BankAccount
  * 

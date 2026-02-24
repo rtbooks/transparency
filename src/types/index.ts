@@ -4,7 +4,7 @@ export type {
   User,
   Transaction,
   Account,
-  PlannedPurchase,
+  ProgramSpending,
   OrganizationUser,
   BankAccount,
 } from "@/generated/prisma/client";
@@ -16,5 +16,5 @@ export {
   UserRole,
   AccountType,
   TransactionType,
-  PurchaseStatus,
+  SpendingStatus,
 } from "@/generated/prisma/client";

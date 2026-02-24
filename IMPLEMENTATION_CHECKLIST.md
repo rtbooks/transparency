@@ -2,8 +2,8 @@
 
 Track your progress as you build the RadBooks platform.
 
-**Last Updated**: February 21, 2026
-**Current Phase**: Phase 14 — Contacts, Bills & Pledges ✅
+**Last Updated**: February 24, 2026
+**Current Phase**: Phase 15 — Program Spending ✅, Campaigns, Attachments
 
 ## Phase 1: Foundation ✅ (Complete!)
 
@@ -116,7 +116,8 @@ Track your progress as you build the RadBooks platform.
 
 - [x] Create organization creation form
 - [x] Build organization settings page
-- [ ] Add logo upload
+- [x] Add logo upload
+- [x] Add organization theming (primary/accent colors)
 - [x] Configure fiscal year settings
 - [x] Create organization slug/URL
 
@@ -263,48 +264,54 @@ Track your progress as you build the RadBooks platform.
 
 ---
 
-## Phase 6: Planned Purchases (Weeks 13-14)
+## Phase 6: Program Spending ✅ (Complete!)
 
-### Planned Purchase CRUD
+_Renamed from "Planned Purchases" to align with IRS 990 terminology_
 
-- [ ] Create planned purchase form
-- [ ] Build planned purchase list view
-- [ ] Implement edit planned purchase
-- [ ] Add delete planned purchase
-- [ ] Create status workflow
+### Program Spending CRUD
+- [x] Create ProgramSpending model with bi-temporal versioning
+- [x] Create program-spending.service.ts with CRUD + temporal versioning
+- [x] Create API routes (GET list, POST, GET/PATCH/DELETE single)
+- [x] Build ProgramSpendingList component with summary cards, filters, progress bars
+- [x] Build ProgramSpendingForm component (create/edit)
+- [x] Build ProgramSpendingDetail modal with inline editing
+- [x] Simplified workflow: Planned → Purchased / Cancelled (no priority)
+- [x] Create migration to rename PlannedPurchase → ProgramSpending
+- [x] Create migration to simplify SpendingStatus enum
 
-### Image Upload
+### Multi-Transaction Linking
+- [x] Create ProgramSpendingTransaction junction table
+- [x] Implement linkTransaction / unlinkTransaction service functions
+- [x] Create transaction link/unlink API routes
+- [x] Build LinkTransactionDialog with transaction search
+- [x] Compute actualTotal as SUM of linked transaction amounts
+- [x] Show funding progress bars (actual vs estimated)
 
-- [ ] Set up Cloudflare R2 (or storage)
-- [ ] Implement image upload form
-- [ ] Add multi-image support
-- [ ] Create image preview
-- [ ] Optimize images on upload
+### Image Upload & Gallery
+- [x] Set up Vercel Blob for file storage (private access)
+- [x] Create attachment.service.ts with upload/download/delete
+- [x] Create attachment API routes with authenticated proxy for private blobs
+- [x] Build ImageGallery component with thumbnail grid and lightbox viewer
+- [x] Display image attachments as photo gallery in detail view
+- [x] Display non-image attachments as file list
 
-### Purchase Gallery
+### Statistics & Reporting
+- [x] Create spending statistics API endpoint
+- [x] Build summary cards (Total, Planned, Purchased, Budget, Actual Spent)
+- [x] Add spending statistics to temporal analytics
+- [x] Create getSpendingStatisticsOverTime function
 
-- [ ] Design gallery layout
-- [ ] Build public gallery view
-- [ ] Add image lightbox
-- [ ] Implement captions
-- [ ] Create before/after view
+### Navigation & Access
+- [x] Add Program Spending to sidebar for all roles (including DONOR)
+- [x] Enforce ORG_ADMIN/PLATFORM_ADMIN for create/edit/delete at API level
+- [x] Add Megaphone icon for Campaigns navigation link
 
-### Purchase Completion
+### Testing
+- [x] Create service unit tests (program-spending.service.test.ts)
+- [x] Create API contract tests (program-spending-api-contract.test.ts)
+- [x] All 414 tests passing
 
-- [ ] Link transaction to planned purchase
-- [ ] Auto-complete on transaction
-- [ ] Show actual vs. estimated cost
-- [ ] Update completion date
-- [ ] Mark as completed
-
-### Progress Tracking
-
-- [ ] Calculate funding progress
-- [ ] Display progress bars
-- [ ] Show total needed vs. raised
-- [ ] Add priority indicators
-
-**Milestone**: Planned purchase tracking complete
+**Milestone**: Program spending tracking complete ✅
 
 ---
 
@@ -590,49 +597,47 @@ Track your progress as you build the RadBooks platform.
 ### Overall Progress
 - **Phase 1 (Foundation)**: ✅ 100% Complete
 - **Phase 2 (Core Ledger)**: ✅ 100% Complete
-- **Phase 3 (Transparency)**: ✅ ~85% Complete (Org users & platform admin done)
+- **Phase 3 (Transparency)**: ✅ ~90% Complete (Org users, platform admin, logo upload, theming done)
 - **Phase 4 (Public Features)**: ✅ Reports & exports complete
+- **Phase 6 (Program Spending)**: ✅ 100% Complete (renamed from Planned Purchases)
 - **Phase 9 (Deployment)**: ✅ Live at radbooks.org (Vercel + Neon)
 - **Phase 11 (Temporal Architecture)**: ✅ 100% Complete
 
 ### Recent Achievements
-- ✅ **Transaction Editing & Voiding** - Full edit/void with audit trail
-  - Bi-temporal versioning on Transaction model (version chain, valid/system time)
-  - Edit transactions with automatic balance reversal and reapplication
-  - Void transactions with required reason and balance reversal
-  - Show voided toggle, Edited/Voided badges in transaction list
-  - 10 service tests covering edit, void, and history operations
-- ✅ **Production Deployment** - Live at [radbooks.org](https://radbooks.org)
-  - Vercel hosting with custom domain
-  - Neon serverless PostgreSQL
-  - Clerk production authentication with dedicated Google OAuth
-- ✅ **Financial Reports UI** - Complete reporting interface
-  - Income Statement with comparative prior periods
-  - Balance Sheet with accounting equation validation
-  - Financial Dashboard with recharts visualizations
-  - Period selector (Year/Quarter/Month) with fiscal year awareness
-  - CSV export and Print/PDF support
-  - 18 unit tests for fiscal period calculations
-- ✅ **Temporal Data Architecture** - Complete bi-temporal versioning system
-  - Bi-temporal fields on all mutable financial entities
-  - Complete audit trails with version history
-  - Point-in-time queries (as-of-date)
-  - Temporal financial reports (balance sheet, income statement, cash flow)
-  - Analytics with change tracking
-  - 77 unit tests with 100% pass rate
-  - Full API and UI support
-- ✅ **Platform Admin Architecture Refactor** - Decoupled from organization membership
-- ✅ Comprehensive navigation system with role-based links
-- ✅ Organization user management with role assignment and removal
-- ✅ User invitation system with email-based invites
-- ✅ Platform admin dashboard with organization and user management
-- ✅ Organization routes moved to /org/[slug] (resolved routing conflicts)
-- ✅ Prisma 7 upgrade with custom client output location
+- ✅ **Program Spending** — Full feature replacing Planned Purchases
+  - Renamed model/table/enums to align with IRS 990 terminology
+  - Simplified workflow: Planned → Purchased / Cancelled (removed priority)
+  - Multi-transaction linking with junction table
+  - Image gallery with lightbox for uploaded attachments
+  - Summary cards, progress bars, statistics endpoint
+  - 33 new tests (service + API contract), all 414 tests passing
+- ✅ **Attachments System** — Vercel Blob private store integration
+  - Upload/download/delete with authenticated proxy endpoints
+  - Support for TRANSACTION, BILL, PROGRAM_SPENDING entity types
+  - Private blob access with Bearer token authentication
+- ✅ **Campaigns Feature** — Fundraising campaigns for organizations
+  - Campaign CRUD with goal tracking and progress display
+  - Default account configuration for automated accounting
+  - Visible to all organization roles including DONOR
+- ✅ **Organization Theming** — Custom branding per organization
+  - Logo upload via Vercel Blob (private store)
+  - Primary and accent color customization
+  - Theme applied to navigation and UI elements
+- ✅ **Dashboard Redesign** — Improved organization dashboard
+  - Current assets/liabilities display instead of account counts
+  - Last 30-day revenue/expenses summary
+  - Recent transactions with account names (not codes)
+  - Correct debit/credit arrow direction for transfers
+- ✅ **Bills Improvements** — UX and workflow refinements
+  - Default filter to outstanding bills (excludes Paid/Cancelled)
+  - Type filter changed from toggle buttons to dropdown
+  - Header simplified to "Bills"
+  - Bill payment transaction descriptions cleaned up
 
 ### Current Focus
 - 🎯 **Production**: Live at radbooks.org — monitoring and stabilizing
-- **Next Tasks**: Stripe donation processing, GRIT Hoops onboarding
-- **After**: Donor features, beta testing with real users
+- **Recent**: Program Spending feature, Campaigns, Dashboard redesign, Bills UX
+- **Next Tasks**: Stripe donation processing, Donor features, GRIT Hoops onboarding
 
 ### Git Branches
 - `main` - Production-ready code deployed to radbooks.org
@@ -644,9 +649,9 @@ Track your progress as you build the RadBooks platform.
 - Visit /org/[slug]/reports/dashboard — Charts and visualizations
 - Visit /org/[slug]/audit-trail — View complete change log
 - Visit /org/[slug]/time-machine — Browse historical states
-- Run tests: `npm test` (265 tests passing)
+- Run tests: `npm test` (414 tests passing)
 
-**Last Updated**: February 20, 2026
+**Last Updated**: February 24, 2026
 
 ---
 
@@ -657,7 +662,7 @@ Track your progress as you build the RadBooks platform.
 - [x] Add temporal fields to Organization model
 - [x] Add temporal fields to Account model
 - [x] Add temporal fields to OrganizationUser model
-- [x] Add temporal fields to PlannedPurchase model
+- [x] Add temporal fields to ProgramSpending model
 - [x] Create migration with backfill logic
 - [x] Add temporal indexes for performance
 - [x] Apply migration to development database
@@ -682,7 +687,7 @@ Track your progress as you build the RadBooks platform.
 - [x] Create organization.service.ts
 - [x] Create account.service.ts
 - [x] Create organization-user.service.ts
-- [x] Create planned-purchase.service.ts
+- [x] Create program-spending.service.ts
 - [x] Update API routes to use services
 - [x] Ensure all updates create versions
 - [x] Add audit trail tracking (changedBy)

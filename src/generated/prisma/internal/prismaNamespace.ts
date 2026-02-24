@@ -389,8 +389,8 @@ export const ModelName = {
   OrganizationUser: 'OrganizationUser',
   Account: 'Account',
   Transaction: 'Transaction',
-  PlannedPurchase: 'PlannedPurchase',
-  PurchaseImage: 'PurchaseImage',
+  ProgramSpending: 'ProgramSpending',
+  ProgramSpendingTransaction: 'ProgramSpendingTransaction',
   BankAccount: 'BankAccount',
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
@@ -415,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "plannedPurchase" | "purchaseImage" | "bankAccount" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "contact" | "bill" | "billPayment" | "attachment"
+    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "contact" | "bill" | "billPayment" | "attachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -789,151 +789,151 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    PlannedPurchase: {
-      payload: Prisma.$PlannedPurchasePayload<ExtArgs>
-      fields: Prisma.PlannedPurchaseFieldRefs
+    ProgramSpending: {
+      payload: Prisma.$ProgramSpendingPayload<ExtArgs>
+      fields: Prisma.ProgramSpendingFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.PlannedPurchaseFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedPurchasePayload> | null
+          args: Prisma.ProgramSpendingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.PlannedPurchaseFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedPurchasePayload>
+          args: Prisma.ProgramSpendingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingPayload>
         }
         findFirst: {
-          args: Prisma.PlannedPurchaseFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedPurchasePayload> | null
+          args: Prisma.ProgramSpendingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.PlannedPurchaseFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedPurchasePayload>
+          args: Prisma.ProgramSpendingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingPayload>
         }
         findMany: {
-          args: Prisma.PlannedPurchaseFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedPurchasePayload>[]
+          args: Prisma.ProgramSpendingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingPayload>[]
         }
         create: {
-          args: Prisma.PlannedPurchaseCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedPurchasePayload>
+          args: Prisma.ProgramSpendingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingPayload>
         }
         createMany: {
-          args: Prisma.PlannedPurchaseCreateManyArgs<ExtArgs>
+          args: Prisma.ProgramSpendingCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.PlannedPurchaseCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedPurchasePayload>[]
+          args: Prisma.ProgramSpendingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingPayload>[]
         }
         delete: {
-          args: Prisma.PlannedPurchaseDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedPurchasePayload>
+          args: Prisma.ProgramSpendingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingPayload>
         }
         update: {
-          args: Prisma.PlannedPurchaseUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedPurchasePayload>
+          args: Prisma.ProgramSpendingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingPayload>
         }
         deleteMany: {
-          args: Prisma.PlannedPurchaseDeleteManyArgs<ExtArgs>
+          args: Prisma.ProgramSpendingDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.PlannedPurchaseUpdateManyArgs<ExtArgs>
+          args: Prisma.ProgramSpendingUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.PlannedPurchaseUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedPurchasePayload>[]
+          args: Prisma.ProgramSpendingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingPayload>[]
         }
         upsert: {
-          args: Prisma.PlannedPurchaseUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedPurchasePayload>
+          args: Prisma.ProgramSpendingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingPayload>
         }
         aggregate: {
-          args: Prisma.PlannedPurchaseAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregatePlannedPurchase>
+          args: Prisma.ProgramSpendingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProgramSpending>
         }
         groupBy: {
-          args: Prisma.PlannedPurchaseGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PlannedPurchaseGroupByOutputType>[]
+          args: Prisma.ProgramSpendingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProgramSpendingGroupByOutputType>[]
         }
         count: {
-          args: Prisma.PlannedPurchaseCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PlannedPurchaseCountAggregateOutputType> | number
+          args: Prisma.ProgramSpendingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProgramSpendingCountAggregateOutputType> | number
         }
       }
     }
-    PurchaseImage: {
-      payload: Prisma.$PurchaseImagePayload<ExtArgs>
-      fields: Prisma.PurchaseImageFieldRefs
+    ProgramSpendingTransaction: {
+      payload: Prisma.$ProgramSpendingTransactionPayload<ExtArgs>
+      fields: Prisma.ProgramSpendingTransactionFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.PurchaseImageFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchaseImagePayload> | null
+          args: Prisma.ProgramSpendingTransactionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingTransactionPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.PurchaseImageFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchaseImagePayload>
+          args: Prisma.ProgramSpendingTransactionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingTransactionPayload>
         }
         findFirst: {
-          args: Prisma.PurchaseImageFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchaseImagePayload> | null
+          args: Prisma.ProgramSpendingTransactionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingTransactionPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.PurchaseImageFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchaseImagePayload>
+          args: Prisma.ProgramSpendingTransactionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingTransactionPayload>
         }
         findMany: {
-          args: Prisma.PurchaseImageFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchaseImagePayload>[]
+          args: Prisma.ProgramSpendingTransactionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingTransactionPayload>[]
         }
         create: {
-          args: Prisma.PurchaseImageCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchaseImagePayload>
+          args: Prisma.ProgramSpendingTransactionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingTransactionPayload>
         }
         createMany: {
-          args: Prisma.PurchaseImageCreateManyArgs<ExtArgs>
+          args: Prisma.ProgramSpendingTransactionCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.PurchaseImageCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchaseImagePayload>[]
+          args: Prisma.ProgramSpendingTransactionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingTransactionPayload>[]
         }
         delete: {
-          args: Prisma.PurchaseImageDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchaseImagePayload>
+          args: Prisma.ProgramSpendingTransactionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingTransactionPayload>
         }
         update: {
-          args: Prisma.PurchaseImageUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchaseImagePayload>
+          args: Prisma.ProgramSpendingTransactionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingTransactionPayload>
         }
         deleteMany: {
-          args: Prisma.PurchaseImageDeleteManyArgs<ExtArgs>
+          args: Prisma.ProgramSpendingTransactionDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.PurchaseImageUpdateManyArgs<ExtArgs>
+          args: Prisma.ProgramSpendingTransactionUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.PurchaseImageUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchaseImagePayload>[]
+          args: Prisma.ProgramSpendingTransactionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingTransactionPayload>[]
         }
         upsert: {
-          args: Prisma.PurchaseImageUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchaseImagePayload>
+          args: Prisma.ProgramSpendingTransactionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgramSpendingTransactionPayload>
         }
         aggregate: {
-          args: Prisma.PurchaseImageAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregatePurchaseImage>
+          args: Prisma.ProgramSpendingTransactionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProgramSpendingTransaction>
         }
         groupBy: {
-          args: Prisma.PurchaseImageGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PurchaseImageGroupByOutputType>[]
+          args: Prisma.ProgramSpendingTransactionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProgramSpendingTransactionGroupByOutputType>[]
         }
         count: {
-          args: Prisma.PurchaseImageCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PurchaseImageCountAggregateOutputType> | number
+          args: Prisma.ProgramSpendingTransactionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProgramSpendingTransactionCountAggregateOutputType> | number
         }
       }
     }
@@ -1794,7 +1794,7 @@ export const TransactionScalarFieldEnum = {
 export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
 
 
-export const PlannedPurchaseScalarFieldEnum = {
+export const ProgramSpendingScalarFieldEnum = {
   versionId: 'versionId',
   id: 'id',
   organizationId: 'organizationId',
@@ -1802,11 +1802,7 @@ export const PlannedPurchaseScalarFieldEnum = {
   description: 'description',
   estimatedAmount: 'estimatedAmount',
   targetDate: 'targetDate',
-  category: 'category',
   status: 'status',
-  priority: 'priority',
-  actualTransactionId: 'actualTransactionId',
-  actualAmount: 'actualAmount',
   completedAt: 'completedAt',
   previousVersionId: 'previousVersionId',
   validFrom: 'validFrom',
@@ -1822,18 +1818,19 @@ export const PlannedPurchaseScalarFieldEnum = {
   createdBy: 'createdBy'
 } as const
 
-export type PlannedPurchaseScalarFieldEnum = (typeof PlannedPurchaseScalarFieldEnum)[keyof typeof PlannedPurchaseScalarFieldEnum]
+export type ProgramSpendingScalarFieldEnum = (typeof ProgramSpendingScalarFieldEnum)[keyof typeof ProgramSpendingScalarFieldEnum]
 
 
-export const PurchaseImageScalarFieldEnum = {
+export const ProgramSpendingTransactionScalarFieldEnum = {
   id: 'id',
-  plannedPurchaseId: 'plannedPurchaseId',
-  url: 'url',
-  caption: 'caption',
-  uploadedAt: 'uploadedAt'
+  programSpendingId: 'programSpendingId',
+  transactionId: 'transactionId',
+  amount: 'amount',
+  linkedAt: 'linkedAt',
+  linkedBy: 'linkedBy'
 } as const
 
-export type PurchaseImageScalarFieldEnum = (typeof PurchaseImageScalarFieldEnum)[keyof typeof PurchaseImageScalarFieldEnum]
+export type ProgramSpendingTransactionScalarFieldEnum = (typeof ProgramSpendingTransactionScalarFieldEnum)[keyof typeof ProgramSpendingTransactionScalarFieldEnum]
 
 
 export const BankAccountScalarFieldEnum = {
@@ -2209,30 +2206,16 @@ export type ListEnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
- * Reference to a field of type 'PurchaseStatus'
+ * Reference to a field of type 'SpendingStatus'
  */
-export type EnumPurchaseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PurchaseStatus'>
+export type EnumSpendingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SpendingStatus'>
     
 
 
 /**
- * Reference to a field of type 'PurchaseStatus[]'
+ * Reference to a field of type 'SpendingStatus[]'
  */
-export type ListEnumPurchaseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PurchaseStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'PurchasePriority'
- */
-export type EnumPurchasePriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PurchasePriority'>
-    
-
-
-/**
- * Reference to a field of type 'PurchasePriority[]'
- */
-export type ListEnumPurchasePriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PurchasePriority[]'>
+export type ListEnumSpendingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SpendingStatus[]'>
     
 
 
@@ -2475,8 +2458,8 @@ export type GlobalOmitConfig = {
   organizationUser?: Prisma.OrganizationUserOmit
   account?: Prisma.AccountOmit
   transaction?: Prisma.TransactionOmit
-  plannedPurchase?: Prisma.PlannedPurchaseOmit
-  purchaseImage?: Prisma.PurchaseImageOmit
+  programSpending?: Prisma.ProgramSpendingOmit
+  programSpendingTransaction?: Prisma.ProgramSpendingTransactionOmit
   bankAccount?: Prisma.BankAccountOmit
   auditLog?: Prisma.AuditLogOmit
   invitation?: Prisma.InvitationOmit
