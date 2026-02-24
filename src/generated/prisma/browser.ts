@@ -78,6 +78,11 @@ export type AccessRequest = Prisma.AccessRequestModel
  */
 export type Campaign = Prisma.CampaignModel
 /**
+ * Model Donation
+ * 
+ */
+export type Donation = Prisma.DonationModel
+/**
  * Model Contact
  * 
  */

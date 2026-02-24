@@ -9,6 +9,7 @@ type AnalyticsEvents = {
   pledge_created: { amount: number; orgSlug: string; campaignId?: string };
   pledge_updated: { orgSlug: string };
   pledge_cancelled: { orgSlug: string };
+  donation_created: { type: string; amount: number; orgSlug: string; campaignId?: string };
   bill_created: { direction: string; amount: number; orgSlug: string };
   bill_paid: { amount: number; orgSlug: string };
   transaction_created: { amount: number; type: string; orgSlug: string };

@@ -5,6 +5,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { getCampaignDonationSummary } from '@/services/donation.service';
 import type { Campaign } from '@/generated/prisma/client';
 
 export interface CreateCampaignInput {
@@ -152,34 +153,22 @@ export async function getCampaignById(
 }
 
 /**
- * Calculate the raised amount for a campaign from RECEIVABLE bills
- * that target the campaign's linked account.
+ * Calculate the raised amount for a campaign from the Donation table.
  */
 async function getCampaignProgress(
   campaign: Campaign
 ): Promise<{ amountRaised: number; progressPercent: number | null; donationCount: number }> {
-  // Sum INCOME transactions that credit the campaign's account (accrual entries from pledges/donations).
-  // Payment transactions are type TRANSFER and won't match.
-  const txResult = await prisma.transaction.aggregate({
-    where: buildCurrentVersionWhere({
-      organizationId: campaign.organizationId,
-      creditAccountId: campaign.accountId,
-      type: 'INCOME',
-    }),
-    _sum: { amount: true },
-    _count: { id: true },
-  });
+  const summary = await getCampaignDonationSummary(campaign.id);
 
-  const amountRaised = Number(txResult._sum.amount || 0);
   const targetAmount = campaign.targetAmount ? Number(campaign.targetAmount) : null;
   const progressPercent = targetAmount && targetAmount > 0
-    ? Math.min(Math.round((amountRaised / targetAmount) * 100), 100)
+    ? Math.min(Math.round((summary.totalPledged / targetAmount) * 100), 100)
     : null;
 
   return {
-    amountRaised,
+    amountRaised: summary.totalPledged,
     progressPercent,
-    donationCount: txResult._count.id,
+    donationCount: summary.donationCount,
   };
 }
 

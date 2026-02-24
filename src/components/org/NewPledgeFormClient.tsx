@@ -18,17 +18,18 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Loader2, CheckCircle, Target } from 'lucide-react';
+import { Loader2, CheckCircle, Target, Gift, CalendarClock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils/account-tree';
 
-const pledgeSchema = z.object({
+const donationSchema = z.object({
   amount: z.number().positive('Amount must be positive'),
   description: z.string().min(1, 'Please provide a description'),
+  donorMessage: z.string().optional(),
   dueDate: z.string().optional(),
 });
 
-type PledgeFormData = z.infer<typeof pledgeSchema>;
+type DonationFormData = z.infer<typeof donationSchema>;
 
 interface NewPledgeFormClientProps {
   organizationSlug: string;
@@ -44,7 +45,8 @@ export function NewPledgeFormClient({
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pledgeCreated, setPledgeCreated] = useState(false);
+  const [donationCreated, setDonationCreated] = useState(false);
+  const [donationType, setDonationType] = useState<'PLEDGE' | 'ONE_TIME'>('PLEDGE');
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
@@ -66,28 +68,31 @@ export function NewPledgeFormClient({
     fetchCampaigns();
   }, [organizationSlug]);
 
-  const form = useForm<PledgeFormData>({
-    resolver: zodResolver(pledgeSchema),
+  const form = useForm<DonationFormData>({
+    resolver: zodResolver(donationSchema),
     defaultValues: {
       amount: 0,
       description: '',
+      donorMessage: '',
       dueDate: '',
     },
   });
 
-  const onSubmit = async (data: PledgeFormData) => {
+  const onSubmit = async (data: DonationFormData) => {
     try {
       setIsSubmitting(true);
 
       const response = await fetch(
-        `/api/organizations/${organizationSlug}/donations/pledge`,
+        `/api/organizations/${organizationSlug}/donations`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            type: donationType,
             amount: data.amount,
             description: data.description,
-            dueDate: data.dueDate || null,
+            donorMessage: data.donorMessage || undefined,
+            dueDate: donationType === 'PLEDGE' ? (data.dueDate || null) : null,
             campaignId: selectedCampaignId || null,
           }),
         }
@@ -95,25 +100,28 @@ export function NewPledgeFormClient({
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create pledge');
+        throw new Error(error.error || 'Failed to create donation');
       }
 
-      setPledgeCreated(true);
-      trackEvent('pledge_created', {
+      setDonationCreated(true);
+      trackEvent('donation_created', {
+        type: donationType,
         amount: data.amount,
         orgSlug: organizationSlug,
         campaignId: selectedCampaignId || undefined,
       });
       toast({
-        title: 'Pledge Created!',
-        description: 'Your donation pledge has been recorded.',
+        title: donationType === 'PLEDGE' ? 'Pledge Created!' : 'Donation Recorded!',
+        description: donationType === 'PLEDGE'
+          ? 'Your donation pledge has been recorded.'
+          : 'Your one-time donation has been recorded. Thank you!',
       });
     } catch (error) {
-      console.error('Error creating pledge:', error);
+      console.error('Error creating donation:', error);
       toast({
         title: 'Error',
         description:
-          error instanceof Error ? error.message : 'Failed to create pledge',
+          error instanceof Error ? error.message : 'Failed to create donation',
         variant: 'destructive',
       });
     } finally {
@@ -121,19 +129,19 @@ export function NewPledgeFormClient({
     }
   };
 
-  if (pledgeCreated) {
+  if (donationCreated) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="rounded-lg border bg-white p-8 text-center">
           <CheckCircle className="mx-auto h-16 w-16 text-green-600" />
           <h2 className="mt-4 text-2xl font-bold text-gray-900">
-            Pledge Created Successfully!
+            {donationType === 'PLEDGE' ? 'Pledge Created Successfully!' : 'Donation Recorded!'}
           </h2>
           <p className="mt-2 text-gray-600">
-            Thank you for your pledge to {organizationName}.
+            Thank you for your {donationType === 'PLEDGE' ? 'pledge' : 'donation'} to {organizationName}.
           </p>
 
-          {paymentInstructions && (
+          {donationType === 'PLEDGE' && paymentInstructions && (
             <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-6 text-left">
               <h3 className="mb-2 font-semibold text-blue-900">
                 How to Submit Your Payment
@@ -144,7 +152,7 @@ export function NewPledgeFormClient({
             </div>
           )}
 
-          {!paymentInstructions && (
+          {donationType === 'PLEDGE' && !paymentInstructions && (
             <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-6 text-left">
               <p className="text-sm text-gray-600">
                 Please contact the organization for payment submission details.
@@ -159,8 +167,8 @@ export function NewPledgeFormClient({
             >
               View My Donations
             </Button>
-            <Button onClick={() => setPledgeCreated(false)}>
-              Create Another Pledge
+            <Button onClick={() => setDonationCreated(false)}>
+              Create Another
             </Button>
           </div>
         </div>
@@ -171,13 +179,50 @@ export function NewPledgeFormClient({
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">New Donation Pledge</h1>
+        <h1 className="text-3xl font-bold text-gray-900">New Donation</h1>
         <p className="mt-2 text-gray-600">
-          Pledge a donation to {organizationName}
+          Support {organizationName} with a donation or pledge
         </p>
       </div>
 
       <div className="rounded-lg border bg-white p-6">
+        {/* Donation Type Toggle */}
+        <div className="mb-6 space-y-3">
+          <label className="text-sm font-medium">Donation Type</label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setDonationType('ONE_TIME')}
+              className={`flex items-center gap-3 rounded-lg border p-4 text-left transition-colors ${
+                donationType === 'ONE_TIME'
+                  ? 'border-green-500 bg-green-50 ring-2 ring-green-200'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <Gift className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="font-medium text-gray-900">One-Time Donation</p>
+                <p className="text-xs text-gray-500">Immediate contribution</p>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setDonationType('PLEDGE')}
+              className={`flex items-center gap-3 rounded-lg border p-4 text-left transition-colors ${
+                donationType === 'PLEDGE'
+                  ? 'border-green-500 bg-green-50 ring-2 ring-green-200'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <CalendarClock className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="font-medium text-gray-900">Pledge</p>
+                <p className="text-xs text-gray-500">Promise to pay later</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Campaign Picker */}
@@ -246,7 +291,7 @@ export function NewPledgeFormClient({
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pledge Amount ($)</FormLabel>
+                  <FormLabel>Amount ($)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -258,7 +303,9 @@ export function NewPledgeFormClient({
                     />
                   </FormControl>
                   <FormDescription>
-                    The amount you intend to donate
+                    {donationType === 'PLEDGE'
+                      ? 'The amount you intend to donate'
+                      : 'The amount you are donating now'}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -273,7 +320,7 @@ export function NewPledgeFormClient({
                   <FormLabel>Description / Purpose</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="e.g., Annual giving pledge, Capital campaign contribution..."
+                      placeholder="e.g., Annual giving, Capital campaign contribution..."
                       rows={3}
                       {...field}
                     />
@@ -288,20 +335,40 @@ export function NewPledgeFormClient({
 
             <FormField
               control={form.control}
-              name="dueDate"
+              name="donorMessage"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Target Date (Optional)</FormLabel>
+                  <FormLabel>Personal Message (Optional)</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Textarea
+                      placeholder="A message to the organization..."
+                      rows={2}
+                      {...field}
+                    />
                   </FormControl>
-                  <FormDescription>
-                    When you plan to fulfill this pledge
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {donationType === 'PLEDGE' && (
+              <FormField
+                control={form.control}
+                name="dueDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Target Date (Optional)</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      When you plan to fulfill this pledge
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <div className="flex gap-3 pt-4">
               <Button
@@ -316,7 +383,7 @@ export function NewPledgeFormClient({
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Create Pledge
+                {donationType === 'PLEDGE' ? 'Create Pledge' : 'Submit Donation'}
               </Button>
             </div>
           </form>

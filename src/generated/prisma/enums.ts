@@ -125,6 +125,24 @@ export const CampaignStatus = {
 export type CampaignStatus = (typeof CampaignStatus)[keyof typeof CampaignStatus]
 
 
+export const DonationType = {
+  ONE_TIME: 'ONE_TIME',
+  PLEDGE: 'PLEDGE'
+} as const
+
+export type DonationType = (typeof DonationType)[keyof typeof DonationType]
+
+
+export const DonationStatus = {
+  PLEDGED: 'PLEDGED',
+  PARTIAL: 'PARTIAL',
+  RECEIVED: 'RECEIVED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type DonationStatus = (typeof DonationStatus)[keyof typeof DonationStatus]
+
+
 export const ContactType = {
   INDIVIDUAL: 'INDIVIDUAL',
   ORGANIZATION: 'ORGANIZATION'

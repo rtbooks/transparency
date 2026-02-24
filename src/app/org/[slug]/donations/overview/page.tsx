@@ -1,54 +1,39 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
-import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
+import { prisma } from '@/lib/prisma';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { AllDonationsPageClient } from '@/components/donations/AllDonationsPageClient';
 
-interface AllDonationsPageProps {
+export default async function DonationsOverviewPage({
+  params,
+}: {
   params: Promise<{ slug: string }>;
-}
-
-export default async function AllDonationsPage({ params }: AllDonationsPageProps) {
+}) {
   const { slug } = await params;
   const { userId: clerkUserId } = await auth();
 
   if (!clerkUserId) {
-    redirect('/login');
+    redirect('/sign-in');
   }
 
-  const { organization, userAccess } = await checkOrganizationAccess(slug, clerkUserId, false);
+  const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
+  if (!user) redirect('/sign-in');
 
-  if (!userAccess) {
-    return (
-      <OrganizationLayoutWrapper organizationSlug={slug}>
-        <div className="flex min-h-screen items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900">Access Denied</h1>
-            <p className="mt-2 text-gray-600">
-              You need to be a member of this organization to view donations.
-            </p>
-          </div>
-        </div>
-      </OrganizationLayoutWrapper>
-    );
-  }
-
-  const verificationMessage = VerificationStatusMessage({
-    status: organization.verificationStatus,
-    organizationName: organization.name,
-    notes: organization.verificationNotes,
+  const organization = await prisma.organization.findFirst({
+    where: buildCurrentVersionWhere({ slug }),
   });
+  if (!organization) redirect('/');
 
-  if (verificationMessage) {
-    return verificationMessage;
-  }
+  // Verify membership
+  const orgUsers = await prisma.organizationUser.findMany({
+    where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+  });
+  if (!orgUsers[0]) redirect('/');
 
   return (
-    <OrganizationLayoutWrapper organizationSlug={slug}>
-      <AllDonationsPageClient
-        organizationSlug={slug}
-        organizationName={organization.name}
-      />
-    </OrganizationLayoutWrapper>
+    <AllDonationsPageClient
+      organizationSlug={slug}
+      organizationName={organization.name}
+    />
   );
 }

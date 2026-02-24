@@ -1,32 +1,26 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { DollarSign, Clock, CheckCircle, AlertCircle, Target, Users } from 'lucide-react';
+import { DollarSign, Users, CheckCircle, Clock, AlertCircle, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils/account-tree';
 
-interface Payment {
-  id: string;
-  amount: number;
-  date: string;
-  notes?: string | null;
-}
-
-interface Pledge {
+interface DonationItem {
   id: string;
   contactName: string;
   amount: number;
-  amountPaid: number;
-  description: string;
+  amountReceived: number;
+  description: string | null;
   status: string;
-  issueDate: string;
+  type: string;
+  donationDate: string;
   dueDate?: string | null;
-  payments: Payment[];
   campaignName?: string | null;
+  isAnonymous?: boolean;
 }
 
-interface DonationsData {
-  pledges: Pledge[];
+interface DonationsOverviewData {
+  donations: DonationItem[];
   summary: {
     totalPledged: number;
     totalPaid: number;
@@ -40,22 +34,25 @@ interface AllDonationsPageClientProps {
 }
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-  DRAFT: { label: 'Draft', variant: 'secondary' },
-  PENDING: { label: 'Pending', variant: 'outline' },
-  PARTIAL: { label: 'Partially Paid', variant: 'default' },
-  PAID: { label: 'Paid', variant: 'default' },
-  OVERDUE: { label: 'Overdue', variant: 'destructive' },
+  PLEDGED: { label: 'Pledged', variant: 'outline' },
+  PARTIAL: { label: 'Partial', variant: 'default' },
+  RECEIVED: { label: 'Received', variant: 'default' },
   CANCELLED: { label: 'Cancelled', variant: 'secondary' },
+};
+
+const typeConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' }> = {
+  ONE_TIME: { label: 'One-Time', variant: 'secondary' },
+  PLEDGE: { label: 'Pledge', variant: 'outline' },
 };
 
 export function AllDonationsPageClient({
   organizationSlug,
   organizationName,
 }: AllDonationsPageClientProps) {
-  const [data, setData] = useState<DonationsData | null>(null);
+  const [data, setData] = useState<DonationsOverviewData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>('ACTIVE');
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
 
   const fetchDonations = useCallback(async () => {
     try {
@@ -95,24 +92,19 @@ export function AllDonationsPageClient({
 
   if (!data) return null;
 
-  const { pledges, summary } = data;
+  const { donations, summary } = data;
 
-  const filteredPledges = statusFilter === 'ALL'
-    ? pledges
-    : statusFilter === 'ACTIVE'
-      ? pledges.filter(p => !['PAID', 'CANCELLED'].includes(p.status))
-      : pledges.filter(p => p.status === statusFilter);
+  const filtered = statusFilter === 'ALL'
+    ? donations
+    : donations.filter((d) => d.status === statusFilter);
 
-  const donorCount = new Set(pledges.map(p => p.contactName)).size;
+  const uniqueDonors = new Set(donations.filter(d => !d.isAnonymous).map(d => d.contactName)).size;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Donations</h1>
-        <p className="mt-1 text-gray-600">
-          All donations and pledges for {organizationName}
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">Donations Overview</h1>
+        <p className="mt-1 text-gray-600">{organizationName}</p>
       </div>
 
       {/* Summary Cards */}
@@ -122,7 +114,7 @@ export function AllDonationsPageClient({
             <Users className="h-8 w-8 text-purple-600" />
             <div>
               <p className="text-sm text-gray-600">Donors</p>
-              <p className="text-2xl font-bold text-gray-900">{donorCount}</p>
+              <p className="text-2xl font-bold text-gray-900">{uniqueDonors}</p>
             </div>
           </div>
         </div>
@@ -131,9 +123,7 @@ export function AllDonationsPageClient({
             <DollarSign className="h-8 w-8 text-blue-600" />
             <div>
               <p className="text-sm text-gray-600">Total Pledged</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {formatCurrency(summary.totalPledged)}
-              </p>
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(summary.totalPledged)}</p>
             </div>
           </div>
         </div>
@@ -142,9 +132,7 @@ export function AllDonationsPageClient({
             <CheckCircle className="h-8 w-8 text-green-600" />
             <div>
               <p className="text-sm text-gray-600">Total Received</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {formatCurrency(summary.totalPaid)}
-              </p>
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(summary.totalPaid)}</p>
             </div>
           </div>
         </div>
@@ -153,44 +141,36 @@ export function AllDonationsPageClient({
             <Clock className="h-8 w-8 text-orange-600" />
             <div>
               <p className="text-sm text-gray-600">Outstanding</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {formatCurrency(summary.outstanding)}
-              </p>
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(summary.outstanding)}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Status Filter */}
-      <div className="mb-6 flex items-center gap-3">
-        <label className="text-sm font-medium text-gray-700">Status:</label>
-        <select
-          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="ACTIVE">Active (Outstanding)</option>
-          <option value="ALL">All</option>
-          <option value="PENDING">Pending</option>
-          <option value="PARTIAL">Partially Paid</option>
-          <option value="PAID">Paid</option>
-          <option value="OVERDUE">Overdue</option>
-          <option value="CANCELLED">Cancelled</option>
-        </select>
-        <span className="text-sm text-gray-500">
-          {filteredPledges.length} pledge{filteredPledges.length !== 1 ? 's' : ''}
-        </span>
+      {/* Filter */}
+      <div className="mb-4 flex gap-2">
+        {['ALL', 'PLEDGED', 'PARTIAL', 'RECEIVED', 'CANCELLED'].map((s) => (
+          <button
+            key={s}
+            onClick={() => setStatusFilter(s)}
+            className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+              statusFilter === s
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            {s === 'ALL' ? 'All' : (statusConfig[s]?.label || s)}
+          </button>
+        ))}
       </div>
 
-      {/* Pledge Table */}
-      {filteredPledges.length === 0 ? (
+      {/* Donations Table */}
+      {filtered.length === 0 ? (
         <div className="rounded-lg border bg-white p-12 text-center">
           <DollarSign className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-4 text-lg font-medium text-gray-900">No donations found</h3>
           <p className="mt-2 text-gray-600">
-            {statusFilter === 'ACTIVE'
-              ? 'No outstanding pledges at this time.'
-              : 'No donations match the selected filter.'}
+            {statusFilter !== 'ALL' ? 'Try changing the filter.' : 'No donations have been made yet.'}
           </p>
         </div>
       ) : (
@@ -198,61 +178,44 @@ export function AllDonationsPageClient({
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Donor
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Campaign
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Pledged
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Paid
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Date
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Donor</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Amount</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Received</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Campaign</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredPledges.map((pledge) => {
-                const config = statusConfig[pledge.status] || statusConfig.PENDING;
+              {filtered.map((donation) => {
+                const sc = statusConfig[donation.status] || statusConfig.PLEDGED;
+                const tc = typeConfig[donation.type] || typeConfig.PLEDGE;
                 return (
-                  <tr key={pledge.id} className="hover:bg-gray-50">
+                  <tr key={donation.id} className="hover:bg-gray-50">
                     <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                      {pledge.contactName}
-                    </td>
-                    <td className="max-w-xs truncate px-6 py-4 text-sm text-gray-600">
-                      {pledge.description}
+                      {donation.isAnonymous ? 'Anonymous' : donation.contactName}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm">
-                      {pledge.campaignName ? (
-                        <div className="flex items-center gap-1">
+                      <Badge variant={tc.variant}>{tc.label}</Badge>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">{formatCurrency(donation.amount)}</td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">{formatCurrency(donation.amountReceived)}</td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm">
+                      <Badge variant={sc.variant}>{sc.label}</Badge>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
+                      {donation.campaignName ? (
+                        <span className="flex items-center gap-1">
                           <Target className="h-3 w-3 text-green-600" />
-                          <span className="text-green-700">{pledge.campaignName}</span>
-                        </div>
+                          {donation.campaignName}
+                        </span>
                       ) : (
-                        <span className="text-gray-400">—</span>
+                        <span className="text-gray-400">General</span>
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium text-gray-900">
-                      {formatCurrency(pledge.amount)}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-600">
-                      {formatCurrency(pledge.amountPaid)}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <Badge variant={config.variant}>{config.label}</Badge>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                      {new Date(pledge.issueDate).toLocaleDateString()}
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
+                      {new Date(donation.donationDate).toLocaleDateString()}
                     </td>
                   </tr>
                 );

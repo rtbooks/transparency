@@ -1,12 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { listDonations, getMyDonations, createPledgeDonation, createOneTimeDonation } from '@/services/donation.service';
+import { findOrCreateForUser } from '@/services/contact.service';
+import { z } from 'zod';
+
+const createDonationSchema = z.object({
+  type: z.enum(['ONE_TIME', 'PLEDGE']),
+  amount: z.number().positive(),
+  description: z.string().min(1),
+  donorMessage: z.string().optional(),
+  isAnonymous: z.boolean().optional(),
+  dueDate: z.string().nullable().optional(),
+  campaignId: z.string().uuid().nullable().optional(),
+});
 
 /**
  * GET /api/organizations/[slug]/donations
- * Returns the authenticated donor's pledges and payments for this organization.
- * Also accessible by ORG_ADMIN/PLATFORM_ADMIN to see all donations.
+ * Returns donations for the org. Supports ?view=all for org-wide view.
  */
 export async function GET(
   request: NextRequest,
@@ -47,124 +59,211 @@ export async function GET(
 
     const isAdmin = user.isPlatformAdmin || orgUser.role === 'ORG_ADMIN';
 
-    // Check if requesting org-wide view (any member can see, but only their own are editable)
-    const { searchParams } = new URL(request.url);
-    const viewAll = searchParams.get('view') === 'all';
-
-    // Find the donor's contact record(s) in this organization
-    const donorContacts = await prisma.contact.findMany({
+    // Find the user's contact record(s) in this organization
+    const userContacts = await prisma.contact.findMany({
       where: buildCurrentVersionWhere({
         organizationId: organization.id,
         userId: user.id,
       }),
     });
+    const userContactIds = userContacts.map(c => c.id);
 
-    const contactIds = donorContacts.map(c => c.id);
+    const { searchParams } = new URL(request.url);
+    const viewAll = searchParams.get('view') === 'all';
 
-    // Build bill filter: only RECEIVABLE bills
-    const billWhere: any = {
-      organizationId: organization.id,
-      direction: 'RECEIVABLE',
-    };
-
+    let donations;
     if (viewAll) {
-      // Org-wide view: show all receivable bills (pledges/donations)
-      // No contactId filter — show everything
-    } else if (contactIds.length > 0) {
-      // Personal view: show only the current user's pledges
-      billWhere.contactId = { in: contactIds };
+      // Org-wide view: all donations
+      donations = await listDonations(organization.id);
     } else {
-      // User has no linked contact — return empty for personal view
-      return NextResponse.json({
-        pledges: [],
-        summary: { totalPledged: 0, totalPaid: 0, outstanding: 0 },
-        paymentInstructions: organization.paymentInstructions,
-      });
+      // Personal view: only current user's donations
+      donations = await getMyDonations(organization.id, userContactIds);
     }
 
-    const pledges = await prisma.bill.findMany({
-      where: billWhere,
-      include: { payments: true },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    // Resolve contact names
-    const allContactIds = [...new Set(pledges.map(p => p.contactId))];
-    const contacts = allContactIds.length > 0
-      ? await prisma.contact.findMany({ where: buildEntitiesWhere(allContactIds) })
-      : [];
-    const contactMap = buildEntityMap(contacts);
-
-    // Resolve payment transactions
-    const txIds = pledges.flatMap(p => p.payments.map(pay => pay.transactionId));
-    const uniqueTxIds = [...new Set(txIds)];
-    const transactions = uniqueTxIds.length > 0
-      ? await prisma.transaction.findMany({ where: buildEntitiesWhere(uniqueTxIds) })
-      : [];
-    const txMap = buildEntityMap(transactions);
-
-    // Resolve campaign attribution via accrual transactions
-    const accrualTxIds = pledges.map(p => p.accrualTransactionId).filter(Boolean) as string[];
-    const accrualTransactions = accrualTxIds.length > 0
-      ? await prisma.transaction.findMany({ where: buildEntitiesWhere(accrualTxIds) })
-      : [];
-    const accrualTxMap = buildEntityMap(accrualTransactions);
-
-    // Load all campaigns for this org to map accountId → campaign name
-    const allCampaigns = await prisma.campaign.findMany({
-      where: { organizationId: organization.id },
-    });
-    const campaignByAccountId = new Map(allCampaigns.map(c => [c.accountId, c]));
-
-    const enrichedPledges = pledges.map(pledge => {
-      const contact = contactMap.get(pledge.contactId);
-      // Find campaign via accrual transaction's credit account
-      let campaignName: string | null = null;
-      let campaignId: string | null = null;
-      if (pledge.accrualTransactionId) {
-        const accrualTx = accrualTxMap.get(pledge.accrualTransactionId);
-        if (accrualTx) {
-          const campaign = campaignByAccountId.get(accrualTx.creditAccountId);
-          if (campaign) {
-            campaignName = campaign.name;
-            campaignId = campaign.id;
-          }
-        }
-      }
-      return {
-        ...pledge,
-        contactName: contact?.name ?? 'Unknown',
-        amount: Number(pledge.amount),
-        amountPaid: Number(pledge.amountPaid),
-        campaignName,
-        campaignId,
-        payments: pledge.payments.map(pay => {
-          const tx = txMap.get(pay.transactionId);
-          return {
-            ...pay,
-            amount: tx ? Number(tx.amount) : 0,
-            date: tx?.transactionDate ?? pay.createdAt,
-          };
-        }),
-      };
-    });
-
-    const totalPledged = enrichedPledges.reduce((sum, p) => sum + p.amount, 0);
-    const totalPaid = enrichedPledges.reduce((sum, p) => sum + p.amountPaid, 0);
+    const totalPledged = donations.reduce((sum, d) => sum + Number(d.amount), 0);
+    const totalReceived = donations.reduce((sum, d) => sum + Number(d.amountReceived), 0);
 
     return NextResponse.json({
-      pledges: enrichedPledges,
+      donations,
+      // Legacy field name for backward compat with existing UI
+      pledges: donations,
       summary: {
         totalPledged,
-        totalPaid,
-        outstanding: totalPledged - totalPaid,
+        totalPaid: totalReceived,
+        outstanding: totalPledged - totalReceived,
       },
       paymentInstructions: organization.paymentInstructions,
       isAdmin,
-      userContactIds: contactIds,
+      userContactIds,
     });
   } catch (error) {
     console.error('Error fetching donations:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+/**
+ * POST /api/organizations/[slug]/donations
+ * Create a new donation (one-time or pledge).
+ */
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const { slug } = await params;
+    const { userId: clerkUserId } = await auth();
+
+    if (!clerkUserId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { authId: clerkUserId },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const organization = await prisma.organization.findFirst({
+      where: buildCurrentVersionWhere({ slug }),
+    });
+
+    if (!organization) {
+      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    }
+
+    // Verify membership
+    const orgUsers = await prisma.organizationUser.findMany({
+      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
+    });
+
+    if (!orgUsers[0]) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const validated = createDonationSchema.parse(body);
+
+    // Find or create donor's contact record
+    const contact = await findOrCreateForUser(
+      organization.id,
+      user.id,
+      user.name,
+      user.email
+    );
+
+    // Find Accounts Receivable account
+    const arAccount = await prisma.account.findFirst({
+      where: buildCurrentVersionWhere({
+        organizationId: organization.id,
+        type: 'ASSET',
+        name: { contains: 'Receivable' },
+      }),
+    });
+
+    if (!arAccount) {
+      return NextResponse.json(
+        { error: 'Organization has no Accounts Receivable account configured.' },
+        { status: 400 }
+      );
+    }
+
+    // Find a Revenue account — campaign-directed or fallback
+    let revenueAccount;
+    let campaignId: string | null = null;
+
+    if (validated.campaignId) {
+      const campaign = await prisma.campaign.findUnique({
+        where: { id: validated.campaignId },
+      });
+      if (!campaign || campaign.organizationId !== organization.id || campaign.status !== 'ACTIVE') {
+        return NextResponse.json({ error: 'Campaign not found or inactive' }, { status: 400 });
+      }
+      campaignId = campaign.id;
+      revenueAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({ id: campaign.accountId, organizationId: organization.id }),
+      });
+    } else if (organization.donationsAccountId) {
+      revenueAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({ id: organization.donationsAccountId, organizationId: organization.id }),
+      });
+    }
+
+    if (!revenueAccount) {
+      revenueAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({
+          organizationId: organization.id,
+          type: 'REVENUE',
+          name: { contains: 'Donation' },
+        }),
+      });
+    }
+
+    if (!revenueAccount) {
+      revenueAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({
+          organizationId: organization.id,
+          type: 'REVENUE',
+        }),
+      });
+    }
+
+    if (!revenueAccount) {
+      return NextResponse.json(
+        { error: 'Organization has no Revenue account configured.' },
+        { status: 400 }
+      );
+    }
+
+    // For one-time donations, find a cash/bank account
+    let cashAccountId: string | undefined;
+    if (validated.type === 'ONE_TIME') {
+      const cashAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({
+          organizationId: organization.id,
+          type: 'ASSET',
+          name: { contains: 'Cash' },
+          isActive: true,
+        }),
+      });
+      if (!cashAccount) {
+        return NextResponse.json(
+          { error: 'Organization has no Cash account configured for receiving donations.' },
+          { status: 400 }
+        );
+      }
+      cashAccountId = cashAccount.id;
+    }
+
+    const input = {
+      organizationId: organization.id,
+      contactId: contact.id,
+      type: validated.type as 'ONE_TIME' | 'PLEDGE',
+      amount: validated.amount,
+      description: validated.description,
+      donorMessage: validated.donorMessage,
+      isAnonymous: validated.isAnonymous,
+      donationDate: new Date(),
+      dueDate: validated.dueDate ? new Date(validated.dueDate) : null,
+      campaignId,
+      arAccountId: arAccount.id,
+      revenueAccountId: revenueAccount.id,
+      cashAccountId,
+      createdBy: user.id,
+    };
+
+    const donation = validated.type === 'PLEDGE'
+      ? await createPledgeDonation(input)
+      : await createOneTimeDonation(input);
+
+    return NextResponse.json(donation, { status: 201 });
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
+    }
+    console.error('Error creating donation:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
