@@ -59,7 +59,7 @@ export async function createBill(input: CreateBillInput): Promise<Bill> {
       : input.expenseOrRevenueAccountId; // CR Revenue
 
     const now = new Date();
-    const txDescription = `${input.direction === 'PAYABLE' ? 'Bill' : 'Pledge'}: ${input.description || 'No description'}`;
+    const txDescription = input.description || 'No description';
 
     // Create the accrual transaction
     const accrualTransaction = await tx.transaction.create({
