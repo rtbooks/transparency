@@ -10,7 +10,7 @@ const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
 
 /**
  * GET - Proxy endpoint to serve org logo from private Vercel Blob store.
- * Authenticates user and verifies org membership before streaming the image.
+ * Publicly accessible — the logo is organizational branding visible to all visitors.
  */
 export async function GET(
   _request: NextRequest,
@@ -18,27 +18,10 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
 
     const organization = await findOrganizationBySlug(slug);
     if (!organization || !organization.logoUrl) {
       return NextResponse.json({ error: 'Logo not found' }, { status: 404 });
-    }
-
-    const userAccess = await prisma.organizationUser.findFirst({
-      where: buildCurrentVersionWhere({ userId: user.id, organizationId: organization.id }),
-    });
-    if (!userAccess) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     // Fetch the logo from the private blob store
@@ -57,7 +40,7 @@ export async function GET(
     return new NextResponse(blobResponse.body, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'private, max-age=3600',
+        'Cache-Control': 'public, max-age=3600',
       },
     });
   } catch (error) {

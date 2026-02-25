@@ -6,6 +6,7 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Link,
   Preview,
   Section,
@@ -19,6 +20,7 @@ interface CampaignInviteEmailProps {
   campaignDescription: string | null;
   personalMessage: string | null;
   donateUrl: string;
+  organizationLogoUrl?: string;
 }
 
 export function CampaignInviteEmail({
@@ -28,6 +30,7 @@ export function CampaignInviteEmail({
   campaignDescription,
   personalMessage,
   donateUrl,
+  organizationLogoUrl,
 }: CampaignInviteEmailProps) {
   return (
     <Html>
@@ -38,7 +41,11 @@ export function CampaignInviteEmail({
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Text style={brandName}>📚 RadBooks</Text>
+            {organizationLogoUrl ? (
+              <Img src={organizationLogoUrl} alt={organizationName} width="48" height="48" style={logoImg} />
+            ) : (
+              <Text style={brandName}>📚 RadBooks</Text>
+            )}
           </Section>
 
           <Heading style={heading}>
@@ -112,6 +119,11 @@ const brandName = {
   fontWeight: '700' as const,
   color: '#1a1a1a',
   margin: '0',
+};
+
+const logoImg = {
+  margin: '0 auto',
+  borderRadius: '8px',
 };
 
 const heading = {

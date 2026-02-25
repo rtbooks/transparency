@@ -9,13 +9,14 @@ interface SendCampaignInviteParams {
   campaignDescription: string | null;
   personalMessage?: string;
   donateUrl: string;
+  organizationLogoUrl?: string;
 }
 
 /**
  * Send a campaign invite email. Fire-and-forget — never throws.
  */
 export async function sendCampaignInviteEmail(params: SendCampaignInviteParams): Promise<boolean> {
-  const { to, senderName, organizationName, campaignName, campaignDescription, personalMessage, donateUrl } = params;
+  const { to, senderName, organizationName, campaignName, campaignDescription, personalMessage, donateUrl, organizationLogoUrl } = params;
 
   return sendEmail({
     to,
@@ -27,6 +28,7 @@ export async function sendCampaignInviteEmail(params: SendCampaignInviteParams):
       campaignDescription,
       personalMessage: personalMessage || null,
       donateUrl,
+      organizationLogoUrl,
     }),
   });
 }
