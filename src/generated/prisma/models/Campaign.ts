@@ -348,7 +348,6 @@ export type CampaignOrderByWithRelationInput = {
 
 export type CampaignWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  organizationId_accountId?: Prisma.CampaignOrganizationIdAccountIdCompoundUniqueInput
   AND?: Prisma.CampaignWhereInput | Prisma.CampaignWhereInput[]
   OR?: Prisma.CampaignWhereInput[]
   NOT?: Prisma.CampaignWhereInput | Prisma.CampaignWhereInput[]
@@ -370,7 +369,7 @@ export type CampaignWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
   donations?: Prisma.DonationListRelationFilter
   tiers?: Prisma.CampaignTierListRelationFilter
-}, "id" | "organizationId_accountId">
+}, "id">
 
 export type CampaignOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -566,11 +565,6 @@ export type CampaignUncheckedUpdateManyInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type CampaignOrganizationIdAccountIdCompoundUniqueInput = {
-  organizationId: string
-  accountId: string
 }
 
 export type CampaignCountOrderByAggregateInput = {
