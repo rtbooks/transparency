@@ -10,6 +10,7 @@ const isPublicRoute = createRouteMatcher([
   "/privacy", // Privacy Policy
   "/about", // About page
   "/contact", // Contact page
+  "/features", // Features page
   "/organizations", // Organization lists
   "/org/:slug", // Public organization dashboard
   "/org/:slug/donate(.*)", // Public donation page
