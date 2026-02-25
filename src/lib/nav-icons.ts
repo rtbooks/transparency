@@ -13,6 +13,8 @@ import {
   Target,
   Megaphone,
   Scale,
+  Wrench,
+  Calendar,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -31,6 +33,8 @@ const iconMap: Record<string, LucideIcon> = {
   Target,
   Megaphone,
   Scale,
+  Wrench,
+  Calendar,
 };
 
 export function getNavIcon(name?: string): LucideIcon | undefined {

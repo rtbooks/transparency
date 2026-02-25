@@ -33,7 +33,6 @@ export function getOrganizationNavLinks(
       { label: 'Dashboard', href: `/org/${slug}/dashboard`, icon: 'LayoutDashboard', section: 'Main' },
       { label: 'Accounts', href: `/org/${slug}/accounts`, icon: 'BookOpen', section: 'Main' },
       { label: 'Transactions', href: `/org/${slug}/transactions`, icon: 'ArrowLeftRight', section: 'Main' },
-      { label: 'Reconciliation', href: `/org/${slug}/reconciliation`, icon: 'Scale', section: 'Main' },
       { label: 'Contacts', href: `/org/${slug}/contacts`, icon: 'Users', section: 'Payables' },
       { label: 'Bills', href: `/org/${slug}/bills`, icon: 'FileText', section: 'Payables' },
       { label: 'Reports', href: `/org/${slug}/reports`, icon: 'BarChart3', section: 'Reporting' },
@@ -42,7 +41,7 @@ export function getOrganizationNavLinks(
       { label: 'Donations', href: `/org/${slug}/donations`, icon: 'HandHeart', section: 'Fundraising' },
       { label: 'My Donations', href: `/org/${slug}/my-donations`, icon: 'Heart', section: 'Fundraising' },
       { label: 'Users', href: `/org/${slug}/users`, icon: 'UserCog', section: 'Admin' },
-      { label: 'Fiscal Periods', href: `/org/${slug}/fiscal-periods`, icon: 'Calendar', section: 'Admin' },
+      { label: 'Maintenance', href: `/org/${slug}/maintenance`, icon: 'Wrench', section: 'Admin' },
       { label: 'Settings', href: `/org/${slug}/settings`, icon: 'Settings', section: 'Admin' },
     ];
   }
