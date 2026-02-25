@@ -16,6 +16,7 @@ const recordPaymentSchema = z.object({
   amount: z.number().positive(),
   transactionDate: dateString,
   cashAccountId: z.string().uuid(),
+  creditAccountId: z.string().uuid().optional(), // Override: credit this account instead of AP/AR (e.g., reimbursements)
   description: z.string().optional(),
   referenceNumber: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
@@ -89,12 +90,23 @@ export async function POST(
       return NextResponse.json({ error: 'Invalid account selection' }, { status: 400 });
     }
 
+    // Validate credit account override if provided
+    if (validated.creditAccountId) {
+      const creditAccount = await prisma.account.findFirst({
+        where: buildCurrentVersionWhere({ id: validated.creditAccountId, organizationId: organization.id }),
+      });
+      if (!creditAccount) {
+        return NextResponse.json({ error: 'Invalid credit account selection' }, { status: 400 });
+      }
+    }
+
     const billPayment = await recordPayment({
       billId,
       organizationId: organization.id,
       amount: validated.amount,
       transactionDate: new Date(validated.transactionDate.length === 10 ? validated.transactionDate + 'T12:00:00' : validated.transactionDate),
       cashAccountId: validated.cashAccountId,
+      creditAccountId: validated.creditAccountId,
       description: validated.description,
       referenceNumber: validated.referenceNumber ?? null,
       notes: validated.notes ?? null,

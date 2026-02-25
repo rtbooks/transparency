@@ -15,6 +15,7 @@ export interface RecordPaymentInput {
   amount: number;
   transactionDate: Date;
   cashAccountId: string; // The cash/bank account for the payment
+  creditAccountId?: string; // Optional override: credit this account instead of AP/AR (e.g., expense account for reimbursements)
   description?: string;
   referenceNumber?: string | null;
   notes?: string | null;
@@ -57,13 +58,18 @@ export async function recordPayment(
       })
     : null;
 
-  // Derive AP/AR account from the accrual transaction
-  // PAYABLE accrual: DR Expense, CR AP → payment reverses AP: DR AP, CR Cash
-  // RECEIVABLE accrual: DR AR, CR Revenue → receipt reverses AR: DR Cash, CR AR
+  // Derive debit/credit accounts
   let debitAccountId: string;
   let creditAccountId: string;
 
-  if (accrualTransaction) {
+  if (input.creditAccountId) {
+    // Credit account override (e.g., reimbursement: DR Cash, CR Expense)
+    debitAccountId = input.cashAccountId;
+    creditAccountId = input.creditAccountId;
+  } else if (accrualTransaction) {
+    // Standard payment: derive from accrual transaction
+    // PAYABLE accrual: DR Expense, CR AP → payment reverses AP: DR AP, CR Cash
+    // RECEIVABLE accrual: DR AR, CR Revenue → receipt reverses AR: DR Cash, CR AR
     if (bill.direction === 'PAYABLE') {
       debitAccountId = accrualTransaction.creditAccountId; // AP account
       creditAccountId = input.cashAccountId; // Cash/Bank
@@ -72,7 +78,6 @@ export async function recordPayment(
       creditAccountId = accrualTransaction.debitAccountId; // AR account
     }
   } else {
-    // Fallback for bills created before accrual integration
     throw new Error('Bill has no accrual transaction — cannot determine AP/AR account');
   }
 

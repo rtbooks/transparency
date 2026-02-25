@@ -62,9 +62,13 @@ export function BillPaymentForm({
   const [referenceNumber, setReferenceNumber] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isReimbursement, setIsReimbursement] = useState(false);
+  const [creditAccountId, setCreditAccountId] = useState("");
 
   // Cash/Bank accounts are always ASSET type
   const cashAccounts = accounts.filter((a) => a.type === "ASSET");
+  // Credit account options for reimbursement (non-ASSET accounts)
+  const creditAccounts = accounts.filter((a) => a.type !== "ASSET");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,6 +91,10 @@ export function BillPaymentForm({
       setError("Cash/Bank account is required");
       return;
     }
+    if (isReimbursement && !creditAccountId) {
+      setError("Account to credit is required for reimbursements");
+      return;
+    }
 
     try {
       setSubmitting(true);
@@ -99,6 +107,7 @@ export function BillPaymentForm({
             amount: parsedAmount,
             transactionDate: paymentDate.toISOString(),
             cashAccountId,
+            ...(isReimbursement && creditAccountId ? { creditAccountId } : {}),
             description: description.trim() || undefined,
             referenceNumber: referenceNumber.trim() || null,
           }),
@@ -195,6 +204,49 @@ export function BillPaymentForm({
           </SelectContent>
         </Select>
       </div>
+
+      {/* Reimbursement toggle — PAYABLE bills only */}
+      {direction === "PAYABLE" && (
+        <div className="space-y-3">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={isReimbursement}
+              onChange={(e) => {
+                setIsReimbursement(e.target.checked);
+                if (!e.target.checked) setCreditAccountId("");
+              }}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <span className="font-medium text-gray-700">
+              This is a reimbursement
+            </span>
+          </label>
+          {isReimbursement && (
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 space-y-2">
+              <p className="text-xs text-blue-700">
+                Credits the selected account instead of Accounts Payable.
+                Use this when receiving money back for an expense (e.g., partial reimbursement).
+              </p>
+              <label className="block text-sm font-medium text-blue-800">
+                Account to Credit <span className="text-red-500">*</span>
+              </label>
+              <Select value={creditAccountId} onValueChange={setCreditAccountId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select account to credit..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {creditAccounts.map((acct) => (
+                    <SelectItem key={acct.id} value={acct.id}>
+                      {acct.code} – {acct.name} ({acct.type})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Description */}
       <div>
