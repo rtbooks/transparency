@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { redirect } from 'next/navigation';
 import { ReconciliationPageClient } from '@/components/reconciliation/ReconciliationPageClient';
+import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
+import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
 
 export default async function ReconciliationPage({
   params,
@@ -14,24 +16,31 @@ export default async function ReconciliationPage({
 
   if (!clerkUserId) redirect('/login');
 
-  const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-  if (!user) redirect('/login');
+  const { organization, userAccess } = await checkOrganizationAccess(slug, clerkUserId, false);
 
-  const organization = await prisma.organization.findFirst({
-    where: buildCurrentVersionWhere({ slug }),
-  });
-  if (!organization) redirect('/');
+  if (!userAccess) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900">Access Denied</h1>
+          <p className="mt-2 text-gray-600">You don&apos;t have permission to view this page.</p>
+        </div>
+      </div>
+    );
+  }
 
-  // Check user has admin access
-  const orgUser = await prisma.organizationUser.findFirst({
-    where: buildCurrentVersionWhere({
-      organizationId: organization.id,
-      userId: user.id,
-    }),
-  });
-
-  if (!orgUser || (orgUser.role !== 'ORG_ADMIN' && orgUser.role !== 'PLATFORM_ADMIN')) {
+  if (userAccess.role !== 'ORG_ADMIN' && userAccess.role !== 'PLATFORM_ADMIN') {
     redirect(`/org/${slug}/dashboard`);
+  }
+
+  const verificationMessage = VerificationStatusMessage({
+    status: organization.verificationStatus,
+    organizationName: organization.name,
+    notes: organization.verificationNotes,
+  });
+
+  if (verificationMessage) {
+    return verificationMessage;
   }
 
   // Get bank accounts with linked account names
@@ -42,10 +51,12 @@ export default async function ReconciliationPage({
 
   // Resolve account names
   const accountIds = bankAccounts.map((ba) => ba.accountId);
-  const accounts = await prisma.account.findMany({
-    where: buildCurrentVersionWhere({ id: { in: accountIds } }),
-    select: { id: true, name: true, code: true },
-  });
+  const accounts = accountIds.length > 0
+    ? await prisma.account.findMany({
+        where: buildCurrentVersionWhere({ id: { in: accountIds } }),
+        select: { id: true, name: true, code: true },
+      })
+    : [];
   const accountMap = new Map(accounts.map((a) => [a.id, a]));
 
   const bankAccountsWithNames = bankAccounts.map((ba) => ({
@@ -58,9 +69,15 @@ export default async function ReconciliationPage({
   }));
 
   return (
-    <ReconciliationPageClient
-      slug={slug}
-      bankAccounts={bankAccountsWithNames}
-    />
+    <OrganizationLayoutWrapper organizationSlug={slug}>
+      <div className="min-h-screen bg-gray-50">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <ReconciliationPageClient
+            slug={slug}
+            bankAccounts={bankAccountsWithNames}
+          />
+        </div>
+      </div>
+    </OrganizationLayoutWrapper>
   );
 }

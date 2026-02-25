@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Scale, Upload, FileText, CheckCircle, Clock, AlertCircle, Loader2, BarChart3 } from 'lucide-react';
+import { Scale, Upload, FileText, CheckCircle, Clock, AlertCircle, Loader2, BarChart3, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatementUploadDialog } from './StatementUploadDialog';
 import { ReconciliationWorkspace } from './ReconciliationWorkspace';
 import { ReconciliationReports } from './ReconciliationReports';
+import { BankAccountManager } from './BankAccountManager';
 
 interface BankAccountInfo {
   id: string;
@@ -45,15 +46,42 @@ const STATUS_BADGES: Record<string, { label: string; variant: 'default' | 'secon
   CANCELLED: { label: 'Cancelled', variant: 'destructive' },
 };
 
-export function ReconciliationPageClient({ slug, bankAccounts }: ReconciliationPageClientProps) {
+type TabKey = 'statements' | 'bank-accounts' | 'reports';
+
+export function ReconciliationPageClient({ slug, bankAccounts: initialBankAccounts }: ReconciliationPageClientProps) {
+  const [bankAccounts, setBankAccounts] = useState(initialBankAccounts);
   const [selectedBankAccount, setSelectedBankAccount] = useState<string | null>(
-    bankAccounts.length === 1 ? bankAccounts[0].id : null
+    initialBankAccounts.length === 1 ? initialBankAccounts[0].id : null
   );
   const [statements, setStatements] = useState<StatementSummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
   const [activeStatementId, setActiveStatementId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'statements' | 'reports'>('statements');
+  const [activeTab, setActiveTab] = useState<TabKey>(
+    initialBankAccounts.length === 0 ? 'bank-accounts' : 'statements'
+  );
+
+  const fetchBankAccounts = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/organizations/${slug}/bank-accounts`);
+      if (res.ok) {
+        const data = await res.json();
+        const mapped = data
+          .filter((ba: BankAccountInfo & { isActive: boolean }) => ba.isActive)
+          .map((ba: BankAccountInfo & { accountId: string }) => ({
+            id: ba.id,
+            bankName: ba.bankName,
+            accountNumberLast4: ba.accountNumberLast4,
+            accountType: ba.accountType,
+            accountName: (ba as BankAccountInfo).accountName || 'Unknown',
+            accountCode: (ba as BankAccountInfo).accountCode || '',
+          }));
+        setBankAccounts(mapped);
+      }
+    } catch {
+      // ignore
+    }
+  }, [slug]);
 
   const fetchStatements = useCallback(async (bankAccountId: string) => {
     setLoading(true);
@@ -69,10 +97,10 @@ export function ReconciliationPageClient({ slug, bankAccounts }: ReconciliationP
   }, [slug]);
 
   useEffect(() => {
-    if (selectedBankAccount) {
+    if (selectedBankAccount && activeTab === 'statements') {
       fetchStatements(selectedBankAccount);
     }
-  }, [selectedBankAccount, fetchStatements]);
+  }, [selectedBankAccount, fetchStatements, activeTab]);
 
   const selectedAccount = bankAccounts.find((ba) => ba.id === selectedBankAccount);
 
@@ -91,6 +119,12 @@ export function ReconciliationPageClient({ slug, bankAccounts }: ReconciliationP
     );
   }
 
+  const tabs: { key: TabKey; label: string; icon: React.ElementType }[] = [
+    { key: 'statements', label: 'Statements', icon: FileText },
+    { key: 'bank-accounts', label: 'Bank Accounts', icon: Building2 },
+    { key: 'reports', label: 'Reports', icon: BarChart3 },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -107,147 +141,151 @@ export function ReconciliationPageClient({ slug, bankAccounts }: ReconciliationP
 
       {/* Tabs */}
       <div className="flex gap-1 border-b">
-        <button
-          onClick={() => setActiveTab('statements')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'statements'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <FileText className="h-4 w-4 inline mr-1.5 -mt-0.5" />
-          Statements
-        </button>
-        <button
-          onClick={() => setActiveTab('reports')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'reports'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <BarChart3 className="h-4 w-4 inline mr-1.5 -mt-0.5" />
-          Reports
-        </button>
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === tab.key
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <tab.icon className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Reports Tab */}
-      {activeTab === 'reports' ? (
+      {activeTab === 'reports' && (
         <ReconciliationReports slug={slug} />
-      ) : (
-      <>
-      {/* Bank Account Selection */}
-      {bankAccounts.length === 0 ? (
-        <Card>
-          <CardContent className="py-8 text-center text-muted-foreground">
-            <Scale className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="font-medium">No Bank Accounts Found</p>
-            <p className="text-sm mt-1">
-              Add a bank account in Settings to start reconciling.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          {/* Bank Account Cards */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {bankAccounts.map((ba) => (
-              <Card
-                key={ba.id}
-                className={`cursor-pointer transition-colors hover:border-primary ${
-                  selectedBankAccount === ba.id ? 'border-primary bg-primary/5' : ''
-                }`}
-                onClick={() => setSelectedBankAccount(ba.id)}
-              >
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{ba.bankName}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    {ba.accountName} ({ba.accountCode})
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    ···{ba.accountNumberLast4} · {ba.accountType || 'Account'}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      )}
 
-          {/* Statements List */}
-          {selectedBankAccount && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">
-                  Statements — {selectedAccount?.bankName}
-                </h2>
-                <Button onClick={() => setShowUpload(true)}>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Import Statement
-                </Button>
+      {/* Bank Accounts Tab */}
+      {activeTab === 'bank-accounts' && (
+        <BankAccountManager
+          slug={slug}
+          onBankAccountsChanged={() => {
+            fetchBankAccounts();
+          }}
+        />
+      )}
+
+      {/* Statements Tab */}
+      {activeTab === 'statements' && (
+        <>
+          {bankAccounts.length === 0 ? (
+            <Card>
+              <CardContent className="py-8 text-center text-muted-foreground">
+                <Scale className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="font-medium">No Bank Accounts Found</p>
+                <p className="text-sm mt-1">
+                  Go to the <button className="underline text-primary" onClick={() => setActiveTab('bank-accounts')}>Bank Accounts</button> tab to link a ledger account first.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              {/* Bank Account Cards */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {bankAccounts.map((ba) => (
+                  <Card
+                    key={ba.id}
+                    className={`cursor-pointer transition-colors hover:border-primary ${
+                      selectedBankAccount === ba.id ? 'border-primary bg-primary/5' : ''
+                    }`}
+                    onClick={() => setSelectedBankAccount(ba.id)}
+                  >
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base">{ba.bankName}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">
+                        {ba.accountName} ({ba.accountCode})
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        ···{ba.accountNumberLast4} · {ba.accountType || 'Account'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
 
-              {loading ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                </div>
-              ) : statements.length === 0 ? (
-                <Card>
-                  <CardContent className="py-8 text-center text-muted-foreground">
-                    <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                    <p>No statements imported yet.</p>
-                    <p className="text-sm mt-1">
-                      Download a CSV or OFX file from your bank and import it here.
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-2">
-                  {statements.map((stmt) => {
-                    const badge = STATUS_BADGES[stmt.status] || STATUS_BADGES.DRAFT;
-                    const matched = (stmt.lineCounts?.MATCHED || 0) + (stmt.lineCounts?.CONFIRMED || 0);
-                    const total = stmt._count.lines;
-                    return (
-                      <Card
-                        key={stmt.id}
-                        className="cursor-pointer hover:border-primary/50 transition-colors"
-                        onClick={() => setActiveStatementId(stmt.id)}
-                      >
-                        <CardContent className="flex items-center justify-between py-4">
-                          <div className="flex items-center gap-4">
-                            <div>
-                              {stmt.status === 'COMPLETED' ? (
-                                <CheckCircle className="h-5 w-5 text-green-600" />
-                              ) : stmt.status === 'IN_PROGRESS' ? (
-                                <Clock className="h-5 w-5 text-blue-600" />
-                              ) : (
-                                <AlertCircle className="h-5 w-5 text-muted-foreground" />
-                              )}
-                            </div>
-                            <div>
-                              <p className="font-medium text-sm">{stmt.fileName}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {new Date(stmt.periodStart).toLocaleDateString()} — {new Date(stmt.periodEnd).toLocaleDateString()}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <div className="text-right text-sm">
-                              <p>{matched}/{total} matched</p>
-                            </div>
-                            <Badge variant={badge.variant}>{badge.label}</Badge>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+              {/* Statements List */}
+              {selectedBankAccount && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold">
+                      Statements — {selectedAccount?.bankName}
+                    </h2>
+                    <Button onClick={() => setShowUpload(true)}>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Import Statement
+                    </Button>
+                  </div>
+
+                  {loading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    </div>
+                  ) : statements.length === 0 ? (
+                    <Card>
+                      <CardContent className="py-8 text-center text-muted-foreground">
+                        <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                        <p>No statements imported yet.</p>
+                        <p className="text-sm mt-1">
+                          Download a CSV or OFX file from your bank and import it here.
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="space-y-2">
+                      {statements.map((stmt) => {
+                        const badge = STATUS_BADGES[stmt.status] || STATUS_BADGES.DRAFT;
+                        const matched = (stmt.lineCounts?.MATCHED || 0) + (stmt.lineCounts?.CONFIRMED || 0);
+                        const total = stmt._count.lines;
+                        return (
+                          <Card
+                            key={stmt.id}
+                            className="cursor-pointer hover:border-primary/50 transition-colors"
+                            onClick={() => setActiveStatementId(stmt.id)}
+                          >
+                            <CardContent className="flex items-center justify-between py-4">
+                              <div className="flex items-center gap-4">
+                                <div>
+                                  {stmt.status === 'COMPLETED' ? (
+                                    <CheckCircle className="h-5 w-5 text-green-600" />
+                                  ) : stmt.status === 'IN_PROGRESS' ? (
+                                    <Clock className="h-5 w-5 text-blue-600" />
+                                  ) : (
+                                    <AlertCircle className="h-5 w-5 text-muted-foreground" />
+                                  )}
+                                </div>
+                                <div>
+                                  <p className="font-medium text-sm">{stmt.fileName}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {new Date(stmt.periodStart).toLocaleDateString()} — {new Date(stmt.periodEnd).toLocaleDateString()}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <div className="text-right text-sm">
+                                  <p>{matched}/{total} matched</p>
+                                </div>
+                                <Badge variant={badge.variant}>{badge.label}</Badge>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
+            </>
           )}
         </>
-      )}
-      </>
       )}
 
       {/* Upload Dialog */}
