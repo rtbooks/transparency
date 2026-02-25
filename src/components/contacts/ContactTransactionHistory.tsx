@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { formatTransactionAmount } from "@/lib/utils/account-tree";
 
 interface ContactTransaction {
   id: string;
@@ -18,21 +19,13 @@ interface ContactTransaction {
   type: string;
   description: string;
   referenceNumber: string | null;
-  debitAccount: { code: string; name: string };
-  creditAccount: { code: string; name: string };
+  debitAccount: { code: string; name: string; type?: string };
+  creditAccount: { code: string; name: string; type?: string };
 }
 
 interface ContactTransactionHistoryProps {
   organizationSlug: string;
   contactId: string;
-}
-
-function formatCurrency(amount: number | string) {
-  const num = typeof amount === "string" ? parseFloat(amount) : amount;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(num);
 }
 
 export function ContactTransactionHistory({
@@ -107,7 +100,7 @@ export function ContactTransactionHistory({
                   {tx.creditAccount.code} - {tx.creditAccount.name}
                 </TableCell>
                 <TableCell className="text-right font-semibold">
-                  {formatCurrency(tx.amount)}
+                  {formatTransactionAmount(tx.amount, tx.type, tx.creditAccount.type)}
                 </TableCell>
                 <TableCell className="max-w-xs truncate text-sm">
                   {tx.description}

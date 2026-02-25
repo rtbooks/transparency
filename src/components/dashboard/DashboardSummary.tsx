@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { formatCurrency } from '@/lib/utils/account-tree';
+import { formatCurrency, formatTransactionAmount } from '@/lib/utils/account-tree';
 import { DollarSign, TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle, Landmark } from 'lucide-react';
 
 interface AccountData {
@@ -17,8 +17,8 @@ interface RecentTransaction {
   type: string;
   amount: number;
   description: string;
-  debitAccount: { code: string; name: string };
-  creditAccount: { code: string; name: string };
+  debitAccount: { code: string; name: string; type: string };
+  creditAccount: { code: string; name: string; type: string };
 }
 
 interface DashboardSummaryProps {
@@ -260,7 +260,7 @@ export function DashboardSummary({ organizationSlug }: DashboardSummaryProps) {
                     </div>
                   </div>
                   <div className="ml-4 text-right font-semibold whitespace-nowrap">
-                    {formatCurrency(tx.amount)}
+                    {formatTransactionAmount(tx.amount, tx.type, tx.creditAccount.type)}
                   </div>
                 </div>
               ))}

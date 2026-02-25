@@ -37,7 +37,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { formatCurrency } from "@/lib/utils/account-tree";
+import { formatCurrency, formatTransactionAmount } from "@/lib/utils/account-tree";
 import { ChevronLeft, ChevronRight, Download, Search, Info, Pencil, Ban, MoreVertical, CalendarClock, Eye, CheckCircle2, X } from "lucide-react";
 import { format, subDays, subMonths, startOfDay } from "date-fns";
 import { EditTransactionForm } from "./EditTransactionForm";
@@ -574,10 +574,7 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
                     </div>
                   </TableCell>
                   <TableCell className="text-right font-semibold text-gray-900">
-                    {/* Reimbursement pattern: EXPENSE type where credit account is an expense account (expense reduction) */}
-                    {transaction.type === "EXPENSE" && transaction.creditAccount.type === "EXPENSE"
-                      ? `(${formatCurrency(transaction.amount)})`
-                      : formatCurrency(transaction.amount)}
+                    {formatTransactionAmount(transaction.amount, transaction.type, transaction.creditAccount.type)}
                   </TableCell>
                   <TableCell className="max-w-xs truncate">{transaction.description}</TableCell>
                   <TableCell className="text-sm text-gray-600">
@@ -659,7 +656,7 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
                 <div>
                   <label className="text-sm font-medium text-gray-700">Amount</label>
                   <div className={`mt-1 text-lg font-semibold ${selectedTransaction.isVoided ? 'line-through text-gray-400' : ''}`}>
-                    {formatCurrency(selectedTransaction.amount)}
+                    {formatTransactionAmount(selectedTransaction.amount, selectedTransaction.type, selectedTransaction.creditAccount.type)}
                   </div>
                 </div>
               </div>
