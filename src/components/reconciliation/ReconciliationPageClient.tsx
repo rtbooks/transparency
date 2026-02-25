@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Scale, Upload, FileText, CheckCircle, Clock, AlertCircle, Loader2 } from 'lucide-react';
+import { Scale, Upload, FileText, CheckCircle, Clock, AlertCircle, Loader2, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatementUploadDialog } from './StatementUploadDialog';
 import { ReconciliationWorkspace } from './ReconciliationWorkspace';
+import { ReconciliationReports } from './ReconciliationReports';
 
 interface BankAccountInfo {
   id: string;
@@ -52,6 +53,7 @@ export function ReconciliationPageClient({ slug, bankAccounts }: ReconciliationP
   const [loading, setLoading] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
   const [activeStatementId, setActiveStatementId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'statements' | 'reports'>('statements');
 
   const fetchStatements = useCallback(async (bankAccountId: string) => {
     setLoading(true);
@@ -103,6 +105,37 @@ export function ReconciliationPageClient({ slug, bankAccounts }: ReconciliationP
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-1 border-b">
+        <button
+          onClick={() => setActiveTab('statements')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'statements'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <FileText className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+          Statements
+        </button>
+        <button
+          onClick={() => setActiveTab('reports')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'reports'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <BarChart3 className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+          Reports
+        </button>
+      </div>
+
+      {/* Reports Tab */}
+      {activeTab === 'reports' ? (
+        <ReconciliationReports slug={slug} />
+      ) : (
+      <>
       {/* Bank Account Selection */}
       {bankAccounts.length === 0 ? (
         <Card>
@@ -213,6 +246,8 @@ export function ReconciliationPageClient({ slug, bankAccounts }: ReconciliationP
             </div>
           )}
         </>
+      )}
+      </>
       )}
 
       {/* Upload Dialog */}
