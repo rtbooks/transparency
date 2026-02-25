@@ -56,9 +56,12 @@ export async function POST(
     const validated = inviteSchema.parse(body);
 
     // Build the donate URL
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL
+      || (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : (process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : 'http://localhost:3000'));
     const donateUrl = `${baseUrl}/org/${slug}/donate/${campaignId}`;
 
     const senderName = user.name || user.email || 'A supporter';
