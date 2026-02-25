@@ -59,6 +59,9 @@ export const ModelName = {
   ProgramSpending: 'ProgramSpending',
   ProgramSpendingTransaction: 'ProgramSpendingTransaction',
   BankAccount: 'BankAccount',
+  BankStatement: 'BankStatement',
+  BankStatementLine: 'BankStatementLine',
+  BankStatementLineMatch: 'BankStatementLineMatch',
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
   AccessRequest: 'AccessRequest',
@@ -288,6 +291,7 @@ export const BankAccountScalarFieldEnum = {
   accountType: 'accountType',
   plaidAccessToken: 'plaidAccessToken',
   plaidItemId: 'plaidItemId',
+  csvColumnMapping: 'csvColumnMapping',
   isActive: 'isActive',
   lastSyncedAt: 'lastSyncedAt',
   createdAt: 'createdAt',
@@ -295,6 +299,57 @@ export const BankAccountScalarFieldEnum = {
 } as const
 
 export type BankAccountScalarFieldEnum = (typeof BankAccountScalarFieldEnum)[keyof typeof BankAccountScalarFieldEnum]
+
+
+export const BankStatementScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  bankAccountId: 'bankAccountId',
+  statementDate: 'statementDate',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  openingBalance: 'openingBalance',
+  closingBalance: 'closingBalance',
+  fileName: 'fileName',
+  blobUrl: 'blobUrl',
+  status: 'status',
+  reconciledBy: 'reconciledBy',
+  reconciledAt: 'reconciledAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BankStatementScalarFieldEnum = (typeof BankStatementScalarFieldEnum)[keyof typeof BankStatementScalarFieldEnum]
+
+
+export const BankStatementLineScalarFieldEnum = {
+  id: 'id',
+  bankStatementId: 'bankStatementId',
+  transactionDate: 'transactionDate',
+  postDate: 'postDate',
+  description: 'description',
+  referenceNumber: 'referenceNumber',
+  amount: 'amount',
+  category: 'category',
+  matchConfidence: 'matchConfidence',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type BankStatementLineScalarFieldEnum = (typeof BankStatementLineScalarFieldEnum)[keyof typeof BankStatementLineScalarFieldEnum]
+
+
+export const BankStatementLineMatchScalarFieldEnum = {
+  id: 'id',
+  lineId: 'lineId',
+  transactionId: 'transactionId',
+  amount: 'amount',
+  confidence: 'confidence',
+  createdAt: 'createdAt'
+} as const
+
+export type BankStatementLineMatchScalarFieldEnum = (typeof BankStatementLineMatchScalarFieldEnum)[keyof typeof BankStatementLineMatchScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {

@@ -35,6 +35,12 @@ export function buildAccountTree(accounts: Account[]): AccountTreeNode[] {
     }
   });
 
+  // Sort children and root accounts by code
+  for (const node of accountMap.values()) {
+    node.children.sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true }));
+  }
+  rootAccounts.sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true }));
+
   return rootAccounts;
 }
 

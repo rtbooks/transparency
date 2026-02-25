@@ -74,6 +74,14 @@ export async function PATCH(
       }
     }
 
+    // Block edits to reconciled transactions
+    const existingTxn = await prisma.transaction.findFirst({
+      where: buildCurrentVersionWhere({ id, organizationId: organization.id }),
+    });
+    if (existingTxn?.reconciled) {
+      return NextResponse.json({ error: 'Cannot edit a reconciled transaction' }, { status: 400 });
+    }
+
     // Call the service
     const updated = await editTransaction(id, organization.id, validatedData, user.id);
     return NextResponse.json(updated);

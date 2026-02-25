@@ -408,6 +408,9 @@ model BankAccount {
   plaidAccessToken String? @map("plaid_access_token") // Should be encrypted
   plaidItemId      String? @map("plaid_item_id")
 
+  // CSV import column mapping (stored JSON for repeat imports)
+  csvColumnMapping Json? @map("csv_column_mapping")
+
   // Status
   isActive     Boolean   @default(true) @map("is_active")
   lastSyncedAt DateTime? @map("last_synced_at")
@@ -417,8 +420,114 @@ model BankAccount {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Organization and Account are bitemporal — no @relation, resolved at service layer
+  statements BankStatement[]
 
   @@map("bank_accounts")
+}
+
+// ============================================
+// BANK RECONCILIATION
+// ============================================
+
+enum ReconciliationStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum MatchConfidence {
+  AUTO_EXACT
+  AUTO_FUZZY
+  MANUAL
+  UNMATCHED
+}
+
+enum StatementLineStatus {
+  UNMATCHED
+  MATCHED
+  CONFIRMED
+  SKIPPED
+}
+
+model BankStatement {
+  id             String @id @default(uuid())
+  organizationId String @map("organization_id")
+  bankAccountId  String @map("bank_account_id")
+
+  // Statement period
+  statementDate  DateTime  @map("statement_date")
+  periodStart    DateTime  @map("period_start")
+  periodEnd      DateTime  @map("period_end")
+  openingBalance Decimal   @default(0) @map("opening_balance") @db.Decimal(12, 2)
+  closingBalance Decimal   @default(0) @map("closing_balance") @db.Decimal(12, 2)
+
+  // Source file
+  fileName String  @map("file_name")
+  blobUrl  String? @map("blob_url")
+
+  // Reconciliation status
+  status       ReconciliationStatus @default(DRAFT)
+  reconciledBy String?              @map("reconciled_by")
+  reconciledAt DateTime?            @map("reconciled_at")
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  bankAccount BankAccount          @relation(fields: [bankAccountId], references: [id])
+  lines       BankStatementLine[]
+
+  @@index([organizationId, bankAccountId], name: "idx_statement_org_bank")
+  @@map("bank_statements")
+}
+
+model BankStatementLine {
+  id              String @id @default(uuid())
+  bankStatementId String @map("bank_statement_id")
+
+  // Transaction data from bank
+  transactionDate DateTime  @map("transaction_date")
+  postDate        DateTime? @map("post_date")
+  description     String
+  referenceNumber String?   @map("reference_number")
+  amount          Decimal   @map("amount") @db.Decimal(12, 2) // positive = deposit, negative = withdrawal
+  category        String?   // bank-provided category
+
+  // Matching
+  matchConfidence      MatchConfidence @default(UNMATCHED) @map("match_confidence")
+  status               StatementLineStatus @default(UNMATCHED)
+
+  // Notes
+  notes String?
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  bankStatement BankStatement @relation(fields: [bankStatementId], references: [id], onDelete: Cascade)
+  matches       BankStatementLineMatch[]
+
+  @@index([bankStatementId], name: "idx_statement_line_statement")
+  @@map("bank_statement_lines")
+}
+
+model BankStatementLineMatch {
+  id            String @id @default(uuid())
+  lineId        String @map("line_id")
+  transactionId String @map("transaction_id") // Links to Transaction.id (stable entity ID)
+  amount        Decimal @map("amount") @db.Decimal(12, 2) // portion of the line amount matched
+  confidence    MatchConfidence @default(MANUAL) @map("confidence")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  line BankStatementLine @relation(fields: [lineId], references: [id], onDelete: Cascade)
+
+  @@index([lineId], name: "idx_line_match_line")
+  @@index([transactionId], name: "idx_line_match_txn")
+  @@map("bank_statement_line_matches")
 }
 
 // ============================================

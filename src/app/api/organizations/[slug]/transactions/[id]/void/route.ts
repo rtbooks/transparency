@@ -48,6 +48,14 @@ export async function POST(
     const body = await request.json();
     const validatedData = voidTransactionSchema.parse(body);
 
+    // Block voiding reconciled transactions
+    const existingTxn = await prisma.transaction.findFirst({
+      where: buildCurrentVersionWhere({ id, organizationId: organization.id }),
+    });
+    if (existingTxn?.reconciled) {
+      return NextResponse.json({ error: 'Cannot void a reconciled transaction' }, { status: 400 });
+    }
+
     const voided = await voidTransaction(id, organization.id, validatedData, user.id);
     return NextResponse.json(voided);
   } catch (error) {

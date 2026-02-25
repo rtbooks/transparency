@@ -392,6 +392,9 @@ export const ModelName = {
   ProgramSpending: 'ProgramSpending',
   ProgramSpendingTransaction: 'ProgramSpendingTransaction',
   BankAccount: 'BankAccount',
+  BankStatement: 'BankStatement',
+  BankStatementLine: 'BankStatementLine',
+  BankStatementLineMatch: 'BankStatementLineMatch',
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
   AccessRequest: 'AccessRequest',
@@ -416,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "donation" | "contact" | "bill" | "billPayment" | "attachment"
+    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "donation" | "contact" | "bill" | "billPayment" | "attachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1009,6 +1012,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.BankAccountCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.BankAccountCountAggregateOutputType> | number
+        }
+      }
+    }
+    BankStatement: {
+      payload: Prisma.$BankStatementPayload<ExtArgs>
+      fields: Prisma.BankStatementFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BankStatementFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BankStatementFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementPayload>
+        }
+        findFirst: {
+          args: Prisma.BankStatementFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BankStatementFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementPayload>
+        }
+        findMany: {
+          args: Prisma.BankStatementFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementPayload>[]
+        }
+        create: {
+          args: Prisma.BankStatementCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementPayload>
+        }
+        createMany: {
+          args: Prisma.BankStatementCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BankStatementCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementPayload>[]
+        }
+        delete: {
+          args: Prisma.BankStatementDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementPayload>
+        }
+        update: {
+          args: Prisma.BankStatementUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementPayload>
+        }
+        deleteMany: {
+          args: Prisma.BankStatementDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BankStatementUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BankStatementUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementPayload>[]
+        }
+        upsert: {
+          args: Prisma.BankStatementUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementPayload>
+        }
+        aggregate: {
+          args: Prisma.BankStatementAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBankStatement>
+        }
+        groupBy: {
+          args: Prisma.BankStatementGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankStatementGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BankStatementCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankStatementCountAggregateOutputType> | number
+        }
+      }
+    }
+    BankStatementLine: {
+      payload: Prisma.$BankStatementLinePayload<ExtArgs>
+      fields: Prisma.BankStatementLineFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BankStatementLineFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLinePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BankStatementLineFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLinePayload>
+        }
+        findFirst: {
+          args: Prisma.BankStatementLineFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLinePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BankStatementLineFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLinePayload>
+        }
+        findMany: {
+          args: Prisma.BankStatementLineFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLinePayload>[]
+        }
+        create: {
+          args: Prisma.BankStatementLineCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLinePayload>
+        }
+        createMany: {
+          args: Prisma.BankStatementLineCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BankStatementLineCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLinePayload>[]
+        }
+        delete: {
+          args: Prisma.BankStatementLineDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLinePayload>
+        }
+        update: {
+          args: Prisma.BankStatementLineUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLinePayload>
+        }
+        deleteMany: {
+          args: Prisma.BankStatementLineDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BankStatementLineUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BankStatementLineUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLinePayload>[]
+        }
+        upsert: {
+          args: Prisma.BankStatementLineUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLinePayload>
+        }
+        aggregate: {
+          args: Prisma.BankStatementLineAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBankStatementLine>
+        }
+        groupBy: {
+          args: Prisma.BankStatementLineGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankStatementLineGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BankStatementLineCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankStatementLineCountAggregateOutputType> | number
+        }
+      }
+    }
+    BankStatementLineMatch: {
+      payload: Prisma.$BankStatementLineMatchPayload<ExtArgs>
+      fields: Prisma.BankStatementLineMatchFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BankStatementLineMatchFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BankStatementLineMatchFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        findFirst: {
+          args: Prisma.BankStatementLineMatchFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BankStatementLineMatchFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        findMany: {
+          args: Prisma.BankStatementLineMatchFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>[]
+        }
+        create: {
+          args: Prisma.BankStatementLineMatchCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        createMany: {
+          args: Prisma.BankStatementLineMatchCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BankStatementLineMatchCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>[]
+        }
+        delete: {
+          args: Prisma.BankStatementLineMatchDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        update: {
+          args: Prisma.BankStatementLineMatchUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        deleteMany: {
+          args: Prisma.BankStatementLineMatchDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BankStatementLineMatchUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BankStatementLineMatchUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>[]
+        }
+        upsert: {
+          args: Prisma.BankStatementLineMatchUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        aggregate: {
+          args: Prisma.BankStatementLineMatchAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBankStatementLineMatch>
+        }
+        groupBy: {
+          args: Prisma.BankStatementLineMatchGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankStatementLineMatchGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BankStatementLineMatchCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankStatementLineMatchCountAggregateOutputType> | number
         }
       }
     }
@@ -1919,6 +2144,7 @@ export const BankAccountScalarFieldEnum = {
   accountType: 'accountType',
   plaidAccessToken: 'plaidAccessToken',
   plaidItemId: 'plaidItemId',
+  csvColumnMapping: 'csvColumnMapping',
   isActive: 'isActive',
   lastSyncedAt: 'lastSyncedAt',
   createdAt: 'createdAt',
@@ -1926,6 +2152,57 @@ export const BankAccountScalarFieldEnum = {
 } as const
 
 export type BankAccountScalarFieldEnum = (typeof BankAccountScalarFieldEnum)[keyof typeof BankAccountScalarFieldEnum]
+
+
+export const BankStatementScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  bankAccountId: 'bankAccountId',
+  statementDate: 'statementDate',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  openingBalance: 'openingBalance',
+  closingBalance: 'closingBalance',
+  fileName: 'fileName',
+  blobUrl: 'blobUrl',
+  status: 'status',
+  reconciledBy: 'reconciledBy',
+  reconciledAt: 'reconciledAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BankStatementScalarFieldEnum = (typeof BankStatementScalarFieldEnum)[keyof typeof BankStatementScalarFieldEnum]
+
+
+export const BankStatementLineScalarFieldEnum = {
+  id: 'id',
+  bankStatementId: 'bankStatementId',
+  transactionDate: 'transactionDate',
+  postDate: 'postDate',
+  description: 'description',
+  referenceNumber: 'referenceNumber',
+  amount: 'amount',
+  category: 'category',
+  matchConfidence: 'matchConfidence',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type BankStatementLineScalarFieldEnum = (typeof BankStatementLineScalarFieldEnum)[keyof typeof BankStatementLineScalarFieldEnum]
+
+
+export const BankStatementLineMatchScalarFieldEnum = {
+  id: 'id',
+  lineId: 'lineId',
+  transactionId: 'transactionId',
+  amount: 'amount',
+  confidence: 'confidence',
+  createdAt: 'createdAt'
+} as const
+
+export type BankStatementLineMatchScalarFieldEnum = (typeof BankStatementLineMatchScalarFieldEnum)[keyof typeof BankStatementLineMatchScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {
@@ -2337,6 +2614,48 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'ReconciliationStatus'
+ */
+export type EnumReconciliationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReconciliationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ReconciliationStatus[]'
+ */
+export type ListEnumReconciliationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReconciliationStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MatchConfidence'
+ */
+export type EnumMatchConfidenceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MatchConfidence'>
+    
+
+
+/**
+ * Reference to a field of type 'MatchConfidence[]'
+ */
+export type ListEnumMatchConfidenceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MatchConfidence[]'>
+    
+
+
+/**
+ * Reference to a field of type 'StatementLineStatus'
+ */
+export type EnumStatementLineStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatementLineStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'StatementLineStatus[]'
+ */
+export type ListEnumStatementLineStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatementLineStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'InvitationStatus'
  */
 export type EnumInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvitationStatus'>
@@ -2592,6 +2911,9 @@ export type GlobalOmitConfig = {
   programSpending?: Prisma.ProgramSpendingOmit
   programSpendingTransaction?: Prisma.ProgramSpendingTransactionOmit
   bankAccount?: Prisma.BankAccountOmit
+  bankStatement?: Prisma.BankStatementOmit
+  bankStatementLine?: Prisma.BankStatementLineOmit
+  bankStatementLineMatch?: Prisma.BankStatementLineMatchOmit
   auditLog?: Prisma.AuditLogOmit
   invitation?: Prisma.InvitationOmit
   accessRequest?: Prisma.AccessRequestOmit

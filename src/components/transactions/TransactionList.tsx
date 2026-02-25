@@ -38,7 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatCurrency } from "@/lib/utils/account-tree";
-import { ChevronLeft, ChevronRight, Download, Search, Info, Pencil, Ban, MoreVertical, CalendarClock, Eye } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Search, Info, Pencil, Ban, MoreVertical, CalendarClock, Eye, CheckCircle2, X } from "lucide-react";
 import { format, subDays, subMonths, startOfDay } from "date-fns";
 import { EditTransactionForm } from "./EditTransactionForm";
 import { VoidTransactionDialog } from "./VoidTransactionDialog";
@@ -53,6 +53,7 @@ interface TransactionWithAccounts extends Transaction {
 interface TransactionListProps {
   organizationSlug: string;
   refreshKey?: number;
+  initialAccountId?: string;
 }
 
 type PeriodKey = "30d" | "60d" | "90d" | "6m" | "12m" | "ytd" | "all" | "custom";
@@ -91,7 +92,7 @@ function computePeriodDates(period: PeriodKey): { start: string; end: string } {
   }
 }
 
-export function TransactionList({ organizationSlug, refreshKey }: TransactionListProps) {
+export function TransactionList({ organizationSlug, refreshKey, initialAccountId }: TransactionListProps) {
   const [transactions, setTransactions] = useState<TransactionWithAccounts[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -107,6 +108,7 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
   // Filters
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [accountFilter, setAccountFilter] = useState<string>(initialAccountId || "all");
   const [period, setPeriod] = useState<PeriodKey>("30d");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
@@ -163,6 +165,9 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
       if (showVoided) {
         params.append("includeVoided", "true");
       }
+      if (accountFilter && accountFilter !== "all") {
+        params.append("accountId", accountFilter);
+      }
 
       const response = await fetch(
         `/api/organizations/${organizationSlug}/transactions?${params.toString()}`
@@ -186,7 +191,7 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
 
   useEffect(() => {
     fetchTransactions();
-  }, [page, typeFilter, startDate, endDate, asOfDate, showVoided, refreshKey]);
+  }, [page, typeFilter, accountFilter, startDate, endDate, asOfDate, showVoided, refreshKey]);
 
   const handleSearch = () => {
     setPage(1); // Reset to first page
@@ -210,6 +215,9 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
         params.append("endDate", endDate);
       }
       params.append("limit", "10000"); // Large limit for export
+      if (accountFilter && accountFilter !== "all") {
+        params.append("accountId", accountFilter);
+      }
 
       const response = await fetch(
         `/api/organizations/${organizationSlug}/transactions?${params.toString()}`
@@ -267,11 +275,13 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
     }
   }, [organizationSlug]);
 
+  // Fetch accounts on mount for filter dropdown and edit forms
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
+
   const handleEditClick = async (transaction: TransactionWithAccounts) => {
     setSelectedTransaction(null);
-    if (accounts.length === 0) {
-      await fetchAccounts();
-    }
     setEditingTransaction(transaction);
   };
 
@@ -367,6 +377,30 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="min-w-[200px]">
+          <label className="mb-2 block text-sm font-medium text-gray-700">Account</label>
+          <div className="flex items-center gap-1">
+            <Select value={accountFilter} onValueChange={(v) => { setAccountFilter(v); setPage(1); }}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Accounts</SelectItem>
+                {accounts.map((acct) => (
+                  <SelectItem key={acct.id} value={acct.id}>
+                    {acct.code} — {acct.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {accountFilter !== "all" && (
+              <Button variant="ghost" size="sm" className="h-8 w-8 shrink-0 p-0" onClick={() => { setAccountFilter("all"); setPage(1); }}>
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
 
         {period === "custom" && (
@@ -510,10 +544,15 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
                       {transaction.isVoided && (
                         <Badge variant="destructive" className="text-xs">Voided</Badge>
                       )}
-                      {!transaction.isVoided && transaction.previousVersionId && (
+                      {!transaction.isVoided && transaction.reconciled && (
+                        <Badge variant="outline" className="border-green-300 bg-green-50 text-xs text-green-700">
+                          <CheckCircle2 className="mr-1 h-3 w-3" />Reconciled
+                        </Badge>
+                      )}
+                      {!transaction.isVoided && !transaction.reconciled && transaction.previousVersionId && (
                         <Badge variant="outline" className="text-xs">Edited</Badge>
                       )}
-                      {!transaction.isVoided && !transaction.previousVersionId && (
+                      {!transaction.isVoided && !transaction.reconciled && !transaction.previousVersionId && (
                         <span className="text-xs text-gray-400">—</span>
                       )}
                     </div>
@@ -604,6 +643,11 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
                     {selectedTransaction.isVoided && (
                       <Badge variant="destructive">Voided</Badge>
                     )}
+                    {!selectedTransaction.isVoided && selectedTransaction.reconciled && (
+                      <Badge variant="outline" className="border-green-300 bg-green-50 text-green-700">
+                        <CheckCircle2 className="mr-1 h-3 w-3" />Reconciled
+                      </Badge>
+                    )}
                     {!selectedTransaction.isVoided && selectedTransaction.previousVersionId && (
                       <Badge variant="outline">Edited</Badge>
                     )}
@@ -628,6 +672,16 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
                   <label className="text-sm font-medium text-blue-700">Edit Reason</label>
                   <div className="mt-1 text-sm text-blue-900">{selectedTransaction.changeReason}</div>
+                </div>
+              )}
+
+              {selectedTransaction.reconciled && selectedTransaction.reconciledAt && (
+                <div className="rounded-lg border border-green-200 bg-green-50 p-3">
+                  <label className="text-sm font-medium text-green-700">Reconciled</label>
+                  <div className="mt-1 text-sm text-green-900">
+                    This transaction was reconciled on {new Date(selectedTransaction.reconciledAt).toLocaleDateString()}.
+                    Reconciled transactions cannot be edited or voided.
+                  </div>
                 </div>
               )}
 
@@ -688,11 +742,11 @@ export function TransactionList({ organizationSlug, refreshKey }: TransactionLis
                 organizationSlug={organizationSlug}
                 entityType="TRANSACTION"
                 entityId={selectedTransaction.id}
-                readOnly={selectedTransaction.isVoided}
+                readOnly={selectedTransaction.isVoided || selectedTransaction.reconciled}
               />
 
-              {/* Edit/Void action buttons - only for non-voided transactions */}
-              {!selectedTransaction.isVoided && (
+              {/* Edit/Void action buttons - only for non-voided, non-reconciled transactions */}
+              {!selectedTransaction.isVoided && !selectedTransaction.reconciled && (
                 <div className="flex gap-2 border-t pt-4">
                   <Button
                     variant="outline"

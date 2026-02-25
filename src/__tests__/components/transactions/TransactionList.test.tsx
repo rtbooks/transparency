@@ -39,6 +39,21 @@ jest.mock('next/navigation', () => ({
 }));
 
 describe('TransactionList Component', () => {
+  const mockAccountsResponse = {
+    ok: true,
+    json: () => Promise.resolve([
+      { id: 'acct-1', code: '1000', name: 'Checking', type: 'ASSET' },
+      { id: 'acct-2', code: '4000', name: 'Revenue', type: 'REVENUE' },
+    ]),
+  };
+
+  function mockFetchForTransactions(txnResponse: object) {
+    (global.fetch as jest.Mock).mockImplementation((url: string) => {
+      if (url.includes('/accounts')) return Promise.resolve(mockAccountsResponse);
+      return Promise.resolve(txnResponse);
+    });
+  }
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -49,8 +64,10 @@ describe('TransactionList Component', () => {
 
   describe('Loading State', () => {
     it('should display loading state while fetching transactions', () => {
-      // Mock fetch to never resolve
-      (global.fetch as jest.Mock).mockImplementation(() => new Promise(() => {}));
+      (global.fetch as jest.Mock).mockImplementation((url: string) => {
+        if (url.includes('/accounts')) return Promise.resolve(mockAccountsResponse);
+        return new Promise(() => {});
+      });
 
       render(<TransactionList organizationSlug="test-org" />);
 
@@ -60,7 +77,10 @@ describe('TransactionList Component', () => {
 
   describe('Error State', () => {
     it('should display error message when fetch fails', async () => {
-      (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+      (global.fetch as jest.Mock).mockImplementation((url: string) => {
+        if (url.includes('/accounts')) return Promise.resolve(mockAccountsResponse);
+        return Promise.reject(new Error('Network error'));
+      });
 
       render(<TransactionList organizationSlug="test-org" />);
 
@@ -70,9 +90,9 @@ describe('TransactionList Component', () => {
     });
 
     it('should display error message when API returns non-OK status', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false,
-        status: 500,
+      (global.fetch as jest.Mock).mockImplementation((url: string) => {
+        if (url.includes('/accounts')) return Promise.resolve(mockAccountsResponse);
+        return Promise.resolve({ ok: false, status: 500 });
       });
 
       render(<TransactionList organizationSlug="test-org" />);
@@ -96,7 +116,7 @@ describe('TransactionList Component', () => {
         temporalContext: null,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
@@ -150,7 +170,7 @@ describe('TransactionList Component', () => {
         temporalContext: null,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
@@ -234,7 +254,7 @@ describe('TransactionList Component', () => {
         temporalContext: null,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
@@ -288,7 +308,7 @@ describe('TransactionList Component', () => {
         temporalContext: null,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
@@ -343,7 +363,7 @@ describe('TransactionList Component', () => {
         temporalContext: null,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
@@ -396,7 +416,7 @@ describe('TransactionList Component', () => {
         temporalContext: null,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
@@ -422,7 +442,7 @@ describe('TransactionList Component', () => {
         temporalContext: null,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
@@ -459,7 +479,7 @@ describe('TransactionList Component', () => {
         temporalContext: null,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
@@ -515,7 +535,7 @@ describe('TransactionList Component', () => {
         temporalContext: null,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
@@ -548,7 +568,7 @@ describe('TransactionList Component', () => {
         },
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
@@ -603,7 +623,7 @@ describe('TransactionList Component', () => {
         temporalContext: null,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
@@ -655,7 +675,7 @@ describe('TransactionList Component', () => {
         temporalContext: null,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      mockFetchForTransactions({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
