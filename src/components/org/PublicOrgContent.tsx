@@ -53,9 +53,8 @@ export function PublicOrgContent({
   const [currentUserState, setCurrentUserState] = useState(userState);
   const [campaigns, setCampaigns] = useState<any[]>(serverCampaigns || []);
 
-  // Only fetch client-side if server didn't provide campaigns (non-transparent mode)
+  // Always fetch enriched campaign data from API (server data may lack progress fields)
   useEffect(() => {
-    if (serverCampaigns) return; // Already have server data
     async function fetchCampaigns() {
       try {
         const res = await fetch(`/api/organizations/${organization.slug}/campaigns`);
@@ -64,11 +63,11 @@ export function PublicOrgContent({
           setCampaigns((data.campaigns || []).filter((c: any) => c.status === 'ACTIVE'));
         }
       } catch (e) {
-        // Ignore
+        // Ignore — fall back to server-provided data
       }
     }
     fetchCampaigns();
-  }, [organization.slug, serverCampaigns]);
+  }, [organization.slug]);
 
   const showFinancials = organization.publicTransparency || userState === 'member';
 
@@ -199,7 +198,7 @@ export function PublicOrgContent({
                   )}
                   <div className="mt-4">
                     <p className="text-xl font-bold text-green-700">
-                      {formatCurrency(campaign.amountRaised)}
+                      {formatCurrency(campaign.amountRaised ?? 0)}
                       {campaign.targetAmount && (
                         <span className="text-sm font-normal text-gray-500">
                           {' '}of {formatCurrency(campaign.targetAmount)}
@@ -215,7 +214,7 @@ export function PublicOrgContent({
                       </div>
                     )}
                     <p className="mt-1 text-xs text-gray-500">
-                      {campaign.donationCount} donation{campaign.donationCount !== 1 ? 's' : ''}
+                      {campaign.donationCount ?? 0} donation{(campaign.donationCount ?? 0) !== 1 ? 's' : ''}
                     </p>
                     <div className="mt-3 flex gap-2">
                       <Link href={`/org/${organization.slug}/donate/${campaign.id}`}>
