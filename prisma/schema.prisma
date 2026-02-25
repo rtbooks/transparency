@@ -31,6 +31,7 @@ model Organization {
   paymentInstructions   String?         @map("payment_instructions") @db.Text
   donationsAccountId    String?         @map("donations_account_id")    // Stable entity ID of the designated Revenue account
   donationsArAccountId  String?         @map("donations_ar_account_id") // Stable entity ID of the designated Accounts Receivable account
+  fundBalanceAccountId  String?         @map("fund_balance_account_id") // Stable entity ID of the designated Fund Balance / Net Assets equity account
 
   // Public transparency — when true, unauthenticated visitors can see financial summaries
   publicTransparency Boolean @default(false) @map("public_transparency")
@@ -311,6 +312,7 @@ enum TransactionType {
   INCOME // Money coming in
   EXPENSE // Money going out
   TRANSFER // Between accounts
+  CLOSING // Year-end closing entry
 }
 
 enum PaymentMethod {
@@ -917,4 +919,42 @@ model Attachment {
   @@index([organizationId, entityType, entityId], name: "idx_attachment_org_entity")
   @@index([entityType, entityId], name: "idx_attachment_entity")
   @@map("attachments")
+}
+
+// ============================================
+// FISCAL PERIODS (Year-End Closing)
+// ============================================
+
+enum FiscalPeriodStatus {
+  OPEN
+  CLOSING
+  CLOSED
+}
+
+model FiscalPeriod {
+  id             String             @id @default(uuid())
+  organizationId String             @map("organization_id")
+  name           String // e.g., "FY 2025"
+  startDate      DateTime           @map("start_date")
+  endDate        DateTime           @map("end_date")
+  status         FiscalPeriodStatus @default(OPEN)
+
+  // Closing metadata
+  closedAt  DateTime? @map("closed_at")
+  closedBy  String?   @map("closed_by")
+
+  // Reopen metadata
+  reopenedAt DateTime? @map("reopened_at")
+  reopenedBy String?   @map("reopened_by")
+
+  // References to closing transactions created during close
+  closingTransactionIds String[] @map("closing_transaction_ids")
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([organizationId, startDate])
+  @@index([organizationId, status], name: "idx_fiscal_period_org_status")
+  @@map("fiscal_periods")
 }

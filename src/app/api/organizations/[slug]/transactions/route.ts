@@ -5,6 +5,7 @@ import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
 import { AccountService } from '@/services/account.service';
 import { MAX_DATE, buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
+import { isDateInClosedPeriod } from '@/services/fiscal-period.service';
 
 const createTransactionSchema = z.object({
   date: z.string().datetime(),
@@ -332,6 +333,15 @@ export async function POST(
     if (!debitAccount.isActive || !creditAccount.isActive) {
       return NextResponse.json(
         { error: 'Cannot use inactive accounts for transactions' },
+        { status: 400 }
+      );
+    }
+
+    // Check if the transaction date falls in a closed fiscal period
+    const closedCheck = await isDateInClosedPeriod(organization.id, new Date(validatedData.date));
+    if (closedCheck.closed) {
+      return NextResponse.json(
+        { error: `Cannot create transaction in closed fiscal period "${closedCheck.periodName}"` },
         { status: 400 }
       );
     }

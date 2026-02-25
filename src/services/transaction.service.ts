@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma';
 import { updateAccountBalances, reverseAccountBalances } from '@/lib/accounting/balance-calculator';
 import { MAX_DATE, closeVersion } from '@/lib/temporal/temporal-utils';
 import { recalculateBillStatus } from '@/services/bill.service';
+import { isDateInClosedPeriod } from '@/services/fiscal-period.service';
 
 export interface EditTransactionInput {
   transactionDate?: string;
@@ -51,6 +52,12 @@ export async function editTransaction(
 
   if (current.organizationId !== organizationId) {
     throw new Error('Transaction not found or already voided');
+  }
+
+  // Prevent edits to transactions in closed fiscal periods
+  const closedCheck = await isDateInClosedPeriod(organizationId, current.transactionDate);
+  if (closedCheck.closed) {
+    throw new Error(`Cannot edit transaction in closed fiscal period "${closedCheck.periodName}"`);
   }
 
   const now = new Date();
@@ -159,6 +166,12 @@ export async function voidTransaction(
 
   if (current.organizationId !== organizationId) {
     throw new Error('Transaction not found or already voided');
+  }
+
+  // Prevent voiding transactions in closed fiscal periods
+  const closedCheck = await isDateInClosedPeriod(organizationId, current.transactionDate);
+  if (closedCheck.closed) {
+    throw new Error(`Cannot void transaction in closed fiscal period "${closedCheck.periodName}"`);
   }
 
   const now = new Date();

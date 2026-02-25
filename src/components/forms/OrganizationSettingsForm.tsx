@@ -42,6 +42,7 @@ const organizationSettingsSchema = z.object({
   paymentInstructions: z.string().optional(),
   donationsAccountId: z.string().nullable().optional(),
   donationsArAccountId: z.string().nullable().optional(),
+  fundBalanceAccountId: z.string().nullable().optional(),
   publicTransparency: z.boolean(),
 });
 
@@ -75,13 +76,15 @@ export function OrganizationSettingsForm({
       paymentInstructions: organization.paymentInstructions || '',
       donationsAccountId: organization.donationsAccountId || null,
       donationsArAccountId: organization.donationsArAccountId || null,
+      fundBalanceAccountId: organization.fundBalanceAccountId || null,
       publicTransparency: organization.publicTransparency ?? false,
     },
   });
 
-  // Fetch accounts for donation settings dropdowns
+  // Fetch accounts for settings dropdowns
   const [revenueAccounts, setRevenueAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
   const [arAccounts, setArAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
+  const [equityAccounts, setEquityAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
   useEffect(() => {
     async function fetchAccounts() {
       try {
@@ -89,14 +92,21 @@ export function OrganizationSettingsForm({
         if (res.ok) {
           const data = await res.json();
           const allAccounts = data.accounts || data || [];
-          const revenue = allAccounts.filter(
-            (a: any) => a.type === 'REVENUE' && !a.parentAccountId
+          setRevenueAccounts(
+            allAccounts
+              .filter((a: any) => a.type === 'REVENUE' && !a.parentAccountId)
+              .map((a: any) => ({ id: a.id, name: a.name, code: a.code }))
           );
-          const asset = allAccounts.filter(
-            (a: any) => a.type === 'ASSET' && a.isActive
+          setArAccounts(
+            allAccounts
+              .filter((a: any) => a.type === 'ASSET' && a.isActive)
+              .map((a: any) => ({ id: a.id, name: a.name, code: a.code }))
           );
-          setRevenueAccounts(revenue.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
-          setArAccounts(asset.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
+          setEquityAccounts(
+            allAccounts
+              .filter((a: any) => a.type === 'EQUITY' && a.isActive)
+              .map((a: any) => ({ id: a.id, name: a.name, code: a.code }))
+          );
         }
       } catch (e) {
         console.error('Failed to load accounts:', e);
@@ -123,6 +133,7 @@ export function OrganizationSettingsForm({
           paymentInstructions: data.paymentInstructions || null,
           donationsAccountId: data.donationsAccountId || null,
           donationsArAccountId: data.donationsArAccountId || null,
+          fundBalanceAccountId: data.fundBalanceAccountId || null,
           publicTransparency: data.publicTransparency,
         }),
       });
@@ -206,16 +217,19 @@ export function OrganizationSettingsForm({
     }
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Basic Information */}
-      <div className="rounded-lg border bg-white p-6">
-        <h2 className="mb-6 text-xl font-semibold text-gray-900">
-          Basic Information
-        </h2>
+  const selectClassName = "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+  return (
+    <>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* General Information */}
+        <div className="rounded-lg border bg-white p-6">
+          <h2 className="mb-6 text-xl font-semibold text-gray-900">
+            General Information
+          </h2>
+
+          <div className="space-y-6">
             <FormField
               control={form.control}
               name="name"
@@ -257,7 +271,7 @@ export function OrganizationSettingsForm({
                     <Input placeholder="e.g., 12-3456789" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Your organization's Employer Identification Number
+                    Your organization&apos;s Employer Identification Number
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -278,7 +292,7 @@ export function OrganizationSettingsForm({
                     />
                   </FormControl>
                   <FormDescription>
-                    A brief description of your organization's purpose
+                    A brief description of your organization&apos;s purpose
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -328,57 +342,60 @@ export function OrganizationSettingsForm({
               )}
             />
 
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push(`/${organization.slug}/dashboard`)}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Save Changes
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
-
-      {/* Donor Settings */}
-      <div className="rounded-lg border bg-white p-6">
-        <h2 className="mb-6 text-xl font-semibold text-gray-900">
-          Donor Settings
-        </h2>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="donorAccessMode"
+              name="publicTransparency"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Public Transparency</FormLabel>
+                    <FormDescription>
+                      When enabled, unauthenticated visitors can view financial summaries,
+                      active campaigns, and program spending on your public page.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Accounting Settings */}
+        <div className="rounded-lg border bg-white p-6">
+          <h2 className="mb-6 text-xl font-semibold text-gray-900">
+            Accounting
+          </h2>
+
+          <div className="space-y-6">
+            <FormField
+              control={form.control}
+              name="fundBalanceAccountId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Donor Access Mode</FormLabel>
+                  <FormLabel>Fund Balance / Net Assets Account</FormLabel>
                   <FormControl>
                     <select
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      value={field.value}
-                      onChange={field.onChange}
+                      className={selectClassName}
+                      value={field.value || ''}
+                      onChange={(e) => field.onChange(e.target.value || null)}
                     >
-                      <option value="REQUIRE_APPROVAL">
-                        Require admin approval for donor access requests
-                      </option>
-                      <option value="AUTO_APPROVE">
-                        Auto-approve donor access requests
-                      </option>
+                      <option value="">None</option>
+                      {equityAccounts.map((acct) => (
+                        <option key={acct.id} value={acct.id}>
+                          {acct.code} - {acct.name}
+                        </option>
+                      ))}
                     </select>
                   </FormControl>
                   <FormDescription>
-                    Controls whether donors who request access are automatically
-                    approved or need manual review by an admin.
+                    The equity account where year-end closing entries transfer net
+                    revenue/expenses. Typically &quot;Net Assets Without Donor Restrictions&quot;.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -390,10 +407,10 @@ export function OrganizationSettingsForm({
               name="donationsAccountId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Donations Account</FormLabel>
+                  <FormLabel>Donations Revenue Account</FormLabel>
                   <FormControl>
                     <select
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      className={selectClassName}
                       value={field.value || ''}
                       onChange={(e) => field.onChange(e.target.value || null)}
                     >
@@ -422,7 +439,7 @@ export function OrganizationSettingsForm({
                   <FormLabel>Accounts Receivable Account</FormLabel>
                   <FormControl>
                     <select
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      className={selectClassName}
                       value={field.value || ''}
                       onChange={(e) => field.onChange(e.target.value || null)}
                     >
@@ -437,6 +454,44 @@ export function OrganizationSettingsForm({
                   <FormDescription>
                     The asset account used to track outstanding pledge receivables.
                     When not set, the system looks for an account containing &quot;Receivable&quot;.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Donor & Campaign Settings */}
+        <div className="rounded-lg border bg-white p-6">
+          <h2 className="mb-6 text-xl font-semibold text-gray-900">
+            Donors &amp; Campaigns
+          </h2>
+
+          <div className="space-y-6">
+            <FormField
+              control={form.control}
+              name="donorAccessMode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Donor Access Mode</FormLabel>
+                  <FormControl>
+                    <select
+                      className={selectClassName}
+                      value={field.value}
+                      onChange={field.onChange}
+                    >
+                      <option value="REQUIRE_APPROVAL">
+                        Require admin approval for donor access requests
+                      </option>
+                      <option value="AUTO_APPROVE">
+                        Auto-approve donor access requests
+                      </option>
+                    </select>
+                  </FormControl>
+                  <FormDescription>
+                    Controls whether donors who request access are automatically
+                    approved or need manual review by an admin.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -464,116 +519,83 @@ export function OrganizationSettingsForm({
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="publicTransparency"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Public Transparency</FormLabel>
-                    <FormDescription>
-                      When enabled, unauthenticated visitors can view financial summaries,
-                      active campaigns, and program spending on your public page.
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <div className="flex gap-3 pt-4">
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Save Donor Settings
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
-
-      {/* Branding Section */}
-      <div className="rounded-lg border bg-white p-6">
-        <h2 className="mb-6 text-xl font-semibold text-gray-900">
-          <Palette className="mr-2 inline-block h-5 w-5" />
-          Branding
-        </h2>
-
-        {/* Logo Upload */}
-        <div className="mb-6 space-y-4">
-          <label className="block text-sm font-medium text-gray-700">Organization Logo</label>
-          {currentLogoUrl ? (
-            <div className="flex items-center gap-4">
-              <img
-                src={currentLogoUrl}
-                alt={organization.name}
-                className="h-20 w-20 rounded-lg border object-contain bg-white"
-              />
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-900">Current Logo</p>
-                <div className="flex gap-2">
-                  <label className="cursor-pointer">
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                      onChange={handleLogoUpload}
-                      className="hidden"
-                      disabled={isUploadingLogo}
-                    />
-                    <span className="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                      <Upload className="h-3.5 w-3.5" />
-                      Replace
-                    </span>
-                  </label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleLogoRemove}
-                    disabled={isUploadingLogo}
-                  >
-                    <X className="mr-1 h-3.5 w-3.5" />
-                    Remove
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <label className="cursor-pointer">
-              <input
-                type="file"
-                accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                onChange={handleLogoUpload}
-                className="hidden"
-                disabled={isUploadingLogo}
-              />
-              <div className="flex h-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition-colors hover:border-gray-400 hover:bg-gray-100">
-                <div className="text-center">
-                  {isUploadingLogo ? (
-                    <Loader2 className="mx-auto h-8 w-8 animate-spin text-gray-400" />
-                  ) : (
-                    <Upload className="mx-auto h-8 w-8 text-gray-400" />
-                  )}
-                  <p className="mt-2 text-sm text-gray-600">
-                    {isUploadingLogo ? 'Uploading...' : 'Click to upload logo'}
-                  </p>
-                  <p className="text-xs text-gray-500">PNG, JPEG, WebP, or SVG · Max 500KB</p>
-                </div>
-              </div>
-            </label>
-          )}
+          </div>
         </div>
 
-        {/* Theme Colors */}
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Branding */}
+        <div className="rounded-lg border bg-white p-6">
+          <h2 className="mb-6 text-xl font-semibold text-gray-900">
+            <Palette className="mr-2 inline-block h-5 w-5" />
+            Branding
+          </h2>
+
+          {/* Logo Upload — independent of form submit */}
+          <div className="mb-6 space-y-4">
+            <label className="block text-sm font-medium text-gray-700">Organization Logo</label>
+            {currentLogoUrl ? (
+              <div className="flex items-center gap-4">
+                <img
+                  src={currentLogoUrl}
+                  alt={organization.name}
+                  className="h-20 w-20 rounded-lg border object-contain bg-white"
+                />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-900">Current Logo</p>
+                  <div className="flex gap-2">
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                        disabled={isUploadingLogo}
+                      />
+                      <span className="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        <Upload className="h-3.5 w-3.5" />
+                        Replace
+                      </span>
+                    </label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleLogoRemove}
+                      disabled={isUploadingLogo}
+                    >
+                      <X className="mr-1 h-3.5 w-3.5" />
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                  disabled={isUploadingLogo}
+                />
+                <div className="flex h-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition-colors hover:border-gray-400 hover:bg-gray-100">
+                  <div className="text-center">
+                    {isUploadingLogo ? (
+                      <Loader2 className="mx-auto h-8 w-8 animate-spin text-gray-400" />
+                    ) : (
+                      <Upload className="mx-auto h-8 w-8 text-gray-400" />
+                    )}
+                    <p className="mt-2 text-sm text-gray-600">
+                      {isUploadingLogo ? 'Uploading...' : 'Click to upload logo'}
+                    </p>
+                    <p className="text-xs text-gray-500">PNG, JPEG, WebP, or SVG · Max 500KB</p>
+                  </div>
+                </div>
+              </label>
+            )}
+          </div>
+
+          {/* Theme Colors */}
+          <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
@@ -645,35 +667,49 @@ export function OrganizationSettingsForm({
                 </span>
               </div>
             </div>
-
-            <div className="flex justify-end">
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Branding
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
-
-      {/* Danger Zone */}
-      <div className="rounded-lg border border-red-200 bg-white p-6">
-        <h2 className="mb-4 text-xl font-semibold text-red-900">Danger Zone</h2>
-        <div className="rounded-lg border border-red-300 bg-red-50 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-red-900">Delete Organization</p>
-              <p className="text-sm text-red-700">
-                Permanently delete this organization and all its data. This
-                action cannot be undone.
-              </p>
-            </div>
-            <Button variant="destructive" disabled>
-              Delete
-            </Button>
           </div>
+        </div>
+
+        {/* Save Button */}
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push(`/${organization.slug}/dashboard`)}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Save Settings
+          </Button>
+        </div>
+
+        {/* Danger Zone — outside the save flow but inside for layout */}
+      </form>
+    </Form>
+
+    {/* Danger Zone — separate from the form */}
+    <div className="mt-6 rounded-lg border border-red-200 bg-white p-6">
+      <h2 className="mb-4 text-xl font-semibold text-red-900">Danger Zone</h2>
+      <div className="rounded-lg border border-red-300 bg-red-50 p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-medium text-red-900">Delete Organization</p>
+            <p className="text-sm text-red-700">
+              Permanently delete this organization and all its data. This
+              action cannot be undone.
+            </p>
+          </div>
+          <Button variant="destructive" disabled>
+            Delete
+          </Button>
         </div>
       </div>
     </div>
+    </>
   );
 }

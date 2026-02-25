@@ -308,8 +308,16 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
       INCOME: { variant: "default", label: "Income" },
       EXPENSE: { variant: "destructive", label: "Expense" },
       TRANSFER: { variant: "secondary", label: "Transfer" },
+      CLOSING: { variant: "outline", label: "Closing" },
     };
     const config = variants[type] || { variant: "outline", label: type };
+    if (type === 'CLOSING') {
+      return (
+        <Badge variant="outline" className="border-purple-300 bg-purple-50 text-purple-700">
+          {config.label}
+        </Badge>
+      );
+    }
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
@@ -359,6 +367,7 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
               <SelectItem value="INCOME">Income</SelectItem>
               <SelectItem value="EXPENSE">Expense</SelectItem>
               <SelectItem value="TRANSFER">Transfer</SelectItem>
+              <SelectItem value="CLOSING">Closing</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -742,11 +751,16 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
                 organizationSlug={organizationSlug}
                 entityType="TRANSACTION"
                 entityId={selectedTransaction.id}
-                readOnly={selectedTransaction.isVoided || selectedTransaction.reconciled}
+                readOnly={selectedTransaction.isVoided || selectedTransaction.reconciled || selectedTransaction.type === 'CLOSING'}
               />
 
-              {/* Edit/Void action buttons - only for non-voided, non-reconciled transactions */}
-              {!selectedTransaction.isVoided && !selectedTransaction.reconciled && (
+              {/* Edit/Void action buttons - only for non-voided, non-reconciled, non-closing transactions */}
+              {selectedTransaction.type === 'CLOSING' && !selectedTransaction.isVoided && (
+                <div className="rounded-lg border border-purple-200 bg-purple-50 p-3 text-sm text-purple-700">
+                  This is a year-end closing entry. To modify or reverse it, reopen the fiscal period from the Maintenance page.
+                </div>
+              )}
+              {!selectedTransaction.isVoided && !selectedTransaction.reconciled && selectedTransaction.type !== 'CLOSING' && (
                 <div className="flex gap-2 border-t pt-4">
                   <Button
                     variant="outline"

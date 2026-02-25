@@ -404,7 +404,8 @@ export const ModelName = {
   Contact: 'Contact',
   Bill: 'Bill',
   BillPayment: 'BillPayment',
-  Attachment: 'Attachment'
+  Attachment: 'Attachment',
+  FiscalPeriod: 'FiscalPeriod'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -420,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "campaignTier" | "donation" | "contact" | "bill" | "billPayment" | "attachment"
+    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "campaignTier" | "donation" | "contact" | "bill" | "billPayment" | "attachment" | "fiscalPeriod"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1978,6 +1979,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FiscalPeriod: {
+      payload: Prisma.$FiscalPeriodPayload<ExtArgs>
+      fields: Prisma.FiscalPeriodFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FiscalPeriodFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FiscalPeriodPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FiscalPeriodFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FiscalPeriodPayload>
+        }
+        findFirst: {
+          args: Prisma.FiscalPeriodFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FiscalPeriodPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FiscalPeriodFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FiscalPeriodPayload>
+        }
+        findMany: {
+          args: Prisma.FiscalPeriodFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FiscalPeriodPayload>[]
+        }
+        create: {
+          args: Prisma.FiscalPeriodCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FiscalPeriodPayload>
+        }
+        createMany: {
+          args: Prisma.FiscalPeriodCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FiscalPeriodCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FiscalPeriodPayload>[]
+        }
+        delete: {
+          args: Prisma.FiscalPeriodDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FiscalPeriodPayload>
+        }
+        update: {
+          args: Prisma.FiscalPeriodUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FiscalPeriodPayload>
+        }
+        deleteMany: {
+          args: Prisma.FiscalPeriodDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FiscalPeriodUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FiscalPeriodUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FiscalPeriodPayload>[]
+        }
+        upsert: {
+          args: Prisma.FiscalPeriodUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FiscalPeriodPayload>
+        }
+        aggregate: {
+          args: Prisma.FiscalPeriodAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFiscalPeriod>
+        }
+        groupBy: {
+          args: Prisma.FiscalPeriodGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FiscalPeriodGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FiscalPeriodCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FiscalPeriodCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2032,6 +2107,7 @@ export const OrganizationScalarFieldEnum = {
   paymentInstructions: 'paymentInstructions',
   donationsAccountId: 'donationsAccountId',
   donationsArAccountId: 'donationsArAccountId',
+  fundBalanceAccountId: 'fundBalanceAccountId',
   publicTransparency: 'publicTransparency',
   status: 'status',
   subscriptionTier: 'subscriptionTier',
@@ -2471,6 +2547,25 @@ export const AttachmentScalarFieldEnum = {
 export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
 
 
+export const FiscalPeriodScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  status: 'status',
+  closedAt: 'closedAt',
+  closedBy: 'closedBy',
+  reopenedAt: 'reopenedAt',
+  reopenedBy: 'reopenedBy',
+  closingTransactionIds: 'closingTransactionIds',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FiscalPeriodScalarFieldEnum = (typeof FiscalPeriodScalarFieldEnum)[keyof typeof FiscalPeriodScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2904,6 +2999,20 @@ export type ListEnumBillStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$P
 
 
 /**
+ * Reference to a field of type 'FiscalPeriodStatus'
+ */
+export type EnumFiscalPeriodStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FiscalPeriodStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'FiscalPeriodStatus[]'
+ */
+export type ListEnumFiscalPeriodStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FiscalPeriodStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -3032,6 +3141,7 @@ export type GlobalOmitConfig = {
   bill?: Prisma.BillOmit
   billPayment?: Prisma.BillPaymentOmit
   attachment?: Prisma.AttachmentOmit
+  fiscalPeriod?: Prisma.FiscalPeriodOmit
 }
 
 /* Types for Logging */

@@ -115,6 +115,21 @@ export async function POST(
       }
     }
 
+    // Auto-set fundBalanceAccountId to "Net Assets Without Donor Restrictions" (code 3000)
+    const fundBalanceAccountId = accountMap.get('3000');
+    if (fundBalanceAccountId) {
+      const currentOrg = await prisma.organization.findFirst({
+        where: buildCurrentVersionWhere({ id: organization.id }),
+      });
+      if (currentOrg && !currentOrg.fundBalanceAccountId) {
+        const now = new Date();
+        await closeVersion(prisma.organization, currentOrg.versionId, now, 'organization');
+        await prisma.organization.create({
+          data: buildNewVersionData(currentOrg, { fundBalanceAccountId } as any, now) as any,
+        });
+      }
+    }
+
     return NextResponse.json({
       success: true,
       accountsCreated: template.length,

@@ -71,7 +71,8 @@ export const ModelName = {
   Contact: 'Contact',
   Bill: 'Bill',
   BillPayment: 'BillPayment',
-  Attachment: 'Attachment'
+  Attachment: 'Attachment',
+  FiscalPeriod: 'FiscalPeriod'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -105,6 +106,7 @@ export const OrganizationScalarFieldEnum = {
   paymentInstructions: 'paymentInstructions',
   donationsAccountId: 'donationsAccountId',
   donationsArAccountId: 'donationsArAccountId',
+  fundBalanceAccountId: 'fundBalanceAccountId',
   publicTransparency: 'publicTransparency',
   status: 'status',
   subscriptionTier: 'subscriptionTier',
@@ -542,6 +544,25 @@ export const AttachmentScalarFieldEnum = {
 } as const
 
 export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
+
+
+export const FiscalPeriodScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  status: 'status',
+  closedAt: 'closedAt',
+  closedBy: 'closedBy',
+  reopenedAt: 'reopenedAt',
+  reopenedBy: 'reopenedBy',
+  closingTransactionIds: 'closingTransactionIds',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FiscalPeriodScalarFieldEnum = (typeof FiscalPeriodScalarFieldEnum)[keyof typeof FiscalPeriodScalarFieldEnum]
 
 
 export const SortOrder = {
