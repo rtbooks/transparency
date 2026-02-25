@@ -568,8 +568,9 @@ export function ReconciliationWorkspace({
       </div>
 
       {/* Complete Reconciliation Dialog */}
-      {showComplete && (
-        <Dialog open onOpenChange={(open) => !open && setShowComplete(false)}>
+      <Dialog open={showComplete} onOpenChange={(open) => {
+        if (!open && actionLoading !== 'complete') setShowComplete(false);
+      }}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
@@ -619,7 +620,6 @@ export function ReconciliationWorkspace({
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      )}
 
       {/* Create Transaction from Bank Line Dialog */}
       {showCreateTxn && (
