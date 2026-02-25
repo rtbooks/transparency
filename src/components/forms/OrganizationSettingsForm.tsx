@@ -42,6 +42,7 @@ const organizationSettingsSchema = z.object({
   paymentInstructions: z.string().optional(),
   donationsAccountId: z.string().nullable().optional(),
   donationsArAccountId: z.string().nullable().optional(),
+  fundBalanceAccountId: z.string().nullable().optional(),
   publicTransparency: z.boolean(),
 });
 
@@ -75,6 +76,7 @@ export function OrganizationSettingsForm({
       paymentInstructions: organization.paymentInstructions || '',
       donationsAccountId: organization.donationsAccountId || null,
       donationsArAccountId: organization.donationsArAccountId || null,
+      fundBalanceAccountId: organization.fundBalanceAccountId || null,
       publicTransparency: organization.publicTransparency ?? false,
     },
   });
@@ -82,6 +84,7 @@ export function OrganizationSettingsForm({
   // Fetch accounts for donation settings dropdowns
   const [revenueAccounts, setRevenueAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
   const [arAccounts, setArAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
+  const [equityAccounts, setEquityAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
   useEffect(() => {
     async function fetchAccounts() {
       try {
@@ -95,8 +98,12 @@ export function OrganizationSettingsForm({
           const asset = allAccounts.filter(
             (a: any) => a.type === 'ASSET' && a.isActive
           );
+          const equity = allAccounts.filter(
+            (a: any) => a.type === 'EQUITY' && a.isActive
+          );
           setRevenueAccounts(revenue.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
           setArAccounts(asset.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
+          setEquityAccounts(equity.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
         }
       } catch (e) {
         console.error('Failed to load accounts:', e);
@@ -437,6 +444,35 @@ export function OrganizationSettingsForm({
                   <FormDescription>
                     The asset account used to track outstanding pledge receivables.
                     When not set, the system looks for an account containing &quot;Receivable&quot;.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="fundBalanceAccountId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fund Balance / Net Assets Account</FormLabel>
+                  <FormControl>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      value={field.value || ''}
+                      onChange={(e) => field.onChange(e.target.value || null)}
+                    >
+                      <option value="">None</option>
+                      {equityAccounts.map((acct) => (
+                        <option key={acct.id} value={acct.id}>
+                          {acct.code} - {acct.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormDescription>
+                    The equity account where year-end closing entries transfer net
+                    revenue/expenses. Typically &quot;Net Assets Without Donor Restrictions&quot;.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

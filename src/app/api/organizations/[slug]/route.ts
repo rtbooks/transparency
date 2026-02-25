@@ -20,6 +20,7 @@ const updateOrganizationSchema = z.object({
   paymentInstructions: z.string().nullable().optional(),
   donationsAccountId: z.string().nullable().optional(),
   donationsArAccountId: z.string().nullable().optional(),
+  fundBalanceAccountId: z.string().nullable().optional(),
   publicTransparency: z.boolean().optional(),
 });
 
@@ -147,6 +148,7 @@ export async function PATCH(
     if (validatedData.paymentInstructions !== undefined) updates.paymentInstructions = validatedData.paymentInstructions;
     if (validatedData.donationsAccountId !== undefined) updates.donationsAccountId = validatedData.donationsAccountId;
     if (validatedData.donationsArAccountId !== undefined) updates.donationsArAccountId = validatedData.donationsArAccountId;
+    if (validatedData.fundBalanceAccountId !== undefined) updates.fundBalanceAccountId = validatedData.fundBalanceAccountId;
     if (validatedData.publicTransparency !== undefined) updates.publicTransparency = validatedData.publicTransparency;
 
     // Update organization (creates new version with audit trail)

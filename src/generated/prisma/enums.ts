@@ -61,7 +61,8 @@ export type AccountType = (typeof AccountType)[keyof typeof AccountType]
 export const TransactionType = {
   INCOME: 'INCOME',
   EXPENSE: 'EXPENSE',
-  TRANSFER: 'TRANSFER'
+  TRANSFER: 'TRANSFER',
+  CLOSING: 'CLOSING'
 } as const
 
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType]
@@ -216,3 +217,12 @@ export const BillStatus = {
 } as const
 
 export type BillStatus = (typeof BillStatus)[keyof typeof BillStatus]
+
+
+export const FiscalPeriodStatus = {
+  OPEN: 'OPEN',
+  CLOSING: 'CLOSING',
+  CLOSED: 'CLOSED'
+} as const
+
+export type FiscalPeriodStatus = (typeof FiscalPeriodStatus)[keyof typeof FiscalPeriodStatus]

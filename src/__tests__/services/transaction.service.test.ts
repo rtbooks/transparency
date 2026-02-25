@@ -42,6 +42,10 @@ jest.mock('@/services/bill.service', () => ({
   recalculateBillStatus: jest.fn(),
 }));
 
+jest.mock('@/services/fiscal-period.service', () => ({
+  isDateInClosedPeriod: jest.fn().mockResolvedValue({ closed: false }),
+}));
+
 import { editTransaction, voidTransaction, getTransactionHistory } from '@/services/transaction.service';
 import { updateAccountBalances, reverseAccountBalances } from '@/lib/accounting/balance-calculator';
 import { closeVersion } from '@/lib/temporal/temporal-utils';

@@ -308,6 +308,7 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
       INCOME: { variant: "default", label: "Income" },
       EXPENSE: { variant: "destructive", label: "Expense" },
       TRANSFER: { variant: "secondary", label: "Transfer" },
+      CLOSING: { variant: "outline", label: "Closing" },
     };
     const config = variants[type] || { variant: "outline", label: type };
     return <Badge variant={config.variant}>{config.label}</Badge>;
@@ -359,6 +360,7 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
               <SelectItem value="INCOME">Income</SelectItem>
               <SelectItem value="EXPENSE">Expense</SelectItem>
               <SelectItem value="TRANSFER">Transfer</SelectItem>
+              <SelectItem value="CLOSING">Closing</SelectItem>
             </SelectContent>
           </Select>
         </div>
