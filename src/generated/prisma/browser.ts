@@ -58,6 +58,16 @@ export type ProgramSpendingTransaction = Prisma.ProgramSpendingTransactionModel
  */
 export type BankAccount = Prisma.BankAccountModel
 /**
+ * Model BankStatement
+ * 
+ */
+export type BankStatement = Prisma.BankStatementModel
+/**
+ * Model BankStatementLine
+ * 
+ */
+export type BankStatementLine = Prisma.BankStatementLineModel
+/**
  * Model AuditLog
  * 
  */

@@ -59,6 +59,8 @@ export const ModelName = {
   ProgramSpending: 'ProgramSpending',
   ProgramSpendingTransaction: 'ProgramSpendingTransaction',
   BankAccount: 'BankAccount',
+  BankStatement: 'BankStatement',
+  BankStatementLine: 'BankStatementLine',
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
   AccessRequest: 'AccessRequest',
@@ -288,6 +290,7 @@ export const BankAccountScalarFieldEnum = {
   accountType: 'accountType',
   plaidAccessToken: 'plaidAccessToken',
   plaidItemId: 'plaidItemId',
+  csvColumnMapping: 'csvColumnMapping',
   isActive: 'isActive',
   lastSyncedAt: 'lastSyncedAt',
   createdAt: 'createdAt',
@@ -295,6 +298,46 @@ export const BankAccountScalarFieldEnum = {
 } as const
 
 export type BankAccountScalarFieldEnum = (typeof BankAccountScalarFieldEnum)[keyof typeof BankAccountScalarFieldEnum]
+
+
+export const BankStatementScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  bankAccountId: 'bankAccountId',
+  statementDate: 'statementDate',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  openingBalance: 'openingBalance',
+  closingBalance: 'closingBalance',
+  fileName: 'fileName',
+  blobUrl: 'blobUrl',
+  status: 'status',
+  reconciledBy: 'reconciledBy',
+  reconciledAt: 'reconciledAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BankStatementScalarFieldEnum = (typeof BankStatementScalarFieldEnum)[keyof typeof BankStatementScalarFieldEnum]
+
+
+export const BankStatementLineScalarFieldEnum = {
+  id: 'id',
+  bankStatementId: 'bankStatementId',
+  transactionDate: 'transactionDate',
+  postDate: 'postDate',
+  description: 'description',
+  referenceNumber: 'referenceNumber',
+  amount: 'amount',
+  category: 'category',
+  matchedTransactionId: 'matchedTransactionId',
+  matchConfidence: 'matchConfidence',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type BankStatementLineScalarFieldEnum = (typeof BankStatementLineScalarFieldEnum)[keyof typeof BankStatementLineScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {

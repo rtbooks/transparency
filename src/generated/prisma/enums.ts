@@ -88,6 +88,36 @@ export const SpendingStatus = {
 export type SpendingStatus = (typeof SpendingStatus)[keyof typeof SpendingStatus]
 
 
+export const ReconciliationStatus = {
+  DRAFT: 'DRAFT',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ReconciliationStatus = (typeof ReconciliationStatus)[keyof typeof ReconciliationStatus]
+
+
+export const MatchConfidence = {
+  AUTO_EXACT: 'AUTO_EXACT',
+  AUTO_FUZZY: 'AUTO_FUZZY',
+  MANUAL: 'MANUAL',
+  UNMATCHED: 'UNMATCHED'
+} as const
+
+export type MatchConfidence = (typeof MatchConfidence)[keyof typeof MatchConfidence]
+
+
+export const StatementLineStatus = {
+  UNMATCHED: 'UNMATCHED',
+  MATCHED: 'MATCHED',
+  CONFIRMED: 'CONFIRMED',
+  SKIPPED: 'SKIPPED'
+} as const
+
+export type StatementLineStatus = (typeof StatementLineStatus)[keyof typeof StatementLineStatus]
+
+
 export const InvitationStatus = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',

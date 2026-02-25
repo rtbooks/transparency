@@ -379,6 +379,57 @@ export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonNullableFilter<$PrismaModel>
 }
 
+export type EnumReconciliationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReconciliationStatus | Prisma.EnumReconciliationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ReconciliationStatus[] | Prisma.ListEnumReconciliationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReconciliationStatus[] | Prisma.ListEnumReconciliationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReconciliationStatusFilter<$PrismaModel> | $Enums.ReconciliationStatus
+}
+
+export type EnumReconciliationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReconciliationStatus | Prisma.EnumReconciliationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ReconciliationStatus[] | Prisma.ListEnumReconciliationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReconciliationStatus[] | Prisma.ListEnumReconciliationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReconciliationStatusWithAggregatesFilter<$PrismaModel> | $Enums.ReconciliationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumReconciliationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumReconciliationStatusFilter<$PrismaModel>
+}
+
+export type EnumMatchConfidenceFilter<$PrismaModel = never> = {
+  equals?: $Enums.MatchConfidence | Prisma.EnumMatchConfidenceFieldRefInput<$PrismaModel>
+  in?: $Enums.MatchConfidence[] | Prisma.ListEnumMatchConfidenceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MatchConfidence[] | Prisma.ListEnumMatchConfidenceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMatchConfidenceFilter<$PrismaModel> | $Enums.MatchConfidence
+}
+
+export type EnumStatementLineStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatementLineStatus | Prisma.EnumStatementLineStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.StatementLineStatus[] | Prisma.ListEnumStatementLineStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatementLineStatus[] | Prisma.ListEnumStatementLineStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatementLineStatusFilter<$PrismaModel> | $Enums.StatementLineStatus
+}
+
+export type EnumMatchConfidenceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MatchConfidence | Prisma.EnumMatchConfidenceFieldRefInput<$PrismaModel>
+  in?: $Enums.MatchConfidence[] | Prisma.ListEnumMatchConfidenceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MatchConfidence[] | Prisma.ListEnumMatchConfidenceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMatchConfidenceWithAggregatesFilter<$PrismaModel> | $Enums.MatchConfidence
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMatchConfidenceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMatchConfidenceFilter<$PrismaModel>
+}
+
+export type EnumStatementLineStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatementLineStatus | Prisma.EnumStatementLineStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.StatementLineStatus[] | Prisma.ListEnumStatementLineStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatementLineStatus[] | Prisma.ListEnumStatementLineStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatementLineStatusWithAggregatesFilter<$PrismaModel> | $Enums.StatementLineStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStatementLineStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStatementLineStatusFilter<$PrismaModel>
+}
+
 export type EnumInvitationStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.InvitationStatus | Prisma.EnumInvitationStatusFieldRefInput<$PrismaModel>
   in?: $Enums.InvitationStatus[] | Prisma.ListEnumInvitationStatusFieldRefInput<$PrismaModel>
@@ -918,6 +969,57 @@ export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
   gt?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   gte?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter
+}
+
+export type NestedEnumReconciliationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReconciliationStatus | Prisma.EnumReconciliationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ReconciliationStatus[] | Prisma.ListEnumReconciliationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReconciliationStatus[] | Prisma.ListEnumReconciliationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReconciliationStatusFilter<$PrismaModel> | $Enums.ReconciliationStatus
+}
+
+export type NestedEnumReconciliationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReconciliationStatus | Prisma.EnumReconciliationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ReconciliationStatus[] | Prisma.ListEnumReconciliationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ReconciliationStatus[] | Prisma.ListEnumReconciliationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumReconciliationStatusWithAggregatesFilter<$PrismaModel> | $Enums.ReconciliationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumReconciliationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumReconciliationStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumMatchConfidenceFilter<$PrismaModel = never> = {
+  equals?: $Enums.MatchConfidence | Prisma.EnumMatchConfidenceFieldRefInput<$PrismaModel>
+  in?: $Enums.MatchConfidence[] | Prisma.ListEnumMatchConfidenceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MatchConfidence[] | Prisma.ListEnumMatchConfidenceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMatchConfidenceFilter<$PrismaModel> | $Enums.MatchConfidence
+}
+
+export type NestedEnumStatementLineStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatementLineStatus | Prisma.EnumStatementLineStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.StatementLineStatus[] | Prisma.ListEnumStatementLineStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatementLineStatus[] | Prisma.ListEnumStatementLineStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatementLineStatusFilter<$PrismaModel> | $Enums.StatementLineStatus
+}
+
+export type NestedEnumMatchConfidenceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MatchConfidence | Prisma.EnumMatchConfidenceFieldRefInput<$PrismaModel>
+  in?: $Enums.MatchConfidence[] | Prisma.ListEnumMatchConfidenceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MatchConfidence[] | Prisma.ListEnumMatchConfidenceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMatchConfidenceWithAggregatesFilter<$PrismaModel> | $Enums.MatchConfidence
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMatchConfidenceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMatchConfidenceFilter<$PrismaModel>
+}
+
+export type NestedEnumStatementLineStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StatementLineStatus | Prisma.EnumStatementLineStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.StatementLineStatus[] | Prisma.ListEnumStatementLineStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StatementLineStatus[] | Prisma.ListEnumStatementLineStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStatementLineStatusWithAggregatesFilter<$PrismaModel> | $Enums.StatementLineStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStatementLineStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStatementLineStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumInvitationStatusFilter<$PrismaModel = never> = {

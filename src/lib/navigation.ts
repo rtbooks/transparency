@@ -41,6 +41,7 @@ export function getOrganizationNavLinks(
       { label: 'Donations', href: `/org/${slug}/donations`, icon: 'HandHeart', section: 'Fundraising' },
       { label: 'My Donations', href: `/org/${slug}/my-donations`, icon: 'Heart', section: 'Fundraising' },
       { label: 'Users', href: `/org/${slug}/users`, icon: 'UserCog', section: 'Admin' },
+      { label: 'Reconciliation', href: `/org/${slug}/reconciliation`, icon: 'Scale', section: 'Admin' },
       { label: 'Settings', href: `/org/${slug}/settings`, icon: 'Settings', section: 'Admin' },
     ];
   }
