@@ -136,29 +136,43 @@ export async function GET(
     // Get total count for pagination
     const totalCount = await prisma.transaction.count({ where });
 
-    // Compute period total (sum of amounts matching current filters)
-    const aggregate = await prisma.transaction.aggregate({
-      where,
-      _sum: { amount: true },
-    });
-    let periodTotal = Number(aggregate._sum.amount) || 0;
-
-    // Adjust for reimbursement expenses: EXPENSE transactions that credit an expense account
-    // should reduce the total rather than inflate it
-    if (type === 'EXPENSE') {
-      const expenseAccounts = await prisma.account.findMany({
-        where: buildCurrentVersionWhere({ organizationId: organization.id, type: 'EXPENSE' }),
+    // Compute period total using double-entry principles when filtering by type
+    let periodTotal: number;
+    if (type === 'EXPENSE' || type === 'INCOME') {
+      const accountType = type === 'EXPENSE' ? 'EXPENSE' : 'REVENUE';
+      const accts = await prisma.account.findMany({
+        where: buildCurrentVersionWhere({ organizationId: organization.id, type: accountType }),
         select: { id: true },
       });
-      const expenseAccountIds = expenseAccounts.map(a => a.id);
-      if (expenseAccountIds.length > 0) {
-        const reimbursementWhere = { ...where, creditAccountId: { in: expenseAccountIds } };
-        const reimbursement = await prisma.transaction.aggregate({
-          where: reimbursementWhere,
-          _sum: { amount: true },
-        });
-        periodTotal -= 2 * Number(reimbursement._sum.amount || 0);
+      const acctIds = accts.map(a => a.id);
+      if (acctIds.length > 0) {
+        // Base where without the type filter (we use account-based logic instead)
+        const baseWhere = { ...where };
+        delete baseWhere.type;
+        const [debits, credits] = await Promise.all([
+          prisma.transaction.aggregate({
+            where: { ...baseWhere, debitAccountId: { in: acctIds } },
+            _sum: { amount: true },
+          }),
+          prisma.transaction.aggregate({
+            where: { ...baseWhere, creditAccountId: { in: acctIds } },
+            _sum: { amount: true },
+          }),
+        ]);
+        // Expenses: debits increase, credits decrease
+        // Revenue: credits increase, debits decrease
+        periodTotal = type === 'EXPENSE'
+          ? Number(debits._sum.amount || 0) - Number(credits._sum.amount || 0)
+          : Number(credits._sum.amount || 0) - Number(debits._sum.amount || 0);
+      } else {
+        periodTotal = 0;
       }
+    } else {
+      const aggregate = await prisma.transaction.aggregate({
+        where,
+        _sum: { amount: true },
+      });
+      periodTotal = Number(aggregate._sum.amount) || 0;
     }
 
     // Fetch transactions (without account includes for now)
