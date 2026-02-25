@@ -66,6 +66,13 @@ interface RecordTransactionFormProps {
   }>;
   onSuccess?: () => void;
   onCancel?: () => void;
+  initialValues?: {
+    type?: 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'GENERAL';
+    date?: Date;
+    amount?: number;
+    description?: string;
+    referenceNumber?: string;
+  };
 }
 
 export function RecordTransactionForm({
@@ -73,6 +80,7 @@ export function RecordTransactionForm({
   accounts,
   onSuccess,
   onCancel,
+  initialValues,
 }: RecordTransactionFormProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -92,11 +100,11 @@ export function RecordTransactionForm({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      type: 'INCOME',
-      date: new Date(),
-      amount: 0,
-      description: '',
-      referenceNumber: '',
+      type: initialValues?.type || 'INCOME',
+      date: initialValues?.date || new Date(),
+      amount: initialValues?.amount || 0,
+      description: initialValues?.description || '',
+      referenceNumber: initialValues?.referenceNumber || '',
       fromAccountId: '',
       toAccountId: '',
     },

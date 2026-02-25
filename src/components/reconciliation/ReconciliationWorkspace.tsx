@@ -12,6 +12,7 @@ import {
   DollarSign,
   AlertTriangle,
   Check,
+  Plus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +25,7 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { RecordTransactionForm } from '@/components/transactions/RecordTransactionForm';
 
 interface MatchEntry {
   id: string;
@@ -93,6 +95,8 @@ export function ReconciliationWorkspace({
   const [selectedLine, setSelectedLine] = useState<string | null>(null);
   const [showComplete, setShowComplete] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [showCreateTxn, setShowCreateTxn] = useState<StatementLine | null>(null);
+  const [accounts, setAccounts] = useState<Array<{ id: string; code: string; name: string; type: string }>>([]);
 
   const basePath = `/api/organizations/${slug}/bank-accounts/${bankAccountId}/statements/${statementId}`;
 
@@ -111,6 +115,11 @@ export function ReconciliationWorkspace({
 
   useEffect(() => {
     fetchStatement();
+    // Fetch accounts for the create transaction form
+    fetch(`/api/organizations/${slug}/accounts`)
+      .then(res => res.ok ? res.json() : { accounts: [] })
+      .then(data => setAccounts(data.accounts || data || []))
+      .catch(() => {});
   }, [fetchStatement]);
 
   const handleAutoMatch = async () => {
@@ -430,6 +439,20 @@ export function ReconciliationWorkspace({
                           Skip
                         </Button>
                       )}
+                      {!isCompleted && (line.status === 'UNMATCHED' || line.status === 'SKIPPED') && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-1.5 text-xs text-blue-600"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowCreateTxn(line);
+                          }}
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          Post
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -471,7 +494,20 @@ export function ReconciliationWorkspace({
                     No unreconciled transactions found.
                   </p>
                 ) : (
-                  statement.unreconciledTransactions.map((txn) => (
+                  (() => {
+                    // Collect all transaction IDs already matched to any statement line
+                    const matchedTxnIds = new Set(
+                      statement.lines.flatMap(l => l.matches.map(m => m.transactionId))
+                    );
+                    const availableTxns = statement.unreconciledTransactions.filter(
+                      txn => !matchedTxnIds.has(txn.id)
+                    );
+                    return availableTxns.length === 0 ? (
+                      <p className="text-sm text-muted-foreground py-4 text-center">
+                        All transactions are already matched.
+                      </p>
+                    ) : (
+                    availableTxns.map((txn) => (
                     <div
                       key={txn.id}
                       className="border rounded-md p-3 text-sm cursor-pointer hover:bg-muted/50 transition-colors"
@@ -513,6 +549,8 @@ export function ReconciliationWorkspace({
                       </div>
                     </div>
                   ))
+                    );
+                  })()
                 )}
               </>
             ) : (
@@ -579,6 +617,36 @@ export function ReconciliationWorkspace({
                 Finalize
               </Button>
             </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Create Transaction from Bank Line Dialog */}
+      {showCreateTxn && (
+        <Dialog open onOpenChange={(open) => !open && setShowCreateTxn(null)}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Post Transaction from Bank Statement</DialogTitle>
+              <DialogDescription>
+                Create a ledger transaction from this bank statement line: &ldquo;{showCreateTxn.description}&rdquo; for {formatCurrency(showCreateTxn.amount)}
+              </DialogDescription>
+            </DialogHeader>
+            <RecordTransactionForm
+              organizationSlug={slug}
+              accounts={accounts}
+              initialValues={{
+                date: new Date(showCreateTxn.transactionDate),
+                amount: Math.abs(parseFloat(showCreateTxn.amount)),
+                description: showCreateTxn.description,
+                referenceNumber: showCreateTxn.referenceNumber || undefined,
+                type: parseFloat(showCreateTxn.amount) >= 0 ? 'INCOME' : 'EXPENSE',
+              }}
+              onSuccess={() => {
+                setShowCreateTxn(null);
+                fetchStatement();
+              }}
+              onCancel={() => setShowCreateTxn(null)}
+            />
           </DialogContent>
         </Dialog>
       )}
