@@ -88,6 +88,7 @@ export function BillForm({
   const [liabilityOrAssetAccountId, setLiabilityOrAssetAccountId] = useState("");
   const [expenseOrRevenueAccountId, setExpenseOrRevenueAccountId] = useState("");
   const [fundingAccountId, setFundingAccountId] = useState(bill?.fundingAccountId ?? "");
+  const [isReimbursement, setIsReimbursement] = useState(false);
 
   // Overdraft check state
   const [overdraftWarning, setOverdraftWarning] = useState<{
@@ -97,19 +98,19 @@ export function BillForm({
     isOverdraft: boolean;
   } | null>(null);
 
-  // Filter accounts based on direction
+  // Filter accounts based on direction and reimbursement flag
   // PAYABLE: liability account (AP) + expense account
-  // RECEIVABLE: asset account (AR) + revenue account
+  // RECEIVABLE: asset account (AR) + revenue account (or expense account if reimbursement)
   const apArAccounts = (accounts ?? []).filter((a) =>
     direction === "PAYABLE"
       ? a.type === "LIABILITY"
       : a.type === "ASSET"
   );
-  const expRevAccounts = (accounts ?? []).filter((a) =>
-    direction === "PAYABLE"
-      ? a.type === "EXPENSE"
-      : a.type === "REVENUE"
-  );
+  const expRevAccounts = (accounts ?? []).filter((a) => {
+    if (direction === "PAYABLE") return a.type === "EXPENSE";
+    // RECEIVABLE: show expense accounts for reimbursements, revenue accounts otherwise
+    return isReimbursement ? a.type === "EXPENSE" : a.type === "REVENUE";
+  });
   const cashBankAccounts = (accounts ?? []).filter((a) => a.type === "ASSET");
 
   // Check overdraft risk when funding account or amount changes
@@ -159,6 +160,7 @@ export function BillForm({
       dueDate: dueDate ? dueDate.toISOString().slice(0, 10) : "",
       notes: notes.trim() || null,
       ...(isEditing ? {} : { liabilityOrAssetAccountId, expenseOrRevenueAccountId }),
+      ...(isReimbursement && direction === "RECEIVABLE" ? { isReimbursement: true } : {}),
       ...(direction === "PAYABLE"
         ? { fundingAccountId: fundingAccountId && fundingAccountId !== "__none__" ? fundingAccountId : null }
         : {}),
@@ -233,6 +235,7 @@ export function BillForm({
               setDirection("PAYABLE");
               setLiabilityOrAssetAccountId("");
               setExpenseOrRevenueAccountId("");
+              setIsReimbursement(false);
             }}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
               direction === "PAYABLE"
@@ -248,6 +251,7 @@ export function BillForm({
               setDirection("RECEIVABLE");
               setLiabilityOrAssetAccountId("");
               setExpenseOrRevenueAccountId("");
+              setIsReimbursement(false);
             }}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
               direction === "RECEIVABLE"
@@ -259,6 +263,27 @@ export function BillForm({
           </button>
         </div>
       </div>
+
+      {/* Reimbursement toggle — RECEIVABLE only, new bills only */}
+      {direction === "RECEIVABLE" && !isEditing && (
+        <label className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isReimbursement}
+            onChange={(e) => {
+              setIsReimbursement(e.target.checked);
+              setExpenseOrRevenueAccountId("");
+            }}
+            className="h-4 w-4 rounded border-gray-300"
+          />
+          <div>
+            <span className="font-medium text-blue-800">This is a reimbursement</span>
+            <p className="text-xs text-blue-600">
+              Credits an expense account instead of revenue — use when expecting money back for a previous expense.
+            </p>
+          </div>
+        </label>
+      )}
 
       {/* Contact */}
       <div>
@@ -334,12 +359,12 @@ export function BillForm({
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
-              {direction === "PAYABLE" ? "Expense Account" : "Revenue Account"}{" "}
+              {direction === "PAYABLE" ? "Expense Account" : isReimbursement ? "Expense Account to Credit" : "Revenue Account"}{" "}
               <span className="text-red-500">*</span>
             </label>
             <Select value={expenseOrRevenueAccountId} onValueChange={setExpenseOrRevenueAccountId}>
               <SelectTrigger>
-                <SelectValue placeholder={direction === "PAYABLE" ? "Select expense account..." : "Select revenue account..."} />
+                <SelectValue placeholder={direction === "PAYABLE" ? "Select expense account..." : isReimbursement ? "Select expense account to credit..." : "Select revenue account..."} />
               </SelectTrigger>
               <SelectContent>
                 {expRevAccounts.map((acct) => (

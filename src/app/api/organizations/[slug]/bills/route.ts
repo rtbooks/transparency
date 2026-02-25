@@ -21,6 +21,7 @@ const createBillSchema = z.object({
   liabilityOrAssetAccountId: z.string().uuid(),
   expenseOrRevenueAccountId: z.string().uuid(),
   fundingAccountId: z.string().uuid().nullable().optional(),
+  isReimbursement: z.boolean().optional(),
 });
 
 export async function GET(
@@ -152,6 +153,7 @@ export async function POST(
       createdBy: user.id,
       liabilityOrAssetAccountId: validated.liabilityOrAssetAccountId,
       expenseOrRevenueAccountId: validated.expenseOrRevenueAccountId,
+      isReimbursement: validated.isReimbursement,
     });
 
     // Set funding account if provided (PAYABLE bills only)

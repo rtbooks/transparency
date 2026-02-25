@@ -574,7 +574,10 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
                     </div>
                   </TableCell>
                   <TableCell className="text-right font-semibold text-gray-900">
-                    {formatCurrency(transaction.amount)}
+                    {/* Reimbursement pattern: EXPENSE type where credit account is an expense account (expense reduction) */}
+                    {transaction.type === "EXPENSE" && transaction.creditAccount.type === "EXPENSE"
+                      ? `(${formatCurrency(transaction.amount)})`
+                      : formatCurrency(transaction.amount)}
                   </TableCell>
                   <TableCell className="max-w-xs truncate">{transaction.description}</TableCell>
                   <TableCell className="text-sm text-gray-600">

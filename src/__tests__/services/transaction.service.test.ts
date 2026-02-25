@@ -20,6 +20,10 @@ jest.mock('@/lib/prisma', () => ({
       updateMany: jest.fn(),
       deleteMany: jest.fn(),
     },
+    bill: {
+      findFirst: jest.fn(),
+      update: jest.fn(),
+    },
     $transaction: jest.fn(),
   },
 }));
@@ -101,6 +105,8 @@ describe('Transaction Service', () => {
     });
     // Default: no bill payments linked
     mockPrisma.billPayment.findMany.mockResolvedValue([]);
+    // Default: no bill linked as accrual
+    mockPrisma.bill.findFirst.mockResolvedValue(null);
   });
 
   describe('editTransaction()', () => {

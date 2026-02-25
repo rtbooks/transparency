@@ -31,6 +31,7 @@ export interface CreateBillInput {
   // Account IDs for the accrual transaction
   liabilityOrAssetAccountId: string; // AP for payables, AR for receivables
   expenseOrRevenueAccountId: string; // Expense for payables, Revenue for receivables
+  isReimbursement?: boolean; // RECEIVABLE only: credits expense account instead of revenue
 }
 
 export interface UpdateBillInput {
@@ -47,6 +48,7 @@ export interface UpdateBillInput {
  *
  * PAYABLE:    DR Expense/Asset,      CR Accounts Payable
  * RECEIVABLE: DR Accounts Receivable, CR Revenue
+ * RECEIVABLE (reimbursement): DR Accounts Receivable, CR Expense
  */
 export async function createBill(input: CreateBillInput): Promise<Bill> {
   return await prisma.$transaction(async (tx) => {
@@ -56,7 +58,14 @@ export async function createBill(input: CreateBillInput): Promise<Bill> {
       : input.liabilityOrAssetAccountId; // DR Accounts Receivable
     const creditAccountId = input.direction === 'PAYABLE'
       ? input.liabilityOrAssetAccountId  // CR Accounts Payable
-      : input.expenseOrRevenueAccountId; // CR Revenue
+      : input.expenseOrRevenueAccountId; // CR Revenue (or Expense for reimbursements)
+
+    // Determine transaction type
+    // Reimbursement receivables credit an expense account — still typed as EXPENSE
+    // (the display layer detects the reimbursement pattern and shows a negative amount)
+    const transactionType = input.direction === 'PAYABLE'
+      ? 'EXPENSE'
+      : input.isReimbursement ? 'EXPENSE' : 'INCOME';
 
     const now = new Date();
     const txDescription = input.description || 'No description';
@@ -67,7 +76,7 @@ export async function createBill(input: CreateBillInput): Promise<Bill> {
         organizationId: input.organizationId,
         transactionDate: input.issueDate,
         amount: input.amount,
-        type: input.direction === 'PAYABLE' ? 'EXPENSE' : 'INCOME',
+        type: transactionType,
         debitAccountId,
         creditAccountId,
         description: txDescription,

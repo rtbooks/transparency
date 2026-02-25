@@ -235,6 +235,17 @@ export async function voidTransaction(
       }
     }
 
+    // If this transaction is a bill's accrual, cancel the bill
+    const accrualBill = await tx.bill.findFirst({
+      where: { accrualTransactionId: current.id },
+    });
+    if (accrualBill && accrualBill.status !== 'CANCELLED') {
+      await tx.bill.update({
+        where: { id: accrualBill.id },
+        data: { status: 'CANCELLED' },
+      });
+    }
+
     return voidedTransaction;
   });
 }
