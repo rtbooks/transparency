@@ -141,7 +141,25 @@ export async function GET(
       where,
       _sum: { amount: true },
     });
-    const periodTotal = Number(aggregate._sum.amount) || 0;
+    let periodTotal = Number(aggregate._sum.amount) || 0;
+
+    // Adjust for reimbursement expenses: EXPENSE transactions that credit an expense account
+    // should reduce the total rather than inflate it
+    if (type === 'EXPENSE') {
+      const expenseAccounts = await prisma.account.findMany({
+        where: buildCurrentVersionWhere({ organizationId: organization.id, type: 'EXPENSE' }),
+        select: { id: true },
+      });
+      const expenseAccountIds = expenseAccounts.map(a => a.id);
+      if (expenseAccountIds.length > 0) {
+        const reimbursementWhere = { ...where, creditAccountId: { in: expenseAccountIds } };
+        const reimbursement = await prisma.transaction.aggregate({
+          where: reimbursementWhere,
+          _sum: { amount: true },
+        });
+        periodTotal -= 2 * Number(reimbursement._sum.amount || 0);
+      }
+    }
 
     // Fetch transactions (without account includes for now)
     const transactions = await prisma.transaction.findMany({

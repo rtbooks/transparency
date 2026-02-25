@@ -23,7 +23,14 @@ export default async function OrganizationPublicPage({
   }
 
   // Get basic financial summary (always fetched for member display)
-  const [transactionCount, totalRevenue, totalExpenses] = await Promise.all([
+  // First, get expense-type account IDs to detect reimbursements
+  const expenseAccounts = await prisma.account.findMany({
+    where: buildCurrentVersionWhere({ organizationId: organization.id, type: 'EXPENSE' }),
+    select: { id: true },
+  });
+  const expenseAccountIds = expenseAccounts.map(a => a.id);
+
+  const [transactionCount, totalRevenue, totalExpenses, reimbursementTotal] = await Promise.all([
     prisma.transaction.count({
       where: buildCurrentVersionWhere({ organizationId: organization.id, isVoided: false }),
     }),
@@ -35,6 +42,18 @@ export default async function OrganizationPublicPage({
       where: buildCurrentVersionWhere({ organizationId: organization.id, type: 'EXPENSE', isVoided: false }),
       _sum: { amount: true },
     }),
+    // Reimbursement expenses: type EXPENSE but credit goes to an expense account
+    expenseAccountIds.length > 0
+      ? prisma.transaction.aggregate({
+          where: buildCurrentVersionWhere({
+            organizationId: organization.id,
+            type: 'EXPENSE',
+            isVoided: false,
+            creditAccountId: { in: expenseAccountIds },
+          }),
+          _sum: { amount: true },
+        })
+      : Promise.resolve({ _sum: { amount: null } }),
   ]);
 
   // Fetch additional public data when transparency is enabled
@@ -109,7 +128,7 @@ export default async function OrganizationPublicPage({
         financials={{
           transactionCount,
           totalRevenue: Number(totalRevenue._sum.amount || 0),
-          totalExpenses: Number(totalExpenses._sum.amount || 0),
+          totalExpenses: Number(totalExpenses._sum.amount || 0) - 2 * Number(reimbursementTotal._sum.amount || 0),
         }}
         campaigns={campaigns}
         programSpending={programSpending}
