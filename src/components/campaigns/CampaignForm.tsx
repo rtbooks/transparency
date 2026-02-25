@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/analytics";
 
@@ -13,6 +13,13 @@ interface Account {
   id: string;
   name: string;
   code: string;
+}
+
+interface TierInput {
+  id?: string;
+  name: string;
+  amount: string;
+  maxSlots: string;
 }
 
 interface CampaignFormProps {
@@ -27,6 +34,12 @@ interface CampaignFormProps {
     startDate: string | null;
     endDate: string | null;
     accountId: string;
+    campaignType?: string;
+    unitPrice?: number | null;
+    maxUnits?: number | null;
+    unitLabel?: string | null;
+    allowMultiUnit?: boolean;
+    tiers?: { id: string; name: string; amount: number; maxSlots: number | null; sortOrder?: number }[];
   } | null;
   onSuccess: () => void;
   onCancel: () => void;
@@ -58,6 +71,25 @@ export function CampaignForm({
   const [accountId, setAccountId] = useState(campaign?.accountId || "");
   const [status, setStatus] = useState(campaign?.status || "ACTIVE");
   const [newAccountName, setNewAccountName] = useState("");
+
+  // Campaign constraint fields
+  const [campaignType, setCampaignType] = useState(campaign?.campaignType || "OPEN");
+  const [unitPrice, setUnitPrice] = useState(
+    campaign?.unitPrice ? String(campaign.unitPrice) : ""
+  );
+  const [maxUnits, setMaxUnits] = useState(
+    campaign?.maxUnits ? String(campaign.maxUnits) : ""
+  );
+  const [unitLabel, setUnitLabel] = useState(campaign?.unitLabel || "");
+  const [allowMultiUnit, setAllowMultiUnit] = useState(campaign?.allowMultiUnit ?? true);
+  const [tiers, setTiers] = useState<TierInput[]>(
+    campaign?.tiers?.map(t => ({
+      id: t.id,
+      name: t.name,
+      amount: String(t.amount),
+      maxSlots: t.maxSlots ? String(t.maxSlots) : "",
+    })) || []
+  );
 
   const isEditing = !!campaign;
 
@@ -158,6 +190,10 @@ export function CampaignForm({
             startDate: startDate || null,
             endDate: endDate || null,
             status,
+            unitPrice: campaignType === 'FIXED_UNIT' && unitPrice ? parseFloat(unitPrice) : null,
+            maxUnits: campaignType === 'FIXED_UNIT' && maxUnits ? parseInt(maxUnits) : null,
+            unitLabel: campaignType === 'FIXED_UNIT' ? unitLabel || null : null,
+            allowMultiUnit: campaignType === 'FIXED_UNIT' ? allowMultiUnit : true,
           }
         : {
             accountId: resolvedAccountId,
@@ -166,6 +202,17 @@ export function CampaignForm({
             targetAmount: targetAmount ? parseFloat(targetAmount) : null,
             startDate: startDate || null,
             endDate: endDate || null,
+            campaignType,
+            unitPrice: campaignType === 'FIXED_UNIT' && unitPrice ? parseFloat(unitPrice) : null,
+            maxUnits: campaignType === 'FIXED_UNIT' && maxUnits ? parseInt(maxUnits) : null,
+            unitLabel: campaignType === 'FIXED_UNIT' ? unitLabel || null : null,
+            allowMultiUnit: campaignType === 'FIXED_UNIT' ? allowMultiUnit : true,
+            tiers: campaignType === 'TIERED' ? tiers.map((t, i) => ({
+              name: t.name,
+              amount: parseFloat(t.amount),
+              maxSlots: t.maxSlots ? parseInt(t.maxSlots) : null,
+              sortOrder: i,
+            })) : undefined,
           };
 
       const res = await fetch(url, {
@@ -224,6 +271,159 @@ export function CampaignForm({
           rows={3}
         />
       </div>
+
+      {/* Campaign Type (only for new campaigns) */}
+      {!isEditing && (
+        <div>
+          <Label htmlFor="campaignType">Campaign Type</Label>
+          <select
+            id="campaignType"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            value={campaignType}
+            onChange={(e) => setCampaignType(e.target.value)}
+          >
+            <option value="OPEN">Open — Any donation amount</option>
+            <option value="FIXED_UNIT">Fixed Unit — Fixed price per unit (tickets, squares, bricks)</option>
+            <option value="TIERED">Tiered — Predefined donation levels (sponsorships)</option>
+          </select>
+        </div>
+      )}
+
+      {/* FIXED_UNIT fields */}
+      {campaignType === "FIXED_UNIT" && (
+        <div className="space-y-3 rounded-lg border bg-blue-50 p-4">
+          <p className="text-sm font-medium text-blue-800">Fixed Unit Settings</p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="unitPrice">Price per Unit ($)</Label>
+              <Input
+                id="unitPrice"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={unitPrice}
+                onChange={(e) => setUnitPrice(e.target.value)}
+                placeholder="25.00"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="maxUnits">Max Units (capacity)</Label>
+              <Input
+                id="maxUnits"
+                type="number"
+                min="1"
+                step="1"
+                value={maxUnits}
+                onChange={(e) => setMaxUnits(e.target.value)}
+                placeholder="Optional"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="unitLabel">Unit Label</Label>
+              <Input
+                id="unitLabel"
+                value={unitLabel}
+                onChange={(e) => setUnitLabel(e.target.value)}
+                placeholder="e.g., square, ticket, brick"
+              />
+            </div>
+            <div className="flex items-end gap-2 pb-1">
+              <input
+                id="allowMultiUnit"
+                type="checkbox"
+                checked={allowMultiUnit}
+                onChange={(e) => setAllowMultiUnit(e.target.checked)}
+                className="h-4 w-4"
+              />
+              <Label htmlFor="allowMultiUnit" className="text-sm">Allow multiple units per donation</Label>
+            </div>
+          </div>
+          {unitPrice && maxUnits && (
+            <p className="text-sm text-blue-700">
+              Total capacity: {maxUnits} {unitLabel || "unit"}(s) × ${parseFloat(unitPrice).toFixed(2)} = ${(parseFloat(unitPrice) * parseInt(maxUnits)).toFixed(2)}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* TIERED fields */}
+      {campaignType === "TIERED" && !isEditing && (
+        <div className="space-y-3 rounded-lg border bg-purple-50 p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-purple-800">Sponsorship Tiers</p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setTiers([...tiers, { name: "", amount: "", maxSlots: "" }])}
+            >
+              <Plus className="mr-1 h-3 w-3" /> Add Tier
+            </Button>
+          </div>
+          {tiers.length === 0 && (
+            <p className="text-sm text-purple-600">Add at least one tier for donors to choose from.</p>
+          )}
+          {tiers.map((tier, i) => (
+            <div key={i} className="flex items-end gap-2">
+              <div className="flex-1">
+                <Label className="text-xs">Tier Name</Label>
+                <Input
+                  value={tier.name}
+                  onChange={(e) => {
+                    const updated = [...tiers];
+                    updated[i] = { ...tier, name: e.target.value };
+                    setTiers(updated);
+                  }}
+                  placeholder="e.g., Gold Sponsor"
+                  required
+                />
+              </div>
+              <div className="w-28">
+                <Label className="text-xs">Amount ($)</Label>
+                <Input
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={tier.amount}
+                  onChange={(e) => {
+                    const updated = [...tiers];
+                    updated[i] = { ...tier, amount: e.target.value };
+                    setTiers(updated);
+                  }}
+                  placeholder="500"
+                  required
+                />
+              </div>
+              <div className="w-24">
+                <Label className="text-xs">Max Slots</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={tier.maxSlots}
+                  onChange={(e) => {
+                    const updated = [...tiers];
+                    updated[i] = { ...tier, maxSlots: e.target.value };
+                    setTiers(updated);
+                  }}
+                  placeholder="∞"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setTiers(tiers.filter((_, j) => j !== i))}
+              >
+                <Trash2 className="h-4 w-4 text-red-500" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <div>

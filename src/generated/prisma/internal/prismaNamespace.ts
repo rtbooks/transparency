@@ -399,6 +399,7 @@ export const ModelName = {
   Invitation: 'Invitation',
   AccessRequest: 'AccessRequest',
   Campaign: 'Campaign',
+  CampaignTier: 'CampaignTier',
   Donation: 'Donation',
   Contact: 'Contact',
   Bill: 'Bill',
@@ -419,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "donation" | "contact" | "bill" | "billPayment" | "attachment"
+    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "campaignTier" | "donation" | "contact" | "bill" | "billPayment" | "attachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1533,6 +1534,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CampaignTier: {
+      payload: Prisma.$CampaignTierPayload<ExtArgs>
+      fields: Prisma.CampaignTierFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CampaignTierFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignTierPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CampaignTierFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignTierPayload>
+        }
+        findFirst: {
+          args: Prisma.CampaignTierFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignTierPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CampaignTierFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignTierPayload>
+        }
+        findMany: {
+          args: Prisma.CampaignTierFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignTierPayload>[]
+        }
+        create: {
+          args: Prisma.CampaignTierCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignTierPayload>
+        }
+        createMany: {
+          args: Prisma.CampaignTierCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CampaignTierCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignTierPayload>[]
+        }
+        delete: {
+          args: Prisma.CampaignTierDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignTierPayload>
+        }
+        update: {
+          args: Prisma.CampaignTierUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignTierPayload>
+        }
+        deleteMany: {
+          args: Prisma.CampaignTierDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CampaignTierUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CampaignTierUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignTierPayload>[]
+        }
+        upsert: {
+          args: Prisma.CampaignTierUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignTierPayload>
+        }
+        aggregate: {
+          args: Prisma.CampaignTierAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCampaignTier>
+        }
+        groupBy: {
+          args: Prisma.CampaignTierGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CampaignTierGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CampaignTierCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CampaignTierCountAggregateOutputType> | number
+        }
+      }
+    }
     Donation: {
       payload: Prisma.$DonationPayload<ExtArgs>
       fields: Prisma.DonationFieldRefs
@@ -2261,6 +2336,11 @@ export const CampaignScalarFieldEnum = {
   description: 'description',
   targetAmount: 'targetAmount',
   status: 'status',
+  campaignType: 'campaignType',
+  unitPrice: 'unitPrice',
+  maxUnits: 'maxUnits',
+  unitLabel: 'unitLabel',
+  allowMultiUnit: 'allowMultiUnit',
   startDate: 'startDate',
   endDate: 'endDate',
   createdBy: 'createdBy',
@@ -2269,6 +2349,18 @@ export const CampaignScalarFieldEnum = {
 } as const
 
 export type CampaignScalarFieldEnum = (typeof CampaignScalarFieldEnum)[keyof typeof CampaignScalarFieldEnum]
+
+
+export const CampaignTierScalarFieldEnum = {
+  id: 'id',
+  campaignId: 'campaignId',
+  name: 'name',
+  amount: 'amount',
+  maxSlots: 'maxSlots',
+  sortOrder: 'sortOrder'
+} as const
+
+export type CampaignTierScalarFieldEnum = (typeof CampaignTierScalarFieldEnum)[keyof typeof CampaignTierScalarFieldEnum]
 
 
 export const DonationScalarFieldEnum = {
@@ -2287,6 +2379,8 @@ export const DonationScalarFieldEnum = {
   receivedDate: 'receivedDate',
   dueDate: 'dueDate',
   campaignId: 'campaignId',
+  unitCount: 'unitCount',
+  tierId: 'tierId',
   transactionId: 'transactionId',
   billId: 'billId',
   createdBy: 'createdBy',
@@ -2698,6 +2792,34 @@ export type ListEnumCampaignStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
 
 
 /**
+ * Reference to a field of type 'CampaignType'
+ */
+export type EnumCampaignTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CampaignType'>
+    
+
+
+/**
+ * Reference to a field of type 'CampaignType[]'
+ */
+export type ListEnumCampaignTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CampaignType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
  * Reference to a field of type 'DonationType'
  */
 export type EnumDonationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DonationType'>
@@ -2778,20 +2900,6 @@ export type EnumBillStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Prism
  * Reference to a field of type 'BillStatus[]'
  */
 export type ListEnumBillStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -2918,6 +3026,7 @@ export type GlobalOmitConfig = {
   invitation?: Prisma.InvitationOmit
   accessRequest?: Prisma.AccessRequestOmit
   campaign?: Prisma.CampaignOmit
+  campaignTier?: Prisma.CampaignTierOmit
   donation?: Prisma.DonationOmit
   contact?: Prisma.ContactOmit
   bill?: Prisma.BillOmit
