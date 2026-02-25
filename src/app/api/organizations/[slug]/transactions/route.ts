@@ -136,12 +136,44 @@ export async function GET(
     // Get total count for pagination
     const totalCount = await prisma.transaction.count({ where });
 
-    // Compute period total (sum of amounts matching current filters)
-    const aggregate = await prisma.transaction.aggregate({
-      where,
-      _sum: { amount: true },
-    });
-    const periodTotal = Number(aggregate._sum.amount) || 0;
+    // Compute period total using double-entry principles when filtering by type
+    let periodTotal: number;
+    if (type === 'EXPENSE' || type === 'INCOME') {
+      const accountType = type === 'EXPENSE' ? 'EXPENSE' : 'REVENUE';
+      const accts = await prisma.account.findMany({
+        where: buildCurrentVersionWhere({ organizationId: organization.id, type: accountType }),
+        select: { id: true },
+      });
+      const acctIds = accts.map(a => a.id);
+      if (acctIds.length > 0) {
+        // Base where without the type filter (we use account-based logic instead)
+        const baseWhere = { ...where };
+        delete baseWhere.type;
+        const [debits, credits] = await Promise.all([
+          prisma.transaction.aggregate({
+            where: { ...baseWhere, debitAccountId: { in: acctIds } },
+            _sum: { amount: true },
+          }),
+          prisma.transaction.aggregate({
+            where: { ...baseWhere, creditAccountId: { in: acctIds } },
+            _sum: { amount: true },
+          }),
+        ]);
+        // Expenses: debits increase, credits decrease
+        // Revenue: credits increase, debits decrease
+        periodTotal = type === 'EXPENSE'
+          ? Number(debits._sum.amount || 0) - Number(credits._sum.amount || 0)
+          : Number(credits._sum.amount || 0) - Number(debits._sum.amount || 0);
+      } else {
+        periodTotal = 0;
+      }
+    } else {
+      const aggregate = await prisma.transaction.aggregate({
+        where,
+        _sum: { amount: true },
+      });
+      periodTotal = Number(aggregate._sum.amount) || 0;
+    }
 
     // Fetch transactions (without account includes for now)
     const transactions = await prisma.transaction.findMany({
