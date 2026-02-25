@@ -23,8 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils/account-tree';
 
 const donationSchema = z.object({
-  amount: z.number().positive('Amount must be positive'),
-  description: z.string().min(1, 'Please provide a description'),
+  amount: z.number().optional(),
   donorMessage: z.string().optional(),
   dueDate: z.string().optional(),
 });
@@ -73,7 +72,6 @@ export function NewPledgeFormClient({
     resolver: zodResolver(donationSchema),
     defaultValues: {
       amount: 0,
-      description: '',
       donorMessage: '',
       dueDate: '',
     },
@@ -87,15 +85,28 @@ export function NewPledgeFormClient({
     try {
       setIsSubmitting(true);
 
-      // For FIXED_UNIT, calculate amount from units
-      let finalAmount = data.amount;
+      // Compute final amount based on campaign type
+      let finalAmount = data.amount || 0;
       if (isFixedUnit && selectedCampaign?.unitPrice) {
         finalAmount = selectedCampaign.unitPrice * unitCount;
-      }
-      // For TIERED, use tier amount
-      if (isTiered && selectedTierId) {
+      } else if (isTiered && selectedTierId) {
         const tier = selectedCampaign?.tiers?.find((t: any) => t.id === selectedTierId);
         if (tier) finalAmount = tier.amount;
+      }
+
+      if (finalAmount <= 0) {
+        toast({ title: 'Error', description: 'Please enter a valid amount', variant: 'destructive' });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Auto-generate description from campaign context
+      let description = selectedCampaign?.name || 'Donation';
+      if (isFixedUnit) {
+        description = `${unitCount} ${selectedCampaign?.unitLabel || 'unit'}(s) — ${selectedCampaign?.name}`;
+      } else if (isTiered && selectedTierId) {
+        const tier = selectedCampaign?.tiers?.find((t: any) => t.id === selectedTierId);
+        description = `${tier?.name || 'Tier'} — ${selectedCampaign?.name}`;
       }
 
       const response = await fetch(
@@ -106,7 +117,7 @@ export function NewPledgeFormClient({
           body: JSON.stringify({
             type: 'PLEDGE',
             amount: finalAmount,
-            description: data.description,
+            description,
             donorMessage: data.donorMessage || undefined,
             dueDate: data.dueDate || null,
             campaignId: selectedCampaignId || null,
@@ -124,7 +135,7 @@ export function NewPledgeFormClient({
       setDonationCreated(true);
       trackEvent('donation_created', {
         type: 'PLEDGE',
-        amount: data.amount,
+        amount: finalAmount,
         orgSlug: organizationSlug,
         campaignId: selectedCampaignId || undefined,
       });
@@ -368,27 +379,6 @@ export function NewPledgeFormClient({
               )}
             />
             )}
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description / Purpose</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="e.g., Annual giving, Capital campaign contribution..."
-                      rows={3}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Briefly describe the purpose of your donation
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}

@@ -59,7 +59,6 @@ export function AllDonationsPageClient({
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [editingDonation, setEditingDonation] = useState<DonationItem | null>(null);
   const [editAmount, setEditAmount] = useState('');
-  const [editDescription, setEditDescription] = useState('');
   const [editDueDate, setEditDueDate] = useState('');
   const [cancellingDonationId, setCancellingDonationId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
@@ -163,7 +162,6 @@ export function AllDonationsPageClient({
   const openEditDialog = (donation: DonationItem) => {
     setEditingDonation(donation);
     setEditAmount(String(donation.amount));
-    setEditDescription(donation.description || '');
     setEditDueDate(donation.dueDate ? donation.dueDate.split('T')[0] : '');
   };
 
@@ -178,7 +176,6 @@ export function AllDonationsPageClient({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             amount: parseFloat(editAmount),
-            description: editDescription,
             dueDate: editDueDate || null,
           }),
         }
@@ -422,14 +419,6 @@ export function AllDonationsPageClient({
                   min="0.01"
                   value={editAmount}
                   onChange={(e) => setEditAmount(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Description</label>
-                <Textarea
-                  value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
-                  rows={3}
                 />
               </div>
               <div>

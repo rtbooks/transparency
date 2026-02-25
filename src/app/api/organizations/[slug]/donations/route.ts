@@ -9,7 +9,7 @@ import { z } from 'zod';
 const createDonationSchema = z.object({
   type: z.enum(['ONE_TIME', 'PLEDGE']),
   amount: z.number().positive(),
-  description: z.string().min(1),
+  description: z.string().optional(),
   donorMessage: z.string().optional(),
   isAnonymous: z.boolean().optional(),
   dueDate: z.string().nullable().optional(),

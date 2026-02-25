@@ -444,7 +444,7 @@ describe('Campaign API Contract', () => {
     const CreateDonationSchema = z.object({
       type: z.enum(['ONE_TIME', 'PLEDGE']),
       amount: z.number().positive(),
-      description: z.string().min(1),
+      description: z.string().optional(),
       campaignId: z.string().uuid().nullable().optional(),
       unitCount: z.number().int().positive().nullable().optional(),
       tierId: z.string().uuid().nullable().optional(),
@@ -461,9 +461,14 @@ describe('Campaign API Contract', () => {
     expect(CreateDonationSchema.safeParse({
       type: 'PLEDGE',
       amount: 500,
-      description: 'Gold sponsor',
       campaignId: '550e8400-e29b-41d4-a716-446655440000',
       tierId: '660e8400-e29b-41d4-a716-446655440000',
+    }).success).toBe(true);
+
+    // Without description should also work
+    expect(CreateDonationSchema.safeParse({
+      type: 'PLEDGE',
+      amount: 100,
     }).success).toBe(true);
   });
 });
