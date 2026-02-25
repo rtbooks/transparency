@@ -141,6 +141,9 @@ export async function POST(
       role,
       inviteUrl,
       expiresInDays: 7,
+      organizationLogoUrl: organization.logoUrl
+        ? `${baseUrl}/api/organizations/${slug}/logo`
+        : undefined,
     });
     if (!emailSent) {
       console.warn('[Invitation] Email failed to send for', email);

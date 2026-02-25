@@ -74,6 +74,9 @@ export async function POST(
       campaignDescription: campaign.description,
       personalMessage: validated.message,
       donateUrl,
+      organizationLogoUrl: organization.logoUrl
+        ? `${baseUrl}/api/organizations/${slug}/logo`
+        : undefined,
     });
 
     return NextResponse.json({ success: true });

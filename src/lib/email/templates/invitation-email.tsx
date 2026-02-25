@@ -6,6 +6,7 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Link,
   Preview,
   Section,
@@ -18,6 +19,7 @@ interface InvitationEmailProps {
   role: string;
   inviteUrl: string;
   expiresInDays: number;
+  organizationLogoUrl?: string;
 }
 
 export function InvitationEmail({
@@ -26,6 +28,7 @@ export function InvitationEmail({
   role,
   inviteUrl,
   expiresInDays,
+  organizationLogoUrl,
 }: InvitationEmailProps) {
   const roleName = role === 'ORG_ADMIN' ? 'Organization Admin' : 'Donor';
 
@@ -38,7 +41,11 @@ export function InvitationEmail({
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Text style={brandName}>📚 RadBooks</Text>
+            {organizationLogoUrl ? (
+              <Img src={organizationLogoUrl} alt={organizationName} width="48" height="48" style={logoImg} />
+            ) : (
+              <Text style={brandName}>📚 RadBooks</Text>
+            )}
           </Section>
 
           <Heading style={heading}>
@@ -111,6 +118,11 @@ const brandName = {
   fontWeight: '700' as const,
   color: '#1a1a1a',
   margin: '0',
+};
+
+const logoImg = {
+  margin: '0 auto',
+  borderRadius: '8px',
 };
 
 const heading = {
