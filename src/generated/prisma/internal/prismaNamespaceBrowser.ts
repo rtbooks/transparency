@@ -66,6 +66,7 @@ export const ModelName = {
   Invitation: 'Invitation',
   AccessRequest: 'AccessRequest',
   Campaign: 'Campaign',
+  CampaignTier: 'CampaignTier',
   Donation: 'Donation',
   Contact: 'Contact',
   Bill: 'Bill',
@@ -408,6 +409,11 @@ export const CampaignScalarFieldEnum = {
   description: 'description',
   targetAmount: 'targetAmount',
   status: 'status',
+  campaignType: 'campaignType',
+  unitPrice: 'unitPrice',
+  maxUnits: 'maxUnits',
+  unitLabel: 'unitLabel',
+  allowMultiUnit: 'allowMultiUnit',
   startDate: 'startDate',
   endDate: 'endDate',
   createdBy: 'createdBy',
@@ -416,6 +422,18 @@ export const CampaignScalarFieldEnum = {
 } as const
 
 export type CampaignScalarFieldEnum = (typeof CampaignScalarFieldEnum)[keyof typeof CampaignScalarFieldEnum]
+
+
+export const CampaignTierScalarFieldEnum = {
+  id: 'id',
+  campaignId: 'campaignId',
+  name: 'name',
+  amount: 'amount',
+  maxSlots: 'maxSlots',
+  sortOrder: 'sortOrder'
+} as const
+
+export type CampaignTierScalarFieldEnum = (typeof CampaignTierScalarFieldEnum)[keyof typeof CampaignTierScalarFieldEnum]
 
 
 export const DonationScalarFieldEnum = {
@@ -434,6 +452,8 @@ export const DonationScalarFieldEnum = {
   receivedDate: 'receivedDate',
   dueDate: 'dueDate',
   campaignId: 'campaignId',
+  unitCount: 'unitCount',
+  tierId: 'tierId',
   transactionId: 'transactionId',
   billId: 'billId',
   createdBy: 'createdBy',

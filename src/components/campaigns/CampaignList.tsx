@@ -27,6 +27,13 @@ interface Campaign {
   endDate: string | null;
   accountId: string;
   createdAt: string;
+  campaignType?: string;
+  unitPrice?: number | null;
+  maxUnits?: number | null;
+  unitLabel?: string | null;
+  unitsSold?: number;
+  unitsRemaining?: number;
+  tiers?: { id: string; name: string; amount: number; maxSlots: number | null; sortOrder?: number; slotsFilled?: number }[];
 }
 
 interface CampaignListProps {
@@ -123,27 +130,73 @@ export function CampaignList({
               </p>
             )}
 
-            {/* Progress bar */}
+            {/* Progress display */}
             <div className="mb-3">
-              <div className="mb-1 flex items-baseline justify-between">
-                <span className="text-2xl font-bold text-green-700">
-                  {formatCurrency(campaign.amountRaised)}
-                </span>
-                {campaign.targetAmount && (
-                  <span className="text-sm text-gray-500">
-                    of {formatCurrency(campaign.targetAmount)} goal
-                  </span>
-                )}
-              </div>
-              {campaign.targetAmount && campaign.targetAmount > 0 && (
-                <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200">
-                  <div
-                    className="h-full rounded-full bg-green-500 transition-all"
-                    style={{ width: `${campaign.progressPercent || 0}%` }}
-                  />
-                </div>
+              {campaign.campaignType === 'FIXED_UNIT' ? (
+                <>
+                  <div className="mb-1 flex items-baseline justify-between">
+                    <span className="text-2xl font-bold text-green-700">
+                      {campaign.unitsSold ?? 0} {campaign.unitLabel || 'unit'}(s)
+                    </span>
+                    {campaign.maxUnits && (
+                      <span className="text-sm text-gray-500">
+                        of {campaign.maxUnits} · {formatCurrency(campaign.unitPrice || 0)} each
+                      </span>
+                    )}
+                  </div>
+                  {campaign.maxUnits && campaign.maxUnits > 0 && (
+                    <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className="h-full rounded-full bg-blue-500 transition-all"
+                        style={{ width: `${Math.min(100, ((campaign.unitsSold ?? 0) / campaign.maxUnits) * 100)}%` }}
+                      />
+                    </div>
+                  )}
+                  <p className="mt-1 text-sm text-gray-500">
+                    {formatCurrency(campaign.amountRaised)} raised
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="mb-1 flex items-baseline justify-between">
+                    <span className="text-2xl font-bold text-green-700">
+                      {formatCurrency(campaign.amountRaised)}
+                    </span>
+                    {campaign.targetAmount && (
+                      <span className="text-sm text-gray-500">
+                        of {formatCurrency(campaign.targetAmount)} goal
+                      </span>
+                    )}
+                  </div>
+                  {campaign.targetAmount && campaign.targetAmount > 0 && (
+                    <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className="h-full rounded-full bg-green-500 transition-all"
+                        style={{ width: `${campaign.progressPercent || 0}%` }}
+                      />
+                    </div>
+                  )}
+                </>
               )}
             </div>
+
+            {/* Tier progress for TIERED campaigns */}
+            {campaign.campaignType === 'TIERED' && campaign.tiers && campaign.tiers.length > 0 && (
+              <div className="mb-3 space-y-1">
+                {campaign.tiers.map(tier => (
+                  <div key={tier.id} className="flex items-center justify-between text-xs">
+                    <span className="text-gray-600">{tier.name} ({formatCurrency(tier.amount)})</span>
+                    {tier.maxSlots ? (
+                      <span className="text-gray-500">
+                        {tier.slotsFilled || 0} / {tier.maxSlots}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500">{tier.slotsFilled || 0} donors</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="flex items-center justify-between text-sm text-gray-500">
               <span>

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
-import { updateCampaign, getCampaignById } from '@/services/campaign.service';
+import { updateCampaign, getCampaignById, getTierSlotsFilled } from '@/services/campaign.service';
 import { z } from 'zod';
 
 const updateCampaignSchema = z.object({
@@ -12,6 +12,10 @@ const updateCampaignSchema = z.object({
   startDate: z.string().nullable().optional(),
   endDate: z.string().nullable().optional(),
   status: z.enum(['ACTIVE', 'PAUSED', 'COMPLETED', 'CANCELLED']).optional(),
+  unitPrice: z.number().positive().nullable().optional(),
+  maxUnits: z.number().int().positive().nullable().optional(),
+  unitLabel: z.string().nullable().optional(),
+  allowMultiUnit: z.boolean().optional(),
 });
 
 /**
@@ -38,9 +42,20 @@ export async function GET(
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
     }
 
+    const campaignTiers = (campaign as any).tiers || [];
+    const enrichedTiers = await Promise.all(
+      campaignTiers.map(async (t: any) => ({
+        ...t,
+        amount: Number(t.amount),
+        slotsFilled: await getTierSlotsFilled(t.id),
+      }))
+    );
+
     return NextResponse.json({
       ...campaign,
       targetAmount: campaign.targetAmount ? Number(campaign.targetAmount) : null,
+      unitPrice: campaign.unitPrice ? Number(campaign.unitPrice) : null,
+      tiers: enrichedTiers,
     });
   } catch (error) {
     console.error('Error getting campaign:', error);
@@ -110,6 +125,7 @@ export async function PATCH(
     return NextResponse.json({
       ...updated,
       targetAmount: updated.targetAmount ? Number(updated.targetAmount) : null,
+      unitPrice: updated.unitPrice ? Number(updated.unitPrice) : null,
     });
   } catch (error: any) {
     if (error instanceof z.ZodError) {

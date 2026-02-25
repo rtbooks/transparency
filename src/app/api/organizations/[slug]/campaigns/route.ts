@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
-import { createCampaign, listCampaigns } from '@/services/campaign.service';
+import { createCampaign, listCampaigns, getTierSlotsFilled } from '@/services/campaign.service';
 import { z } from 'zod';
 
 const createCampaignSchema = z.object({
@@ -12,6 +12,19 @@ const createCampaignSchema = z.object({
   targetAmount: z.number().positive().nullable().optional(),
   startDate: z.string().nullable().optional(),
   endDate: z.string().nullable().optional(),
+  // Campaign constraint fields
+  campaignType: z.enum(['OPEN', 'FIXED_UNIT', 'TIERED']).optional(),
+  unitPrice: z.number().positive().nullable().optional(),
+  maxUnits: z.number().int().positive().nullable().optional(),
+  unitLabel: z.string().nullable().optional(),
+  allowMultiUnit: z.boolean().optional(),
+  // Tiers for TIERED campaigns
+  tiers: z.array(z.object({
+    name: z.string().min(1),
+    amount: z.number().positive(),
+    maxSlots: z.number().int().positive().nullable().optional(),
+    sortOrder: z.number().int().optional(),
+  })).optional(),
 });
 
 /**
@@ -53,10 +66,22 @@ export async function GET(
     const statusFilter = isAdmin ? undefined : 'ACTIVE';
     const campaigns = await listCampaigns(organization.id, { statusFilter });
 
-    // Serialize Decimal fields
-    const serialized = campaigns.map(c => ({
-      ...c,
-      targetAmount: c.targetAmount ? Number(c.targetAmount) : null,
+    // Serialize Decimal fields and enrich tiers
+    const serialized = await Promise.all(campaigns.map(async (c) => {
+      const campaignTiers = (c as any).tiers || [];
+      const enrichedTiers = await Promise.all(
+        campaignTiers.map(async (t: any) => ({
+          ...t,
+          amount: Number(t.amount),
+          slotsFilled: await getTierSlotsFilled(t.id),
+        }))
+      );
+      return {
+        ...c,
+        targetAmount: c.targetAmount ? Number(c.targetAmount) : null,
+        unitPrice: c.unitPrice ? Number(c.unitPrice) : null,
+        tiers: enrichedTiers,
+      };
     }));
 
     return NextResponse.json({
@@ -121,9 +146,35 @@ export async function POST(
       startDate: validated.startDate ? new Date(validated.startDate) : null,
       endDate: validated.endDate ? new Date(validated.endDate) : null,
       createdBy: user.id,
+      campaignType: validated.campaignType,
+      unitPrice: validated.unitPrice,
+      maxUnits: validated.maxUnits,
+      unitLabel: validated.unitLabel,
+      allowMultiUnit: validated.allowMultiUnit,
     });
 
-    return NextResponse.json(campaign, { status: 201 });
+    // Create tiers for TIERED campaigns
+    if (validated.campaignType === 'TIERED' && validated.tiers?.length) {
+      for (const [i, tier] of validated.tiers.entries()) {
+        await prisma.campaignTier.create({
+          data: {
+            campaignId: campaign.id,
+            name: tier.name,
+            amount: tier.amount,
+            maxSlots: tier.maxSlots ?? null,
+            sortOrder: tier.sortOrder ?? i,
+          },
+        });
+      }
+    }
+
+    // Re-fetch with tiers
+    const result = await prisma.campaign.findUnique({
+      where: { id: campaign.id },
+      include: { tiers: { orderBy: { sortOrder: 'asc' } } },
+    });
+
+    return NextResponse.json(result, { status: 201 });
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });

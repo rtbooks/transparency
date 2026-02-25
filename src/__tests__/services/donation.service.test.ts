@@ -53,6 +53,10 @@ jest.mock('@/lib/prisma', () => ({
     transaction: {
       findMany: jest.fn(),
     },
+    campaign: {
+      findUnique: jest.fn(),
+      update: jest.fn(),
+    },
   },
 }));
 
@@ -117,6 +121,16 @@ const baseDonation = {
 describe('Donation Service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Default: campaign-1 is an OPEN campaign with no constraints
+    (prisma.campaign.findUnique as jest.Mock).mockResolvedValue({
+      id: 'campaign-1',
+      campaignType: 'OPEN',
+      status: 'ACTIVE',
+      unitPrice: null,
+      maxUnits: null,
+      allowMultiUnit: true,
+      tiers: [],
+    });
   });
 
   // ── createPledgeDonation ──────────────────────────────────────────────

@@ -28,10 +28,14 @@ export type AggregateCampaign = {
 
 export type CampaignAvgAggregateOutputType = {
   targetAmount: runtime.Decimal | null
+  unitPrice: runtime.Decimal | null
+  maxUnits: number | null
 }
 
 export type CampaignSumAggregateOutputType = {
   targetAmount: runtime.Decimal | null
+  unitPrice: runtime.Decimal | null
+  maxUnits: number | null
 }
 
 export type CampaignMinAggregateOutputType = {
@@ -42,6 +46,11 @@ export type CampaignMinAggregateOutputType = {
   description: string | null
   targetAmount: runtime.Decimal | null
   status: $Enums.CampaignStatus | null
+  campaignType: $Enums.CampaignType | null
+  unitPrice: runtime.Decimal | null
+  maxUnits: number | null
+  unitLabel: string | null
+  allowMultiUnit: boolean | null
   startDate: Date | null
   endDate: Date | null
   createdBy: string | null
@@ -57,6 +66,11 @@ export type CampaignMaxAggregateOutputType = {
   description: string | null
   targetAmount: runtime.Decimal | null
   status: $Enums.CampaignStatus | null
+  campaignType: $Enums.CampaignType | null
+  unitPrice: runtime.Decimal | null
+  maxUnits: number | null
+  unitLabel: string | null
+  allowMultiUnit: boolean | null
   startDate: Date | null
   endDate: Date | null
   createdBy: string | null
@@ -72,6 +86,11 @@ export type CampaignCountAggregateOutputType = {
   description: number
   targetAmount: number
   status: number
+  campaignType: number
+  unitPrice: number
+  maxUnits: number
+  unitLabel: number
+  allowMultiUnit: number
   startDate: number
   endDate: number
   createdBy: number
@@ -83,10 +102,14 @@ export type CampaignCountAggregateOutputType = {
 
 export type CampaignAvgAggregateInputType = {
   targetAmount?: true
+  unitPrice?: true
+  maxUnits?: true
 }
 
 export type CampaignSumAggregateInputType = {
   targetAmount?: true
+  unitPrice?: true
+  maxUnits?: true
 }
 
 export type CampaignMinAggregateInputType = {
@@ -97,6 +120,11 @@ export type CampaignMinAggregateInputType = {
   description?: true
   targetAmount?: true
   status?: true
+  campaignType?: true
+  unitPrice?: true
+  maxUnits?: true
+  unitLabel?: true
+  allowMultiUnit?: true
   startDate?: true
   endDate?: true
   createdBy?: true
@@ -112,6 +140,11 @@ export type CampaignMaxAggregateInputType = {
   description?: true
   targetAmount?: true
   status?: true
+  campaignType?: true
+  unitPrice?: true
+  maxUnits?: true
+  unitLabel?: true
+  allowMultiUnit?: true
   startDate?: true
   endDate?: true
   createdBy?: true
@@ -127,6 +160,11 @@ export type CampaignCountAggregateInputType = {
   description?: true
   targetAmount?: true
   status?: true
+  campaignType?: true
+  unitPrice?: true
+  maxUnits?: true
+  unitLabel?: true
+  allowMultiUnit?: true
   startDate?: true
   endDate?: true
   createdBy?: true
@@ -229,6 +267,11 @@ export type CampaignGroupByOutputType = {
   description: string | null
   targetAmount: runtime.Decimal | null
   status: $Enums.CampaignStatus
+  campaignType: $Enums.CampaignType
+  unitPrice: runtime.Decimal | null
+  maxUnits: number | null
+  unitLabel: string | null
+  allowMultiUnit: boolean
   startDate: Date | null
   endDate: Date | null
   createdBy: string | null
@@ -267,12 +310,18 @@ export type CampaignWhereInput = {
   description?: Prisma.StringNullableFilter<"Campaign"> | string | null
   targetAmount?: Prisma.DecimalNullableFilter<"Campaign"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumCampaignStatusFilter<"Campaign"> | $Enums.CampaignStatus
+  campaignType?: Prisma.EnumCampaignTypeFilter<"Campaign"> | $Enums.CampaignType
+  unitPrice?: Prisma.DecimalNullableFilter<"Campaign"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: Prisma.IntNullableFilter<"Campaign"> | number | null
+  unitLabel?: Prisma.StringNullableFilter<"Campaign"> | string | null
+  allowMultiUnit?: Prisma.BoolFilter<"Campaign"> | boolean
   startDate?: Prisma.DateTimeNullableFilter<"Campaign"> | Date | string | null
   endDate?: Prisma.DateTimeNullableFilter<"Campaign"> | Date | string | null
   createdBy?: Prisma.StringNullableFilter<"Campaign"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
   donations?: Prisma.DonationListRelationFilter
+  tiers?: Prisma.CampaignTierListRelationFilter
 }
 
 export type CampaignOrderByWithRelationInput = {
@@ -283,12 +332,18 @@ export type CampaignOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   targetAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  campaignType?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrderInput | Prisma.SortOrder
+  maxUnits?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitLabel?: Prisma.SortOrderInput | Prisma.SortOrder
+  allowMultiUnit?: Prisma.SortOrder
   startDate?: Prisma.SortOrderInput | Prisma.SortOrder
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   donations?: Prisma.DonationOrderByRelationAggregateInput
+  tiers?: Prisma.CampaignTierOrderByRelationAggregateInput
 }
 
 export type CampaignWhereUniqueInput = Prisma.AtLeast<{
@@ -303,12 +358,18 @@ export type CampaignWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"Campaign"> | string | null
   targetAmount?: Prisma.DecimalNullableFilter<"Campaign"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumCampaignStatusFilter<"Campaign"> | $Enums.CampaignStatus
+  campaignType?: Prisma.EnumCampaignTypeFilter<"Campaign"> | $Enums.CampaignType
+  unitPrice?: Prisma.DecimalNullableFilter<"Campaign"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: Prisma.IntNullableFilter<"Campaign"> | number | null
+  unitLabel?: Prisma.StringNullableFilter<"Campaign"> | string | null
+  allowMultiUnit?: Prisma.BoolFilter<"Campaign"> | boolean
   startDate?: Prisma.DateTimeNullableFilter<"Campaign"> | Date | string | null
   endDate?: Prisma.DateTimeNullableFilter<"Campaign"> | Date | string | null
   createdBy?: Prisma.StringNullableFilter<"Campaign"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
   donations?: Prisma.DonationListRelationFilter
+  tiers?: Prisma.CampaignTierListRelationFilter
 }, "id" | "organizationId_accountId">
 
 export type CampaignOrderByWithAggregationInput = {
@@ -319,6 +380,11 @@ export type CampaignOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   targetAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  campaignType?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrderInput | Prisma.SortOrder
+  maxUnits?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitLabel?: Prisma.SortOrderInput | Prisma.SortOrder
+  allowMultiUnit?: Prisma.SortOrder
   startDate?: Prisma.SortOrderInput | Prisma.SortOrder
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -342,6 +408,11 @@ export type CampaignScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"Campaign"> | string | null
   targetAmount?: Prisma.DecimalNullableWithAggregatesFilter<"Campaign"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumCampaignStatusWithAggregatesFilter<"Campaign"> | $Enums.CampaignStatus
+  campaignType?: Prisma.EnumCampaignTypeWithAggregatesFilter<"Campaign"> | $Enums.CampaignType
+  unitPrice?: Prisma.DecimalNullableWithAggregatesFilter<"Campaign"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: Prisma.IntNullableWithAggregatesFilter<"Campaign"> | number | null
+  unitLabel?: Prisma.StringNullableWithAggregatesFilter<"Campaign"> | string | null
+  allowMultiUnit?: Prisma.BoolWithAggregatesFilter<"Campaign"> | boolean
   startDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Campaign"> | Date | string | null
   endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Campaign"> | Date | string | null
   createdBy?: Prisma.StringNullableWithAggregatesFilter<"Campaign"> | string | null
@@ -357,12 +428,18 @@ export type CampaignCreateInput = {
   description?: string | null
   targetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.CampaignStatus
+  campaignType?: $Enums.CampaignType
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: number | null
+  unitLabel?: string | null
+  allowMultiUnit?: boolean
   startDate?: Date | string | null
   endDate?: Date | string | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   donations?: Prisma.DonationCreateNestedManyWithoutCampaignInput
+  tiers?: Prisma.CampaignTierCreateNestedManyWithoutCampaignInput
 }
 
 export type CampaignUncheckedCreateInput = {
@@ -373,12 +450,18 @@ export type CampaignUncheckedCreateInput = {
   description?: string | null
   targetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.CampaignStatus
+  campaignType?: $Enums.CampaignType
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: number | null
+  unitLabel?: string | null
+  allowMultiUnit?: boolean
   startDate?: Date | string | null
   endDate?: Date | string | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutCampaignInput
+  tiers?: Prisma.CampaignTierUncheckedCreateNestedManyWithoutCampaignInput
 }
 
 export type CampaignUpdateInput = {
@@ -389,12 +472,18 @@ export type CampaignUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  campaignType?: Prisma.EnumCampaignTypeFieldUpdateOperationsInput | $Enums.CampaignType
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  unitLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allowMultiUnit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donations?: Prisma.DonationUpdateManyWithoutCampaignNestedInput
+  tiers?: Prisma.CampaignTierUpdateManyWithoutCampaignNestedInput
 }
 
 export type CampaignUncheckedUpdateInput = {
@@ -405,12 +494,18 @@ export type CampaignUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  campaignType?: Prisma.EnumCampaignTypeFieldUpdateOperationsInput | $Enums.CampaignType
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  unitLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allowMultiUnit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donations?: Prisma.DonationUncheckedUpdateManyWithoutCampaignNestedInput
+  tiers?: Prisma.CampaignTierUncheckedUpdateManyWithoutCampaignNestedInput
 }
 
 export type CampaignCreateManyInput = {
@@ -421,6 +516,11 @@ export type CampaignCreateManyInput = {
   description?: string | null
   targetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.CampaignStatus
+  campaignType?: $Enums.CampaignType
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: number | null
+  unitLabel?: string | null
+  allowMultiUnit?: boolean
   startDate?: Date | string | null
   endDate?: Date | string | null
   createdBy?: string | null
@@ -436,6 +536,11 @@ export type CampaignUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  campaignType?: Prisma.EnumCampaignTypeFieldUpdateOperationsInput | $Enums.CampaignType
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  unitLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allowMultiUnit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -451,6 +556,11 @@ export type CampaignUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  campaignType?: Prisma.EnumCampaignTypeFieldUpdateOperationsInput | $Enums.CampaignType
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  unitLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allowMultiUnit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -471,6 +581,11 @@ export type CampaignCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   targetAmount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  campaignType?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrder
+  maxUnits?: Prisma.SortOrder
+  unitLabel?: Prisma.SortOrder
+  allowMultiUnit?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
@@ -480,6 +595,8 @@ export type CampaignCountOrderByAggregateInput = {
 
 export type CampaignAvgOrderByAggregateInput = {
   targetAmount?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrder
+  maxUnits?: Prisma.SortOrder
 }
 
 export type CampaignMaxOrderByAggregateInput = {
@@ -490,6 +607,11 @@ export type CampaignMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   targetAmount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  campaignType?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrder
+  maxUnits?: Prisma.SortOrder
+  unitLabel?: Prisma.SortOrder
+  allowMultiUnit?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
@@ -505,6 +627,11 @@ export type CampaignMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   targetAmount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  campaignType?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrder
+  maxUnits?: Prisma.SortOrder
+  unitLabel?: Prisma.SortOrder
+  allowMultiUnit?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
@@ -514,6 +641,13 @@ export type CampaignMinOrderByAggregateInput = {
 
 export type CampaignSumOrderByAggregateInput = {
   targetAmount?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrder
+  maxUnits?: Prisma.SortOrder
+}
+
+export type CampaignScalarRelationFilter = {
+  is?: Prisma.CampaignWhereInput
+  isNot?: Prisma.CampaignWhereInput
 }
 
 export type CampaignNullableScalarRelationFilter = {
@@ -533,6 +667,32 @@ export type EnumCampaignStatusFieldUpdateOperationsInput = {
   set?: $Enums.CampaignStatus
 }
 
+export type EnumCampaignTypeFieldUpdateOperationsInput = {
+  set?: $Enums.CampaignType
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type CampaignCreateNestedOneWithoutTiersInput = {
+  create?: Prisma.XOR<Prisma.CampaignCreateWithoutTiersInput, Prisma.CampaignUncheckedCreateWithoutTiersInput>
+  connectOrCreate?: Prisma.CampaignCreateOrConnectWithoutTiersInput
+  connect?: Prisma.CampaignWhereUniqueInput
+}
+
+export type CampaignUpdateOneRequiredWithoutTiersNestedInput = {
+  create?: Prisma.XOR<Prisma.CampaignCreateWithoutTiersInput, Prisma.CampaignUncheckedCreateWithoutTiersInput>
+  connectOrCreate?: Prisma.CampaignCreateOrConnectWithoutTiersInput
+  upsert?: Prisma.CampaignUpsertWithoutTiersInput
+  connect?: Prisma.CampaignWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CampaignUpdateToOneWithWhereWithoutTiersInput, Prisma.CampaignUpdateWithoutTiersInput>, Prisma.CampaignUncheckedUpdateWithoutTiersInput>
+}
+
 export type CampaignCreateNestedOneWithoutDonationsInput = {
   create?: Prisma.XOR<Prisma.CampaignCreateWithoutDonationsInput, Prisma.CampaignUncheckedCreateWithoutDonationsInput>
   connectOrCreate?: Prisma.CampaignCreateOrConnectWithoutDonationsInput
@@ -549,6 +709,106 @@ export type CampaignUpdateOneWithoutDonationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CampaignUpdateToOneWithWhereWithoutDonationsInput, Prisma.CampaignUpdateWithoutDonationsInput>, Prisma.CampaignUncheckedUpdateWithoutDonationsInput>
 }
 
+export type CampaignCreateWithoutTiersInput = {
+  id?: string
+  organizationId: string
+  accountId: string
+  name: string
+  description?: string | null
+  targetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: $Enums.CampaignStatus
+  campaignType?: $Enums.CampaignType
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: number | null
+  unitLabel?: string | null
+  allowMultiUnit?: boolean
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  createdBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  donations?: Prisma.DonationCreateNestedManyWithoutCampaignInput
+}
+
+export type CampaignUncheckedCreateWithoutTiersInput = {
+  id?: string
+  organizationId: string
+  accountId: string
+  name: string
+  description?: string | null
+  targetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: $Enums.CampaignStatus
+  campaignType?: $Enums.CampaignType
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: number | null
+  unitLabel?: string | null
+  allowMultiUnit?: boolean
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  createdBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutCampaignInput
+}
+
+export type CampaignCreateOrConnectWithoutTiersInput = {
+  where: Prisma.CampaignWhereUniqueInput
+  create: Prisma.XOR<Prisma.CampaignCreateWithoutTiersInput, Prisma.CampaignUncheckedCreateWithoutTiersInput>
+}
+
+export type CampaignUpsertWithoutTiersInput = {
+  update: Prisma.XOR<Prisma.CampaignUpdateWithoutTiersInput, Prisma.CampaignUncheckedUpdateWithoutTiersInput>
+  create: Prisma.XOR<Prisma.CampaignCreateWithoutTiersInput, Prisma.CampaignUncheckedCreateWithoutTiersInput>
+  where?: Prisma.CampaignWhereInput
+}
+
+export type CampaignUpdateToOneWithWhereWithoutTiersInput = {
+  where?: Prisma.CampaignWhereInput
+  data: Prisma.XOR<Prisma.CampaignUpdateWithoutTiersInput, Prisma.CampaignUncheckedUpdateWithoutTiersInput>
+}
+
+export type CampaignUpdateWithoutTiersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  campaignType?: Prisma.EnumCampaignTypeFieldUpdateOperationsInput | $Enums.CampaignType
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  unitLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allowMultiUnit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donations?: Prisma.DonationUpdateManyWithoutCampaignNestedInput
+}
+
+export type CampaignUncheckedUpdateWithoutTiersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  campaignType?: Prisma.EnumCampaignTypeFieldUpdateOperationsInput | $Enums.CampaignType
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  unitLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allowMultiUnit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutCampaignNestedInput
+}
+
 export type CampaignCreateWithoutDonationsInput = {
   id?: string
   organizationId: string
@@ -557,11 +817,17 @@ export type CampaignCreateWithoutDonationsInput = {
   description?: string | null
   targetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.CampaignStatus
+  campaignType?: $Enums.CampaignType
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: number | null
+  unitLabel?: string | null
+  allowMultiUnit?: boolean
   startDate?: Date | string | null
   endDate?: Date | string | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tiers?: Prisma.CampaignTierCreateNestedManyWithoutCampaignInput
 }
 
 export type CampaignUncheckedCreateWithoutDonationsInput = {
@@ -572,11 +838,17 @@ export type CampaignUncheckedCreateWithoutDonationsInput = {
   description?: string | null
   targetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.CampaignStatus
+  campaignType?: $Enums.CampaignType
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: number | null
+  unitLabel?: string | null
+  allowMultiUnit?: boolean
   startDate?: Date | string | null
   endDate?: Date | string | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tiers?: Prisma.CampaignTierUncheckedCreateNestedManyWithoutCampaignInput
 }
 
 export type CampaignCreateOrConnectWithoutDonationsInput = {
@@ -603,11 +875,17 @@ export type CampaignUpdateWithoutDonationsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  campaignType?: Prisma.EnumCampaignTypeFieldUpdateOperationsInput | $Enums.CampaignType
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  unitLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allowMultiUnit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tiers?: Prisma.CampaignTierUpdateManyWithoutCampaignNestedInput
 }
 
 export type CampaignUncheckedUpdateWithoutDonationsInput = {
@@ -618,11 +896,17 @@ export type CampaignUncheckedUpdateWithoutDonationsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
+  campaignType?: Prisma.EnumCampaignTypeFieldUpdateOperationsInput | $Enums.CampaignType
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  maxUnits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  unitLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allowMultiUnit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tiers?: Prisma.CampaignTierUncheckedUpdateManyWithoutCampaignNestedInput
 }
 
 
@@ -632,10 +916,12 @@ export type CampaignUncheckedUpdateWithoutDonationsInput = {
 
 export type CampaignCountOutputType = {
   donations: number
+  tiers: number
 }
 
 export type CampaignCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   donations?: boolean | CampaignCountOutputTypeCountDonationsArgs
+  tiers?: boolean | CampaignCountOutputTypeCountTiersArgs
 }
 
 /**
@@ -655,6 +941,13 @@ export type CampaignCountOutputTypeCountDonationsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.DonationWhereInput
 }
 
+/**
+ * CampaignCountOutputType without action
+ */
+export type CampaignCountOutputTypeCountTiersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CampaignTierWhereInput
+}
+
 
 export type CampaignSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -664,12 +957,18 @@ export type CampaignSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   description?: boolean
   targetAmount?: boolean
   status?: boolean
+  campaignType?: boolean
+  unitPrice?: boolean
+  maxUnits?: boolean
+  unitLabel?: boolean
+  allowMultiUnit?: boolean
   startDate?: boolean
   endDate?: boolean
   createdBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   donations?: boolean | Prisma.Campaign$donationsArgs<ExtArgs>
+  tiers?: boolean | Prisma.Campaign$tiersArgs<ExtArgs>
   _count?: boolean | Prisma.CampaignCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["campaign"]>
 
@@ -681,6 +980,11 @@ export type CampaignSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   description?: boolean
   targetAmount?: boolean
   status?: boolean
+  campaignType?: boolean
+  unitPrice?: boolean
+  maxUnits?: boolean
+  unitLabel?: boolean
+  allowMultiUnit?: boolean
   startDate?: boolean
   endDate?: boolean
   createdBy?: boolean
@@ -696,6 +1000,11 @@ export type CampaignSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   description?: boolean
   targetAmount?: boolean
   status?: boolean
+  campaignType?: boolean
+  unitPrice?: boolean
+  maxUnits?: boolean
+  unitLabel?: boolean
+  allowMultiUnit?: boolean
   startDate?: boolean
   endDate?: boolean
   createdBy?: boolean
@@ -711,6 +1020,11 @@ export type CampaignSelectScalar = {
   description?: boolean
   targetAmount?: boolean
   status?: boolean
+  campaignType?: boolean
+  unitPrice?: boolean
+  maxUnits?: boolean
+  unitLabel?: boolean
+  allowMultiUnit?: boolean
   startDate?: boolean
   endDate?: boolean
   createdBy?: boolean
@@ -718,9 +1032,10 @@ export type CampaignSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CampaignOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "accountId" | "name" | "description" | "targetAmount" | "status" | "startDate" | "endDate" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["campaign"]>
+export type CampaignOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "accountId" | "name" | "description" | "targetAmount" | "status" | "campaignType" | "unitPrice" | "maxUnits" | "unitLabel" | "allowMultiUnit" | "startDate" | "endDate" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["campaign"]>
 export type CampaignInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   donations?: boolean | Prisma.Campaign$donationsArgs<ExtArgs>
+  tiers?: boolean | Prisma.Campaign$tiersArgs<ExtArgs>
   _count?: boolean | Prisma.CampaignCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CampaignIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -730,6 +1045,7 @@ export type $CampaignPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "Campaign"
   objects: {
     donations: Prisma.$DonationPayload<ExtArgs>[]
+    tiers: Prisma.$CampaignTierPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -739,6 +1055,11 @@ export type $CampaignPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     description: string | null
     targetAmount: runtime.Decimal | null
     status: $Enums.CampaignStatus
+    campaignType: $Enums.CampaignType
+    unitPrice: runtime.Decimal | null
+    maxUnits: number | null
+    unitLabel: string | null
+    allowMultiUnit: boolean
     startDate: Date | null
     endDate: Date | null
     createdBy: string | null
@@ -1139,6 +1460,7 @@ readonly fields: CampaignFieldRefs;
 export interface Prisma__CampaignClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   donations<T extends Prisma.Campaign$donationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Campaign$donationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tiers<T extends Prisma.Campaign$tiersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Campaign$tiersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CampaignTierPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1175,6 +1497,11 @@ export interface CampaignFieldRefs {
   readonly description: Prisma.FieldRef<"Campaign", 'String'>
   readonly targetAmount: Prisma.FieldRef<"Campaign", 'Decimal'>
   readonly status: Prisma.FieldRef<"Campaign", 'CampaignStatus'>
+  readonly campaignType: Prisma.FieldRef<"Campaign", 'CampaignType'>
+  readonly unitPrice: Prisma.FieldRef<"Campaign", 'Decimal'>
+  readonly maxUnits: Prisma.FieldRef<"Campaign", 'Int'>
+  readonly unitLabel: Prisma.FieldRef<"Campaign", 'String'>
+  readonly allowMultiUnit: Prisma.FieldRef<"Campaign", 'Boolean'>
   readonly startDate: Prisma.FieldRef<"Campaign", 'DateTime'>
   readonly endDate: Prisma.FieldRef<"Campaign", 'DateTime'>
   readonly createdBy: Prisma.FieldRef<"Campaign", 'String'>
@@ -1589,6 +1916,30 @@ export type Campaign$donationsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.DonationScalarFieldEnum | Prisma.DonationScalarFieldEnum[]
+}
+
+/**
+ * Campaign.tiers
+ */
+export type Campaign$tiersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CampaignTier
+   */
+  select?: Prisma.CampaignTierSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CampaignTier
+   */
+  omit?: Prisma.CampaignTierOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CampaignTierInclude<ExtArgs> | null
+  where?: Prisma.CampaignTierWhereInput
+  orderBy?: Prisma.CampaignTierOrderByWithRelationInput | Prisma.CampaignTierOrderByWithRelationInput[]
+  cursor?: Prisma.CampaignTierWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CampaignTierScalarFieldEnum | Prisma.CampaignTierScalarFieldEnum[]
 }
 
 /**

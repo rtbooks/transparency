@@ -23,8 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils/account-tree';
 
 const donationSchema = z.object({
-  amount: z.number().positive('Amount must be positive'),
-  description: z.string().min(1, 'Please provide a description'),
+  amount: z.number().optional(),
   donorMessage: z.string().optional(),
   dueDate: z.string().optional(),
 });
@@ -49,6 +48,8 @@ export function NewPledgeFormClient({
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
+  const [unitCount, setUnitCount] = useState(1);
+  const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -71,15 +72,42 @@ export function NewPledgeFormClient({
     resolver: zodResolver(donationSchema),
     defaultValues: {
       amount: 0,
-      description: '',
       donorMessage: '',
       dueDate: '',
     },
   });
 
+  const selectedCampaign = campaigns.find(c => c.id === selectedCampaignId);
+  const isFixedUnit = selectedCampaign?.campaignType === 'FIXED_UNIT';
+  const isTiered = selectedCampaign?.campaignType === 'TIERED';
+
   const onSubmit = async (data: DonationFormData) => {
     try {
       setIsSubmitting(true);
+
+      // Compute final amount based on campaign type
+      let finalAmount = data.amount || 0;
+      if (isFixedUnit && selectedCampaign?.unitPrice) {
+        finalAmount = selectedCampaign.unitPrice * unitCount;
+      } else if (isTiered && selectedTierId) {
+        const tier = selectedCampaign?.tiers?.find((t: any) => t.id === selectedTierId);
+        if (tier) finalAmount = tier.amount;
+      }
+
+      if (finalAmount <= 0) {
+        toast({ title: 'Error', description: 'Please enter a valid amount', variant: 'destructive' });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Auto-generate description from campaign context
+      let description = selectedCampaign?.name || 'Donation';
+      if (isFixedUnit) {
+        description = `${unitCount} ${selectedCampaign?.unitLabel || 'unit'}(s) — ${selectedCampaign?.name}`;
+      } else if (isTiered && selectedTierId) {
+        const tier = selectedCampaign?.tiers?.find((t: any) => t.id === selectedTierId);
+        description = `${tier?.name || 'Tier'} — ${selectedCampaign?.name}`;
+      }
 
       const response = await fetch(
         `/api/organizations/${organizationSlug}/donations`,
@@ -88,11 +116,13 @@ export function NewPledgeFormClient({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'PLEDGE',
-            amount: data.amount,
-            description: data.description,
+            amount: finalAmount,
+            description,
             donorMessage: data.donorMessage || undefined,
             dueDate: data.dueDate || null,
             campaignId: selectedCampaignId || null,
+            unitCount: isFixedUnit ? unitCount : null,
+            tierId: isTiered ? selectedTierId : null,
           }),
         }
       );
@@ -105,7 +135,7 @@ export function NewPledgeFormClient({
       setDonationCreated(true);
       trackEvent('donation_created', {
         type: 'PLEDGE',
-        amount: data.amount,
+        amount: finalAmount,
         orgSlug: organizationSlug,
         campaignId: selectedCampaignId || undefined,
       });
@@ -210,7 +240,11 @@ export function NewPledgeFormClient({
                     <button
                       key={campaign.id}
                       type="button"
-                      onClick={() => setSelectedCampaignId(campaign.id)}
+                      onClick={() => {
+                        setSelectedCampaignId(campaign.id);
+                        setUnitCount(1);
+                        setSelectedTierId(null);
+                      }}
                       className={`rounded-lg border p-4 text-left transition-colors ${
                         selectedCampaignId === campaign.id
                           ? 'border-green-500 bg-green-50 ring-2 ring-green-200'
@@ -221,6 +255,17 @@ export function NewPledgeFormClient({
                         <Target className="h-4 w-4 text-green-600" />
                         <p className="font-medium text-gray-900">{campaign.name}</p>
                       </div>
+                      {campaign.campaignType === 'FIXED_UNIT' && (
+                        <p className="mt-1 text-xs text-blue-600">
+                          {formatCurrency(campaign.unitPrice)} per {campaign.unitLabel || 'unit'}
+                          {campaign.maxUnits ? ` · ${campaign.maxUnits} available` : ''}
+                        </p>
+                      )}
+                      {campaign.campaignType === 'TIERED' && campaign.tiers?.length > 0 && (
+                        <p className="mt-1 text-xs text-purple-600">
+                          {campaign.tiers.length} tier{campaign.tiers.length !== 1 ? 's' : ''} available
+                        </p>
+                      )}
                       {campaign.description && (
                         <p className="mt-1 text-xs text-gray-500 line-clamp-2">
                           {campaign.description}
@@ -246,7 +291,71 @@ export function NewPledgeFormClient({
               </div>
             )}
 
-            <FormField
+            {/* FIXED_UNIT: Unit quantity selector */}
+            {isFixedUnit && selectedCampaign && (
+              <div className="space-y-2 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                <label className="text-sm font-medium text-blue-800">
+                  How many {selectedCampaign.unitLabel || 'unit'}(s)?
+                </label>
+                <div className="flex items-center gap-3">
+                  <Input
+                    type="number"
+                    min="1"
+                    max={selectedCampaign.allowMultiUnit ? (selectedCampaign.maxUnits || 999) : 1}
+                    step="1"
+                    value={unitCount}
+                    onChange={(e) => setUnitCount(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-24"
+                    disabled={!selectedCampaign.allowMultiUnit}
+                  />
+                  <span className="text-sm text-blue-700">
+                    × {formatCurrency(selectedCampaign.unitPrice)} = {formatCurrency(selectedCampaign.unitPrice * unitCount)}
+                  </span>
+                </div>
+                {selectedCampaign.maxUnits && (
+                  <p className="text-xs text-blue-600">
+                    {selectedCampaign.unitsRemaining ?? selectedCampaign.maxUnits} of {selectedCampaign.maxUnits} remaining
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* TIERED: Tier picker */}
+            {isTiered && selectedCampaign?.tiers?.length > 0 && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select a Tier</label>
+                <div className="grid gap-2">
+                  {selectedCampaign.tiers.map((tier: any) => (
+                    <button
+                      key={tier.id}
+                      type="button"
+                      onClick={() => setSelectedTierId(tier.id)}
+                      className={`flex items-center justify-between rounded-lg border p-3 text-left transition-colors ${
+                        selectedTierId === tier.id
+                          ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-200'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div>
+                        <p className="font-medium">{tier.name}</p>
+                        {tier.maxSlots && (
+                          <p className="text-xs text-gray-500">
+                            {tier.maxSlots - (tier.slotsFilled || 0)} of {tier.maxSlots} slots remaining
+                          </p>
+                        )}
+                      </div>
+                      <p className="text-lg font-bold text-purple-700">
+                        {formatCurrency(tier.amount)}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Amount field — hidden for constrained campaigns */}
+            {!isFixedUnit && !isTiered && (
+              <FormField
               control={form.control}
               name="amount"
               render={({ field }) => (
@@ -269,27 +378,7 @@ export function NewPledgeFormClient({
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description / Purpose</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="e.g., Annual giving, Capital campaign contribution..."
-                      rows={3}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Briefly describe the purpose of your donation
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            )}
 
             <FormField
               control={form.control}

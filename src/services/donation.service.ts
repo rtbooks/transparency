@@ -24,6 +24,8 @@ export interface CreateDonationInput {
   donationDate: Date;
   dueDate?: Date | null;
   campaignId?: string | null;
+  unitCount?: number | null;   // Number of units (FIXED_UNIT campaigns)
+  tierId?: string | null;      // Tier selection (TIERED campaigns)
   // Account IDs for the accounting entry
   arAccountId: string;       // Accounts Receivable (for pledges)
   revenueAccountId: string;  // Revenue / campaign account
@@ -57,7 +59,13 @@ export interface DonationWithDetails extends Donation {
  * Accounting: DR Accounts Receivable, CR Revenue
  */
 export async function createPledgeDonation(input: CreateDonationInput): Promise<Donation> {
-  return await prisma.$transaction(async (tx) => {
+  // Validate against campaign constraints before starting transaction
+  if (input.campaignId) {
+    const { validateDonationAgainstCampaign } = await import('@/services/campaign.service');
+    await validateDonationAgainstCampaign(input.campaignId, input.amount, input.unitCount, input.tierId);
+  }
+
+  const donation = await prisma.$transaction(async (tx) => {
     const now = new Date();
     const desc = input.description || 'Pledge donation';
 
@@ -102,7 +110,7 @@ export async function createPledgeDonation(input: CreateDonationInput): Promise<
     });
 
     // Create the donation record
-    const donation = await tx.donation.create({
+    return await tx.donation.create({
       data: {
         organizationId: input.organizationId,
         contactId: input.contactId,
@@ -117,14 +125,22 @@ export async function createPledgeDonation(input: CreateDonationInput): Promise<
         donationDate: input.donationDate,
         dueDate: input.dueDate ?? null,
         campaignId: input.campaignId ?? null,
+        unitCount: input.unitCount ?? null,
+        tierId: input.tierId ?? null,
         transactionId: transaction.id,
         billId: bill.id,
         createdBy: input.createdBy ?? null,
       },
     });
-
-    return donation;
   });
+
+  // After successful creation, check if campaign should auto-complete
+  if (input.campaignId) {
+    const { checkAndAutoCompleteCampaign } = await import('@/services/campaign.service');
+    await checkAndAutoCompleteCampaign(input.campaignId).catch(() => {});
+  }
+
+  return donation;
 }
 
 /**
@@ -136,7 +152,13 @@ export async function createOneTimeDonation(input: CreateDonationInput): Promise
     throw new Error('Cash account ID is required for one-time donations');
   }
 
-  return await prisma.$transaction(async (tx) => {
+  // Validate against campaign constraints
+  if (input.campaignId) {
+    const { validateDonationAgainstCampaign } = await import('@/services/campaign.service');
+    await validateDonationAgainstCampaign(input.campaignId, input.amount, input.unitCount, input.tierId);
+  }
+
+  const donation = await prisma.$transaction(async (tx) => {
     const now = new Date();
     const desc = input.description || 'One-time donation';
 
@@ -164,7 +186,7 @@ export async function createOneTimeDonation(input: CreateDonationInput): Promise
     await updateAccountBalances(tx, input.cashAccountId!, input.revenueAccountId, input.amount);
 
     // Create the donation record (immediately received)
-    const donation = await tx.donation.create({
+    return await tx.donation.create({
       data: {
         organizationId: input.organizationId,
         contactId: input.contactId,
@@ -179,14 +201,22 @@ export async function createOneTimeDonation(input: CreateDonationInput): Promise
         donationDate: input.donationDate,
         receivedDate: input.donationDate,
         campaignId: input.campaignId ?? null,
+        unitCount: input.unitCount ?? null,
+        tierId: input.tierId ?? null,
         transactionId: transaction.id,
         billId: null,
         createdBy: input.createdBy ?? null,
       },
     });
-
-    return donation;
   });
+
+  // After successful creation, check if campaign should auto-complete
+  if (input.campaignId) {
+    const { checkAndAutoCompleteCampaign } = await import('@/services/campaign.service');
+    await checkAndAutoCompleteCampaign(input.campaignId).catch(() => {});
+  }
+
+  return donation;
 }
 
 // ── Update ──────────────────────────────────────────────────────────────

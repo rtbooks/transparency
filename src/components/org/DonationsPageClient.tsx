@@ -76,7 +76,6 @@ export function DonationsPageClient({
   const [hasLinkedContact, setHasLinkedContact] = useState<boolean | null>(null);
   const [editingDonation, setEditingDonation] = useState<DonationItem | null>(null);
   const [editAmount, setEditAmount] = useState('');
-  const [editDescription, setEditDescription] = useState('');
   const [editDueDate, setEditDueDate] = useState('');
   const [cancellingDonationId, setCancellingDonationId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
@@ -224,7 +223,6 @@ export function DonationsPageClient({
   const openEditDialog = (donation: DonationItem) => {
     setEditingDonation(donation);
     setEditAmount(String(donation.amount));
-    setEditDescription(donation.description || '');
     setEditDueDate(donation.dueDate ? donation.dueDate.split('T')[0] : '');
   };
 
@@ -239,7 +237,6 @@ export function DonationsPageClient({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             amount: parseFloat(editAmount),
-            description: editDescription,
             dueDate: editDueDate || null,
           }),
         }
@@ -450,9 +447,6 @@ export function DonationsPageClient({
                       </h3>
                       <Badge variant={config.variant}>{config.label}</Badge>
                     </div>
-                    {donation.description && (
-                      <p className="mt-1 text-sm text-gray-600">{donation.description}</p>
-                    )}
                     {donation.campaignName && (
                       <div className="mt-1 flex items-center gap-1">
                         <Target className="h-3 w-3 text-green-600" />
@@ -549,14 +543,6 @@ export function DonationsPageClient({
                   min="0.01"
                   value={editAmount}
                   onChange={(e) => setEditAmount(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Description</label>
-                <Textarea
-                  value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
-                  rows={3}
                 />
               </div>
               <div>

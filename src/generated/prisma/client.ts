@@ -115,6 +115,11 @@ export type AccessRequest = Prisma.AccessRequestModel
  */
 export type Campaign = Prisma.CampaignModel
 /**
+ * Model CampaignTier
+ * 
+ */
+export type CampaignTier = Prisma.CampaignTierModel
+/**
  * Model Donation
  * 
  */

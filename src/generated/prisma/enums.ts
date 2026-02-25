@@ -155,6 +155,15 @@ export const CampaignStatus = {
 export type CampaignStatus = (typeof CampaignStatus)[keyof typeof CampaignStatus]
 
 
+export const CampaignType = {
+  OPEN: 'OPEN',
+  FIXED_UNIT: 'FIXED_UNIT',
+  TIERED: 'TIERED'
+} as const
+
+export type CampaignType = (typeof CampaignType)[keyof typeof CampaignType]
+
+
 export const DonationType = {
   ONE_TIME: 'ONE_TIME',
   PLEDGE: 'PLEDGE'

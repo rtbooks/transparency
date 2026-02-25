@@ -9,11 +9,13 @@ import { z } from 'zod';
 const createDonationSchema = z.object({
   type: z.enum(['ONE_TIME', 'PLEDGE']),
   amount: z.number().positive(),
-  description: z.string().min(1),
+  description: z.string().optional(),
   donorMessage: z.string().optional(),
   isAnonymous: z.boolean().optional(),
   dueDate: z.string().nullable().optional(),
   campaignId: z.string().uuid().nullable().optional(),
+  unitCount: z.number().int().positive().nullable().optional(),
+  tierId: z.string().uuid().nullable().optional(),
 });
 
 /**
@@ -270,6 +272,8 @@ export async function POST(
       donationDate: new Date(),
       dueDate,
       campaignId,
+      unitCount: validated.unitCount ?? undefined,
+      tierId: validated.tierId ?? undefined,
       arAccountId: arAccount.id,
       revenueAccountId: revenueAccount.id,
       cashAccountId,
