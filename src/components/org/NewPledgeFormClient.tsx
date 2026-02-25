@@ -34,12 +34,14 @@ interface NewPledgeFormClientProps {
   organizationSlug: string;
   organizationName: string;
   paymentInstructions: string | null;
+  initialCampaignId?: string;
 }
 
 export function NewPledgeFormClient({
   organizationSlug,
   organizationName,
   paymentInstructions,
+  initialCampaignId,
 }: NewPledgeFormClientProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -57,7 +59,13 @@ export function NewPledgeFormClient({
         const res = await fetch(`/api/organizations/${organizationSlug}/campaigns`);
         if (res.ok) {
           const data = await res.json();
-          setCampaigns((data.campaigns || []).filter((c: any) => c.status === 'ACTIVE'));
+          const activeCampaigns = (data.campaigns || []).filter((c: any) => c.status === 'ACTIVE');
+          setCampaigns(activeCampaigns);
+          // Auto-select campaign if initialCampaignId is provided
+          if (initialCampaignId) {
+            const match = activeCampaigns.find((c: any) => c.id === initialCampaignId);
+            if (match) setSelectedCampaignId(match.id);
+          }
         }
       } catch (e) {
         // Ignore — campaigns are optional
@@ -66,7 +74,7 @@ export function NewPledgeFormClient({
       }
     }
     fetchCampaigns();
-  }, [organizationSlug]);
+  }, [organizationSlug, initialCampaignId]);
 
   const form = useForm<DonationFormData>({
     resolver: zodResolver(donationSchema),
@@ -215,8 +223,8 @@ export function NewPledgeFormClient({
       <div className="rounded-lg border bg-white p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Campaign Picker */}
-            {!loadingCampaigns && campaigns.length > 0 && (
+            {/* Campaign Picker — hidden when campaign is pre-selected */}
+            {!loadingCampaigns && campaigns.length > 0 && !initialCampaignId && (
               <div className="space-y-3">
                 <label className="text-sm font-medium">
                   Direct Your Donation (Optional)

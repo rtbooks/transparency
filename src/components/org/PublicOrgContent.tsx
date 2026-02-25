@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Shield, DollarSign, TrendingUp, TrendingDown, UserPlus, Clock, ArrowRight, Target } from 'lucide-react';
+import { Shield, DollarSign, TrendingUp, TrendingDown, UserPlus, Clock, ArrowRight, Target, Share2, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -217,6 +217,13 @@ export function PublicOrgContent({
                     <p className="mt-1 text-xs text-gray-500">
                       {campaign.donationCount} donation{campaign.donationCount !== 1 ? 's' : ''}
                     </p>
+                    <div className="mt-3 flex gap-2">
+                      <Link href={`/org/${organization.slug}/donate/${campaign.id}`}>
+                        <Button size="sm" variant="default" className="bg-green-600 hover:bg-green-700">
+                          <Heart className="mr-1 h-3 w-3" /> Donate
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))}

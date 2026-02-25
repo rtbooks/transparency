@@ -11,8 +11,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Loader2, Target, Pencil } from "lucide-react";
+import { Loader2, Target, Pencil, Share2 } from "lucide-react";
 import { CampaignForm } from "./CampaignForm";
+import { CampaignShareDialog } from "./CampaignShareDialog";
 
 interface Campaign {
   id: string;
@@ -38,18 +39,21 @@ interface Campaign {
 
 interface CampaignListProps {
   organizationSlug: string;
+  organizationName?: string;
   refreshKey: number;
   showEditControls?: boolean;
 }
 
 export function CampaignList({
   organizationSlug,
+  organizationName,
   refreshKey,
   showEditControls = true,
 }: CampaignListProps) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const [sharingCampaign, setSharingCampaign] = useState<Campaign | null>(null);
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -112,6 +116,16 @@ export function CampaignList({
                 <Badge className={statusColors[campaign.status] || "bg-gray-100"}>
                   {campaign.status}
                 </Badge>
+                {campaign.status === 'ACTIVE' && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSharingCampaign(campaign)}
+                    title="Share campaign"
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                )}
                 {showEditControls && (
                   <Button
                     variant="ghost"
@@ -241,6 +255,21 @@ export function CampaignList({
           )}
         </DialogContent>
       </Dialog>
+      {/* Share Dialog */}
+      {sharingCampaign && (
+        <CampaignShareDialog
+          open={!!sharingCampaign}
+          onOpenChange={(open) => !open && setSharingCampaign(null)}
+          campaignName={sharingCampaign.name}
+          organizationName={organizationName || ''}
+          organizationSlug={organizationSlug}
+          campaignId={sharingCampaign.id}
+          shareUrl={typeof window !== 'undefined'
+            ? `${window.location.origin}/org/${organizationSlug}/donate/${sharingCampaign.id}`
+            : `/org/${organizationSlug}/donate/${sharingCampaign.id}`
+          }
+        />
+      )}
     </>
   );
 }
