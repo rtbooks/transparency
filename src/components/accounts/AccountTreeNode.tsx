@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronRight, ChevronDown, Edit, Power, PowerOff, AlertTriangle, ArrowRightLeft } from 'lucide-react';
+import { ChevronRight, ChevronDown, Edit, Power, PowerOff, AlertTriangle } from 'lucide-react';
 import { AccountTreeNode } from '@/lib/utils/account-tree';
 import { formatCurrency, getAccountTypeInfo } from '@/lib/utils/account-tree';
 import { Button } from '@/components/ui/button';
@@ -147,12 +147,16 @@ export function AccountTreeNodeComponent({
           <span className="shrink-0 font-mono text-sm font-medium text-gray-900">
             {node.code}
           </span>
-          <span className={`truncate text-sm font-medium ${node.isActive ? 'text-gray-900' : 'text-gray-500'}`}>
+          <Link
+            href={`/org/${organizationSlug}/transactions?accountId=${node.id}`}
+            className={`truncate text-sm font-medium hover:underline ${node.isActive ? 'text-blue-700 hover:text-blue-900' : 'text-gray-500 hover:text-gray-700'}`}
+            title="View transactions for this account"
+          >
             {node.name}
             {!node.isActive && (
               <span className="ml-1 text-xs text-gray-400">(Inactive)</span>
             )}
-          </span>
+          </Link>
         </div>
 
         {/* Type Badge */}
@@ -188,11 +192,6 @@ export function AccountTreeNodeComponent({
 
         {/* Action Buttons */}
         <div className="flex shrink-0 items-center gap-1">
-          <Link href={`/org/${organizationSlug}/transactions?accountId=${node.id}`}>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="View transactions">
-              <ArrowRightLeft className="h-4 w-4" />
-            </Button>
-          </Link>
           <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
