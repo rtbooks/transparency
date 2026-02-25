@@ -159,7 +159,7 @@ export function FiscalPeriodsPageClient({ organizationSlug }: FiscalPeriodsPageC
       const data = await res.json();
       toast({
         title: 'Fiscal period closed',
-        description: `${data.entriesCreated} closing entries created. Net surplus/deficit: $${data.netSurplusOrDeficit.toFixed(2)}`,
+        description: `${data.entriesCreated} closing entries created. View them in Transactions using the "All Time" date range and "Closing" type filter.`,
       });
       setPreviewData(null);
       setPreviewPeriodId(null);
