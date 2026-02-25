@@ -61,10 +61,11 @@ export async function createBill(input: CreateBillInput): Promise<Bill> {
       : input.expenseOrRevenueAccountId; // CR Revenue (or Expense for reimbursements)
 
     // Determine transaction type
-    // Reimbursement receivables credit an expense account, so use TRANSFER to avoid inflating revenue
+    // Reimbursement receivables credit an expense account — still typed as EXPENSE
+    // (the display layer detects the reimbursement pattern and shows a negative amount)
     const transactionType = input.direction === 'PAYABLE'
       ? 'EXPENSE'
-      : input.isReimbursement ? 'TRANSFER' : 'INCOME';
+      : input.isReimbursement ? 'EXPENSE' : 'INCOME';
 
     const now = new Date();
     const txDescription = input.description || 'No description';
