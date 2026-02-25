@@ -11,9 +11,15 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Loader2, Target, Pencil, Share2 } from "lucide-react";
+import { Loader2, Target, Pencil, Share2, MoreVertical, Eye, EyeOff } from "lucide-react";
 import { CampaignForm } from "./CampaignForm";
 import { CampaignShareDialog } from "./CampaignShareDialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Campaign {
   id: string;
@@ -54,6 +60,7 @@ export function CampaignList({
   const [loading, setLoading] = useState(true);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [sharingCampaign, setSharingCampaign] = useState<Campaign | null>(null);
+  const [showInactive, setShowInactive] = useState(false);
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -81,6 +88,12 @@ export function CampaignList({
     );
   }
 
+  const filteredCampaigns = showInactive
+    ? campaigns
+    : campaigns.filter((c) => c.status === "ACTIVE");
+
+  const inactiveCount = campaigns.length - campaigns.filter((c) => c.status === "ACTIVE").length;
+
   if (campaigns.length === 0) {
     return (
       <div className="rounded-lg border bg-white p-12 text-center">
@@ -102,8 +115,48 @@ export function CampaignList({
 
   return (
     <>
+      {/* Filter menu */}
+      <div className="mb-4 flex items-center justify-between">
+        <p className="text-sm text-gray-500">
+          {filteredCampaigns.length} campaign{filteredCampaigns.length !== 1 ? "s" : ""}
+          {!showInactive && inactiveCount > 0 && ` · ${inactiveCount} inactive hidden`}
+        </p>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setShowInactive(!showInactive)}>
+              {showInactive ? (
+                <><EyeOff className="mr-2 h-4 w-4" /> Hide inactive campaigns</>
+              ) : (
+                <><Eye className="mr-2 h-4 w-4" /> Show inactive campaigns</>
+              )}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {filteredCampaigns.length === 0 ? (
+        <div className="rounded-lg border bg-white p-12 text-center">
+          <Target className="mx-auto h-12 w-12 text-gray-300" />
+          <h3 className="mt-4 text-lg font-medium text-gray-900">No active campaigns</h3>
+          <p className="mt-2 text-sm text-gray-500">
+            {inactiveCount > 0
+              ? `${inactiveCount} inactive campaign${inactiveCount !== 1 ? "s" : ""} hidden.`
+              : "Create your first fundraising campaign to start receiving directed donations."}
+          </p>
+          {inactiveCount > 0 && (
+            <Button variant="outline" size="sm" className="mt-3" onClick={() => setShowInactive(true)}>
+              Show inactive
+            </Button>
+          )}
+        </div>
+      ) : (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {campaigns.map((campaign) => (
+        {filteredCampaigns.map((campaign) => (
           <div
             key={campaign.id}
             className="rounded-lg border bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
@@ -225,6 +278,7 @@ export function CampaignList({
           </div>
         ))}
       </div>
+      )}
 
       {/* Edit Dialog */}
       <Dialog
