@@ -30,7 +30,10 @@ export async function GET(
     const statement = await prisma.bankStatement.findUnique({
       where: { id: statementId },
       include: {
-        lines: { orderBy: { transactionDate: 'asc' } },
+        lines: {
+          orderBy: { transactionDate: 'asc' },
+          include: { matches: true },
+        },
         bankAccount: true,
       },
     });

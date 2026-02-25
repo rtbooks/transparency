@@ -25,23 +25,23 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 
+interface MatchEntry {
+  id: string;
+  transactionId: string;
+  amount: string;
+  confidence: string;
+}
+
 interface StatementLine {
   id: string;
   transactionDate: string;
   description: string;
   amount: string;
   referenceNumber: string | null;
-  matchedTransactionId: string | null;
   matchConfidence: string;
   status: string;
   notes: string | null;
-  matchedTransaction?: {
-    id: string;
-    transactionDate: string;
-    description: string;
-    amount: string;
-    referenceNumber: string | null;
-  } | null;
+  matches: MatchEntry[];
 }
 
 interface LedgerTransaction {
@@ -126,16 +126,52 @@ export function ReconciliationWorkspace({
   };
 
   const handleMatch = async (lineId: string, transactionId: string) => {
+    const line = statement?.lines.find((l) => l.id === lineId);
+    if (!line) return;
+
+    // Calculate remaining amount to match
+    const lineAmount = Math.abs(parseFloat(line.amount));
+    const matchedSoFar = line.matches.reduce((sum, m) => sum + parseFloat(m.amount), 0);
+    const remaining = lineAmount - matchedSoFar;
+
+    // For simple click matching, find the transaction amount
+    const txn = statement?.unreconciledTransactions.find((t) => t.id === transactionId);
+    const matchAmount = txn ? Math.min(Math.abs(parseFloat(txn.amount)), remaining) : remaining;
+
     setActionLoading(lineId);
     try {
       const res = await fetch(`${basePath}/lines/${lineId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'match', transactionId }),
+        body: JSON.stringify({
+          action: 'match',
+          transactionId,
+          amount: matchAmount,
+        }),
       });
       if (res.ok) {
         await fetchStatement();
-        setSelectedLine(null);
+        // Only deselect if line is now fully matched
+        const updated = await res.json();
+        if (updated.status === 'MATCHED') {
+          setSelectedLine(null);
+        }
+      }
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleRemoveMatch = async (lineId: string, matchId: string) => {
+    setActionLoading(lineId);
+    try {
+      const res = await fetch(`${basePath}/lines/${lineId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'remove-match', matchId }),
+      });
+      if (res.ok) {
+        await fetchStatement();
       }
     } finally {
       setActionLoading(null);
@@ -295,13 +331,19 @@ export function ReconciliationWorkspace({
                 No lines match the current filter.
               </p>
             ) : (
-              filteredLines.map((line) => (
+              filteredLines.map((line) => {
+                const lineAmount = Math.abs(parseFloat(line.amount));
+                const matchedAmount = line.matches.reduce((sum, m) => sum + parseFloat(m.amount), 0);
+                const remaining = lineAmount - matchedAmount;
+                const hasPartialMatch = line.matches.length > 0 && remaining > 0.01;
+
+                return (
                 <div
                   key={line.id}
                   className={`border rounded-md p-3 text-sm transition-colors ${
                     selectedLine === line.id ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
                   } ${isCompleted ? '' : 'cursor-pointer'}`}
-                  onClick={() => !isCompleted && line.status === 'UNMATCHED' && setSelectedLine(line.id)}
+                  onClick={() => !isCompleted && (line.status === 'UNMATCHED' || hasPartialMatch) && setSelectedLine(line.id)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
@@ -317,20 +359,48 @@ export function ReconciliationWorkspace({
                             ({line.matchConfidence.replace('AUTO_', '')})
                           </span>
                         )}
+                        {hasPartialMatch && (
+                          <span className="text-xs text-amber-600 font-medium">
+                            Partial ({formatCurrency(remaining)} remaining)
+                          </span>
+                        )}
                       </div>
                       <p className="truncate mt-0.5">{line.description}</p>
-                      {line.matchedTransaction && (
-                        <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                          <Link2 className="h-3 w-3" />
-                          {line.matchedTransaction.description}
-                        </p>
+                      {/* Show matched transactions */}
+                      {line.matches.length > 0 && (
+                        <div className="mt-1 space-y-0.5">
+                          {line.matches.map((match) => {
+                            const txn = statement.unreconciledTransactions.find((t) => t.id === match.transactionId) ||
+                              (statement as any)._matchedTxnCache?.[match.transactionId];
+                            return (
+                              <div key={match.id} className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Link2 className="h-3 w-3 flex-shrink-0" />
+                                <span className="truncate">{txn?.description || match.transactionId.slice(0, 8)}</span>
+                                {line.matches.length > 1 && (
+                                  <span className="font-mono text-primary">({formatCurrency(match.amount)})</span>
+                                )}
+                                {!isCompleted && (
+                                  <button
+                                    className="ml-1 text-destructive hover:text-destructive/80"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRemoveMatch(line.id, match.id);
+                                    }}
+                                  >
+                                    ×
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
                       )}
                     </div>
                     <div className="text-right ml-3 flex-shrink-0">
                       <p className={`font-mono font-medium ${parseFloat(line.amount) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                         {formatCurrency(line.amount)}
                       </p>
-                      {!isCompleted && line.status === 'MATCHED' && (
+                      {!isCompleted && line.status === 'MATCHED' && !hasPartialMatch && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -342,10 +412,10 @@ export function ReconciliationWorkspace({
                           disabled={actionLoading === line.id}
                         >
                           <Unlink className="h-3 w-3 mr-1" />
-                          Unmatch
+                          Unmatch All
                         </Button>
                       )}
-                      {!isCompleted && line.status === 'UNMATCHED' && (
+                      {!isCompleted && line.status === 'UNMATCHED' && line.matches.length === 0 && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -363,7 +433,8 @@ export function ReconciliationWorkspace({
                     </div>
                   </div>
                 </div>
-              ))
+                );
+              })
             )}
           </CardContent>
         </Card>
@@ -379,9 +450,22 @@ export function ReconciliationWorkspace({
           <CardContent className="space-y-1 max-h-[60vh] overflow-y-auto">
             {selectedLine ? (
               <>
-                <p className="text-xs text-muted-foreground mb-2">
-                  Select a transaction to match with the highlighted bank line.
-                </p>
+                {(() => {
+                  const selLine = statement.lines.find((l) => l.id === selectedLine);
+                  const selAmount = selLine ? Math.abs(parseFloat(selLine.amount)) : 0;
+                  const selMatched = selLine ? selLine.matches.reduce((s, m) => s + parseFloat(m.amount), 0) : 0;
+                  const selRemaining = selAmount - selMatched;
+                  return (
+                    <div className="text-xs text-muted-foreground mb-2 space-y-1">
+                      <p>Select a transaction to match with the highlighted bank line.</p>
+                      {selMatched > 0 && (
+                        <p className="text-amber-600 font-medium">
+                          {formatCurrency(selMatched)} matched · {formatCurrency(selRemaining)} remaining of {formatCurrency(selAmount)}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
                 {statement.unreconciledTransactions.length === 0 ? (
                   <p className="text-sm text-muted-foreground py-4 text-center">
                     No unreconciled transactions found.

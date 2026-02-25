@@ -18,7 +18,15 @@ jest.mock('@/lib/prisma', () => ({
     bankAccount: { findUnique: jest.fn() },
     bankStatementLine: {
       findMany: jest.fn(),
+      findUnique: jest.fn(),
       update: jest.fn(),
+    },
+    bankStatementLineMatch: {
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
+      deleteMany: jest.fn(),
     },
     bankStatement: {
       findUnique: jest.fn(),
@@ -38,6 +46,7 @@ import {
   manualMatch,
   unmatchLine,
   skipLine,
+  removeMatch,
 } from '@/services/reconciliation.service';
 
 // ── Test Data ───────────────────────────────────────────────────────────
@@ -85,6 +94,7 @@ describe('autoMatchStatement', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (prisma.bankAccount.findUnique as jest.Mock).mockResolvedValue(bankAccount);
+    (prisma.bankStatementLineMatch.create as jest.Mock).mockResolvedValue({});
   });
 
   it('should find exact match when amount, date, and reference all match', async () => {
@@ -188,43 +198,87 @@ describe('autoMatchStatement', () => {
 // ── Manual Operations ──────────────────────────────────────────────────
 
 describe('manualMatch', () => {
-  it('should update line with MANUAL confidence', async () => {
+  it('should create match entries and update line status', async () => {
+    (prisma.bankStatementLine.findUnique as jest.Mock).mockResolvedValue({
+      id: 'line-1',
+      amount: '100.00',
+    });
+    (prisma.bankStatementLineMatch.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma.bankStatementLineMatch.create as jest.Mock).mockResolvedValue({
+      id: 'match-1',
+      lineId: 'line-1',
+      transactionId: 'txn-1',
+      amount: 100,
+    });
     (prisma.bankStatementLine.update as jest.Mock).mockResolvedValue({
       id: 'line-1',
-      matchedTransactionId: 'txn-1',
       matchConfidence: 'MANUAL',
       status: 'MATCHED',
     });
 
-    const result = await manualMatch('line-1', 'txn-1');
+    const result = await manualMatch('line-1', [{ transactionId: 'txn-1', amount: 100 }]);
 
-    expect(prisma.bankStatementLine.update).toHaveBeenCalledWith({
-      where: { id: 'line-1' },
+    expect(prisma.bankStatementLineMatch.create).toHaveBeenCalledWith({
       data: {
-        matchedTransactionId: 'txn-1',
-        matchConfidence: 'MANUAL',
-        status: 'MATCHED',
+        lineId: 'line-1',
+        transactionId: 'txn-1',
+        amount: 100,
+        confidence: 'MANUAL',
       },
     });
-    expect(result.matchConfidence).toBe('MANUAL');
+    expect(result.status).toBe('MATCHED');
+  });
+
+  it('should mark as UNMATCHED when partially matched', async () => {
+    (prisma.bankStatementLine.findUnique as jest.Mock).mockResolvedValue({
+      id: 'line-1',
+      amount: '500.00',
+    });
+    (prisma.bankStatementLineMatch.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma.bankStatementLineMatch.create as jest.Mock).mockResolvedValue({});
+    (prisma.bankStatementLine.update as jest.Mock).mockResolvedValue({
+      id: 'line-1',
+      matchConfidence: 'MANUAL',
+      status: 'UNMATCHED',
+    });
+
+    const result = await manualMatch('line-1', [{ transactionId: 'txn-1', amount: 200 }]);
+
+    expect(result.status).toBe('UNMATCHED');
+  });
+
+  it('should reject if total exceeds line amount', async () => {
+    (prisma.bankStatementLine.findUnique as jest.Mock).mockResolvedValue({
+      id: 'line-1',
+      amount: '100.00',
+    });
+    (prisma.bankStatementLineMatch.findMany as jest.Mock).mockResolvedValue([
+      { id: 'existing', amount: '80.00' },
+    ]);
+
+    await expect(
+      manualMatch('line-1', [{ transactionId: 'txn-2', amount: 30 }])
+    ).rejects.toThrow('exceeds line amount');
   });
 });
 
 describe('unmatchLine', () => {
-  it('should clear match and reset to UNMATCHED', async () => {
+  it('should delete all matches and reset to UNMATCHED', async () => {
+    (prisma.bankStatementLineMatch.deleteMany as jest.Mock).mockResolvedValue({ count: 1 });
     (prisma.bankStatementLine.update as jest.Mock).mockResolvedValue({
       id: 'line-1',
-      matchedTransactionId: null,
       matchConfidence: 'UNMATCHED',
       status: 'UNMATCHED',
     });
 
     await unmatchLine('line-1');
 
+    expect(prisma.bankStatementLineMatch.deleteMany).toHaveBeenCalledWith({
+      where: { lineId: 'line-1' },
+    });
     expect(prisma.bankStatementLine.update).toHaveBeenCalledWith({
       where: { id: 'line-1' },
       data: {
-        matchedTransactionId: null,
         matchConfidence: 'UNMATCHED',
         status: 'UNMATCHED',
       },

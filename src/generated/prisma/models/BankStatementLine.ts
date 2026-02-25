@@ -43,7 +43,6 @@ export type BankStatementLineMinAggregateOutputType = {
   referenceNumber: string | null
   amount: runtime.Decimal | null
   category: string | null
-  matchedTransactionId: string | null
   matchConfidence: $Enums.MatchConfidence | null
   status: $Enums.StatementLineStatus | null
   notes: string | null
@@ -59,7 +58,6 @@ export type BankStatementLineMaxAggregateOutputType = {
   referenceNumber: string | null
   amount: runtime.Decimal | null
   category: string | null
-  matchedTransactionId: string | null
   matchConfidence: $Enums.MatchConfidence | null
   status: $Enums.StatementLineStatus | null
   notes: string | null
@@ -75,7 +73,6 @@ export type BankStatementLineCountAggregateOutputType = {
   referenceNumber: number
   amount: number
   category: number
-  matchedTransactionId: number
   matchConfidence: number
   status: number
   notes: number
@@ -101,7 +98,6 @@ export type BankStatementLineMinAggregateInputType = {
   referenceNumber?: true
   amount?: true
   category?: true
-  matchedTransactionId?: true
   matchConfidence?: true
   status?: true
   notes?: true
@@ -117,7 +113,6 @@ export type BankStatementLineMaxAggregateInputType = {
   referenceNumber?: true
   amount?: true
   category?: true
-  matchedTransactionId?: true
   matchConfidence?: true
   status?: true
   notes?: true
@@ -133,7 +128,6 @@ export type BankStatementLineCountAggregateInputType = {
   referenceNumber?: true
   amount?: true
   category?: true
-  matchedTransactionId?: true
   matchConfidence?: true
   status?: true
   notes?: true
@@ -236,7 +230,6 @@ export type BankStatementLineGroupByOutputType = {
   referenceNumber: string | null
   amount: runtime.Decimal
   category: string | null
-  matchedTransactionId: string | null
   matchConfidence: $Enums.MatchConfidence
   status: $Enums.StatementLineStatus
   notes: string | null
@@ -275,12 +268,12 @@ export type BankStatementLineWhereInput = {
   referenceNumber?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
   amount?: Prisma.DecimalFilter<"BankStatementLine"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
-  matchedTransactionId?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
   matchConfidence?: Prisma.EnumMatchConfidenceFilter<"BankStatementLine"> | $Enums.MatchConfidence
   status?: Prisma.EnumStatementLineStatusFilter<"BankStatementLine"> | $Enums.StatementLineStatus
   notes?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BankStatementLine"> | Date | string
   bankStatement?: Prisma.XOR<Prisma.BankStatementScalarRelationFilter, Prisma.BankStatementWhereInput>
+  matches?: Prisma.BankStatementLineMatchListRelationFilter
 }
 
 export type BankStatementLineOrderByWithRelationInput = {
@@ -292,12 +285,12 @@ export type BankStatementLineOrderByWithRelationInput = {
   referenceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
-  matchedTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   matchConfidence?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   bankStatement?: Prisma.BankStatementOrderByWithRelationInput
+  matches?: Prisma.BankStatementLineMatchOrderByRelationAggregateInput
 }
 
 export type BankStatementLineWhereUniqueInput = Prisma.AtLeast<{
@@ -312,12 +305,12 @@ export type BankStatementLineWhereUniqueInput = Prisma.AtLeast<{
   referenceNumber?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
   amount?: Prisma.DecimalFilter<"BankStatementLine"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
-  matchedTransactionId?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
   matchConfidence?: Prisma.EnumMatchConfidenceFilter<"BankStatementLine"> | $Enums.MatchConfidence
   status?: Prisma.EnumStatementLineStatusFilter<"BankStatementLine"> | $Enums.StatementLineStatus
   notes?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BankStatementLine"> | Date | string
   bankStatement?: Prisma.XOR<Prisma.BankStatementScalarRelationFilter, Prisma.BankStatementWhereInput>
+  matches?: Prisma.BankStatementLineMatchListRelationFilter
 }, "id">
 
 export type BankStatementLineOrderByWithAggregationInput = {
@@ -329,7 +322,6 @@ export type BankStatementLineOrderByWithAggregationInput = {
   referenceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
-  matchedTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   matchConfidence?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -353,7 +345,6 @@ export type BankStatementLineScalarWhereWithAggregatesInput = {
   referenceNumber?: Prisma.StringNullableWithAggregatesFilter<"BankStatementLine"> | string | null
   amount?: Prisma.DecimalWithAggregatesFilter<"BankStatementLine"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: Prisma.StringNullableWithAggregatesFilter<"BankStatementLine"> | string | null
-  matchedTransactionId?: Prisma.StringNullableWithAggregatesFilter<"BankStatementLine"> | string | null
   matchConfidence?: Prisma.EnumMatchConfidenceWithAggregatesFilter<"BankStatementLine"> | $Enums.MatchConfidence
   status?: Prisma.EnumStatementLineStatusWithAggregatesFilter<"BankStatementLine"> | $Enums.StatementLineStatus
   notes?: Prisma.StringNullableWithAggregatesFilter<"BankStatementLine"> | string | null
@@ -368,12 +359,12 @@ export type BankStatementLineCreateInput = {
   referenceNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: string | null
-  matchedTransactionId?: string | null
   matchConfidence?: $Enums.MatchConfidence
   status?: $Enums.StatementLineStatus
   notes?: string | null
   createdAt?: Date | string
   bankStatement: Prisma.BankStatementCreateNestedOneWithoutLinesInput
+  matches?: Prisma.BankStatementLineMatchCreateNestedManyWithoutLineInput
 }
 
 export type BankStatementLineUncheckedCreateInput = {
@@ -385,11 +376,11 @@ export type BankStatementLineUncheckedCreateInput = {
   referenceNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: string | null
-  matchedTransactionId?: string | null
   matchConfidence?: $Enums.MatchConfidence
   status?: $Enums.StatementLineStatus
   notes?: string | null
   createdAt?: Date | string
+  matches?: Prisma.BankStatementLineMatchUncheckedCreateNestedManyWithoutLineInput
 }
 
 export type BankStatementLineUpdateInput = {
@@ -400,12 +391,12 @@ export type BankStatementLineUpdateInput = {
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchedTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchConfidence?: Prisma.EnumMatchConfidenceFieldUpdateOperationsInput | $Enums.MatchConfidence
   status?: Prisma.EnumStatementLineStatusFieldUpdateOperationsInput | $Enums.StatementLineStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bankStatement?: Prisma.BankStatementUpdateOneRequiredWithoutLinesNestedInput
+  matches?: Prisma.BankStatementLineMatchUpdateManyWithoutLineNestedInput
 }
 
 export type BankStatementLineUncheckedUpdateInput = {
@@ -417,11 +408,11 @@ export type BankStatementLineUncheckedUpdateInput = {
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchedTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchConfidence?: Prisma.EnumMatchConfidenceFieldUpdateOperationsInput | $Enums.MatchConfidence
   status?: Prisma.EnumStatementLineStatusFieldUpdateOperationsInput | $Enums.StatementLineStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  matches?: Prisma.BankStatementLineMatchUncheckedUpdateManyWithoutLineNestedInput
 }
 
 export type BankStatementLineCreateManyInput = {
@@ -433,7 +424,6 @@ export type BankStatementLineCreateManyInput = {
   referenceNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: string | null
-  matchedTransactionId?: string | null
   matchConfidence?: $Enums.MatchConfidence
   status?: $Enums.StatementLineStatus
   notes?: string | null
@@ -448,7 +438,6 @@ export type BankStatementLineUpdateManyMutationInput = {
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchedTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchConfidence?: Prisma.EnumMatchConfidenceFieldUpdateOperationsInput | $Enums.MatchConfidence
   status?: Prisma.EnumStatementLineStatusFieldUpdateOperationsInput | $Enums.StatementLineStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -464,7 +453,6 @@ export type BankStatementLineUncheckedUpdateManyInput = {
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchedTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchConfidence?: Prisma.EnumMatchConfidenceFieldUpdateOperationsInput | $Enums.MatchConfidence
   status?: Prisma.EnumStatementLineStatusFieldUpdateOperationsInput | $Enums.StatementLineStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -490,7 +478,6 @@ export type BankStatementLineCountOrderByAggregateInput = {
   referenceNumber?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  matchedTransactionId?: Prisma.SortOrder
   matchConfidence?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -510,7 +497,6 @@ export type BankStatementLineMaxOrderByAggregateInput = {
   referenceNumber?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  matchedTransactionId?: Prisma.SortOrder
   matchConfidence?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -526,7 +512,6 @@ export type BankStatementLineMinOrderByAggregateInput = {
   referenceNumber?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  matchedTransactionId?: Prisma.SortOrder
   matchConfidence?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -535,6 +520,11 @@ export type BankStatementLineMinOrderByAggregateInput = {
 
 export type BankStatementLineSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
+}
+
+export type BankStatementLineScalarRelationFilter = {
+  is?: Prisma.BankStatementLineWhereInput
+  isNot?: Prisma.BankStatementLineWhereInput
 }
 
 export type BankStatementLineCreateNestedManyWithoutBankStatementInput = {
@@ -587,6 +577,20 @@ export type EnumStatementLineStatusFieldUpdateOperationsInput = {
   set?: $Enums.StatementLineStatus
 }
 
+export type BankStatementLineCreateNestedOneWithoutMatchesInput = {
+  create?: Prisma.XOR<Prisma.BankStatementLineCreateWithoutMatchesInput, Prisma.BankStatementLineUncheckedCreateWithoutMatchesInput>
+  connectOrCreate?: Prisma.BankStatementLineCreateOrConnectWithoutMatchesInput
+  connect?: Prisma.BankStatementLineWhereUniqueInput
+}
+
+export type BankStatementLineUpdateOneRequiredWithoutMatchesNestedInput = {
+  create?: Prisma.XOR<Prisma.BankStatementLineCreateWithoutMatchesInput, Prisma.BankStatementLineUncheckedCreateWithoutMatchesInput>
+  connectOrCreate?: Prisma.BankStatementLineCreateOrConnectWithoutMatchesInput
+  upsert?: Prisma.BankStatementLineUpsertWithoutMatchesInput
+  connect?: Prisma.BankStatementLineWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BankStatementLineUpdateToOneWithWhereWithoutMatchesInput, Prisma.BankStatementLineUpdateWithoutMatchesInput>, Prisma.BankStatementLineUncheckedUpdateWithoutMatchesInput>
+}
+
 export type BankStatementLineCreateWithoutBankStatementInput = {
   id?: string
   transactionDate: Date | string
@@ -595,11 +599,11 @@ export type BankStatementLineCreateWithoutBankStatementInput = {
   referenceNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: string | null
-  matchedTransactionId?: string | null
   matchConfidence?: $Enums.MatchConfidence
   status?: $Enums.StatementLineStatus
   notes?: string | null
   createdAt?: Date | string
+  matches?: Prisma.BankStatementLineMatchCreateNestedManyWithoutLineInput
 }
 
 export type BankStatementLineUncheckedCreateWithoutBankStatementInput = {
@@ -610,11 +614,11 @@ export type BankStatementLineUncheckedCreateWithoutBankStatementInput = {
   referenceNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: string | null
-  matchedTransactionId?: string | null
   matchConfidence?: $Enums.MatchConfidence
   status?: $Enums.StatementLineStatus
   notes?: string | null
   createdAt?: Date | string
+  matches?: Prisma.BankStatementLineMatchUncheckedCreateNestedManyWithoutLineInput
 }
 
 export type BankStatementLineCreateOrConnectWithoutBankStatementInput = {
@@ -655,11 +659,86 @@ export type BankStatementLineScalarWhereInput = {
   referenceNumber?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
   amount?: Prisma.DecimalFilter<"BankStatementLine"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
-  matchedTransactionId?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
   matchConfidence?: Prisma.EnumMatchConfidenceFilter<"BankStatementLine"> | $Enums.MatchConfidence
   status?: Prisma.EnumStatementLineStatusFilter<"BankStatementLine"> | $Enums.StatementLineStatus
   notes?: Prisma.StringNullableFilter<"BankStatementLine"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BankStatementLine"> | Date | string
+}
+
+export type BankStatementLineCreateWithoutMatchesInput = {
+  id?: string
+  transactionDate: Date | string
+  postDate?: Date | string | null
+  description: string
+  referenceNumber?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  category?: string | null
+  matchConfidence?: $Enums.MatchConfidence
+  status?: $Enums.StatementLineStatus
+  notes?: string | null
+  createdAt?: Date | string
+  bankStatement: Prisma.BankStatementCreateNestedOneWithoutLinesInput
+}
+
+export type BankStatementLineUncheckedCreateWithoutMatchesInput = {
+  id?: string
+  bankStatementId: string
+  transactionDate: Date | string
+  postDate?: Date | string | null
+  description: string
+  referenceNumber?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  category?: string | null
+  matchConfidence?: $Enums.MatchConfidence
+  status?: $Enums.StatementLineStatus
+  notes?: string | null
+  createdAt?: Date | string
+}
+
+export type BankStatementLineCreateOrConnectWithoutMatchesInput = {
+  where: Prisma.BankStatementLineWhereUniqueInput
+  create: Prisma.XOR<Prisma.BankStatementLineCreateWithoutMatchesInput, Prisma.BankStatementLineUncheckedCreateWithoutMatchesInput>
+}
+
+export type BankStatementLineUpsertWithoutMatchesInput = {
+  update: Prisma.XOR<Prisma.BankStatementLineUpdateWithoutMatchesInput, Prisma.BankStatementLineUncheckedUpdateWithoutMatchesInput>
+  create: Prisma.XOR<Prisma.BankStatementLineCreateWithoutMatchesInput, Prisma.BankStatementLineUncheckedCreateWithoutMatchesInput>
+  where?: Prisma.BankStatementLineWhereInput
+}
+
+export type BankStatementLineUpdateToOneWithWhereWithoutMatchesInput = {
+  where?: Prisma.BankStatementLineWhereInput
+  data: Prisma.XOR<Prisma.BankStatementLineUpdateWithoutMatchesInput, Prisma.BankStatementLineUncheckedUpdateWithoutMatchesInput>
+}
+
+export type BankStatementLineUpdateWithoutMatchesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  postDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchConfidence?: Prisma.EnumMatchConfidenceFieldUpdateOperationsInput | $Enums.MatchConfidence
+  status?: Prisma.EnumStatementLineStatusFieldUpdateOperationsInput | $Enums.StatementLineStatus
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankStatement?: Prisma.BankStatementUpdateOneRequiredWithoutLinesNestedInput
+}
+
+export type BankStatementLineUncheckedUpdateWithoutMatchesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  bankStatementId?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  postDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchConfidence?: Prisma.EnumMatchConfidenceFieldUpdateOperationsInput | $Enums.MatchConfidence
+  status?: Prisma.EnumStatementLineStatusFieldUpdateOperationsInput | $Enums.StatementLineStatus
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type BankStatementLineCreateManyBankStatementInput = {
@@ -670,7 +749,6 @@ export type BankStatementLineCreateManyBankStatementInput = {
   referenceNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: string | null
-  matchedTransactionId?: string | null
   matchConfidence?: $Enums.MatchConfidence
   status?: $Enums.StatementLineStatus
   notes?: string | null
@@ -685,11 +763,11 @@ export type BankStatementLineUpdateWithoutBankStatementInput = {
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchedTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchConfidence?: Prisma.EnumMatchConfidenceFieldUpdateOperationsInput | $Enums.MatchConfidence
   status?: Prisma.EnumStatementLineStatusFieldUpdateOperationsInput | $Enums.StatementLineStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  matches?: Prisma.BankStatementLineMatchUpdateManyWithoutLineNestedInput
 }
 
 export type BankStatementLineUncheckedUpdateWithoutBankStatementInput = {
@@ -700,11 +778,11 @@ export type BankStatementLineUncheckedUpdateWithoutBankStatementInput = {
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchedTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchConfidence?: Prisma.EnumMatchConfidenceFieldUpdateOperationsInput | $Enums.MatchConfidence
   status?: Prisma.EnumStatementLineStatusFieldUpdateOperationsInput | $Enums.StatementLineStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  matches?: Prisma.BankStatementLineMatchUncheckedUpdateManyWithoutLineNestedInput
 }
 
 export type BankStatementLineUncheckedUpdateManyWithoutBankStatementInput = {
@@ -715,13 +793,41 @@ export type BankStatementLineUncheckedUpdateManyWithoutBankStatementInput = {
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchedTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   matchConfidence?: Prisma.EnumMatchConfidenceFieldUpdateOperationsInput | $Enums.MatchConfidence
   status?: Prisma.EnumStatementLineStatusFieldUpdateOperationsInput | $Enums.StatementLineStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type BankStatementLineCountOutputType
+ */
+
+export type BankStatementLineCountOutputType = {
+  matches: number
+}
+
+export type BankStatementLineCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  matches?: boolean | BankStatementLineCountOutputTypeCountMatchesArgs
+}
+
+/**
+ * BankStatementLineCountOutputType without action
+ */
+export type BankStatementLineCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BankStatementLineCountOutputType
+   */
+  select?: Prisma.BankStatementLineCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * BankStatementLineCountOutputType without action
+ */
+export type BankStatementLineCountOutputTypeCountMatchesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BankStatementLineMatchWhereInput
+}
 
 
 export type BankStatementLineSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -733,12 +839,13 @@ export type BankStatementLineSelect<ExtArgs extends runtime.Types.Extensions.Int
   referenceNumber?: boolean
   amount?: boolean
   category?: boolean
-  matchedTransactionId?: boolean
   matchConfidence?: boolean
   status?: boolean
   notes?: boolean
   createdAt?: boolean
   bankStatement?: boolean | Prisma.BankStatementDefaultArgs<ExtArgs>
+  matches?: boolean | Prisma.BankStatementLine$matchesArgs<ExtArgs>
+  _count?: boolean | Prisma.BankStatementLineCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["bankStatementLine"]>
 
 export type BankStatementLineSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -750,7 +857,6 @@ export type BankStatementLineSelectCreateManyAndReturn<ExtArgs extends runtime.T
   referenceNumber?: boolean
   amount?: boolean
   category?: boolean
-  matchedTransactionId?: boolean
   matchConfidence?: boolean
   status?: boolean
   notes?: boolean
@@ -767,7 +873,6 @@ export type BankStatementLineSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   referenceNumber?: boolean
   amount?: boolean
   category?: boolean
-  matchedTransactionId?: boolean
   matchConfidence?: boolean
   status?: boolean
   notes?: boolean
@@ -784,16 +889,17 @@ export type BankStatementLineSelectScalar = {
   referenceNumber?: boolean
   amount?: boolean
   category?: boolean
-  matchedTransactionId?: boolean
   matchConfidence?: boolean
   status?: boolean
   notes?: boolean
   createdAt?: boolean
 }
 
-export type BankStatementLineOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "bankStatementId" | "transactionDate" | "postDate" | "description" | "referenceNumber" | "amount" | "category" | "matchedTransactionId" | "matchConfidence" | "status" | "notes" | "createdAt", ExtArgs["result"]["bankStatementLine"]>
+export type BankStatementLineOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "bankStatementId" | "transactionDate" | "postDate" | "description" | "referenceNumber" | "amount" | "category" | "matchConfidence" | "status" | "notes" | "createdAt", ExtArgs["result"]["bankStatementLine"]>
 export type BankStatementLineInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bankStatement?: boolean | Prisma.BankStatementDefaultArgs<ExtArgs>
+  matches?: boolean | Prisma.BankStatementLine$matchesArgs<ExtArgs>
+  _count?: boolean | Prisma.BankStatementLineCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BankStatementLineIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bankStatement?: boolean | Prisma.BankStatementDefaultArgs<ExtArgs>
@@ -806,6 +912,7 @@ export type $BankStatementLinePayload<ExtArgs extends runtime.Types.Extensions.I
   name: "BankStatementLine"
   objects: {
     bankStatement: Prisma.$BankStatementPayload<ExtArgs>
+    matches: Prisma.$BankStatementLineMatchPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -816,7 +923,6 @@ export type $BankStatementLinePayload<ExtArgs extends runtime.Types.Extensions.I
     referenceNumber: string | null
     amount: runtime.Decimal
     category: string | null
-    matchedTransactionId: string | null
     matchConfidence: $Enums.MatchConfidence
     status: $Enums.StatementLineStatus
     notes: string | null
@@ -1216,6 +1322,7 @@ readonly fields: BankStatementLineFieldRefs;
 export interface Prisma__BankStatementLineClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   bankStatement<T extends Prisma.BankStatementDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BankStatementDefaultArgs<ExtArgs>>): Prisma.Prisma__BankStatementClient<runtime.Types.Result.GetResult<Prisma.$BankStatementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  matches<T extends Prisma.BankStatementLine$matchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BankStatementLine$matchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BankStatementLineMatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1253,7 +1360,6 @@ export interface BankStatementLineFieldRefs {
   readonly referenceNumber: Prisma.FieldRef<"BankStatementLine", 'String'>
   readonly amount: Prisma.FieldRef<"BankStatementLine", 'Decimal'>
   readonly category: Prisma.FieldRef<"BankStatementLine", 'String'>
-  readonly matchedTransactionId: Prisma.FieldRef<"BankStatementLine", 'String'>
   readonly matchConfidence: Prisma.FieldRef<"BankStatementLine", 'MatchConfidence'>
   readonly status: Prisma.FieldRef<"BankStatementLine", 'StatementLineStatus'>
   readonly notes: Prisma.FieldRef<"BankStatementLine", 'String'>
@@ -1651,6 +1757,30 @@ export type BankStatementLineDeleteManyArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many BankStatementLines to delete.
    */
   limit?: number
+}
+
+/**
+ * BankStatementLine.matches
+ */
+export type BankStatementLine$matchesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BankStatementLineMatch
+   */
+  select?: Prisma.BankStatementLineMatchSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BankStatementLineMatch
+   */
+  omit?: Prisma.BankStatementLineMatchOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BankStatementLineMatchInclude<ExtArgs> | null
+  where?: Prisma.BankStatementLineMatchWhereInput
+  orderBy?: Prisma.BankStatementLineMatchOrderByWithRelationInput | Prisma.BankStatementLineMatchOrderByWithRelationInput[]
+  cursor?: Prisma.BankStatementLineMatchWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BankStatementLineMatchScalarFieldEnum | Prisma.BankStatementLineMatchScalarFieldEnum[]
 }
 
 /**

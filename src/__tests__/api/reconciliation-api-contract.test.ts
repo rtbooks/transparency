@@ -46,13 +46,21 @@ const StatementResponseSchema = z.object({
 
 // ── Statement Line Response Schema ──────────────────────────────────────
 
+const MatchEntrySchema = z.object({
+  id: z.string(),
+  lineId: z.string(),
+  transactionId: z.string(),
+  amount: z.any(),
+  confidence: z.enum(['AUTO_EXACT', 'AUTO_FUZZY', 'MANUAL']),
+});
+
 const StatementLineSchema = z.object({
   id: z.string(),
   bankStatementId: z.string(),
   transactionDate: z.string(),
   description: z.string(),
   amount: z.any(),
-  matchedTransactionId: z.string().nullable(),
+  matches: z.array(MatchEntrySchema).optional(),
   matchConfidence: z.enum(['AUTO_EXACT', 'AUTO_FUZZY', 'MANUAL', 'UNMATCHED']),
   status: z.enum(['UNMATCHED', 'MATCHED', 'CONFIRMED', 'SKIPPED']),
 });
@@ -75,8 +83,14 @@ const AutoMatchResponseSchema = z.object({
 // ── Line Action Schema ──────────────────────────────────────────────────
 
 const LineActionSchema = z.object({
-  action: z.enum(['match', 'unmatch', 'skip']),
+  action: z.enum(['match', 'unmatch', 'skip', 'remove-match']),
   transactionId: z.string().uuid().optional(),
+  amount: z.number().positive().optional(),
+  matches: z.array(z.object({
+    transactionId: z.string().uuid(),
+    amount: z.number().positive(),
+  })).optional(),
+  matchId: z.string().uuid().optional(),
   notes: z.string().optional(),
 });
 
@@ -157,7 +171,8 @@ describe('Reconciliation API Contracts', () => {
         id: 'line-1', bankStatementId: 'stmt-1',
         transactionDate: '2026-01-15T12:00:00.000Z',
         description: 'Electric Bill', amount: '-150.00',
-        matchedTransactionId: null, matchConfidence: 'UNMATCHED', status: 'UNMATCHED',
+        matchConfidence: 'UNMATCHED', status: 'UNMATCHED',
+        matches: [],
       };
       expect(StatementLineSchema.safeParse(line).success).toBe(true);
     });
@@ -167,7 +182,8 @@ describe('Reconciliation API Contracts', () => {
         id: 'line-1', bankStatementId: 'stmt-1',
         transactionDate: '2026-01-15T12:00:00.000Z',
         description: 'Payment', amount: '-500.00',
-        matchedTransactionId: 'txn-1', matchConfidence: 'AUTO_EXACT', status: 'MATCHED',
+        matches: [{ id: 'match-1', lineId: 'line-1', transactionId: 'txn-1', amount: '500.00', confidence: 'AUTO_EXACT' }],
+        matchConfidence: 'AUTO_EXACT', status: 'MATCHED',
       };
       expect(StatementLineSchema.safeParse(line).success).toBe(true);
     });
@@ -206,6 +222,22 @@ describe('Reconciliation API Contracts', () => {
 
     it('should reject invalid action', () => {
       expect(LineActionSchema.safeParse({ action: 'delete' }).success).toBe(false);
+    });
+
+    it('should accept match with multi-match entries', () => {
+      const action = {
+        action: 'match',
+        matches: [
+          { transactionId: '550e8400-e29b-41d4-a716-446655440000', amount: 200 },
+          { transactionId: '550e8400-e29b-41d4-a716-446655440001', amount: 300 },
+        ],
+      };
+      expect(LineActionSchema.safeParse(action).success).toBe(true);
+    });
+
+    it('should accept remove-match action', () => {
+      const action = { action: 'remove-match', matchId: '550e8400-e29b-41d4-a716-446655440000' };
+      expect(LineActionSchema.safeParse(action).success).toBe(true);
     });
   });
 });

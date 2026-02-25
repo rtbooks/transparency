@@ -394,6 +394,7 @@ export const ModelName = {
   BankAccount: 'BankAccount',
   BankStatement: 'BankStatement',
   BankStatementLine: 'BankStatementLine',
+  BankStatementLineMatch: 'BankStatementLineMatch',
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
   AccessRequest: 'AccessRequest',
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "donation" | "contact" | "bill" | "billPayment" | "attachment"
+    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "donation" | "contact" | "bill" | "billPayment" | "attachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1159,6 +1160,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.BankStatementLineCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.BankStatementLineCountAggregateOutputType> | number
+        }
+      }
+    }
+    BankStatementLineMatch: {
+      payload: Prisma.$BankStatementLineMatchPayload<ExtArgs>
+      fields: Prisma.BankStatementLineMatchFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BankStatementLineMatchFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BankStatementLineMatchFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        findFirst: {
+          args: Prisma.BankStatementLineMatchFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BankStatementLineMatchFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        findMany: {
+          args: Prisma.BankStatementLineMatchFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>[]
+        }
+        create: {
+          args: Prisma.BankStatementLineMatchCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        createMany: {
+          args: Prisma.BankStatementLineMatchCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BankStatementLineMatchCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>[]
+        }
+        delete: {
+          args: Prisma.BankStatementLineMatchDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        update: {
+          args: Prisma.BankStatementLineMatchUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        deleteMany: {
+          args: Prisma.BankStatementLineMatchDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BankStatementLineMatchUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BankStatementLineMatchUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>[]
+        }
+        upsert: {
+          args: Prisma.BankStatementLineMatchUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankStatementLineMatchPayload>
+        }
+        aggregate: {
+          args: Prisma.BankStatementLineMatchAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBankStatementLineMatch>
+        }
+        groupBy: {
+          args: Prisma.BankStatementLineMatchGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankStatementLineMatchGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BankStatementLineMatchCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankStatementLineMatchCountAggregateOutputType> | number
         }
       }
     }
@@ -2109,7 +2184,6 @@ export const BankStatementLineScalarFieldEnum = {
   referenceNumber: 'referenceNumber',
   amount: 'amount',
   category: 'category',
-  matchedTransactionId: 'matchedTransactionId',
   matchConfidence: 'matchConfidence',
   status: 'status',
   notes: 'notes',
@@ -2117,6 +2191,18 @@ export const BankStatementLineScalarFieldEnum = {
 } as const
 
 export type BankStatementLineScalarFieldEnum = (typeof BankStatementLineScalarFieldEnum)[keyof typeof BankStatementLineScalarFieldEnum]
+
+
+export const BankStatementLineMatchScalarFieldEnum = {
+  id: 'id',
+  lineId: 'lineId',
+  transactionId: 'transactionId',
+  amount: 'amount',
+  confidence: 'confidence',
+  createdAt: 'createdAt'
+} as const
+
+export type BankStatementLineMatchScalarFieldEnum = (typeof BankStatementLineMatchScalarFieldEnum)[keyof typeof BankStatementLineMatchScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {
@@ -2827,6 +2913,7 @@ export type GlobalOmitConfig = {
   bankAccount?: Prisma.BankAccountOmit
   bankStatement?: Prisma.BankStatementOmit
   bankStatementLine?: Prisma.BankStatementLineOmit
+  bankStatementLineMatch?: Prisma.BankStatementLineMatchOmit
   auditLog?: Prisma.AuditLogOmit
   invitation?: Prisma.InvitationOmit
   accessRequest?: Prisma.AccessRequestOmit

@@ -61,6 +61,7 @@ export const ModelName = {
   BankAccount: 'BankAccount',
   BankStatement: 'BankStatement',
   BankStatementLine: 'BankStatementLine',
+  BankStatementLineMatch: 'BankStatementLineMatch',
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
   AccessRequest: 'AccessRequest',
@@ -330,7 +331,6 @@ export const BankStatementLineScalarFieldEnum = {
   referenceNumber: 'referenceNumber',
   amount: 'amount',
   category: 'category',
-  matchedTransactionId: 'matchedTransactionId',
   matchConfidence: 'matchConfidence',
   status: 'status',
   notes: 'notes',
@@ -338,6 +338,18 @@ export const BankStatementLineScalarFieldEnum = {
 } as const
 
 export type BankStatementLineScalarFieldEnum = (typeof BankStatementLineScalarFieldEnum)[keyof typeof BankStatementLineScalarFieldEnum]
+
+
+export const BankStatementLineMatchScalarFieldEnum = {
+  id: 'id',
+  lineId: 'lineId',
+  transactionId: 'transactionId',
+  amount: 'amount',
+  confidence: 'confidence',
+  createdAt: 'createdAt'
+} as const
+
+export type BankStatementLineMatchScalarFieldEnum = (typeof BankStatementLineMatchScalarFieldEnum)[keyof typeof BankStatementLineMatchScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {

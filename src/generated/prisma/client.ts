@@ -90,6 +90,11 @@ export type BankStatement = Prisma.BankStatementModel
  */
 export type BankStatementLine = Prisma.BankStatementLineModel
 /**
+ * Model BankStatementLineMatch
+ * 
+ */
+export type BankStatementLineMatch = Prisma.BankStatementLineMatchModel
+/**
  * Model AuditLog
  * 
  */

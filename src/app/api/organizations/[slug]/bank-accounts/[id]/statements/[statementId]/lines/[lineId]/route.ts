@@ -2,18 +2,38 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
-import { manualMatch, unmatchLine, skipLine } from '@/services/reconciliation.service';
+import { manualMatch, unmatchLine, skipLine, removeMatch } from '@/services/reconciliation.service';
 import { z } from 'zod';
 
-const matchSchema = z.object({
-  action: z.enum(['match', 'unmatch', 'skip']),
+const matchActionSchema = z.object({
+  action: z.literal('match'),
+  // Single transaction match
   transactionId: z.string().uuid().optional(),
-  notes: z.string().optional(),
+  amount: z.number().positive().optional(),
+  // Multi-transaction match
+  matches: z.array(z.object({
+    transactionId: z.string().uuid(),
+    amount: z.number().positive(),
+  })).optional(),
 });
+
+const otherActionSchema = z.discriminatedUnion('action', [
+  z.object({ action: z.literal('unmatch') }),
+  z.object({
+    action: z.literal('remove-match'),
+    matchId: z.string().uuid(),
+  }),
+  z.object({
+    action: z.literal('skip'),
+    notes: z.string().optional(),
+  }),
+]);
+
+const patchSchema = z.union([matchActionSchema, otherActionSchema]);
 
 /**
  * PATCH /api/organizations/[slug]/bank-accounts/[id]/statements/[statementId]/lines/[lineId]
- * Match, unmatch, or skip a statement line.
+ * Match, unmatch, remove-match, or skip a statement line.
  */
 export async function PATCH(
   request: NextRequest,
@@ -49,18 +69,27 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const validated = matchSchema.parse(body);
+    const validated = patchSchema.parse(body);
 
     let result;
     switch (validated.action) {
-      case 'match':
-        if (!validated.transactionId) {
-          return NextResponse.json({ error: 'transactionId required for match action' }, { status: 400 });
+      case 'match': {
+        const matchEntries = validated.matches
+          ? validated.matches
+          : validated.transactionId
+            ? [{ transactionId: validated.transactionId, amount: validated.amount || Math.abs(Number(line.amount)) }]
+            : null;
+        if (!matchEntries) {
+          return NextResponse.json({ error: 'transactionId or matches required for match action' }, { status: 400 });
         }
-        result = await manualMatch(lineId, validated.transactionId);
+        result = await manualMatch(lineId, matchEntries);
         break;
+      }
       case 'unmatch':
         result = await unmatchLine(lineId);
+        break;
+      case 'remove-match':
+        result = await removeMatch(validated.matchId);
         break;
       case 'skip':
         result = await skipLine(lineId, validated.notes);
@@ -71,6 +100,9 @@ export async function PATCH(
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
+    }
+    if (error?.message?.includes('exceeds line amount')) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error('Error updating statement line:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

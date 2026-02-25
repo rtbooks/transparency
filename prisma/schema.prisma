@@ -496,7 +496,6 @@ model BankStatementLine {
   category        String?   // bank-provided category
 
   // Matching
-  matchedTransactionId String?         @map("matched_transaction_id") // Links to Transaction.id (stable entity ID)
   matchConfidence      MatchConfidence @default(UNMATCHED) @map("match_confidence")
   status               StatementLineStatus @default(UNMATCHED)
 
@@ -508,10 +507,27 @@ model BankStatementLine {
 
   // Relations
   bankStatement BankStatement @relation(fields: [bankStatementId], references: [id], onDelete: Cascade)
+  matches       BankStatementLineMatch[]
 
   @@index([bankStatementId], name: "idx_statement_line_statement")
-  @@index([matchedTransactionId], name: "idx_statement_line_matched_txn")
   @@map("bank_statement_lines")
+}
+
+model BankStatementLineMatch {
+  id            String @id @default(uuid())
+  lineId        String @map("line_id")
+  transactionId String @map("transaction_id") // Links to Transaction.id (stable entity ID)
+  amount        Decimal @map("amount") @db.Decimal(12, 2) // portion of the line amount matched
+  confidence    MatchConfidence @default(MANUAL) @map("confidence")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  line BankStatementLine @relation(fields: [lineId], references: [id], onDelete: Cascade)
+
+  @@index([lineId], name: "idx_line_match_line")
+  @@index([transactionId], name: "idx_line_match_txn")
+  @@map("bank_statement_line_matches")
 }
 
 // ============================================

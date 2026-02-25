@@ -3,6 +3,7 @@
  *
  * Auto-matching engine and reconciliation lifecycle management.
  * Matches bank statement lines against RadBooks ledger transactions.
+ * Supports many-to-many matching (split deposits, combined entries).
  */
 
 import { prisma } from '@/lib/prisma';
@@ -14,6 +15,7 @@ import type { BankStatementLine } from '@/generated/prisma/client';
 export interface MatchResult {
   statementLineId: string;
   transactionId: string;
+  amount: number;
   confidence: 'AUTO_EXACT' | 'AUTO_FUZZY';
   reason: string;
 }
@@ -54,7 +56,6 @@ function descriptionSimilarity(a: string, b: string): number {
   const nb = normalizeDescription(b);
   if (na === nb) return 1;
   if (na.includes(nb) || nb.includes(na)) return 0.8;
-  // Simple character overlap score
   const setA = new Set(na.split(''));
   const setB = new Set(nb.split(''));
   const intersection = [...setA].filter((c) => setB.has(c)).length;
@@ -62,35 +63,35 @@ function descriptionSimilarity(a: string, b: string): number {
   return union > 0 ? intersection / union : 0;
 }
 
-/**
- * Determine the effective amount for matching a statement line against a ledger transaction.
- * Bank statement: positive = deposit, negative = withdrawal.
- * RadBooks ledger: amount is always positive, direction determined by debit/credit accounts.
- *
- * A deposit matches a transaction where the bank account is the DEBIT side.
- * A withdrawal matches a transaction where the bank account is the CREDIT side.
- */
 function amountsMatch(statementAmount: number, txnAmount: number): boolean {
   return Math.abs(Math.abs(statementAmount) - Math.abs(txnAmount)) < 0.01;
 }
 
 /**
+ * Get the remaining unmatched amount for a statement line.
+ */
+async function getUnmatchedAmount(lineId: string, lineAmount: number): Promise<number> {
+  const existingMatches = await prisma.bankStatementLineMatch.findMany({
+    where: { lineId },
+  });
+  const matchedTotal = existingMatches.reduce((sum, m) => sum + Number(m.amount), 0);
+  return Math.abs(lineAmount) - matchedTotal;
+}
+
+/**
  * Run auto-matching for a bank statement.
- * Finds unmatched statement lines and attempts to match them against
- * unreconciled ledger transactions for the same account and date range.
+ * Auto-match only creates 1:1 full-amount matches. Split/combine matching is manual only.
  */
 export async function autoMatchStatement(
   statementId: string,
   bankAccountId: string,
   organizationId: string
 ): Promise<AutoMatchSummary> {
-  // Get bank account to find the linked Chart of Accounts account ID
   const bankAccount = await prisma.bankAccount.findUnique({
     where: { id: bankAccountId },
   });
   if (!bankAccount) throw new Error('Bank account not found');
 
-  // Get unmatched statement lines
   const unmatchedLines = await prisma.bankStatementLine.findMany({
     where: {
       bankStatementId: statementId,
@@ -103,14 +104,12 @@ export async function autoMatchStatement(
     return { total: 0, exactMatches: 0, fuzzyMatches: 0, unmatched: 0, matches: [] };
   }
 
-  // Determine date range with tolerance
   const dates = unmatchedLines.map((l) => l.transactionDate.getTime());
   const minDate = new Date(Math.min(...dates));
   const maxDate = new Date(Math.max(...dates));
   minDate.setDate(minDate.getDate() - FUZZY_DATE_TOLERANCE_DAYS);
   maxDate.setDate(maxDate.getDate() + FUZZY_DATE_TOLERANCE_DAYS);
 
-  // Get unreconciled ledger transactions for this account in the date range
   const accountId = bankAccount.accountId;
   const ledgerTxns = await prisma.transaction.findMany({
     where: {
@@ -155,6 +154,7 @@ export async function autoMatchStatement(
         matches.push({
           statementLineId: line.id,
           transactionId: txn.id,
+          amount: Math.abs(lineAmount),
           confidence: 'AUTO_EXACT',
           reason: 'Exact match: amount, date, and reference number',
         });
@@ -180,7 +180,6 @@ export async function autoMatchStatement(
       const dateDiff = daysDiff(line.transactionDate, txn.transactionDate);
       if (dateDiff > FUZZY_DATE_TOLERANCE_DAYS) continue;
 
-      // Score: closer date = higher score, description similarity bonus
       const dateScore = 1 - dateDiff / FUZZY_DATE_TOLERANCE_DAYS;
       const descScore = descriptionSimilarity(line.description, txn.description);
       const totalScore = dateScore * 0.6 + descScore * 0.4;
@@ -194,6 +193,7 @@ export async function autoMatchStatement(
       matches.push({
         statementLineId: line.id,
         transactionId: bestMatch.txn.id,
+        amount: Math.abs(lineAmount),
         confidence: 'AUTO_FUZZY',
         reason: `Fuzzy match: amount matches, date within ${FUZZY_DATE_TOLERANCE_DAYS} days (score: ${bestMatch.score.toFixed(2)})`,
       });
@@ -201,12 +201,20 @@ export async function autoMatchStatement(
     }
   }
 
-  // Apply matches to database
+  // Apply matches to database via join table
   for (const match of matches) {
+    await prisma.bankStatementLineMatch.create({
+      data: {
+        lineId: match.statementLineId,
+        transactionId: match.transactionId,
+        amount: match.amount,
+        confidence: match.confidence,
+      },
+    });
+
     await prisma.bankStatementLine.update({
       where: { id: match.statementLineId },
       data: {
-        matchedTransactionId: match.transactionId,
         matchConfidence: match.confidence,
         status: 'MATCHED',
       },
@@ -226,30 +234,98 @@ export async function autoMatchStatement(
 }
 
 /**
- * Manually match a statement line to a transaction.
+ * Manually match a statement line to one or more transactions.
+ * Supports partial amounts for split matching.
  */
 export async function manualMatch(
   lineId: string,
-  transactionId: string
+  matchEntries: { transactionId: string; amount: number }[]
 ): Promise<BankStatementLine> {
+  const line = await prisma.bankStatementLine.findUnique({ where: { id: lineId } });
+  if (!line) throw new Error('Statement line not found');
+
+  const lineAmount = Math.abs(Number(line.amount));
+
+  // Validate total matched doesn't exceed line amount
+  const existingMatches = await prisma.bankStatementLineMatch.findMany({
+    where: { lineId },
+  });
+  const existingTotal = existingMatches.reduce((sum, m) => sum + Number(m.amount), 0);
+  const newTotal = matchEntries.reduce((sum, e) => sum + e.amount, 0);
+
+  if (existingTotal + newTotal > lineAmount + 0.01) {
+    throw new Error(
+      `Total matched amount ($${(existingTotal + newTotal).toFixed(2)}) exceeds line amount ($${lineAmount.toFixed(2)})`
+    );
+  }
+
+  // Create match entries
+  for (const entry of matchEntries) {
+    await prisma.bankStatementLineMatch.create({
+      data: {
+        lineId,
+        transactionId: entry.transactionId,
+        amount: entry.amount,
+        confidence: 'MANUAL',
+      },
+    });
+  }
+
+  // Update line status based on whether fully matched
+  const totalMatched = existingTotal + newTotal;
+  const fullyMatched = Math.abs(totalMatched - lineAmount) < 0.01;
+
   return prisma.bankStatementLine.update({
     where: { id: lineId },
     data: {
-      matchedTransactionId: transactionId,
       matchConfidence: 'MANUAL',
-      status: 'MATCHED',
+      status: fullyMatched ? 'MATCHED' : 'UNMATCHED',
     },
   });
 }
 
 /**
- * Unmatch a previously matched statement line.
+ * Remove a specific match from a statement line.
+ */
+export async function removeMatch(matchId: string): Promise<BankStatementLine> {
+  const match = await prisma.bankStatementLineMatch.findUnique({ where: { id: matchId } });
+  if (!match) throw new Error('Match not found');
+
+  await prisma.bankStatementLineMatch.delete({ where: { id: matchId } });
+
+  // Check remaining matches
+  const remaining = await prisma.bankStatementLineMatch.findMany({
+    where: { lineId: match.lineId },
+  });
+
+  const line = await prisma.bankStatementLine.findUnique({ where: { id: match.lineId } });
+  if (!line) throw new Error('Line not found');
+
+  const lineAmount = Math.abs(Number(line.amount));
+  const remainingTotal = remaining.reduce((sum, m) => sum + Number(m.amount), 0);
+
+  return prisma.bankStatementLine.update({
+    where: { id: match.lineId },
+    data: {
+      matchConfidence: remaining.length > 0 ? line.matchConfidence : 'UNMATCHED',
+      status: remaining.length === 0
+        ? 'UNMATCHED'
+        : Math.abs(remainingTotal - lineAmount) < 0.01
+          ? 'MATCHED'
+          : 'UNMATCHED',
+    },
+  });
+}
+
+/**
+ * Unmatch all matches from a statement line.
  */
 export async function unmatchLine(lineId: string): Promise<BankStatementLine> {
+  await prisma.bankStatementLineMatch.deleteMany({ where: { lineId } });
+
   return prisma.bankStatementLine.update({
     where: { id: lineId },
     data: {
-      matchedTransactionId: null,
       matchConfidence: 'UNMATCHED',
       status: 'UNMATCHED',
     },
@@ -278,33 +354,43 @@ export async function completeReconciliation(
 ): Promise<{ reconciledCount: number }> {
   const statement = await prisma.bankStatement.findUnique({
     where: { id: statementId },
-    include: { lines: true },
+    include: {
+      lines: {
+        include: { matches: true },
+      },
+    },
   });
 
   if (!statement) throw new Error('Statement not found');
   if (statement.status === 'COMPLETED') throw new Error('Statement already reconciled');
 
   const matchedLines = statement.lines.filter(
-    (l) => l.status === 'MATCHED' && l.matchedTransactionId
+    (l) => l.status === 'MATCHED' && l.matches.length > 0
   );
 
   const now = new Date();
+  const reconciledTxnIds = new Set<string>();
 
   // Mark all matched transactions as reconciled (temporal: close + create new version)
   for (const line of matchedLines) {
-    const txn = await prisma.transaction.findFirst({
-      where: buildCurrentVersionWhere({ id: line.matchedTransactionId! }),
-    });
+    for (const match of line.matches) {
+      if (reconciledTxnIds.has(match.transactionId)) continue;
 
-    if (txn && !txn.reconciled) {
-      await closeVersion(prisma.transaction, txn.versionId, now, 'transaction');
-      await prisma.transaction.create({
-        data: buildNewVersionData(txn, {
-          reconciled: true,
-          reconciledAt: now,
-          bankTransactionId: line.id,
-        } as any, now, userId) as any,
+      const txn = await prisma.transaction.findFirst({
+        where: buildCurrentVersionWhere({ id: match.transactionId }),
       });
+
+      if (txn && !txn.reconciled) {
+        await closeVersion(prisma.transaction, txn.versionId, now, 'transaction');
+        await prisma.transaction.create({
+          data: buildNewVersionData(txn, {
+            reconciled: true,
+            reconciledAt: now,
+            bankTransactionId: line.id,
+          } as any, now, userId) as any,
+        });
+        reconciledTxnIds.add(match.transactionId);
+      }
     }
 
     // Confirm the line
@@ -324,5 +410,5 @@ export async function completeReconciliation(
     },
   });
 
-  return { reconciledCount: matchedLines.length };
+  return { reconciledCount: reconciledTxnIds.size };
 }
