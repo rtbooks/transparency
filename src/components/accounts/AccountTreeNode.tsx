@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronRight, ChevronDown, Edit, Power, PowerOff, AlertTriangle } from 'lucide-react';
+import { ChevronRight, ChevronDown, Edit, Power, PowerOff, AlertTriangle, ArrowRightLeft } from 'lucide-react';
 import { AccountTreeNode } from '@/lib/utils/account-tree';
 import { formatCurrency, getAccountTypeInfo } from '@/lib/utils/account-tree';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { EditAccountForm } from '@/components/forms/EditAccountForm';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 interface AccountTreeNodeProps {
   node: AccountTreeNode;
@@ -187,6 +188,11 @@ export function AccountTreeNodeComponent({
 
         {/* Action Buttons */}
         <div className="flex shrink-0 items-center gap-1">
+          <Link href={`/org/${organizationSlug}/transactions?accountId=${node.id}`}>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="View transactions">
+              <ArrowRightLeft className="h-4 w-4" />
+            </Button>
+          </Link>
           <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">

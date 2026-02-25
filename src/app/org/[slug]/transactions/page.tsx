@@ -6,10 +6,12 @@ import { checkOrganizationAccess, VerificationStatusMessage } from "@/lib/organi
 
 interface TransactionsPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ accountId?: string }>;
 }
 
-export default async function TransactionsPage({ params }: TransactionsPageProps) {
+export default async function TransactionsPage({ params, searchParams }: TransactionsPageProps) {
   const { slug } = await params;
+  const { accountId } = await searchParams;
   const { userId: clerkUserId } = await auth();
 
   if (!clerkUserId) {
@@ -49,7 +51,7 @@ export default async function TransactionsPage({ params }: TransactionsPageProps
     <OrganizationLayoutWrapper organizationSlug={slug}>
       <div className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <TransactionsPageClient organizationSlug={slug} canEdit={canEdit} />
+          <TransactionsPageClient organizationSlug={slug} canEdit={canEdit} initialAccountId={accountId} />
         </div>
       </div>
     </OrganizationLayoutWrapper>

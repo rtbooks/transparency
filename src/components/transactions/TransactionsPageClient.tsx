@@ -7,9 +7,10 @@ import { RecordTransactionButton } from "./RecordTransactionButton";
 interface TransactionsPageClientProps {
   organizationSlug: string;
   canEdit?: boolean;
+  initialAccountId?: string;
 }
 
-export function TransactionsPageClient({ organizationSlug, canEdit = true }: TransactionsPageClientProps) {
+export function TransactionsPageClient({ organizationSlug, canEdit = true, initialAccountId }: TransactionsPageClientProps) {
   const [refreshKey, setRefreshKey] = useState(0);
 
   return (
@@ -29,7 +30,7 @@ export function TransactionsPageClient({ organizationSlug, canEdit = true }: Tra
         )}
       </div>
 
-      <TransactionList organizationSlug={organizationSlug} refreshKey={refreshKey} />
+      <TransactionList organizationSlug={organizationSlug} refreshKey={refreshKey} initialAccountId={initialAccountId} />
     </>
   );
 }
