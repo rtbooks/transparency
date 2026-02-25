@@ -49,7 +49,7 @@ export function TopNav({
 
   return (
     <>
-      <nav className="z-100 sticky top-0 border-b bg-white">
+      <nav className="sticky top-0 z-50 border-b bg-white">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Left: Logo and Org Switcher */}
