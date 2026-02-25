@@ -1,7 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { OrganizationSettingsForm } from '@/components/forms/OrganizationSettingsForm';
-import { AccessRequestManager } from '@/components/org/AccessRequestManager';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
 import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
 
@@ -63,7 +62,6 @@ export default async function OrganizationSettingsPage({
           </div>
 
           <div className="space-y-6">
-            <AccessRequestManager organizationSlug={slug} />
             <OrganizationSettingsForm organization={organization} />
           </div>
         </div>

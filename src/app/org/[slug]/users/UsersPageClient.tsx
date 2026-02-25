@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { UserList } from '@/components/users/UserList';
 import { InviteUserDialog } from '@/components/users/InviteUserDialog';
 import { PendingInvitationsList } from '@/components/users/PendingInvitationsList';
+import { AccessRequestManager } from '@/components/org/AccessRequestManager';
 import { Button } from '@/components/ui/button';
 import { UserPlus } from 'lucide-react';
 
@@ -74,6 +75,12 @@ export function UsersPageClient({
               organizationSlug={slug}
               onInvitationRevoked={handleInviteSuccess}
             />
+          </div>
+        )}
+
+        {canManageUsers && (
+          <div className="mb-6">
+            <AccessRequestManager organizationSlug={slug} />
           </div>
         )}
 
