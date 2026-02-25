@@ -9,7 +9,7 @@ const isPublicRoute = createRouteMatcher([
   '/terms', // Terms of Service
   '/privacy', // Privacy Policy
   '/org/:slug', // Public organization dashboard
-  '/org/:slug/donate', // Public donation page
+  '/org/:slug/donate(.*)', // Public donation page
   '/invite/:token', // Invitation acceptance page (handles auth internally)
 ]);
 
