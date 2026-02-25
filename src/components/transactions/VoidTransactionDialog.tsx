@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { formatCurrency } from '@/lib/utils/account-tree';
+import { formatCurrency, formatTransactionAmount } from '@/lib/utils/account-tree';
 
 interface VoidTransactionDialogProps {
   open: boolean;
@@ -29,8 +29,8 @@ interface VoidTransactionDialogProps {
     amount: number | string | { toString(): string };
     description: string;
     type: string;
-    debitAccount?: { code: string; name: string };
-    creditAccount?: { code: string; name: string };
+    debitAccount?: { code: string; name: string; type?: string };
+    creditAccount?: { code: string; name: string; type?: string };
   };
   onSuccess?: () => void;
 }
@@ -114,7 +114,7 @@ export function VoidTransactionDialog({
           <div className="flex items-center gap-2 mb-2">
             <Badge variant="destructive">Voiding</Badge>
             <span className="font-medium">
-              {formatCurrency(transaction.amount)}
+              {formatTransactionAmount(transaction.amount, transaction.type, transaction.creditAccount?.type)}
             </span>
           </div>
           <p className="text-gray-700">{transaction.description}</p>

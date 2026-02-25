@@ -56,6 +56,33 @@ export function formatCurrency(amount: number | string | { toString(): string })
 }
 
 /**
+ * Detects the reimbursement pattern: an EXPENSE transaction that credits an
+ * expense account (reducing the expense rather than incurring one).
+ */
+export function isReimbursementTransaction(
+  type: string,
+  creditAccountType?: string,
+): boolean {
+  return type === 'EXPENSE' && creditAccountType === 'EXPENSE';
+}
+
+/**
+ * Formats a transaction amount for display, showing reimbursements as negative
+ * using accounting parenthesis notation.
+ */
+export function formatTransactionAmount(
+  amount: number | string | { toString(): string },
+  type: string,
+  creditAccountType?: string,
+): string {
+  const formatted = formatCurrency(amount);
+  if (isReimbursementTransaction(type, creditAccountType)) {
+    return `(${formatted})`;
+  }
+  return formatted;
+}
+
+/**
  * Gets icon or color for account type
  */
 export function getAccountTypeInfo(type: string): {
