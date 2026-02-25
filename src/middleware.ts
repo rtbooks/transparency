@@ -14,6 +14,7 @@ const isPublicRoute = createRouteMatcher([
   "/organizations", // Organization lists
   "/org/:slug", // Public organization dashboard
   "/org/:slug/donate(.*)", // Public donation page
+  "/api/organizations/:slug/logo", // Org logo (public branding, used in emails)
   "/invite/:token", // Invitation acceptance page (handles auth internally)
 ]);
 
