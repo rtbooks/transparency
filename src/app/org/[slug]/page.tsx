@@ -25,14 +25,14 @@ export default async function OrganizationPublicPage({
   // Get basic financial summary (always fetched for member display)
   const [transactionCount, totalRevenue, totalExpenses] = await Promise.all([
     prisma.transaction.count({
-      where: buildCurrentVersionWhere({ organizationId: organization.id }),
+      where: buildCurrentVersionWhere({ organizationId: organization.id, isVoided: false }),
     }),
     prisma.transaction.aggregate({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, type: 'INCOME' }),
+      where: buildCurrentVersionWhere({ organizationId: organization.id, type: 'INCOME', isVoided: false }),
       _sum: { amount: true },
     }),
     prisma.transaction.aggregate({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, type: 'EXPENSE' }),
+      where: buildCurrentVersionWhere({ organizationId: organization.id, type: 'EXPENSE', isVoided: false }),
       _sum: { amount: true },
     }),
   ]);
