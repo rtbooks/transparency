@@ -72,7 +72,8 @@ export const ModelName = {
   Bill: 'Bill',
   BillPayment: 'BillPayment',
   Attachment: 'Attachment',
-  FiscalPeriod: 'FiscalPeriod'
+  FiscalPeriod: 'FiscalPeriod',
+  OrganizationPaymentMethod: 'OrganizationPaymentMethod'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -563,6 +564,28 @@ export const FiscalPeriodScalarFieldEnum = {
 } as const
 
 export type FiscalPeriodScalarFieldEnum = (typeof FiscalPeriodScalarFieldEnum)[keyof typeof FiscalPeriodScalarFieldEnum]
+
+
+export const OrganizationPaymentMethodScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  type: 'type',
+  isEnabled: 'isEnabled',
+  displayOrder: 'displayOrder',
+  label: 'label',
+  instructions: 'instructions',
+  stripeAccountId: 'stripeAccountId',
+  stripeChargesEnabled: 'stripeChargesEnabled',
+  stripePayoutsEnabled: 'stripePayoutsEnabled',
+  handle: 'handle',
+  paymentUrl: 'paymentUrl',
+  payableTo: 'payableTo',
+  mailingAddress: 'mailingAddress',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrganizationPaymentMethodScalarFieldEnum = (typeof OrganizationPaymentMethodScalarFieldEnum)[keyof typeof OrganizationPaymentMethodScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { OrganizationSettingsForm } from '@/components/forms/OrganizationSettingsForm';
+import { PaymentMethodsManager } from '@/components/settings/PaymentMethodsManager';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
 import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
 
@@ -66,6 +67,16 @@ export default async function OrganizationSettingsPage({
 
           <div className="space-y-6">
             <OrganizationSettingsForm organization={organization} />
+
+            <div className="rounded-lg border bg-white p-6">
+              <h2 className="mb-4 text-xl font-semibold text-gray-900">
+                Payment Methods
+              </h2>
+              <p className="mb-6 text-sm text-gray-600">
+                Configure how donors can contribute to your organization.
+              </p>
+              <PaymentMethodsManager organizationSlug={slug} />
+            </div>
           </div>
         </div>
       </div>

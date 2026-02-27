@@ -318,8 +318,11 @@ enum TransactionType {
 enum PaymentMethod {
   STRIPE
   VENMO
+  PAYPAL
   CHECK
   CASH
+  CASH_APP
+  ZELLE
   BANK_TRANSFER
   OTHER
 }
@@ -959,4 +962,38 @@ model FiscalPeriod {
   @@unique([organizationId, startDate])
   @@index([organizationId, status], name: "idx_fiscal_period_org_status")
   @@map("fiscal_periods")
+}
+
+// Payment methods configured by each organization for receiving donations
+model OrganizationPaymentMethod {
+  id             String        @id @default(uuid())
+  organizationId String        @map("organization_id")
+  type           PaymentMethod
+  isEnabled      Boolean       @default(true) @map("is_enabled")
+  displayOrder   Int           @default(0) @map("display_order")
+
+  // Display
+  label        String? // Custom display name (e.g., "Mail a Check")
+  instructions String? @db.Text // Instructions shown to donor
+
+  // Stripe Connect
+  stripeAccountId   String? @map("stripe_account_id") // Connected Stripe account (acct_xxx)
+  stripeChargesEnabled Boolean @default(false) @map("stripe_charges_enabled")
+  stripePayoutsEnabled Boolean @default(false) @map("stripe_payouts_enabled")
+
+  // Digital payment handles (Venmo, PayPal, Cash App, Zelle)
+  handle     String? // @handle or email address
+  paymentUrl String? @map("payment_url") // Deep link or payment URL
+
+  // Check / mail
+  payableTo      String? @map("payable_to") // "Make checks payable to..."
+  mailingAddress String? @db.Text @map("mailing_address")
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([organizationId, type])
+  @@index([organizationId, isEnabled], name: "idx_org_payment_method_enabled")
+  @@map("organization_payment_methods")
 }

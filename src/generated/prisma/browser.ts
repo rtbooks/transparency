@@ -127,3 +127,8 @@ export type Attachment = Prisma.AttachmentModel
  * 
  */
 export type FiscalPeriod = Prisma.FiscalPeriodModel
+/**
+ * Model OrganizationPaymentMethod
+ * 
+ */
+export type OrganizationPaymentMethod = Prisma.OrganizationPaymentMethodModel

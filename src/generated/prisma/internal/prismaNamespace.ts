@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.3.0
- * Query Engine version: 9d6ad21cbbceab97458517b147a6a09ff43aa735
+ * Prisma Client JS version: 7.4.1
+ * Query Engine version: 55ae170b1ced7fc6ed07a15f110549408c501bb3
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.3.0",
-  engine: "9d6ad21cbbceab97458517b147a6a09ff43aa735"
+  client: "7.4.1",
+  engine: "55ae170b1ced7fc6ed07a15f110549408c501bb3"
 }
 
 /**
@@ -405,7 +405,8 @@ export const ModelName = {
   Bill: 'Bill',
   BillPayment: 'BillPayment',
   Attachment: 'Attachment',
-  FiscalPeriod: 'FiscalPeriod'
+  FiscalPeriod: 'FiscalPeriod',
+  OrganizationPaymentMethod: 'OrganizationPaymentMethod'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -421,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "campaignTier" | "donation" | "contact" | "bill" | "billPayment" | "attachment" | "fiscalPeriod"
+    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "campaignTier" | "donation" | "contact" | "bill" | "billPayment" | "attachment" | "fiscalPeriod" | "organizationPaymentMethod"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2053,6 +2054,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    OrganizationPaymentMethod: {
+      payload: Prisma.$OrganizationPaymentMethodPayload<ExtArgs>
+      fields: Prisma.OrganizationPaymentMethodFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OrganizationPaymentMethodFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationPaymentMethodPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OrganizationPaymentMethodFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationPaymentMethodPayload>
+        }
+        findFirst: {
+          args: Prisma.OrganizationPaymentMethodFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationPaymentMethodPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OrganizationPaymentMethodFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationPaymentMethodPayload>
+        }
+        findMany: {
+          args: Prisma.OrganizationPaymentMethodFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationPaymentMethodPayload>[]
+        }
+        create: {
+          args: Prisma.OrganizationPaymentMethodCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationPaymentMethodPayload>
+        }
+        createMany: {
+          args: Prisma.OrganizationPaymentMethodCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OrganizationPaymentMethodCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationPaymentMethodPayload>[]
+        }
+        delete: {
+          args: Prisma.OrganizationPaymentMethodDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationPaymentMethodPayload>
+        }
+        update: {
+          args: Prisma.OrganizationPaymentMethodUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationPaymentMethodPayload>
+        }
+        deleteMany: {
+          args: Prisma.OrganizationPaymentMethodDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OrganizationPaymentMethodUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OrganizationPaymentMethodUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationPaymentMethodPayload>[]
+        }
+        upsert: {
+          args: Prisma.OrganizationPaymentMethodUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrganizationPaymentMethodPayload>
+        }
+        aggregate: {
+          args: Prisma.OrganizationPaymentMethodAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOrganizationPaymentMethod>
+        }
+        groupBy: {
+          args: Prisma.OrganizationPaymentMethodGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrganizationPaymentMethodGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OrganizationPaymentMethodCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrganizationPaymentMethodCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2564,6 +2639,28 @@ export const FiscalPeriodScalarFieldEnum = {
 } as const
 
 export type FiscalPeriodScalarFieldEnum = (typeof FiscalPeriodScalarFieldEnum)[keyof typeof FiscalPeriodScalarFieldEnum]
+
+
+export const OrganizationPaymentMethodScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  type: 'type',
+  isEnabled: 'isEnabled',
+  displayOrder: 'displayOrder',
+  label: 'label',
+  instructions: 'instructions',
+  stripeAccountId: 'stripeAccountId',
+  stripeChargesEnabled: 'stripeChargesEnabled',
+  stripePayoutsEnabled: 'stripePayoutsEnabled',
+  handle: 'handle',
+  paymentUrl: 'paymentUrl',
+  payableTo: 'payableTo',
+  mailingAddress: 'mailingAddress',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrganizationPaymentMethodScalarFieldEnum = (typeof OrganizationPaymentMethodScalarFieldEnum)[keyof typeof OrganizationPaymentMethodScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -3142,6 +3239,7 @@ export type GlobalOmitConfig = {
   billPayment?: Prisma.BillPaymentOmit
   attachment?: Prisma.AttachmentOmit
   fiscalPeriod?: Prisma.FiscalPeriodOmit
+  organizationPaymentMethod?: Prisma.OrganizationPaymentMethodOmit
 }
 
 /* Types for Logging */

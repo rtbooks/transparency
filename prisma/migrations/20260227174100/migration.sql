@@ -1,0 +1,5 @@
+-- This migration intentionally left empty.
+-- The previous auto-generated migration incorrectly dropped partial unique indexes
+-- that Prisma cannot represent in its schema. Those indexes are critical for
+-- bi-temporal uniqueness constraints and are managed via raw SQL.
+-- See migration 20260222000000_stable_entity_ids for original index definitions.
