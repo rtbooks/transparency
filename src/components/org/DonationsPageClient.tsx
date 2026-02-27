@@ -788,41 +788,11 @@ export function DonationsPageClient({
                 const Icon = METHOD_ICONS[method.type] || Plus;
                 return (
                   <div key={method.id} className="rounded-lg border border-gray-200 p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Icon className="h-5 w-5 text-gray-600" />
-                        <span className="font-medium text-gray-900">
-                          {method.label || METHOD_LABELS[method.type]}
-                        </span>
-                      </div>
-                      {method.type === 'STRIPE' && (() => {
-                        const remaining = payNowDonation.amount - payNowDonation.amountReceived;
-                        const pct = (method as any).stripeFeePercent ?? 2.9;
-                        const fixed = (method as any).stripeFeeFixed ?? 0.30;
-                        const rate = pct / 100;
-                        const total = Math.ceil(((remaining + fixed) / (1 - rate)) * 100) / 100;
-                        const fee = total - remaining;
-                        return (
-                          <div className="mt-3 space-y-2">
-                            <p className="text-xs text-gray-500">
-                              A processing fee of {formatCurrency(fee)} will be added — you&apos;ll pay {formatCurrency(total)} so the org receives the full {formatCurrency(remaining)}.
-                            </p>
-                            <Button
-                              size="sm"
-                              className="w-full"
-                              onClick={() => handleStripeCheckout(payNowDonation)}
-                              disabled={stripeLoading}
-                            >
-                              {stripeLoading ? (
-                                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                              ) : (
-                                <CreditCard className="mr-1 h-3 w-3" />
-                              )}
-                              Pay {formatCurrency(total)} with Card
-                            </Button>
-                          </div>
-                        );
-                      })()}
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-900">
+                        {method.label || METHOD_LABELS[method.type]}
+                      </span>
                     </div>
                     {method.handle && (
                       <p className="mt-2 text-sm text-gray-700">
@@ -854,6 +824,34 @@ export function DonationsPageClient({
                         {method.instructions}
                       </p>
                     )}
+                    {method.type === 'STRIPE' && (() => {
+                      const remaining = payNowDonation.amount - payNowDonation.amountReceived;
+                      const pct = (method as any).stripeFeePercent ?? 2.9;
+                      const fixed = (method as any).stripeFeeFixed ?? 0.30;
+                      const rate = pct / 100;
+                      const total = Math.ceil(((remaining + fixed) / (1 - rate)) * 100) / 100;
+                      const fee = total - remaining;
+                      return (
+                        <div className="mt-3 space-y-2">
+                          <p className="text-xs text-gray-500">
+                            A processing fee of {formatCurrency(fee)} will be added — you&apos;ll pay {formatCurrency(total)} so the org receives the full {formatCurrency(remaining)}.
+                          </p>
+                          <Button
+                            size="sm"
+                            className="w-full"
+                            onClick={() => handleStripeCheckout(payNowDonation)}
+                            disabled={stripeLoading}
+                          >
+                            {stripeLoading ? (
+                              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                            ) : (
+                              <CreditCard className="mr-1 h-3 w-3" />
+                            )}
+                            Pay {formatCurrency(total)} with Card
+                          </Button>
+                        </div>
+                      );
+                    })()}
                   </div>
                 );
               })}
