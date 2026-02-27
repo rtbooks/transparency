@@ -41,22 +41,13 @@ export async function createAccessRequest(
     throw new Error('You already have access to this organization');
   }
 
-  // Check for existing pending request
+  // Check for existing pending request (partial unique index also enforces this)
   const existingRequest = await prisma.accessRequest.findFirst({
     where: { organizationId, userId, status: 'PENDING' },
   });
 
   if (existingRequest) {
     throw new Error('You already have a pending access request for this organization');
-  }
-
-  // Check for prior resolved request (APPROVED/DENIED) and remove it so a new one can be created
-  const priorRequest = await prisma.accessRequest.findFirst({
-    where: { organizationId, userId, status: { in: ['APPROVED', 'DENIED'] } },
-  });
-
-  if (priorRequest) {
-    await prisma.accessRequest.delete({ where: { id: priorRequest.id } });
   }
 
   if (organization.donorAccessMode === 'AUTO_APPROVE') {
