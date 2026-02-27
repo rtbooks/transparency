@@ -71,8 +71,11 @@ export type TransactionType = (typeof TransactionType)[keyof typeof TransactionT
 export const PaymentMethod = {
   STRIPE: 'STRIPE',
   VENMO: 'VENMO',
+  PAYPAL: 'PAYPAL',
   CHECK: 'CHECK',
   CASH: 'CASH',
+  CASH_APP: 'CASH_APP',
+  ZELLE: 'ZELLE',
   BANK_TRANSFER: 'BANK_TRANSFER',
   OTHER: 'OTHER'
 } as const

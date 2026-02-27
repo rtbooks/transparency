@@ -53,7 +53,6 @@ export default async function NewPledgePage({ params }: NewPledgePageProps) {
       <NewPledgeFormClient
         organizationSlug={slug}
         organizationName={organization.name}
-        paymentInstructions={organization.paymentInstructions}
       />
     </OrganizationLayoutWrapper>
   );

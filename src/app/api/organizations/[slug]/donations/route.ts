@@ -94,7 +94,6 @@ export async function GET(
         totalPaid: totalReceived,
         outstanding: totalPledged - totalReceived,
       },
-      paymentInstructions: organization.paymentInstructions,
       isAdmin,
       userContactIds,
     });

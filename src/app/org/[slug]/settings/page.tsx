@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { OrganizationSettingsForm } from '@/components/forms/OrganizationSettingsForm';
+import { PaymentMethodsManager } from '@/components/settings/PaymentMethodsManager';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
 import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
 
@@ -65,7 +66,10 @@ export default async function OrganizationSettingsPage({
           </div>
 
           <div className="space-y-6">
-            <OrganizationSettingsForm organization={organization} />
+            <OrganizationSettingsForm
+              organization={organization}
+              paymentMethodsSlot={<PaymentMethodsManager organizationSlug={slug} />}
+            />
           </div>
         </div>
       </div>

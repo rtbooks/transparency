@@ -18,9 +18,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Loader2, CheckCircle, Target } from 'lucide-react';
+import { Loader2, CheckCircle, Target, CreditCard, Smartphone, Mail, Link2, Building2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils/account-tree';
+import { VenmoQRCode } from '@/components/donations/VenmoQRCode';
 
 const donationSchema = z.object({
   amount: z.number().optional(),
@@ -30,17 +31,60 @@ const donationSchema = z.object({
 
 type DonationFormData = z.infer<typeof donationSchema>;
 
+type PaymentMethodType =
+  | 'STRIPE'
+  | 'VENMO'
+  | 'PAYPAL'
+  | 'CHECK'
+  | 'CASH'
+  | 'CASH_APP'
+  | 'ZELLE'
+  | 'BANK_TRANSFER'
+  | 'OTHER';
+
+interface PaymentMethodInfo {
+  id: string;
+  type: PaymentMethodType;
+  label: string | null;
+  instructions: string | null;
+  handle: string | null;
+  payableTo: string | null;
+  mailingAddress: string | null;
+}
+
+const METHOD_ICONS: Record<PaymentMethodType, React.ElementType> = {
+  STRIPE: CreditCard,
+  VENMO: Smartphone,
+  PAYPAL: Link2,
+  CHECK: Mail,
+  CASH: Building2,
+  CASH_APP: Smartphone,
+  ZELLE: Building2,
+  BANK_TRANSFER: Building2,
+  OTHER: Plus,
+};
+
+const METHOD_LABELS: Record<PaymentMethodType, string> = {
+  STRIPE: 'Credit / Debit Card',
+  VENMO: 'Venmo',
+  PAYPAL: 'PayPal',
+  CHECK: 'Check',
+  CASH: 'Cash',
+  CASH_APP: 'Cash App',
+  ZELLE: 'Zelle',
+  BANK_TRANSFER: 'Bank Transfer',
+  OTHER: 'Other',
+};
+
 interface NewPledgeFormClientProps {
   organizationSlug: string;
   organizationName: string;
-  paymentInstructions: string | null;
   initialCampaignId?: string;
 }
 
 export function NewPledgeFormClient({
   organizationSlug,
   organizationName,
-  paymentInstructions,
   initialCampaignId,
 }: NewPledgeFormClientProps) {
   const router = useRouter();
@@ -52,6 +96,9 @@ export function NewPledgeFormClient({
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
   const [unitCount, setUnitCount] = useState(1);
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([]);
+  const [createdDonationAmount, setCreatedDonationAmount] = useState(0);
+  const [stripeLoading, setStripeLoading] = useState(false);
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -75,6 +122,21 @@ export function NewPledgeFormClient({
     }
     fetchCampaigns();
   }, [organizationSlug, initialCampaignId]);
+
+  useEffect(() => {
+    async function fetchPaymentMethods() {
+      try {
+        const res = await fetch(`/api/organizations/${organizationSlug}/payment-methods`);
+        if (res.ok) {
+          const data = await res.json();
+          setPaymentMethods(data.paymentMethods || []);
+        }
+      } catch {
+        // Ignore — payment methods may not be configured
+      }
+    }
+    fetchPaymentMethods();
+  }, [organizationSlug]);
 
   const form = useForm<DonationFormData>({
     resolver: zodResolver(donationSchema),
@@ -141,6 +203,7 @@ export function NewPledgeFormClient({
       }
 
       setDonationCreated(true);
+      setCreatedDonationAmount(finalAmount);
       trackEvent('donation_created', {
         type: 'PLEDGE',
         amount: finalAmount,
@@ -176,18 +239,113 @@ export function NewPledgeFormClient({
             Thank you for your pledge to {organizationName}.
           </p>
 
-          {paymentInstructions && (
-            <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-6 text-left">
-              <h3 className="mb-2 font-semibold text-blue-900">
+          {paymentMethods.length > 0 ? (
+            <div className="mt-6 space-y-3 text-left">
+              <h3 className="font-semibold text-gray-900">
                 How to Submit Your Payment
               </h3>
-              <p className="whitespace-pre-wrap text-sm text-blue-800">
-                {paymentInstructions}
-              </p>
+              {paymentMethods.map((method) => {
+                const Icon = METHOD_ICONS[method.type] || Plus;
+                return (
+                  <div key={method.id} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-900">
+                        {method.label || METHOD_LABELS[method.type]}
+                      </span>
+                    </div>
+                    {method.handle && (
+                      <p className="mt-1 text-sm text-gray-700">
+                        Send to: <span className="font-medium">{method.handle}</span>
+                      </p>
+                    )}
+                    {method.payableTo && (
+                      <p className="mt-1 text-sm text-gray-700">
+                        Make payable to: <span className="font-medium">{method.payableTo}</span>
+                      </p>
+                    )}
+                    {method.mailingAddress && (
+                      <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">
+                        Mail to: {method.mailingAddress}
+                      </p>
+                    )}
+                    {method.instructions && (
+                      <p className="mt-1 whitespace-pre-wrap text-sm text-gray-600">
+                        {method.instructions}
+                      </p>
+                    )}
+                    {method.type === 'VENMO' && method.handle && (
+                      <VenmoQRCode
+                        handle={method.handle}
+                        amount={createdDonationAmount}
+                        note={`Donation to ${organizationName}`}
+                      />
+                    )}
+                    {method.type !== 'STRIPE' && (
+                      <p className="mt-3 text-xs italic text-gray-400">
+                        Your donation will be recorded by the organization once they confirm receipt.
+                      </p>
+                    )}
+                    {method.type === 'STRIPE' && (() => {
+                      const pct = (method as any).stripeFeePercent ?? 2.9;
+                      const fixed = (method as any).stripeFeeFixed ?? 0.30;
+                      const rate = pct / 100;
+                      const total = Math.ceil(((createdDonationAmount + fixed) / (1 - rate)) * 100) / 100;
+                      const fee = total - createdDonationAmount;
+                      return (
+                        <div className="mt-3 space-y-2">
+                          <p className="text-xs text-gray-500">
+                            A processing fee of ${fee.toFixed(2)} will be added — you&apos;ll pay ${total.toFixed(2)} so {organizationName} receives the full ${createdDonationAmount.toFixed(2)}.
+                          </p>
+                          <Button
+                            size="sm"
+                            className="w-full"
+                            disabled={stripeLoading}
+                            onClick={async () => {
+                              setStripeLoading(true);
+                              try {
+                                const res = await fetch(
+                                  `/api/organizations/${organizationSlug}/donations/checkout`,
+                                  {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                      amount: createdDonationAmount,
+                                      campaignId: selectedCampaignId || undefined,
+                                    }),
+                                  }
+                                );
+                                if (!res.ok) {
+                                  const body = await res.json();
+                                  throw new Error(body.error || 'Failed to start checkout');
+                                }
+                                const { url } = await res.json();
+                                if (url) window.location.href = url;
+                              } catch (err) {
+                                toast({
+                                  title: 'Error',
+                                  description: err instanceof Error ? err.message : 'Checkout failed',
+                                  variant: 'destructive',
+                                });
+                                setStripeLoading(false);
+                              }
+                            }}
+                          >
+                            {stripeLoading ? (
+                              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                            ) : (
+                              <CreditCard className="mr-1 h-3 w-3" />
+                            )}
+                            Pay ${total.toFixed(2)} with Card
+                          </Button>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                );
+              })}
             </div>
-          )}
-
-          {!paymentInstructions && (
+          ) : (
             <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-6 text-left">
               <p className="text-sm text-gray-600">
                 Please contact the organization for payment submission details.

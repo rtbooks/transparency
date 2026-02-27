@@ -39,7 +39,6 @@ const organizationSettingsSchema = z.object({
   primaryColor: z.string().regex(HEX_COLOR_REGEX, 'Must be a valid hex color').optional().or(z.literal('')),
   accentColor: z.string().regex(HEX_COLOR_REGEX, 'Must be a valid hex color').optional().or(z.literal('')),
   donorAccessMode: z.enum(['AUTO_APPROVE', 'REQUIRE_APPROVAL']),
-  paymentInstructions: z.string().optional(),
   donationsAccountId: z.string().nullable().optional(),
   donationsArAccountId: z.string().nullable().optional(),
   fundBalanceAccountId: z.string().nullable().optional(),
@@ -50,10 +49,12 @@ type OrganizationSettingsData = z.infer<typeof organizationSettingsSchema>;
 
 interface OrganizationSettingsFormProps {
   organization: Organization;
+  paymentMethodsSlot?: React.ReactNode;
 }
 
 export function OrganizationSettingsForm({
   organization,
+  paymentMethodsSlot,
 }: OrganizationSettingsFormProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -73,7 +74,6 @@ export function OrganizationSettingsForm({
       primaryColor: organization.primaryColor || '',
       accentColor: organization.accentColor || '',
       donorAccessMode: organization.donorAccessMode || 'REQUIRE_APPROVAL',
-      paymentInstructions: organization.paymentInstructions || '',
       donationsAccountId: organization.donationsAccountId || null,
       donationsArAccountId: organization.donationsArAccountId || null,
       fundBalanceAccountId: organization.fundBalanceAccountId || null,
@@ -130,7 +130,6 @@ export function OrganizationSettingsForm({
           primaryColor: data.primaryColor || null,
           accentColor: data.accentColor || null,
           donorAccessMode: data.donorAccessMode,
-          paymentInstructions: data.paymentInstructions || null,
           donationsAccountId: data.donationsAccountId || null,
           donationsArAccountId: data.donationsArAccountId || null,
           fundBalanceAccountId: data.fundBalanceAccountId || null,
@@ -498,27 +497,17 @@ export function OrganizationSettingsForm({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="paymentInstructions"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Payment Instructions (Optional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="e.g., Mail checks to 123 Main St... or Venmo @org-name..."
-                      rows={5}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Instructions shown to donors on how to submit donations
-                    (check, wire transfer, Venmo, etc.)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {paymentMethodsSlot && (
+              <div className="mt-6 border-t pt-6">
+                <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                  Payment Methods
+                </h3>
+                <p className="mb-4 text-sm text-gray-600">
+                  Configure how donors can contribute to your organization.
+                </p>
+                {paymentMethodsSlot}
+              </div>
+            )}
           </div>
         </div>
 

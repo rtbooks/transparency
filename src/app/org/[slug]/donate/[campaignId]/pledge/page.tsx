@@ -90,7 +90,6 @@ export default async function CampaignPledgePage({ params }: Props) {
       <NewPledgeFormClient
         organizationSlug={slug}
         organizationName={organization.name}
-        paymentInstructions={organization.paymentInstructions}
         initialCampaignId={campaignId}
       />
     </OrganizationLayoutWrapper>
