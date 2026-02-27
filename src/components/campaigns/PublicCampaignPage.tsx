@@ -50,7 +50,7 @@ export function PublicCampaignPage({
   primaryColor,
 }: PublicCampaignPageProps) {
   const [shareOpen, setShareOpen] = useState(false);
-  const donateUrl = `/org/${organizationSlug}/donate/${campaign.id}/pledge`;
+  const donateUrl = `/org/${organizationSlug}/donate?campaignId=${campaign.id}`;
   const shareUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/org/${organizationSlug}/donate/${campaign.id}`
     : `/org/${organizationSlug}/donate/${campaign.id}`;

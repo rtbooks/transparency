@@ -18,7 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Loader2, CheckCircle, Target } from 'lucide-react';
+import { Loader2, CheckCircle, Target, CreditCard, Smartphone, Mail, Link2, Building2, Plus, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils/account-tree';
 
@@ -29,6 +29,52 @@ const donationSchema = z.object({
 });
 
 type DonationFormData = z.infer<typeof donationSchema>;
+
+type PaymentMethodType =
+  | 'STRIPE'
+  | 'VENMO'
+  | 'PAYPAL'
+  | 'CHECK'
+  | 'CASH'
+  | 'CASH_APP'
+  | 'ZELLE'
+  | 'BANK_TRANSFER'
+  | 'OTHER';
+
+interface PaymentMethodInfo {
+  id: string;
+  type: PaymentMethodType;
+  label: string | null;
+  instructions: string | null;
+  handle: string | null;
+  paymentUrl: string | null;
+  payableTo: string | null;
+  mailingAddress: string | null;
+}
+
+const METHOD_ICONS: Record<PaymentMethodType, React.ElementType> = {
+  STRIPE: CreditCard,
+  VENMO: Smartphone,
+  PAYPAL: Link2,
+  CHECK: Mail,
+  CASH: Building2,
+  CASH_APP: Smartphone,
+  ZELLE: Building2,
+  BANK_TRANSFER: Building2,
+  OTHER: Plus,
+};
+
+const METHOD_LABELS: Record<PaymentMethodType, string> = {
+  STRIPE: 'Credit / Debit Card',
+  VENMO: 'Venmo',
+  PAYPAL: 'PayPal',
+  CHECK: 'Check',
+  CASH: 'Cash',
+  CASH_APP: 'Cash App',
+  ZELLE: 'Zelle',
+  BANK_TRANSFER: 'Bank Transfer',
+  OTHER: 'Other',
+};
 
 interface NewPledgeFormClientProps {
   organizationSlug: string;
@@ -52,6 +98,7 @@ export function NewPledgeFormClient({
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
   const [unitCount, setUnitCount] = useState(1);
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([]);
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -75,6 +122,21 @@ export function NewPledgeFormClient({
     }
     fetchCampaigns();
   }, [organizationSlug, initialCampaignId]);
+
+  useEffect(() => {
+    async function fetchPaymentMethods() {
+      try {
+        const res = await fetch(`/api/organizations/${organizationSlug}/payment-methods`);
+        if (res.ok) {
+          const data = await res.json();
+          setPaymentMethods(data.paymentMethods || []);
+        }
+      } catch {
+        // Ignore — fall back to paymentInstructions text
+      }
+    }
+    fetchPaymentMethods();
+  }, [organizationSlug]);
 
   const form = useForm<DonationFormData>({
     resolver: zodResolver(donationSchema),
@@ -176,7 +238,64 @@ export function NewPledgeFormClient({
             Thank you for your pledge to {organizationName}.
           </p>
 
-          {paymentInstructions && (
+          {paymentMethods.length > 0 ? (
+            <div className="mt-6 space-y-3 text-left">
+              <h3 className="font-semibold text-gray-900">
+                How to Submit Your Payment
+              </h3>
+              {paymentMethods.map((method) => {
+                const Icon = METHOD_ICONS[method.type] || Plus;
+                return (
+                  <div key={method.id} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-900">
+                        {method.label || METHOD_LABELS[method.type]}
+                      </span>
+                    </div>
+                    {method.handle && (
+                      <p className="mt-1 text-sm text-gray-700">
+                        Send to: <span className="font-medium">{method.handle}</span>
+                      </p>
+                    )}
+                    {method.payableTo && (
+                      <p className="mt-1 text-sm text-gray-700">
+                        Make payable to: <span className="font-medium">{method.payableTo}</span>
+                      </p>
+                    )}
+                    {method.mailingAddress && (
+                      <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">
+                        Mail to: {method.mailingAddress}
+                      </p>
+                    )}
+                    {method.paymentUrl && (
+                      <a
+                        href={method.paymentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
+                      >
+                        Pay online <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                    {method.instructions && (
+                      <p className="mt-1 whitespace-pre-wrap text-sm text-gray-600">
+                        {method.instructions}
+                      </p>
+                    )}
+                    {method.type === 'STRIPE' && (
+                      <a
+                        href={`/org/${organizationSlug}/donate`}
+                        className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline"
+                      >
+                        Pay with card online <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : paymentInstructions ? (
             <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-6 text-left">
               <h3 className="mb-2 font-semibold text-blue-900">
                 How to Submit Your Payment
@@ -185,9 +304,7 @@ export function NewPledgeFormClient({
                 {paymentInstructions}
               </p>
             </div>
-          )}
-
-          {!paymentInstructions && (
+          ) : (
             <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-6 text-left">
               <p className="text-sm text-gray-600">
                 Please contact the organization for payment submission details.
