@@ -10,8 +10,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "RadBooks Platform for Nonprofits",
-    template: "%s | RadBooks Platform",
+    default: "RadBooks — Nonprofit Financial Transparency",
+    template: "%s | RadBooks",
   },
   description:
     "See where every dollar goes. Nonprofits publish real-time financial data. Donors give with complete confidence. Verified 501(c)(3) organizations showing radical transparency.",

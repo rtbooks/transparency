@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
@@ -10,6 +11,8 @@ import { NewPledgeFormClient } from '@/components/org/NewPledgeFormClient';
 interface Props {
   params: Promise<{ slug: string; campaignId: string }>;
 }
+
+export const metadata: Metadata = { title: "Pledge" };
 
 export default async function CampaignPledgePage({ params }: Props) {
   const { slug, campaignId } = await params;

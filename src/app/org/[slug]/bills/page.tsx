@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -9,6 +10,8 @@ import { checkOrganizationAccess, VerificationStatusMessage } from "@/lib/organi
 interface BillsPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = { title: "Bills" };
 
 export default async function BillsPage({ params }: BillsPageProps) {
   const { slug } = await params;

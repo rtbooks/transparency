@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Features | RadBooks",
+  title: "Features",
   description:
     "Discover the powerful features that make financial transparency simple for nonprofits.",
 };

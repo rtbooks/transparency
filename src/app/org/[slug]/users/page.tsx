@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
@@ -10,6 +11,8 @@ import { Button } from '@/components/ui/button';
 interface UsersPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = { title: "Users" };
 
 export default async function UsersPage({ params }: UsersPageProps) {
   const { slug } = await params;

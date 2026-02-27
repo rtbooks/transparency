@@ -42,6 +42,12 @@ export function MarketingNav({ user }: MarketingNavProps) {
           {user ? (
             <>
               <Link
+                href="/organizations/new"
+                className="hidden rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 md:block"
+              >
+                Create Organization
+              </Link>
+              <Link
                 href="/profile"
                 className="hidden text-sm text-gray-600 hover:text-gray-900 md:block"
               >
@@ -130,6 +136,18 @@ export function MarketingNav({ user }: MarketingNavProps) {
                     </Link>
                   </div>
                 </>
+              )}
+
+              {user && (
+                <div className="border-t pt-3">
+                  <Link
+                    href="/organizations/new"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block rounded-md bg-blue-600 px-3 py-2 text-base font-medium text-white hover:bg-blue-700"
+                  >
+                    Create Organization
+                  </Link>
+                </div>
               )}
             </div>
           </div>

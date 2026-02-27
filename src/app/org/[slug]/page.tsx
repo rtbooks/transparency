@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
@@ -8,6 +9,8 @@ import { PublicOrgContent } from '@/components/org/PublicOrgContent';
 interface OrganizationPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = { title: "Home" };
 
 export default async function OrganizationPublicPage({
   params,

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { DashboardSummary } from '@/components/dashboard/DashboardSummary';
@@ -7,6 +8,8 @@ import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organi
 interface DashboardPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = { title: "Dashboard" };
 
 export default async function OrganizationDashboard({
   params,

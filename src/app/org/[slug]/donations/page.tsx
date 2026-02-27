@@ -1,8 +1,11 @@
+import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
 import { AllDonationsPageClient } from '@/components/donations/AllDonationsPageClient';
+
+export const metadata: Metadata = { title: "Donations" };
 
 export default async function DonationsOverviewPage({
   params,

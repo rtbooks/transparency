@@ -5,6 +5,7 @@
 
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { OrganizationService } from '@/services/organization.service';
 import { AccountService } from '@/services/account.service';
 import { AuditTrailClient } from './AuditTrailClient';
@@ -51,7 +52,7 @@ export default async function AuditTrailPage({ params }: AuditTrailPageProps) {
   );
 }
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Audit Trail',
   description: 'View complete change history',
 };

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
@@ -7,6 +8,8 @@ import { PublicCampaignPage } from '@/components/campaigns/PublicCampaignPage';
 interface Props {
   params: Promise<{ slug: string; campaignId: string }>;
 }
+
+export const metadata: Metadata = { title: "Donate" };
 
 export default async function DonateCampaignPage({ params }: Props) {
   const { slug, campaignId } = await params;

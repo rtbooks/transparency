@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import Link from 'next/link';
@@ -9,6 +10,8 @@ import {
   Activity,
   TrendingUp,
 } from 'lucide-react';
+
+export const metadata: Metadata = { title: "Admin Dashboard" };
 
 export default async function AdminDashboard() {
   // Fetch system-wide statistics

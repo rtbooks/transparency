@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { ContactsPageClient } from "@/components/contacts/ContactsPageClient";
@@ -7,6 +8,8 @@ import { checkOrganizationAccess, VerificationStatusMessage } from "@/lib/organi
 interface ContactsPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = { title: "Contacts" };
 
 export default async function ContactsPage({ params }: ContactsPageProps) {
   const { slug } = await params;

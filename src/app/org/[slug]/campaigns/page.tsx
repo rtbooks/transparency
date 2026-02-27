@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { CampaignsPageClient } from "@/components/campaigns/CampaignsPageClient";
@@ -7,6 +8,8 @@ import { checkOrganizationAccess, VerificationStatusMessage } from "@/lib/organi
 interface CampaignsPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = { title: "Campaigns" };
 
 export default async function CampaignsPage({ params }: CampaignsPageProps) {
   const { slug } = await params;

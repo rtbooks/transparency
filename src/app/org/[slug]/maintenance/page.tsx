@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
@@ -5,6 +6,8 @@ import { redirect } from 'next/navigation';
 import { MaintenancePageClient } from '@/components/maintenance/MaintenancePageClient';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
 import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
+
+export const metadata: Metadata = { title: "Maintenance" };
 
 export default async function MaintenancePage({
   params,

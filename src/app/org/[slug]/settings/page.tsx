@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { OrganizationSettingsForm } from '@/components/forms/OrganizationSettingsForm';
@@ -7,6 +8,8 @@ import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organi
 interface OrganizationSettingsPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = { title: "Settings" };
 
 export default async function OrganizationSettingsPage({
   params,

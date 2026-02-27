@@ -1,7 +1,10 @@
+import type { Metadata } from 'next';
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { VerificationList } from "@/components/admin/VerificationList";
+
+export const metadata: Metadata = { title: "Verifications — Admin" };
 
 export default async function VerificationsPage() {
   const { userId: clerkUserId } = await auth();
