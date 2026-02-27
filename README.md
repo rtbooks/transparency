@@ -17,7 +17,7 @@ Make financial transparency the norm for charitable organizations, enabling dono
 - **Historical Data Access** - View financial state as of any past date
 - **Complete Audit Trail** - See all changes with full transparency
 - **Donor Highlights** - Recognize supporters (with opt-in)
-- **Planned Purchases** - See what organizations plan to buy
+- **Program Spending** - See what organizations plan to buy
 - **Completed Purchases Gallery** - Photos of impact
 - **Historical Reports** - Fiscal year comparisons and trends
 
@@ -34,10 +34,14 @@ Make financial transparency the norm for charitable organizations, enabling dono
 - **Chart of Accounts** - Hierarchical account structure
 - **Version History** - Track all changes to accounts and settings
 - **Audit Trail** - Complete change log with timestamps
-- **Planned Purchase Management** - Track future needs
+- **Program Spending Management** - Track planned and actual spending
+- **Bill Management** - Payables and receivables with payment tracking
+- **Bank Reconciliation** - Match statements to ledger transactions
+- **Fundraising Campaigns** - Fixed, tiered, and open campaigns
+- **File Attachments** - Receipts and invoices on transactions/bills
 - **Financial Reports** - Comprehensive reporting with historical accuracy
 - **Time Machine** - View organization state as of any past date
-- **Bank Reconciliation** - Match transactions (future)
+- **Bank Reconciliation** - Match transactions to bank statements
 
 ### For Platform Admins
 - **Multi-Tenant Management** - Manage all organizations
@@ -47,7 +51,7 @@ Make financial transparency the norm for charitable organizations, enabling dono
 ## 🛠️ Technology Stack
 
 ### Frontend
-- **Next.js 14** - React framework with App Router
+- **Next.js 16** - React framework with App Router
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Utility-first styling
 - **Shadcn/ui** - Accessible component library
@@ -55,35 +59,35 @@ Make financial transparency the norm for charitable organizations, enabling dono
 
 ### Backend
 - **Next.js API Routes** - Serverless functions
-- **Prisma** - Type-safe ORM
+- **Prisma 7** - Type-safe ORM with bi-temporal versioning
 - **PostgreSQL** - Primary database (Neon serverless in production)
 - **Zod** - Runtime validation
 
 ### Infrastructure
 - **Vercel** - Hosting and deployment
 - **Neon** - Serverless PostgreSQL with branch databases
-- **Stripe** - Payment processing
 - **Clerk** - Authentication
-- **Cloudflare R2** - File storage
+- **Vercel Blob** - Private file storage (attachments)
+- **Resend** - Transactional email
 
 ## 📚 Documentation
 
-### Essential Guides
-- **[QUICKSTART.md](./QUICKSTART.md)** - Step-by-step setup guide (start here!)
-- **[COPILOT_GUIDELINES.md](./COPILOT_GUIDELINES.md)** - Critical development patterns and conventions
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - How to contribute code
+### Getting Started
+- **[DEV_SETUP.md](./DEV_SETUP.md)** - Development environment setup
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Code standards and contribution workflow
 
 ### Architecture & Design
-- **[APPROACH.md](./APPROACH.md)** - Complete technical approach and architecture
+- **[APPROACH.md](./APPROACH.md)** - System architecture and technical approach
 - **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Folder structure and organization
 - **[TEMPORAL_SCHEMA_DESIGN.md](./TEMPORAL_SCHEMA_DESIGN.md)** - Bi-temporal versioning patterns
-- **[TEMPORAL_IMPLEMENTATION_STATUS.md](./TEMPORAL_IMPLEMENTATION_STATUS.md)** - Temporal architecture status
+- **[docs/adr/](./docs/adr/)** - Architecture Decision Records
 
-### Operations
+### Operations & Reference
 - **[DEPLOYMENT_SETUP.md](./DEPLOYMENT_SETUP.md)** - Production deployment guide
-- **[IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)** - Development progress tracking
+- **[PREVIEW_DEPLOYMENTS.md](./PREVIEW_DEPLOYMENTS.md)** - Preview environments with Neon branches
 - **[API_REFERENCE.md](./API_REFERENCE.md)** - API documentation for temporal endpoints
-- **[schema.prisma](./prisma/schema.prisma)** - Database schema (single source of truth)
+- **[CHANGELOG.md](./CHANGELOG.md)** - Version history and release notes
+- **[IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)** - Feature roadmap and progress
 
 ## 🚀 Quick Start
 
@@ -164,20 +168,20 @@ For detailed manual setup instructions, see [DEV_SETUP.md](./DEV_SETUP.md).
 
 ### Roadmap
 
-- [x] Technical architecture design
-- [x] Database schema design
-- [x] Project setup and configuration
-- [x] Core ledger implementation (double-entry bookkeeping)
+- [x] Core ledger (double-entry bookkeeping)
 - [x] Public transparency dashboard
-- [x] Organization admin features
-- [x] Temporal data architecture (bi-temporal versioning)
-- [x] Financial reports (Income Statement, Balance Sheet, Dashboard)
+- [x] Bi-temporal versioning and audit trails
+- [x] Financial reports (Income Statement, Balance Sheet)
+- [x] Bills, contacts, and payment tracking
+- [x] Fundraising campaigns and donor workflows
+- [x] Bank reconciliation
+- [x] File attachments (receipts, invoices)
+- [x] Fiscal year-end closing
 - [x] Production deployment (Vercel + Neon)
 - [ ] Donation processing (Stripe)
-- [ ] Donor profile and tracking
 - [ ] Beta launch with GRIT Hoops
 
-See [APPROACH.md](./APPROACH.md) for the complete implementation roadmap.
+See [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) for detailed progress.
 
 ## 💡 Core Principles
 

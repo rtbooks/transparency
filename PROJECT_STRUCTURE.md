@@ -32,7 +32,7 @@ transparency-platform/
 │   │   │       ├── dashboard/  # Org admin dashboard
 │   │   │       │   ├── page.tsx
 │   │   │       │   ├── transactions/
-│   │   │       │   ├── planned-purchases/
+│   │   │       │   ├── program-spending/
 │   │   │       │   ├── accounts/
 │   │   │       │   ├── reports/
 │   │   │       │   └── settings/
@@ -48,7 +48,7 @@ transparency-platform/
 │   │   │   ├── organizations/
 │   │   │   ├── transactions/
 │   │   │   ├── accounts/
-│   │   │   ├── planned-purchases/
+│   │   │   ├── program-spending/
 │   │   │   ├── donations/
 │   │   │   ├── webhooks/
 │   │   │   │   └── stripe/
@@ -192,7 +192,7 @@ Test files organized by type (unit, integration, e2e)
 - `/org/grit-hoops/dashboard/transactions` - Transaction management
 - `/org/grit-hoops/dashboard/transactions/new` - Record new transaction
 - `/org/grit-hoops/dashboard/accounts` - Chart of accounts
-- `/org/grit-hoops/dashboard/planned-purchases` - Planned purchases
+- `/org/grit-hoops/dashboard/program-spending` - Program spending
 - `/org/grit-hoops/dashboard/reports` - Financial reports
 - `/org/grit-hoops/dashboard/settings` - Organization settings
 
@@ -207,14 +207,14 @@ Test files organized by type (unit, integration, e2e)
 ### Public APIs
 - `GET /api/organizations/[slug]` - Get org public data
 - `GET /api/organizations/[slug]/transactions` - Get transactions (public view)
-- `GET /api/organizations/[slug]/planned-purchases` - Get planned purchases
+- `GET /api/organizations/[slug]/program-spending` - Get program spending
 
 ### Protected APIs (Org Admin)
 - `POST /api/organizations/[slug]/transactions` - Create transaction
 - `PUT /api/organizations/[slug]/transactions/[id]` - Update transaction
 - `GET /api/organizations/[slug]/accounts` - Get chart of accounts
 - `POST /api/organizations/[slug]/accounts` - Create account
-- `POST /api/organizations/[slug]/planned-purchases` - Create planned purchase
+- `POST /api/organizations/[slug]/program-spending` - Create program spending item
 
 ### Donation APIs
 - `POST /api/donations/create-checkout-session` - Create Stripe checkout
