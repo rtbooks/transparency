@@ -10,11 +10,20 @@ const checkoutSchema = z.object({
   campaignId: z.string().nullable().optional(),
   tierId: z.string().nullable().optional(),
   unitCount: z.number().int().positive().nullable().optional(),
-  donorName: z.string().min(1),
-  donorEmail: z.string().email(),
+  donorName: z.string().min(1).optional(),
+  donorEmail: z.string().email().optional(),
   donorMessage: z.string().optional(),
   isAnonymous: z.boolean().optional(),
+  coverFees: z.boolean().optional(),
 });
+
+// Stripe fee rates (US standard; nonprofits may qualify for 2.2%)
+const STRIPE_PERCENT_FEE = 0.029;
+const STRIPE_FIXED_FEE = 0.30;
+
+function calculateTotalWithFees(donationAmount: number): number {
+  return Math.ceil(((donationAmount + STRIPE_FIXED_FEE) / (1 - STRIPE_PERCENT_FEE)) * 100) / 100;
+}
 
 /**
  * POST /api/organizations/[slug]/donations/checkout
@@ -71,6 +80,11 @@ export async function POST(
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
 
+    // Calculate charge amount — if donor covers fees, adjust upward
+    const chargeAmount = validated.coverFees
+      ? calculateTotalWithFees(validated.amount)
+      : validated.amount;
+
     // Create Checkout Session on the connected account
     const session = await getStripe().checkout.sessions.create(
       {
@@ -86,21 +100,23 @@ export async function POST(
                   ? { description: validated.donorMessage }
                   : {}),
               },
-              unit_amount: Math.round(validated.amount * 100), // cents
+              unit_amount: Math.round(chargeAmount * 100), // cents
             },
             quantity: 1,
           },
         ],
-        customer_email: validated.donorEmail,
+        ...(validated.donorEmail ? { customer_email: validated.donorEmail } : {}),
         metadata: {
           organizationId: organization.id,
           organizationSlug: slug,
           campaignId: validated.campaignId || "",
           tierId: validated.tierId || "",
           unitCount: String(validated.unitCount || ""),
-          donorName: validated.donorName,
+          donorName: validated.donorName || "",
           donorMessage: validated.donorMessage || "",
           isAnonymous: String(validated.isAnonymous || false),
+          donationAmount: String(validated.amount),
+          coverFees: String(validated.coverFees || false),
         },
         success_url: `${baseUrl}/org/${slug}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${baseUrl}/org/${slug}/donate/cancel`,

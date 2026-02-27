@@ -83,6 +83,7 @@ export function DonationFlow({
   const [donorEmail, setDonorEmail] = useState('');
   const [donorMessage, setDonorMessage] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [coverFees, setCoverFees] = useState(true);
 
   useEffect(() => {
     fetch(`/api/organizations/${organizationSlug}/payment-methods`)
@@ -96,6 +97,13 @@ export function DonationFlow({
 
   const parsedAmount = parseFloat(amount);
   const isValidAmount = !isNaN(parsedAmount) && parsedAmount >= 1;
+
+  const STRIPE_PERCENT = 0.029;
+  const STRIPE_FIXED = 0.30;
+  const feeAmount = isValidAmount
+    ? Math.ceil(((parsedAmount + STRIPE_FIXED) / (1 - STRIPE_PERCENT) - parsedAmount) * 100) / 100
+    : 0;
+  const totalWithFees = isValidAmount ? parsedAmount + feeAmount : 0;
 
   const handleStripeCheckout = async () => {
     setSubmitting(true);
@@ -112,6 +120,7 @@ export function DonationFlow({
             donorEmail,
             donorMessage: donorMessage || undefined,
             isAnonymous,
+            coverFees,
           }),
         }
       );
@@ -344,21 +353,40 @@ export function DonationFlow({
               </div>
             </div>
 
-            {/* Stripe: direct checkout */}
+            {/* Stripe: cover fees option + direct checkout */}
             {selectedMethod.type === 'STRIPE' && (
-              <Button
-                className="w-full"
-                style={accentStyle}
-                disabled={!donorName || !donorEmail || submitting}
-                onClick={handleStripeCheckout}
-              >
-                {submitting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <CreditCard className="mr-2 h-4 w-4" />
-                )}
-                Pay ${parsedAmount.toFixed(2)} with Card
-              </Button>
+              <div className="space-y-3">
+                <div className="flex items-start gap-2 rounded-md border border-gray-200 bg-gray-50 p-3">
+                  <Switch
+                    checked={coverFees}
+                    onCheckedChange={setCoverFees}
+                    className="mt-0.5"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-gray-900">
+                      Cover processing fees
+                    </span>
+                    <p className="text-xs text-gray-500">
+                      {coverFees
+                        ? `You'll be charged $${totalWithFees.toFixed(2)} ($${feeAmount.toFixed(2)} fee) so ${organizationName} receives the full $${parsedAmount.toFixed(2)}`
+                        : `${organizationName} will receive $${(parsedAmount - feeAmount).toFixed(2)} after fees`}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  className="w-full"
+                  style={accentStyle}
+                  disabled={!donorName || !donorEmail || submitting}
+                  onClick={handleStripeCheckout}
+                >
+                  {submitting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <CreditCard className="mr-2 h-4 w-4" />
+                  )}
+                  Pay ${coverFees ? totalWithFees.toFixed(2) : parsedAmount.toFixed(2)} with Card
+                </Button>
+              </div>
             )}
 
             {/* Manual methods: show instructions + confirm */}

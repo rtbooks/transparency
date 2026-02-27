@@ -101,6 +101,7 @@ export function NewPledgeFormClient({
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([]);
   const [createdDonationAmount, setCreatedDonationAmount] = useState(0);
   const [stripeLoading, setStripeLoading] = useState(false);
+  const [coverFees, setCoverFees] = useState(true);
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -286,49 +287,72 @@ export function NewPledgeFormClient({
                         {method.instructions}
                       </p>
                     )}
-                    {method.type === 'STRIPE' && (
-                      <Button
-                        size="sm"
-                        className="mt-2"
-                        disabled={stripeLoading}
-                        onClick={async () => {
-                          setStripeLoading(true);
-                          try {
-                            const res = await fetch(
-                              `/api/organizations/${organizationSlug}/donations/checkout`,
-                              {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                  amount: createdDonationAmount,
-                                  campaignId: selectedCampaignId || undefined,
-                                }),
+                    {method.type === 'STRIPE' && (() => {
+                      const fee = Math.ceil(((createdDonationAmount + 0.30) / (1 - 0.029) - createdDonationAmount) * 100) / 100;
+                      const total = createdDonationAmount + fee;
+                      return (
+                        <div className="mt-3 space-y-2">
+                          <div className="flex items-start gap-2 rounded-md border border-gray-100 bg-white p-2">
+                            <input
+                              type="checkbox"
+                              checked={coverFees}
+                              onChange={(e) => setCoverFees(e.target.checked)}
+                              className="mt-1 h-4 w-4 rounded border-gray-300"
+                            />
+                            <div>
+                              <span className="text-sm font-medium text-gray-900">Cover processing fees</span>
+                              <p className="text-xs text-gray-500">
+                                {coverFees
+                                  ? `You'll pay $${total.toFixed(2)} ($${fee.toFixed(2)} fee) so ${organizationName} receives the full $${createdDonationAmount.toFixed(2)}`
+                                  : `${organizationName} will receive $${(createdDonationAmount - fee).toFixed(2)} after $${fee.toFixed(2)} in fees`}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            className="w-full"
+                            disabled={stripeLoading}
+                            onClick={async () => {
+                              setStripeLoading(true);
+                              try {
+                                const res = await fetch(
+                                  `/api/organizations/${organizationSlug}/donations/checkout`,
+                                  {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                      amount: createdDonationAmount,
+                                      campaignId: selectedCampaignId || undefined,
+                                      coverFees,
+                                    }),
+                                  }
+                                );
+                                if (!res.ok) {
+                                  const body = await res.json();
+                                  throw new Error(body.error || 'Failed to start checkout');
+                                }
+                                const { url } = await res.json();
+                                if (url) window.location.href = url;
+                              } catch (err) {
+                                toast({
+                                  title: 'Error',
+                                  description: err instanceof Error ? err.message : 'Checkout failed',
+                                  variant: 'destructive',
+                                });
+                                setStripeLoading(false);
                               }
-                            );
-                            if (!res.ok) {
-                              const body = await res.json();
-                              throw new Error(body.error || 'Failed to start checkout');
-                            }
-                            const { url } = await res.json();
-                            if (url) window.location.href = url;
-                          } catch (err) {
-                            toast({
-                              title: 'Error',
-                              description: err instanceof Error ? err.message : 'Checkout failed',
-                              variant: 'destructive',
-                            });
-                            setStripeLoading(false);
-                          }
-                        }}
-                      >
-                        {stripeLoading ? (
-                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                        ) : (
-                          <CreditCard className="mr-1 h-3 w-3" />
-                        )}
-                        Pay with Card
-                      </Button>
-                    )}
+                            }}
+                          >
+                            {stripeLoading ? (
+                              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                            ) : (
+                              <CreditCard className="mr-1 h-3 w-3" />
+                            )}
+                            Pay ${coverFees ? total.toFixed(2) : createdDonationAmount.toFixed(2)} with Card
+                          </Button>
+                        </div>
+                      );
+                    })()}
                   </div>
                 );
               })}

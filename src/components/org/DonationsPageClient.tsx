@@ -135,6 +135,7 @@ export function DonationsPageClient({
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([]);
   const [payNowDonation, setPayNowDonation] = useState<DonationItem | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
+  const [coverFees, setCoverFees] = useState(true);
 
   const fetchDonations = useCallback(async () => {
     try {
@@ -266,6 +267,7 @@ export function DonationsPageClient({
             amount: remaining,
             donationId: donation.id,
             campaignId: donation.campaignId || undefined,
+            coverFees,
           }),
         }
       );
@@ -837,20 +839,44 @@ export function DonationsPageClient({
                           {method.label || METHOD_LABELS[method.type]}
                         </span>
                       </div>
-                      {method.type === 'STRIPE' && (
-                        <Button
-                          size="sm"
-                          onClick={() => handleStripeCheckout(payNowDonation)}
-                          disabled={stripeLoading}
-                        >
-                          {stripeLoading ? (
-                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                          ) : (
-                            <CreditCard className="mr-1 h-3 w-3" />
-                          )}
-                          Pay with Card
-                        </Button>
-                      )}
+                      {method.type === 'STRIPE' && (() => {
+                        const remaining = payNowDonation.amount - payNowDonation.amountReceived;
+                        const fee = Math.ceil(((remaining + 0.30) / (1 - 0.029) - remaining) * 100) / 100;
+                        const total = remaining + fee;
+                        return (
+                          <div className="mt-3 space-y-2">
+                            <div className="flex items-start gap-2 rounded-md border border-gray-100 bg-gray-50 p-2">
+                              <input
+                                type="checkbox"
+                                checked={coverFees}
+                                onChange={(e) => setCoverFees(e.target.checked)}
+                                className="mt-1 h-4 w-4 rounded border-gray-300"
+                              />
+                              <div>
+                                <span className="text-sm font-medium text-gray-900">Cover processing fees</span>
+                                <p className="text-xs text-gray-500">
+                                  {coverFees
+                                    ? `You'll pay ${formatCurrency(total)} (${formatCurrency(fee)} fee) so the org receives the full ${formatCurrency(remaining)}`
+                                    : `The org will receive ${formatCurrency(remaining - fee)} after ${formatCurrency(fee)} in fees`}
+                                </p>
+                              </div>
+                            </div>
+                            <Button
+                              size="sm"
+                              className="w-full"
+                              onClick={() => handleStripeCheckout(payNowDonation)}
+                              disabled={stripeLoading}
+                            >
+                              {stripeLoading ? (
+                                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                              ) : (
+                                <CreditCard className="mr-1 h-3 w-3" />
+                              )}
+                              Pay {formatCurrency(coverFees ? total : remaining)} with Card
+                            </Button>
+                          </div>
+                        );
+                      })()}
                     </div>
                     {method.handle && (
                       <p className="mt-2 text-sm text-gray-700">
