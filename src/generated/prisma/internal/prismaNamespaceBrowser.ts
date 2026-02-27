@@ -104,7 +104,6 @@ export const OrganizationScalarFieldEnum = {
   accentColor: 'accentColor',
   fiscalYearStart: 'fiscalYearStart',
   donorAccessMode: 'donorAccessMode',
-  paymentInstructions: 'paymentInstructions',
   donationsAccountId: 'donationsAccountId',
   donationsArAccountId: 'donationsArAccountId',
   fundBalanceAccountId: 'fundBalanceAccountId',

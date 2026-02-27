@@ -28,7 +28,6 @@ model Organization {
 
   // Donor settings
   donorAccessMode      DonorAccessMode @default(REQUIRE_APPROVAL) @map("donor_access_mode")
-  paymentInstructions  String?         @map("payment_instructions") @db.Text
   donationsAccountId   String?         @map("donations_account_id") // Stable entity ID of the designated Revenue account
   donationsArAccountId String?         @map("donations_ar_account_id") // Stable entity ID of the designated Accounts Receivable account
   fundBalanceAccountId String?         @map("fund_balance_account_id") // Stable entity ID of the designated Fund Balance / Net Assets equity account

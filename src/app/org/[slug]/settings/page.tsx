@@ -66,17 +66,10 @@ export default async function OrganizationSettingsPage({
           </div>
 
           <div className="space-y-6">
-            <OrganizationSettingsForm organization={organization} />
-
-            <div className="rounded-lg border bg-white p-6">
-              <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                Payment Methods
-              </h2>
-              <p className="mb-6 text-sm text-gray-600">
-                Configure how donors can contribute to your organization.
-              </p>
-              <PaymentMethodsManager organizationSlug={slug} />
-            </div>
+            <OrganizationSettingsForm
+              organization={organization}
+              paymentMethodsSlot={<PaymentMethodsManager organizationSlug={slug} />}
+            />
           </div>
         </div>
       </div>

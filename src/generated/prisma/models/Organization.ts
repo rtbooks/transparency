@@ -36,7 +36,6 @@ export type OrganizationMinAggregateOutputType = {
   accentColor: string | null
   fiscalYearStart: Date | null
   donorAccessMode: $Enums.DonorAccessMode | null
-  paymentInstructions: string | null
   donationsAccountId: string | null
   donationsArAccountId: string | null
   fundBalanceAccountId: string | null
@@ -75,7 +74,6 @@ export type OrganizationMaxAggregateOutputType = {
   accentColor: string | null
   fiscalYearStart: Date | null
   donorAccessMode: $Enums.DonorAccessMode | null
-  paymentInstructions: string | null
   donationsAccountId: string | null
   donationsArAccountId: string | null
   fundBalanceAccountId: string | null
@@ -114,7 +112,6 @@ export type OrganizationCountAggregateOutputType = {
   accentColor: number
   fiscalYearStart: number
   donorAccessMode: number
-  paymentInstructions: number
   donationsAccountId: number
   donationsArAccountId: number
   fundBalanceAccountId: number
@@ -155,7 +152,6 @@ export type OrganizationMinAggregateInputType = {
   accentColor?: true
   fiscalYearStart?: true
   donorAccessMode?: true
-  paymentInstructions?: true
   donationsAccountId?: true
   donationsArAccountId?: true
   fundBalanceAccountId?: true
@@ -194,7 +190,6 @@ export type OrganizationMaxAggregateInputType = {
   accentColor?: true
   fiscalYearStart?: true
   donorAccessMode?: true
-  paymentInstructions?: true
   donationsAccountId?: true
   donationsArAccountId?: true
   fundBalanceAccountId?: true
@@ -233,7 +228,6 @@ export type OrganizationCountAggregateInputType = {
   accentColor?: true
   fiscalYearStart?: true
   donorAccessMode?: true
-  paymentInstructions?: true
   donationsAccountId?: true
   donationsArAccountId?: true
   fundBalanceAccountId?: true
@@ -345,7 +339,6 @@ export type OrganizationGroupByOutputType = {
   accentColor: string | null
   fiscalYearStart: Date
   donorAccessMode: $Enums.DonorAccessMode
-  paymentInstructions: string | null
   donationsAccountId: string | null
   donationsArAccountId: string | null
   fundBalanceAccountId: string | null
@@ -405,7 +398,6 @@ export type OrganizationWhereInput = {
   accentColor?: Prisma.StringNullableFilter<"Organization"> | string | null
   fiscalYearStart?: Prisma.DateTimeFilter<"Organization"> | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFilter<"Organization"> | $Enums.DonorAccessMode
-  paymentInstructions?: Prisma.StringNullableFilter<"Organization"> | string | null
   donationsAccountId?: Prisma.StringNullableFilter<"Organization"> | string | null
   donationsArAccountId?: Prisma.StringNullableFilter<"Organization"> | string | null
   fundBalanceAccountId?: Prisma.StringNullableFilter<"Organization"> | string | null
@@ -444,7 +436,6 @@ export type OrganizationOrderByWithRelationInput = {
   accentColor?: Prisma.SortOrderInput | Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
   donorAccessMode?: Prisma.SortOrder
-  paymentInstructions?: Prisma.SortOrderInput | Prisma.SortOrder
   donationsAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   donationsArAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   fundBalanceAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -487,7 +478,6 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   accentColor?: Prisma.StringNullableFilter<"Organization"> | string | null
   fiscalYearStart?: Prisma.DateTimeFilter<"Organization"> | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFilter<"Organization"> | $Enums.DonorAccessMode
-  paymentInstructions?: Prisma.StringNullableFilter<"Organization"> | string | null
   donationsAccountId?: Prisma.StringNullableFilter<"Organization"> | string | null
   donationsArAccountId?: Prisma.StringNullableFilter<"Organization"> | string | null
   fundBalanceAccountId?: Prisma.StringNullableFilter<"Organization"> | string | null
@@ -526,7 +516,6 @@ export type OrganizationOrderByWithAggregationInput = {
   accentColor?: Prisma.SortOrderInput | Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
   donorAccessMode?: Prisma.SortOrder
-  paymentInstructions?: Prisma.SortOrderInput | Prisma.SortOrder
   donationsAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   donationsArAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   fundBalanceAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -571,7 +560,6 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   accentColor?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   fiscalYearStart?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeWithAggregatesFilter<"Organization"> | $Enums.DonorAccessMode
-  paymentInstructions?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   donationsAccountId?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   donationsArAccountId?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   fundBalanceAccountId?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
@@ -610,7 +598,6 @@ export type OrganizationCreateInput = {
   accentColor?: string | null
   fiscalYearStart?: Date | string
   donorAccessMode?: $Enums.DonorAccessMode
-  paymentInstructions?: string | null
   donationsAccountId?: string | null
   donationsArAccountId?: string | null
   fundBalanceAccountId?: string | null
@@ -649,7 +636,6 @@ export type OrganizationUncheckedCreateInput = {
   accentColor?: string | null
   fiscalYearStart?: Date | string
   donorAccessMode?: $Enums.DonorAccessMode
-  paymentInstructions?: string | null
   donationsAccountId?: string | null
   donationsArAccountId?: string | null
   fundBalanceAccountId?: string | null
@@ -688,7 +674,6 @@ export type OrganizationUpdateInput = {
   accentColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
-  paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsArAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fundBalanceAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -727,7 +712,6 @@ export type OrganizationUncheckedUpdateInput = {
   accentColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
-  paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsArAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fundBalanceAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -766,7 +750,6 @@ export type OrganizationCreateManyInput = {
   accentColor?: string | null
   fiscalYearStart?: Date | string
   donorAccessMode?: $Enums.DonorAccessMode
-  paymentInstructions?: string | null
   donationsAccountId?: string | null
   donationsArAccountId?: string | null
   fundBalanceAccountId?: string | null
@@ -805,7 +788,6 @@ export type OrganizationUpdateManyMutationInput = {
   accentColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
-  paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsArAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fundBalanceAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -844,7 +826,6 @@ export type OrganizationUncheckedUpdateManyInput = {
   accentColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiscalYearStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donorAccessMode?: Prisma.EnumDonorAccessModeFieldUpdateOperationsInput | $Enums.DonorAccessMode
-  paymentInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donationsArAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fundBalanceAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -888,7 +869,6 @@ export type OrganizationCountOrderByAggregateInput = {
   accentColor?: Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
   donorAccessMode?: Prisma.SortOrder
-  paymentInstructions?: Prisma.SortOrder
   donationsAccountId?: Prisma.SortOrder
   donationsArAccountId?: Prisma.SortOrder
   fundBalanceAccountId?: Prisma.SortOrder
@@ -927,7 +907,6 @@ export type OrganizationMaxOrderByAggregateInput = {
   accentColor?: Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
   donorAccessMode?: Prisma.SortOrder
-  paymentInstructions?: Prisma.SortOrder
   donationsAccountId?: Prisma.SortOrder
   donationsArAccountId?: Prisma.SortOrder
   fundBalanceAccountId?: Prisma.SortOrder
@@ -966,7 +945,6 @@ export type OrganizationMinOrderByAggregateInput = {
   accentColor?: Prisma.SortOrder
   fiscalYearStart?: Prisma.SortOrder
   donorAccessMode?: Prisma.SortOrder
-  paymentInstructions?: Prisma.SortOrder
   donationsAccountId?: Prisma.SortOrder
   donationsArAccountId?: Prisma.SortOrder
   fundBalanceAccountId?: Prisma.SortOrder
@@ -1043,7 +1021,6 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   accentColor?: boolean
   fiscalYearStart?: boolean
   donorAccessMode?: boolean
-  paymentInstructions?: boolean
   donationsAccountId?: boolean
   donationsArAccountId?: boolean
   fundBalanceAccountId?: boolean
@@ -1082,7 +1059,6 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   accentColor?: boolean
   fiscalYearStart?: boolean
   donorAccessMode?: boolean
-  paymentInstructions?: boolean
   donationsAccountId?: boolean
   donationsArAccountId?: boolean
   fundBalanceAccountId?: boolean
@@ -1121,7 +1097,6 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   accentColor?: boolean
   fiscalYearStart?: boolean
   donorAccessMode?: boolean
-  paymentInstructions?: boolean
   donationsAccountId?: boolean
   donationsArAccountId?: boolean
   fundBalanceAccountId?: boolean
@@ -1160,7 +1135,6 @@ export type OrganizationSelectScalar = {
   accentColor?: boolean
   fiscalYearStart?: boolean
   donorAccessMode?: boolean
-  paymentInstructions?: boolean
   donationsAccountId?: boolean
   donationsArAccountId?: boolean
   fundBalanceAccountId?: boolean
@@ -1187,7 +1161,7 @@ export type OrganizationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "primaryColor" | "accentColor" | "fiscalYearStart" | "donorAccessMode" | "paymentInstructions" | "donationsAccountId" | "donationsArAccountId" | "fundBalanceAccountId" | "publicTransparency" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "primaryColor" | "accentColor" | "fiscalYearStart" | "donorAccessMode" | "donationsAccountId" | "donationsArAccountId" | "fundBalanceAccountId" | "publicTransparency" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 
 export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Organization"
@@ -1204,7 +1178,6 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     accentColor: string | null
     fiscalYearStart: Date
     donorAccessMode: $Enums.DonorAccessMode
-    paymentInstructions: string | null
     donationsAccountId: string | null
     donationsArAccountId: string | null
     fundBalanceAccountId: string | null
@@ -1663,7 +1636,6 @@ export interface OrganizationFieldRefs {
   readonly accentColor: Prisma.FieldRef<"Organization", 'String'>
   readonly fiscalYearStart: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly donorAccessMode: Prisma.FieldRef<"Organization", 'DonorAccessMode'>
-  readonly paymentInstructions: Prisma.FieldRef<"Organization", 'String'>
   readonly donationsAccountId: Prisma.FieldRef<"Organization", 'String'>
   readonly donationsArAccountId: Prisma.FieldRef<"Organization", 'String'>
   readonly fundBalanceAccountId: Prisma.FieldRef<"Organization", 'String'>

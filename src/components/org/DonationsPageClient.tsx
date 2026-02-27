@@ -86,7 +86,6 @@ interface DonationsData {
     totalPaid: number;
     outstanding: number;
   };
-  paymentInstructions: string | null;
   isAdmin?: boolean;
 }
 

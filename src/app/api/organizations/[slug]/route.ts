@@ -17,7 +17,6 @@ const updateOrganizationSchema = z.object({
   primaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Must be a valid hex color').nullable().optional(),
   accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Must be a valid hex color').nullable().optional(),
   donorAccessMode: z.enum(['AUTO_APPROVE', 'REQUIRE_APPROVAL']).optional(),
-  paymentInstructions: z.string().nullable().optional(),
   donationsAccountId: z.string().nullable().optional(),
   donationsArAccountId: z.string().nullable().optional(),
   fundBalanceAccountId: z.string().nullable().optional(),
@@ -145,7 +144,6 @@ export async function PATCH(
     if (validatedData.primaryColor !== undefined) updates.primaryColor = validatedData.primaryColor;
     if (validatedData.accentColor !== undefined) updates.accentColor = validatedData.accentColor;
     if (validatedData.donorAccessMode !== undefined) updates.donorAccessMode = validatedData.donorAccessMode;
-    if (validatedData.paymentInstructions !== undefined) updates.paymentInstructions = validatedData.paymentInstructions;
     if (validatedData.donationsAccountId !== undefined) updates.donationsAccountId = validatedData.donationsAccountId;
     if (validatedData.donationsArAccountId !== undefined) updates.donationsArAccountId = validatedData.donationsArAccountId;
     if (validatedData.fundBalanceAccountId !== undefined) updates.fundBalanceAccountId = validatedData.fundBalanceAccountId;

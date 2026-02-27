@@ -60,7 +60,6 @@ const DonationListResponseSchema = z.object({
     totalPaid: z.number(),
     outstanding: z.number(),
   }),
-  paymentInstructions: z.string().nullable(),
   isAdmin: z.boolean(),
   userContactIds: z.array(z.string()),
 });
@@ -134,7 +133,6 @@ describe('Donations API Contract Tests', () => {
         donations: [mockDonation],
         pledges: [mockDonation],
         summary: { totalPledged: 5000, totalPaid: 2000, outstanding: 3000 },
-        paymentInstructions: 'Mail checks to PO Box 123',
         isAdmin: true,
         userContactIds: ['contact-1'],
       };
@@ -143,12 +141,11 @@ describe('Donations API Contract Tests', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should validate response with empty donations and null paymentInstructions', () => {
+    it('should validate response with empty donations', () => {
       const response = {
         donations: [],
         pledges: [],
         summary: { totalPledged: 0, totalPaid: 0, outstanding: 0 },
-        paymentInstructions: null,
         isAdmin: false,
         userContactIds: [],
       };
@@ -186,7 +183,6 @@ describe('Donations API Contract Tests', () => {
         donations: [],
         pledges: [],
         // summary is MISSING
-        paymentInstructions: null,
         isAdmin: false,
         userContactIds: [],
       };

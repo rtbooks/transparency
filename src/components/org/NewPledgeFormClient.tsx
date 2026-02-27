@@ -79,14 +79,12 @@ const METHOD_LABELS: Record<PaymentMethodType, string> = {
 interface NewPledgeFormClientProps {
   organizationSlug: string;
   organizationName: string;
-  paymentInstructions: string | null;
   initialCampaignId?: string;
 }
 
 export function NewPledgeFormClient({
   organizationSlug,
   organizationName,
-  paymentInstructions,
   initialCampaignId,
 }: NewPledgeFormClientProps) {
   const router = useRouter();
@@ -134,7 +132,7 @@ export function NewPledgeFormClient({
           setPaymentMethods(data.paymentMethods || []);
         }
       } catch {
-        // Ignore — fall back to paymentInstructions text
+        // Ignore — payment methods may not be configured
       }
     }
     fetchPaymentMethods();
@@ -346,15 +344,6 @@ export function NewPledgeFormClient({
                   </div>
                 );
               })}
-            </div>
-          ) : paymentInstructions ? (
-            <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-6 text-left">
-              <h3 className="mb-2 font-semibold text-blue-900">
-                How to Submit Your Payment
-              </h3>
-              <p className="whitespace-pre-wrap text-sm text-blue-800">
-                {paymentInstructions}
-              </p>
             </div>
           ) : (
             <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-6 text-left">
