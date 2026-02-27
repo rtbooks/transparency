@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | RadBooks",
+  title: "Terms of Service",
   description: "Terms of Service for the RadBooks financial transparency platform.",
 };
 
