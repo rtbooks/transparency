@@ -12,7 +12,6 @@ export interface CreatePaymentMethodInput {
   instructions?: string | null;
   stripeAccountId?: string | null;
   handle?: string | null;
-  paymentUrl?: string | null;
   payableTo?: string | null;
   mailingAddress?: string | null;
 }
@@ -28,7 +27,6 @@ export interface UpdatePaymentMethodInput {
   stripeFeePercent?: number;
   stripeFeeFixed?: number;
   handle?: string | null;
-  paymentUrl?: string | null;
   payableTo?: string | null;
   mailingAddress?: string | null;
 }
@@ -98,7 +96,6 @@ export async function createPaymentMethod(input: CreatePaymentMethodInput) {
       instructions: input.instructions,
       stripeAccountId: input.stripeAccountId,
       handle: input.handle,
-      paymentUrl: input.paymentUrl,
       payableTo: input.payableTo,
       mailingAddress: input.mailingAddress,
     },
@@ -130,7 +127,6 @@ export async function updatePaymentMethod(
   if (input.stripeFeeFixed !== undefined)
     data.stripeFeeFixed = input.stripeFeeFixed;
   if (input.handle !== undefined) data.handle = input.handle;
-  if (input.paymentUrl !== undefined) data.paymentUrl = input.paymentUrl;
   if (input.payableTo !== undefined) data.payableTo = input.payableTo;
   if (input.mailingAddress !== undefined)
     data.mailingAddress = input.mailingAddress;

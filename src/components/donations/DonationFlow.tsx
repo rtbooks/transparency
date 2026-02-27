@@ -16,7 +16,6 @@ import {
   Loader2,
   ArrowLeft,
   CheckCircle2,
-  ExternalLink,
 } from 'lucide-react';
 
 type PaymentMethodType =
@@ -36,7 +35,6 @@ interface AvailablePaymentMethod {
   label: string | null;
   instructions: string | null;
   handle: string | null;
-  paymentUrl: string | null;
   payableTo: string | null;
   mailingAddress: string | null;
   stripeFeePercent?: number;
@@ -408,17 +406,6 @@ export function DonationFlow({
                     <p className="mt-2 text-sm text-gray-600">
                       {selectedMethod.instructions}
                     </p>
-                  )}
-                  {selectedMethod.paymentUrl && (
-                    <a
-                      href={selectedMethod.paymentUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-2 inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      Open {selectedMethod.label || selectedMethod.type}
-                    </a>
                   )}
                   {selectedMethod.type === 'VENMO' && selectedMethod.handle && (
                     <VenmoQRCode

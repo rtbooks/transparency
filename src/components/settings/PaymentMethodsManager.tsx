@@ -44,7 +44,6 @@ interface PaymentMethod {
   stripeFeePercent: number;
   stripeFeeFixed: number;
   handle: string | null;
-  paymentUrl: string | null;
   payableTo: string | null;
   mailingAddress: string | null;
 }
@@ -366,7 +365,6 @@ function MethodCard({
     label: string;
     instructions: string;
     handle: string;
-    paymentUrl: string;
     payableTo: string;
     mailingAddress: string;
     stripeFeePercent?: number;
@@ -375,7 +373,6 @@ function MethodCard({
     label: method.label || '',
     instructions: method.instructions || '',
     handle: method.handle || '',
-    paymentUrl: method.paymentUrl || '',
     payableTo: method.payableTo || '',
     mailingAddress: method.mailingAddress || '',
   });
@@ -388,8 +385,6 @@ function MethodCard({
       updates.instructions = formState.instructions || null;
     if (formState.handle !== (method.handle || ''))
       updates.handle = formState.handle || null;
-    if (formState.paymentUrl !== (method.paymentUrl || ''))
-      updates.paymentUrl = formState.paymentUrl || null;
     if (formState.payableTo !== (method.payableTo || ''))
       updates.payableTo = formState.payableTo || null;
     if (formState.mailingAddress !== (method.mailingAddress || ''))
@@ -573,24 +568,6 @@ function MethodCard({
                     : 'email or phone'
                 }
               />
-            </div>
-          )}
-
-          {['VENMO', 'PAYPAL', 'CASH_APP'].includes(method.type) && (
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Payment Link (optional)
-              </label>
-              <Input
-                value={formState.paymentUrl}
-                onChange={(e) =>
-                  setFormState({ ...formState, paymentUrl: e.target.value })
-                }
-                placeholder="https://..."
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Direct payment link donors can click
-              </p>
             </div>
           )}
 

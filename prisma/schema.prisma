@@ -984,7 +984,6 @@ model OrganizationPaymentMethod {
 
   // Digital payment handles (Venmo, PayPal, Cash App, Zelle)
   handle     String? // @handle or email address
-  paymentUrl String? @map("payment_url") // Deep link or payment URL
 
   // Check / mail
   payableTo      String? @map("payable_to") // "Make checks payable to..."

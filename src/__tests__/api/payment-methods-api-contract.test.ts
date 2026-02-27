@@ -42,7 +42,6 @@ const PaymentMethodAdminResponseSchema = z.object({
   stripeChargesEnabled: z.boolean(),
   stripePayoutsEnabled: z.boolean(),
   handle: z.string().nullable(),
-  paymentUrl: z.string().nullable(),
   payableTo: z.string().nullable(),
   mailingAddress: z.string().nullable(),
   createdAt: z.union([z.string(), z.date()]),
@@ -56,7 +55,6 @@ const PaymentMethodPublicResponseSchema = z.object({
   label: z.string().nullable(),
   instructions: z.string().nullable(),
   handle: z.string().nullable(),
-  paymentUrl: z.string().nullable(),
   payableTo: z.string().nullable(),
   mailingAddress: z.string().nullable(),
 });
@@ -70,7 +68,6 @@ const PaymentMethodCreateRequestSchema = z.object({
   instructions: z.string().nullable().optional(),
   stripeAccountId: z.string().nullable().optional(),
   handle: z.string().nullable().optional(),
-  paymentUrl: z.string().nullable().optional(),
   payableTo: z.string().nullable().optional(),
   mailingAddress: z.string().nullable().optional(),
 });
@@ -85,7 +82,6 @@ const PaymentMethodUpdateRequestSchema = z.object({
   stripeChargesEnabled: z.boolean().optional(),
   stripePayoutsEnabled: z.boolean().optional(),
   handle: z.string().nullable().optional(),
-  paymentUrl: z.string().nullable().optional(),
   payableTo: z.string().nullable().optional(),
   mailingAddress: z.string().nullable().optional(),
 });
@@ -107,7 +103,6 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: true,
         stripePayoutsEnabled: true,
         handle: null,
-        paymentUrl: null,
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -131,7 +126,6 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: null,
-        paymentUrl: null,
         payableTo: 'Acme Nonprofit Inc.',
         mailingAddress: '123 Main St, City, ST 12345',
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -155,7 +149,6 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: '@acme-nonprofit',
-        paymentUrl: 'https://venmo.com/acme-nonprofit',
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -179,7 +172,6 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: null,
-        paymentUrl: null,
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -203,7 +195,6 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: null,
-        paymentUrl: null,
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -227,7 +218,6 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: null,
-        paymentUrl: null,
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -251,7 +241,6 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: null,
-        paymentUrl: null,
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -271,7 +260,6 @@ describe('Payment Methods API Contract Tests', () => {
         label: 'Venmo',
         instructions: 'Send to our Venmo',
         handle: '@acme-nonprofit',
-        paymentUrl: 'https://venmo.com/acme-nonprofit',
         payableTo: null,
         mailingAddress: null,
       };
@@ -287,7 +275,6 @@ describe('Payment Methods API Contract Tests', () => {
         label: 'Personal Check',
         instructions: 'Mail to our office',
         handle: null,
-        paymentUrl: null,
         payableTo: 'Acme Nonprofit',
         mailingAddress: '123 Main St, City, ST 12345',
       };
@@ -303,7 +290,6 @@ describe('Payment Methods API Contract Tests', () => {
         label: 'Venmo',
         instructions: null,
         handle: '@acme',
-        paymentUrl: null,
         payableTo: null,
         mailingAddress: null,
       };
@@ -328,7 +314,6 @@ describe('Payment Methods API Contract Tests', () => {
         instructions: 'Mail to PO Box 123',
         stripeAccountId: null,
         handle: null,
-        paymentUrl: null,
         payableTo: 'Acme Nonprofit',
         mailingAddress: '123 Main St',
       });
@@ -363,7 +348,6 @@ describe('Payment Methods API Contract Tests', () => {
         label: null,
         instructions: null,
         handle: null,
-        paymentUrl: null,
         payableTo: null,
         mailingAddress: null,
       });
@@ -440,11 +424,6 @@ describe('Payment Methods API Contract Tests', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should accept paymentUrl update', () => {
-      const result = PaymentMethodUpdateRequestSchema.safeParse({ paymentUrl: 'https://pay.me' });
-      expect(result.success).toBe(true);
-    });
-
     it('should accept payableTo update', () => {
       const result = PaymentMethodUpdateRequestSchema.safeParse({ payableTo: 'New Org' });
       expect(result.success).toBe(true);
@@ -461,7 +440,6 @@ describe('Payment Methods API Contract Tests', () => {
         label: 'Updated',
         instructions: 'New instructions',
         handle: '@updated',
-        paymentUrl: 'https://updated.pay',
         payableTo: 'Updated Org',
         mailingAddress: '789 Pine Blvd',
       });

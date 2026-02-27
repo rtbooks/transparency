@@ -234,7 +234,6 @@ describe('Payment Method Service', () => {
         instructions: 'Mail to PO Box 123',
         stripeAccountId: 'acct_123',
         handle: '@myhandle',
-        paymentUrl: 'https://pay.me',
         payableTo: 'Acme Nonprofit',
         mailingAddress: '123 Main St',
       });
@@ -247,7 +246,6 @@ describe('Payment Method Service', () => {
           instructions: 'Mail to PO Box 123',
           stripeAccountId: 'acct_123',
           handle: '@myhandle',
-          paymentUrl: 'https://pay.me',
           payableTo: 'Acme Nonprofit',
           mailingAddress: '123 Main St',
         }),
@@ -372,24 +370,6 @@ describe('Payment Method Service', () => {
       });
     });
 
-    it('should persist paymentUrl changes', async () => {
-      await updatePaymentMethod('pm-1', 'org-1', { paymentUrl: 'https://new.pay' });
-
-      expect(mockOpm.update).toHaveBeenCalledWith({
-        where: { id: 'pm-1', organizationId: 'org-1' },
-        data: expect.objectContaining({ paymentUrl: 'https://new.pay' }),
-      });
-    });
-
-    it('should persist paymentUrl as null to clear it', async () => {
-      await updatePaymentMethod('pm-1', 'org-1', { paymentUrl: null });
-
-      expect(mockOpm.update).toHaveBeenCalledWith({
-        where: { id: 'pm-1', organizationId: 'org-1' },
-        data: expect.objectContaining({ paymentUrl: null }),
-      });
-    });
-
     it('should persist payableTo changes', async () => {
       await updatePaymentMethod('pm-1', 'org-1', { payableTo: 'Acme Nonprofit' });
 
@@ -433,7 +413,6 @@ describe('Payment Method Service', () => {
         label: 'Updated Label',
         instructions: 'New instructions',
         handle: '@updated',
-        paymentUrl: 'https://updated.pay',
         payableTo: 'Updated Org',
         mailingAddress: '789 Pine Blvd',
       });
@@ -446,7 +425,6 @@ describe('Payment Method Service', () => {
           label: 'Updated Label',
           instructions: 'New instructions',
           handle: '@updated',
-          paymentUrl: 'https://updated.pay',
           payableTo: 'Updated Org',
           mailingAddress: '789 Pine Blvd',
         }),
@@ -465,7 +443,6 @@ describe('Payment Method Service', () => {
       expect(callData).not.toHaveProperty('stripeChargesEnabled');
       expect(callData).not.toHaveProperty('stripePayoutsEnabled');
       expect(callData).not.toHaveProperty('handle');
-      expect(callData).not.toHaveProperty('paymentUrl');
       expect(callData).not.toHaveProperty('payableTo');
       expect(callData).not.toHaveProperty('mailingAddress');
     });

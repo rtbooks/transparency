@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X, CreditCard, Smartphone, Mail, Link2, Building2, ExternalLink, Wallet } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X, CreditCard, Smartphone, Mail, Link2, Building2, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -35,7 +35,6 @@ interface PaymentMethodInfo {
   label: string | null;
   instructions: string | null;
   handle: string | null;
-  paymentUrl: string | null;
   payableTo: string | null;
   mailingAddress: string | null;
 }
@@ -809,16 +808,6 @@ export function DonationsPageClient({
                       <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">
                         Mail to: {method.mailingAddress}
                       </p>
-                    )}
-                    {method.paymentUrl && (
-                      <a
-                        href={method.paymentUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-2 inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
-                      >
-                        Pay online <ExternalLink className="h-3 w-3" />
-                      </a>
                     )}
                     {method.instructions && (
                       <p className="mt-1 whitespace-pre-wrap text-sm text-gray-600">

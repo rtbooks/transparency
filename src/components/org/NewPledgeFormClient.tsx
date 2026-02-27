@@ -18,7 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Loader2, CheckCircle, Target, CreditCard, Smartphone, Mail, Link2, Building2, Plus, ExternalLink } from 'lucide-react';
+import { Loader2, CheckCircle, Target, CreditCard, Smartphone, Mail, Link2, Building2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils/account-tree';
 import { VenmoQRCode } from '@/components/donations/VenmoQRCode';
@@ -48,7 +48,6 @@ interface PaymentMethodInfo {
   label: string | null;
   instructions: string | null;
   handle: string | null;
-  paymentUrl: string | null;
   payableTo: string | null;
   mailingAddress: string | null;
 }
@@ -271,16 +270,6 @@ export function NewPledgeFormClient({
                       <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">
                         Mail to: {method.mailingAddress}
                       </p>
-                    )}
-                    {method.paymentUrl && (
-                      <a
-                        href={method.paymentUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-1 inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
-                      >
-                        Pay online <ExternalLink className="h-3 w-3" />
-                      </a>
                     )}
                     {method.instructions && (
                       <p className="mt-1 whitespace-pre-wrap text-sm text-gray-600">

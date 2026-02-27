@@ -15,7 +15,6 @@ const updatePaymentMethodSchema = z.object({
   label: z.string().nullable().optional(),
   instructions: z.string().nullable().optional(),
   handle: z.string().nullable().optional(),
-  paymentUrl: z.string().url().nullable().optional(),
   payableTo: z.string().nullable().optional(),
   mailingAddress: z.string().nullable().optional(),
 });
