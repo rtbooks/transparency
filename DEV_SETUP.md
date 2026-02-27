@@ -8,7 +8,7 @@ Quick reference for getting the development environment running.
 
 1. **Open in VS Code**
    ```bash
-   code /home/hayep/code/transparency
+   code /path/to/transparency
    ```
 
 2. **Reopen in Container**
@@ -63,26 +63,16 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE transparency_dev TO t
 ### 3. Initialize Project
 
 ```bash
-cd /home/hayep/code/transparency
-
-# Create Next.js project
-npx create-next-app@latest transparency-platform \
-  --typescript --tailwind --app --src-dir --import-alias "@/*"
-
-cd transparency-platform
+cd /path/to/transparency
 
 # Install dependencies
-npm install prisma @prisma/client @clerk/nextjs stripe zod \
-  react-hook-form @hookform/resolvers date-fns recharts
-
-# Initialize Prisma
-npx prisma init
-
-# Copy schema
-cp ../schema.prisma prisma/schema.prisma
+npm install
 
 # Generate Prisma Client
 npx prisma generate
+
+# Push schema to database
+npx prisma db push
 ```
 
 ### 4. Configure Environment
@@ -122,17 +112,14 @@ You'll need accounts and API keys from:
   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
   - `CLERK_SECRET_KEY`
 
-### 2. Stripe (Payments)
-- Sign up: https://stripe.com
-- Get test API keys: https://dashboard.stripe.com/test/apikeys
-- Copy keys to `.env.local`:
-  - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
-  - `STRIPE_SECRET_KEY`
+### 2. Vercel Blob (File Storage)
+- Configured automatically when deploying to Vercel
+- For local dev: `BLOB_READ_WRITE_TOKEN` in `.env.local`
 
-### 3. Cloudflare R2 (File Storage) - Optional for MVP
-- Sign up: https://cloudflare.com
-- Create R2 bucket
-- Copy credentials to `.env.local`
+### 3. Resend (Email) - Optional for local dev
+- Sign up: https://resend.com
+- Copy key to `.env.local`:
+  - `RESEND_API_KEY`
 
 ## 📍 Port Reference
 
@@ -277,7 +264,7 @@ npm run db:reset
 
 - Check [.devcontainer/README.md](.devcontainer/README.md) for detailed devcontainer info
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines
-- See [QUICKSTART.md](QUICKSTART.md) for step-by-step setup
+- See [DEPLOYMENT_SETUP.md](DEPLOYMENT_SETUP.md) for production deployment
 
 ---
 
