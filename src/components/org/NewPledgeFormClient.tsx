@@ -99,6 +99,8 @@ export function NewPledgeFormClient({
   const [unitCount, setUnitCount] = useState(1);
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([]);
+  const [createdDonationAmount, setCreatedDonationAmount] = useState(0);
+  const [stripeLoading, setStripeLoading] = useState(false);
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -203,6 +205,7 @@ export function NewPledgeFormClient({
       }
 
       setDonationCreated(true);
+      setCreatedDonationAmount(finalAmount);
       trackEvent('donation_created', {
         type: 'PLEDGE',
         amount: finalAmount,
@@ -284,12 +287,47 @@ export function NewPledgeFormClient({
                       </p>
                     )}
                     {method.type === 'STRIPE' && (
-                      <a
-                        href={`/org/${organizationSlug}/donate`}
-                        className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline"
+                      <Button
+                        size="sm"
+                        className="mt-2"
+                        disabled={stripeLoading}
+                        onClick={async () => {
+                          setStripeLoading(true);
+                          try {
+                            const res = await fetch(
+                              `/api/organizations/${organizationSlug}/donations/checkout`,
+                              {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  amount: createdDonationAmount,
+                                  campaignId: selectedCampaignId || undefined,
+                                }),
+                              }
+                            );
+                            if (!res.ok) {
+                              const body = await res.json();
+                              throw new Error(body.error || 'Failed to start checkout');
+                            }
+                            const { url } = await res.json();
+                            if (url) window.location.href = url;
+                          } catch (err) {
+                            toast({
+                              title: 'Error',
+                              description: err instanceof Error ? err.message : 'Checkout failed',
+                              variant: 'destructive',
+                            });
+                            setStripeLoading(false);
+                          }
+                        }}
                       >
-                        Pay with card online <ExternalLink className="h-3 w-3" />
-                      </a>
+                        {stripeLoading ? (
+                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                        ) : (
+                          <CreditCard className="mr-1 h-3 w-3" />
+                        )}
+                        Pay with Card
+                      </Button>
                     )}
                   </div>
                 );
