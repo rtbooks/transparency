@@ -41,6 +41,8 @@ interface PaymentMethod {
   stripeAccountId: string | null;
   stripeChargesEnabled: boolean;
   stripePayoutsEnabled: boolean;
+  stripeFeePercent: number;
+  stripeFeeFixed: number;
   handle: string | null;
   paymentUrl: string | null;
   payableTo: string | null;
@@ -360,7 +362,16 @@ function MethodCard({
   const meta = METHOD_META[method.type];
   const Icon = meta.icon;
   const [editing, setEditing] = useState(false);
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<{
+    label: string;
+    instructions: string;
+    handle: string;
+    paymentUrl: string;
+    payableTo: string;
+    mailingAddress: string;
+    stripeFeePercent?: number;
+    stripeFeeFixed?: number;
+  }>({
     label: method.label || '',
     instructions: method.instructions || '',
     handle: method.handle || '',
@@ -462,6 +473,55 @@ function MethodCard({
               >
                 Disconnect Stripe
               </Button>
+              <div className="mt-4 border-t pt-4">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Processing Fee Configuration</h4>
+                <p className="text-xs text-gray-500 mb-3">
+                  Donors are charged these fees on top of their donation so your organization receives the full amount. Standard Stripe rate is 2.9% + $0.30. Nonprofits may qualify for 2.2% + $0.30.
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Fee Percent (%)</label>
+                    <Input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="10"
+                      value={formState.stripeFeePercent ?? method.stripeFeePercent}
+                      onChange={(e) =>
+                        setFormState({ ...formState, stripeFeePercent: parseFloat(e.target.value) || 0 })
+                      }
+                      placeholder="2.9"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600">Fixed Fee ($)</label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="5"
+                      value={formState.stripeFeeFixed ?? method.stripeFeeFixed}
+                      onChange={(e) =>
+                        setFormState({ ...formState, stripeFeeFixed: parseFloat(e.target.value) || 0 })
+                      }
+                      placeholder="0.30"
+                    />
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  className="mt-3"
+                  onClick={() => {
+                    onUpdate({
+                      stripeFeePercent: formState.stripeFeePercent ?? method.stripeFeePercent,
+                      stripeFeeFixed: formState.stripeFeeFixed ?? method.stripeFeeFixed,
+                    });
+                  }}
+                  disabled={saving}
+                >
+                  Save Fee Settings
+                </Button>
+              </div>
             </div>
           ) : (
             <div>

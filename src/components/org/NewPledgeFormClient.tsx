@@ -101,7 +101,6 @@ export function NewPledgeFormClient({
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([]);
   const [createdDonationAmount, setCreatedDonationAmount] = useState(0);
   const [stripeLoading, setStripeLoading] = useState(false);
-  const [coverFees, setCoverFees] = useState(true);
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -288,26 +287,16 @@ export function NewPledgeFormClient({
                       </p>
                     )}
                     {method.type === 'STRIPE' && (() => {
-                      const fee = Math.ceil(((createdDonationAmount + 0.30) / (1 - 0.029) - createdDonationAmount) * 100) / 100;
-                      const total = createdDonationAmount + fee;
+                      const pct = (method as any).stripeFeePercent ?? 2.9;
+                      const fixed = (method as any).stripeFeeFixed ?? 0.30;
+                      const rate = pct / 100;
+                      const total = Math.ceil(((createdDonationAmount + fixed) / (1 - rate)) * 100) / 100;
+                      const fee = total - createdDonationAmount;
                       return (
                         <div className="mt-3 space-y-2">
-                          <div className="flex items-start gap-2 rounded-md border border-gray-100 bg-white p-2">
-                            <input
-                              type="checkbox"
-                              checked={coverFees}
-                              onChange={(e) => setCoverFees(e.target.checked)}
-                              className="mt-1 h-4 w-4 rounded border-gray-300"
-                            />
-                            <div>
-                              <span className="text-sm font-medium text-gray-900">Cover processing fees</span>
-                              <p className="text-xs text-gray-500">
-                                {coverFees
-                                  ? `You'll pay $${total.toFixed(2)} ($${fee.toFixed(2)} fee) so ${organizationName} receives the full $${createdDonationAmount.toFixed(2)}`
-                                  : `${organizationName} will receive $${(createdDonationAmount - fee).toFixed(2)} after $${fee.toFixed(2)} in fees`}
-                              </p>
-                            </div>
-                          </div>
+                          <p className="text-xs text-gray-500">
+                            A processing fee of ${fee.toFixed(2)} will be added — you&apos;ll pay ${total.toFixed(2)} so {organizationName} receives the full ${createdDonationAmount.toFixed(2)}.
+                          </p>
                           <Button
                             size="sm"
                             className="w-full"
@@ -323,7 +312,6 @@ export function NewPledgeFormClient({
                                     body: JSON.stringify({
                                       amount: createdDonationAmount,
                                       campaignId: selectedCampaignId || undefined,
-                                      coverFees,
                                     }),
                                   }
                                 );
@@ -348,7 +336,7 @@ export function NewPledgeFormClient({
                             ) : (
                               <CreditCard className="mr-1 h-3 w-3" />
                             )}
-                            Pay ${coverFees ? total.toFixed(2) : createdDonationAmount.toFixed(2)} with Card
+                            Pay ${total.toFixed(2)} with Card
                           </Button>
                         </div>
                       );

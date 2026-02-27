@@ -14,15 +14,11 @@ const checkoutSchema = z.object({
   donorEmail: z.string().email().optional(),
   donorMessage: z.string().optional(),
   isAnonymous: z.boolean().optional(),
-  coverFees: z.boolean().optional(),
 });
 
-// Stripe fee rates (US standard; nonprofits may qualify for 2.2%)
-const STRIPE_PERCENT_FEE = 0.029;
-const STRIPE_FIXED_FEE = 0.30;
-
-function calculateTotalWithFees(donationAmount: number): number {
-  return Math.ceil(((donationAmount + STRIPE_FIXED_FEE) / (1 - STRIPE_PERCENT_FEE)) * 100) / 100;
+function calculateTotalWithFees(donationAmount: number, feePercent: number, feeFixed: number): number {
+  const rate = feePercent / 100;
+  return Math.ceil(((donationAmount + feeFixed) / (1 - rate)) * 100) / 100;
 }
 
 /**
@@ -80,10 +76,12 @@ export async function POST(
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
 
-    // Calculate charge amount — if donor covers fees, adjust upward
-    const chargeAmount = validated.coverFees
-      ? calculateTotalWithFees(validated.amount)
-      : validated.amount;
+    // Always apply processing fees — org admin configures the rate
+    const chargeAmount = calculateTotalWithFees(
+      validated.amount,
+      stripeMethod.stripeFeePercent,
+      stripeMethod.stripeFeeFixed
+    );
 
     // Create Checkout Session on the connected account
     const session = await getStripe().checkout.sessions.create(
@@ -116,7 +114,6 @@ export async function POST(
           donorMessage: validated.donorMessage || "",
           isAnonymous: String(validated.isAnonymous || false),
           donationAmount: String(validated.amount),
-          coverFees: String(validated.coverFees || false),
         },
         success_url: `${baseUrl}/org/${slug}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${baseUrl}/org/${slug}/donate/cancel`,

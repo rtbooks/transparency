@@ -28,10 +28,14 @@ export type AggregateOrganizationPaymentMethod = {
 
 export type OrganizationPaymentMethodAvgAggregateOutputType = {
   displayOrder: number | null
+  stripeFeePercent: number | null
+  stripeFeeFixed: number | null
 }
 
 export type OrganizationPaymentMethodSumAggregateOutputType = {
   displayOrder: number | null
+  stripeFeePercent: number | null
+  stripeFeeFixed: number | null
 }
 
 export type OrganizationPaymentMethodMinAggregateOutputType = {
@@ -45,6 +49,8 @@ export type OrganizationPaymentMethodMinAggregateOutputType = {
   stripeAccountId: string | null
   stripeChargesEnabled: boolean | null
   stripePayoutsEnabled: boolean | null
+  stripeFeePercent: number | null
+  stripeFeeFixed: number | null
   handle: string | null
   paymentUrl: string | null
   payableTo: string | null
@@ -64,6 +70,8 @@ export type OrganizationPaymentMethodMaxAggregateOutputType = {
   stripeAccountId: string | null
   stripeChargesEnabled: boolean | null
   stripePayoutsEnabled: boolean | null
+  stripeFeePercent: number | null
+  stripeFeeFixed: number | null
   handle: string | null
   paymentUrl: string | null
   payableTo: string | null
@@ -83,6 +91,8 @@ export type OrganizationPaymentMethodCountAggregateOutputType = {
   stripeAccountId: number
   stripeChargesEnabled: number
   stripePayoutsEnabled: number
+  stripeFeePercent: number
+  stripeFeeFixed: number
   handle: number
   paymentUrl: number
   payableTo: number
@@ -95,10 +105,14 @@ export type OrganizationPaymentMethodCountAggregateOutputType = {
 
 export type OrganizationPaymentMethodAvgAggregateInputType = {
   displayOrder?: true
+  stripeFeePercent?: true
+  stripeFeeFixed?: true
 }
 
 export type OrganizationPaymentMethodSumAggregateInputType = {
   displayOrder?: true
+  stripeFeePercent?: true
+  stripeFeeFixed?: true
 }
 
 export type OrganizationPaymentMethodMinAggregateInputType = {
@@ -112,6 +126,8 @@ export type OrganizationPaymentMethodMinAggregateInputType = {
   stripeAccountId?: true
   stripeChargesEnabled?: true
   stripePayoutsEnabled?: true
+  stripeFeePercent?: true
+  stripeFeeFixed?: true
   handle?: true
   paymentUrl?: true
   payableTo?: true
@@ -131,6 +147,8 @@ export type OrganizationPaymentMethodMaxAggregateInputType = {
   stripeAccountId?: true
   stripeChargesEnabled?: true
   stripePayoutsEnabled?: true
+  stripeFeePercent?: true
+  stripeFeeFixed?: true
   handle?: true
   paymentUrl?: true
   payableTo?: true
@@ -150,6 +168,8 @@ export type OrganizationPaymentMethodCountAggregateInputType = {
   stripeAccountId?: true
   stripeChargesEnabled?: true
   stripePayoutsEnabled?: true
+  stripeFeePercent?: true
+  stripeFeeFixed?: true
   handle?: true
   paymentUrl?: true
   payableTo?: true
@@ -256,6 +276,8 @@ export type OrganizationPaymentMethodGroupByOutputType = {
   stripeAccountId: string | null
   stripeChargesEnabled: boolean
   stripePayoutsEnabled: boolean
+  stripeFeePercent: number
+  stripeFeeFixed: number
   handle: string | null
   paymentUrl: string | null
   payableTo: string | null
@@ -298,6 +320,8 @@ export type OrganizationPaymentMethodWhereInput = {
   stripeAccountId?: Prisma.StringNullableFilter<"OrganizationPaymentMethod"> | string | null
   stripeChargesEnabled?: Prisma.BoolFilter<"OrganizationPaymentMethod"> | boolean
   stripePayoutsEnabled?: Prisma.BoolFilter<"OrganizationPaymentMethod"> | boolean
+  stripeFeePercent?: Prisma.FloatFilter<"OrganizationPaymentMethod"> | number
+  stripeFeeFixed?: Prisma.FloatFilter<"OrganizationPaymentMethod"> | number
   handle?: Prisma.StringNullableFilter<"OrganizationPaymentMethod"> | string | null
   paymentUrl?: Prisma.StringNullableFilter<"OrganizationPaymentMethod"> | string | null
   payableTo?: Prisma.StringNullableFilter<"OrganizationPaymentMethod"> | string | null
@@ -317,6 +341,8 @@ export type OrganizationPaymentMethodOrderByWithRelationInput = {
   stripeAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   stripeChargesEnabled?: Prisma.SortOrder
   stripePayoutsEnabled?: Prisma.SortOrder
+  stripeFeePercent?: Prisma.SortOrder
+  stripeFeeFixed?: Prisma.SortOrder
   handle?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   payableTo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -340,6 +366,8 @@ export type OrganizationPaymentMethodWhereUniqueInput = Prisma.AtLeast<{
   stripeAccountId?: Prisma.StringNullableFilter<"OrganizationPaymentMethod"> | string | null
   stripeChargesEnabled?: Prisma.BoolFilter<"OrganizationPaymentMethod"> | boolean
   stripePayoutsEnabled?: Prisma.BoolFilter<"OrganizationPaymentMethod"> | boolean
+  stripeFeePercent?: Prisma.FloatFilter<"OrganizationPaymentMethod"> | number
+  stripeFeeFixed?: Prisma.FloatFilter<"OrganizationPaymentMethod"> | number
   handle?: Prisma.StringNullableFilter<"OrganizationPaymentMethod"> | string | null
   paymentUrl?: Prisma.StringNullableFilter<"OrganizationPaymentMethod"> | string | null
   payableTo?: Prisma.StringNullableFilter<"OrganizationPaymentMethod"> | string | null
@@ -359,6 +387,8 @@ export type OrganizationPaymentMethodOrderByWithAggregationInput = {
   stripeAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
   stripeChargesEnabled?: Prisma.SortOrder
   stripePayoutsEnabled?: Prisma.SortOrder
+  stripeFeePercent?: Prisma.SortOrder
+  stripeFeeFixed?: Prisma.SortOrder
   handle?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   payableTo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -386,6 +416,8 @@ export type OrganizationPaymentMethodScalarWhereWithAggregatesInput = {
   stripeAccountId?: Prisma.StringNullableWithAggregatesFilter<"OrganizationPaymentMethod"> | string | null
   stripeChargesEnabled?: Prisma.BoolWithAggregatesFilter<"OrganizationPaymentMethod"> | boolean
   stripePayoutsEnabled?: Prisma.BoolWithAggregatesFilter<"OrganizationPaymentMethod"> | boolean
+  stripeFeePercent?: Prisma.FloatWithAggregatesFilter<"OrganizationPaymentMethod"> | number
+  stripeFeeFixed?: Prisma.FloatWithAggregatesFilter<"OrganizationPaymentMethod"> | number
   handle?: Prisma.StringNullableWithAggregatesFilter<"OrganizationPaymentMethod"> | string | null
   paymentUrl?: Prisma.StringNullableWithAggregatesFilter<"OrganizationPaymentMethod"> | string | null
   payableTo?: Prisma.StringNullableWithAggregatesFilter<"OrganizationPaymentMethod"> | string | null
@@ -405,6 +437,8 @@ export type OrganizationPaymentMethodCreateInput = {
   stripeAccountId?: string | null
   stripeChargesEnabled?: boolean
   stripePayoutsEnabled?: boolean
+  stripeFeePercent?: number
+  stripeFeeFixed?: number
   handle?: string | null
   paymentUrl?: string | null
   payableTo?: string | null
@@ -424,6 +458,8 @@ export type OrganizationPaymentMethodUncheckedCreateInput = {
   stripeAccountId?: string | null
   stripeChargesEnabled?: boolean
   stripePayoutsEnabled?: boolean
+  stripeFeePercent?: number
+  stripeFeeFixed?: number
   handle?: string | null
   paymentUrl?: string | null
   payableTo?: string | null
@@ -443,6 +479,8 @@ export type OrganizationPaymentMethodUpdateInput = {
   stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripeChargesEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stripePayoutsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeFeePercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  stripeFeeFixed?: Prisma.FloatFieldUpdateOperationsInput | number
   handle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payableTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -462,6 +500,8 @@ export type OrganizationPaymentMethodUncheckedUpdateInput = {
   stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripeChargesEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stripePayoutsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeFeePercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  stripeFeeFixed?: Prisma.FloatFieldUpdateOperationsInput | number
   handle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payableTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -481,6 +521,8 @@ export type OrganizationPaymentMethodCreateManyInput = {
   stripeAccountId?: string | null
   stripeChargesEnabled?: boolean
   stripePayoutsEnabled?: boolean
+  stripeFeePercent?: number
+  stripeFeeFixed?: number
   handle?: string | null
   paymentUrl?: string | null
   payableTo?: string | null
@@ -500,6 +542,8 @@ export type OrganizationPaymentMethodUpdateManyMutationInput = {
   stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripeChargesEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stripePayoutsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeFeePercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  stripeFeeFixed?: Prisma.FloatFieldUpdateOperationsInput | number
   handle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payableTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -519,6 +563,8 @@ export type OrganizationPaymentMethodUncheckedUpdateManyInput = {
   stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripeChargesEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stripePayoutsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeFeePercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  stripeFeeFixed?: Prisma.FloatFieldUpdateOperationsInput | number
   handle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   payableTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -543,6 +589,8 @@ export type OrganizationPaymentMethodCountOrderByAggregateInput = {
   stripeAccountId?: Prisma.SortOrder
   stripeChargesEnabled?: Prisma.SortOrder
   stripePayoutsEnabled?: Prisma.SortOrder
+  stripeFeePercent?: Prisma.SortOrder
+  stripeFeeFixed?: Prisma.SortOrder
   handle?: Prisma.SortOrder
   paymentUrl?: Prisma.SortOrder
   payableTo?: Prisma.SortOrder
@@ -553,6 +601,8 @@ export type OrganizationPaymentMethodCountOrderByAggregateInput = {
 
 export type OrganizationPaymentMethodAvgOrderByAggregateInput = {
   displayOrder?: Prisma.SortOrder
+  stripeFeePercent?: Prisma.SortOrder
+  stripeFeeFixed?: Prisma.SortOrder
 }
 
 export type OrganizationPaymentMethodMaxOrderByAggregateInput = {
@@ -566,6 +616,8 @@ export type OrganizationPaymentMethodMaxOrderByAggregateInput = {
   stripeAccountId?: Prisma.SortOrder
   stripeChargesEnabled?: Prisma.SortOrder
   stripePayoutsEnabled?: Prisma.SortOrder
+  stripeFeePercent?: Prisma.SortOrder
+  stripeFeeFixed?: Prisma.SortOrder
   handle?: Prisma.SortOrder
   paymentUrl?: Prisma.SortOrder
   payableTo?: Prisma.SortOrder
@@ -585,6 +637,8 @@ export type OrganizationPaymentMethodMinOrderByAggregateInput = {
   stripeAccountId?: Prisma.SortOrder
   stripeChargesEnabled?: Prisma.SortOrder
   stripePayoutsEnabled?: Prisma.SortOrder
+  stripeFeePercent?: Prisma.SortOrder
+  stripeFeeFixed?: Prisma.SortOrder
   handle?: Prisma.SortOrder
   paymentUrl?: Prisma.SortOrder
   payableTo?: Prisma.SortOrder
@@ -595,6 +649,16 @@ export type OrganizationPaymentMethodMinOrderByAggregateInput = {
 
 export type OrganizationPaymentMethodSumOrderByAggregateInput = {
   displayOrder?: Prisma.SortOrder
+  stripeFeePercent?: Prisma.SortOrder
+  stripeFeeFixed?: Prisma.SortOrder
+}
+
+export type FloatFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 
@@ -610,6 +674,8 @@ export type OrganizationPaymentMethodSelect<ExtArgs extends runtime.Types.Extens
   stripeAccountId?: boolean
   stripeChargesEnabled?: boolean
   stripePayoutsEnabled?: boolean
+  stripeFeePercent?: boolean
+  stripeFeeFixed?: boolean
   handle?: boolean
   paymentUrl?: boolean
   payableTo?: boolean
@@ -629,6 +695,8 @@ export type OrganizationPaymentMethodSelectCreateManyAndReturn<ExtArgs extends r
   stripeAccountId?: boolean
   stripeChargesEnabled?: boolean
   stripePayoutsEnabled?: boolean
+  stripeFeePercent?: boolean
+  stripeFeeFixed?: boolean
   handle?: boolean
   paymentUrl?: boolean
   payableTo?: boolean
@@ -648,6 +716,8 @@ export type OrganizationPaymentMethodSelectUpdateManyAndReturn<ExtArgs extends r
   stripeAccountId?: boolean
   stripeChargesEnabled?: boolean
   stripePayoutsEnabled?: boolean
+  stripeFeePercent?: boolean
+  stripeFeeFixed?: boolean
   handle?: boolean
   paymentUrl?: boolean
   payableTo?: boolean
@@ -667,6 +737,8 @@ export type OrganizationPaymentMethodSelectScalar = {
   stripeAccountId?: boolean
   stripeChargesEnabled?: boolean
   stripePayoutsEnabled?: boolean
+  stripeFeePercent?: boolean
+  stripeFeeFixed?: boolean
   handle?: boolean
   paymentUrl?: boolean
   payableTo?: boolean
@@ -675,7 +747,7 @@ export type OrganizationPaymentMethodSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrganizationPaymentMethodOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "type" | "isEnabled" | "displayOrder" | "label" | "instructions" | "stripeAccountId" | "stripeChargesEnabled" | "stripePayoutsEnabled" | "handle" | "paymentUrl" | "payableTo" | "mailingAddress" | "createdAt" | "updatedAt", ExtArgs["result"]["organizationPaymentMethod"]>
+export type OrganizationPaymentMethodOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "type" | "isEnabled" | "displayOrder" | "label" | "instructions" | "stripeAccountId" | "stripeChargesEnabled" | "stripePayoutsEnabled" | "stripeFeePercent" | "stripeFeeFixed" | "handle" | "paymentUrl" | "payableTo" | "mailingAddress" | "createdAt" | "updatedAt", ExtArgs["result"]["organizationPaymentMethod"]>
 
 export type $OrganizationPaymentMethodPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "OrganizationPaymentMethod"
@@ -691,6 +763,8 @@ export type $OrganizationPaymentMethodPayload<ExtArgs extends runtime.Types.Exte
     stripeAccountId: string | null
     stripeChargesEnabled: boolean
     stripePayoutsEnabled: boolean
+    stripeFeePercent: number
+    stripeFeeFixed: number
     handle: string | null
     paymentUrl: string | null
     payableTo: string | null
@@ -1130,6 +1204,8 @@ export interface OrganizationPaymentMethodFieldRefs {
   readonly stripeAccountId: Prisma.FieldRef<"OrganizationPaymentMethod", 'String'>
   readonly stripeChargesEnabled: Prisma.FieldRef<"OrganizationPaymentMethod", 'Boolean'>
   readonly stripePayoutsEnabled: Prisma.FieldRef<"OrganizationPaymentMethod", 'Boolean'>
+  readonly stripeFeePercent: Prisma.FieldRef<"OrganizationPaymentMethod", 'Float'>
+  readonly stripeFeeFixed: Prisma.FieldRef<"OrganizationPaymentMethod", 'Float'>
   readonly handle: Prisma.FieldRef<"OrganizationPaymentMethod", 'String'>
   readonly paymentUrl: Prisma.FieldRef<"OrganizationPaymentMethod", 'String'>
   readonly payableTo: Prisma.FieldRef<"OrganizationPaymentMethod", 'String'>

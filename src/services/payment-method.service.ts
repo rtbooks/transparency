@@ -25,6 +25,8 @@ export interface UpdatePaymentMethodInput {
   stripeAccountId?: string | null;
   stripeChargesEnabled?: boolean;
   stripePayoutsEnabled?: boolean;
+  stripeFeePercent?: number;
+  stripeFeeFixed?: number;
   handle?: string | null;
   paymentUrl?: string | null;
   payableTo?: string | null;
@@ -123,6 +125,10 @@ export async function updatePaymentMethod(
     data.stripeChargesEnabled = input.stripeChargesEnabled;
   if (input.stripePayoutsEnabled !== undefined)
     data.stripePayoutsEnabled = input.stripePayoutsEnabled;
+  if (input.stripeFeePercent !== undefined)
+    data.stripeFeePercent = input.stripeFeePercent;
+  if (input.stripeFeeFixed !== undefined)
+    data.stripeFeeFixed = input.stripeFeeFixed;
   if (input.handle !== undefined) data.handle = input.handle;
   if (input.paymentUrl !== undefined) data.paymentUrl = input.paymentUrl;
   if (input.payableTo !== undefined) data.payableTo = input.payableTo;
