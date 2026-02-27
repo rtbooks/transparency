@@ -41,7 +41,7 @@ export async function createAccessRequest(
     throw new Error('You already have access to this organization');
   }
 
-  // Check for existing pending request
+  // Check for existing pending request (partial unique index also enforces this)
   const existingRequest = await prisma.accessRequest.findFirst({
     where: { organizationId, userId, status: 'PENDING' },
   });

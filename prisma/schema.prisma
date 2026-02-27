@@ -610,8 +610,10 @@ model AccessRequest {
   // Relations
   user User @relation("AccessRequests", fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([organizationId, userId])
+  // Partial unique index enforced via migration SQL (only PENDING status)
+  // Allows multiple resolved records for audit history
   @@index([organizationId, status], name: "idx_access_request_org_status")
+  @@index([organizationId, userId], name: "idx_access_request_org_user")
   @@map("access_requests")
 }
 

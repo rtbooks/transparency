@@ -232,7 +232,6 @@ export type AccessRequestOrderByWithRelationInput = {
 
 export type AccessRequestWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  organizationId_userId?: Prisma.AccessRequestOrganizationIdUserIdCompoundUniqueInput
   AND?: Prisma.AccessRequestWhereInput | Prisma.AccessRequestWhereInput[]
   OR?: Prisma.AccessRequestWhereInput[]
   NOT?: Prisma.AccessRequestWhereInput | Prisma.AccessRequestWhereInput[]
@@ -245,7 +244,7 @@ export type AccessRequestWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"AccessRequest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AccessRequest"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "id" | "organizationId_userId">
+}, "id">
 
 export type AccessRequestOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -368,11 +367,6 @@ export type AccessRequestListRelationFilter = {
 
 export type AccessRequestOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type AccessRequestOrganizationIdUserIdCompoundUniqueInput = {
-  organizationId: string
-  userId: string
 }
 
 export type AccessRequestCountOrderByAggregateInput = {
