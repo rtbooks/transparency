@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { VenmoQRCode } from '@/components/donations/VenmoQRCode';
 import {
   CreditCard,
   Smartphone,
@@ -418,6 +419,13 @@ export function DonationFlow({
                       <ExternalLink className="h-3 w-3" />
                       Open {selectedMethod.label || selectedMethod.type}
                     </a>
+                  )}
+                  {selectedMethod.type === 'VENMO' && selectedMethod.handle && (
+                    <VenmoQRCode
+                      handle={selectedMethod.handle}
+                      amount={parsedAmount}
+                      note={`Donation to ${organizationName}`}
+                    />
                   )}
                 </div>
 

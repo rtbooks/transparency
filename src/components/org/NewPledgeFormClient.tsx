@@ -21,6 +21,7 @@ import {
 import { Loader2, CheckCircle, Target, CreditCard, Smartphone, Mail, Link2, Building2, Plus, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils/account-tree';
+import { VenmoQRCode } from '@/components/donations/VenmoQRCode';
 
 const donationSchema = z.object({
   amount: z.number().optional(),
@@ -285,6 +286,13 @@ export function NewPledgeFormClient({
                       <p className="mt-1 whitespace-pre-wrap text-sm text-gray-600">
                         {method.instructions}
                       </p>
+                    )}
+                    {method.type === 'VENMO' && method.handle && (
+                      <VenmoQRCode
+                        handle={method.handle}
+                        amount={createdDonationAmount}
+                        note={`Donation to ${organizationName}`}
+                      />
                     )}
                     {method.type === 'STRIPE' && (() => {
                       const pct = (method as any).stripeFeePercent ?? 2.9;

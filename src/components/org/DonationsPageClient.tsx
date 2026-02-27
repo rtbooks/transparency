@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils/account-tree';
 import { trackEvent } from '@/lib/analytics';
+import { VenmoQRCode } from '@/components/donations/VenmoQRCode';
 
 interface Payment {
   id: string;
@@ -823,6 +824,13 @@ export function DonationsPageClient({
                       <p className="mt-1 whitespace-pre-wrap text-sm text-gray-600">
                         {method.instructions}
                       </p>
+                    )}
+                    {method.type === 'VENMO' && method.handle && (
+                      <VenmoQRCode
+                        handle={method.handle}
+                        amount={payNowDonation.amount - payNowDonation.amountReceived}
+                        note={`Donation${payNowDonation.campaignName ? ` — ${payNowDonation.campaignName}` : ''}`}
+                      />
                     )}
                     {method.type === 'STRIPE' && (() => {
                       const remaining = payNowDonation.amount - payNowDonation.amountReceived;
