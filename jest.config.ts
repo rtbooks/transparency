@@ -25,6 +25,29 @@ const config: Config = {
     '!src/app/**', // Exclude Next.js app directory (mostly routing)
     '!src/components/ui/**', // Exclude shadcn components
   ],
+  coverageThreshold: {
+    global: {
+      // Baseline — raise as we add component and route handler tests
+      statements: 2,
+      branches: 2,
+      functions: 2,
+      lines: 2,
+    },
+    // Service layer: core business logic must maintain coverage
+    'src/services/': {
+      branches: 50,
+      functions: 40,
+      lines: 45,
+      statements: 45,
+    },
+    // Library utilities: critical shared code
+    'src/lib/': {
+      branches: 30,
+      functions: 30,
+      lines: 30,
+      statements: 30,
+    },
+  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
