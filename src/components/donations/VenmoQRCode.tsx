@@ -1,6 +1,7 @@
 'use client';
 
 import { QRCodeSVG } from 'qrcode.react';
+import { ExternalLink } from 'lucide-react';
 
 interface VenmoQRCodeProps {
   handle: string;
@@ -24,7 +25,16 @@ export function VenmoQRCode({ handle, amount, note }: VenmoQRCodeProps) {
   return (
     <div className="mt-3 flex flex-col items-center gap-2">
       <QRCodeSVG value={url} size={140} level="M" />
-      <p className="text-xs text-gray-500">Scan with your phone to pay via Venmo</p>
+      <p className="text-xs text-gray-500">Scan with your phone or click below</p>
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline"
+      >
+        Open in Venmo
+        <ExternalLink className="h-3 w-3" />
+      </a>
     </div>
   );
 }
