@@ -398,7 +398,7 @@ export function DonationsPageClient({
 
   if (!data) return null;
 
-  const { donations, summary, paymentInstructions } = data;
+  const { donations, summary } = data;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -501,48 +501,6 @@ export function DonationsPageClient({
           </div>
         </div>
       </div>
-
-      {/* Payment Methods */}
-      {paymentMethods.length > 0 ? (
-        <div className="mb-8 rounded-lg border border-blue-200 bg-blue-50 p-6">
-          <h3 className="mb-3 font-semibold text-blue-900">Payment Options</h3>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {paymentMethods.map((method) => {
-              const Icon = METHOD_ICONS[method.type] || Plus;
-              return (
-                <div key={method.id} className="rounded-md border border-blue-200 bg-white p-3">
-                  <div className="flex items-center gap-2">
-                    <Icon className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm font-medium text-gray-900">
-                      {method.label || METHOD_LABELS[method.type]}
-                    </span>
-                  </div>
-                  {method.handle && (
-                    <p className="mt-1 text-xs text-gray-600">
-                      Send to: <span className="font-medium">{method.handle}</span>
-                    </p>
-                  )}
-                  {method.paymentUrl && (
-                    <a
-                      href={method.paymentUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
-                    >
-                      Pay online <ExternalLink className="h-3 w-3" />
-                    </a>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ) : paymentInstructions ? (
-        <div className="mb-8 rounded-lg border border-blue-200 bg-blue-50 p-6">
-          <h3 className="mb-2 font-semibold text-blue-900">Payment Instructions</h3>
-          <p className="whitespace-pre-wrap text-sm text-blue-800">{paymentInstructions}</p>
-        </div>
-      ) : null}
 
       {/* Donation List */}
       {donations.length === 0 ? (
