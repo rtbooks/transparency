@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import {
@@ -10,6 +11,8 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Users as UsersIcon, Building2 } from 'lucide-react';
+
+export const metadata: Metadata = { title: "Users — Admin" };
 
 export default async function AdminUsersPage() {
   const users = await prisma.user.findMany({

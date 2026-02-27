@@ -1,7 +1,10 @@
+import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { CreateOrganizationForm } from '@/components/forms/CreateOrganizationForm';
+
+export const metadata: Metadata = { title: "Create Organization" };
 
 export default async function NewOrganizationPage() {
   const { userId: clerkUserId } = await auth();

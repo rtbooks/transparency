@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
@@ -14,6 +15,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }
+
+export const metadata: Metadata = { title: "Reports Dashboard" };
 
 export default async function ReportsDashboardPage({
   params,

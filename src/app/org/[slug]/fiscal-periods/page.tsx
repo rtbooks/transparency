@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { FiscalPeriodsPageClient } from "@/components/fiscal-periods/FiscalPeriodsPageClient";
@@ -7,6 +8,8 @@ import { checkOrganizationAccess, VerificationStatusMessage } from "@/lib/organi
 interface FiscalPeriodsPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = { title: "Fiscal Periods" };
 
 export default async function FiscalPeriodsPage({ params }: FiscalPeriodsPageProps) {
   const { slug } = await params;

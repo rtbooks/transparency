@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
@@ -9,6 +10,8 @@ import { NewPledgeFormClient } from '@/components/org/NewPledgeFormClient';
 interface NewPledgePageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = { title: "Record Donation" };
 
 export default async function NewPledgePage({ params }: NewPledgePageProps) {
   const { slug } = await params;

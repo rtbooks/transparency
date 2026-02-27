@@ -1,9 +1,12 @@
+import type { Metadata } from 'next';
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { TopNavWrapper } from '@/components/navigation/TopNavWrapper';
 import { getPublicNavLinks } from '@/lib/navigation';
+
+export const metadata: Metadata = { title: "My Profile" };
 
 export default async function ProfilePage() {
   const user = await currentUser();

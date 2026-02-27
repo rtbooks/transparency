@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
@@ -8,6 +9,8 @@ import { ROLE_LABELS } from '@/lib/auth/permissions';
 interface InvitePageProps {
   params: Promise<{ token: string }>;
 }
+
+export const metadata: Metadata = { title: "Accept Invitation" };
 
 export default async function InvitePage({ params }: InvitePageProps) {
   const { token } = await params;

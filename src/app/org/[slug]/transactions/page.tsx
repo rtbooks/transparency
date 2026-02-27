@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { TransactionsPageClient } from "@/components/transactions/TransactionsPageClient";
@@ -8,6 +9,8 @@ interface TransactionsPageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ accountId?: string }>;
 }
+
+export const metadata: Metadata = { title: "Transactions" };
 
 export default async function TransactionsPage({ params, searchParams }: TransactionsPageProps) {
   const { slug } = await params;

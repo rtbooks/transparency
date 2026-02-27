@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { AccountTree } from '@/components/accounts/AccountTree';
@@ -7,6 +8,8 @@ import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organi
 interface AccountsPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = { title: "Chart of Accounts" };
 
 export default async function AccountsPage({ params }: AccountsPageProps) {
   const { slug } = await params;

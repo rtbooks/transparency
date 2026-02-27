@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import {
@@ -9,6 +10,8 @@ import {
   TrendingDown,
   Calendar,
 } from 'lucide-react';
+
+export const metadata: Metadata = { title: "Analytics — Admin" };
 
 export default async function AdminAnalyticsPage() {
   // Fetch comprehensive analytics

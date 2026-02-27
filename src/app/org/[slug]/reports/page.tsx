@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -8,6 +9,8 @@ import { FileText, BarChart3, PieChart } from 'lucide-react';
 interface ReportsPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = { title: "Reports" };
 
 export default async function ReportsPage({ params }: ReportsPageProps) {
   const { slug } = await params;

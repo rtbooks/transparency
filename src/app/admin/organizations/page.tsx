@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import Link from 'next/link';
@@ -12,6 +13,8 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Building2, Users, Activity, Plus } from 'lucide-react';
+
+export const metadata: Metadata = { title: "Organizations — Admin" };
 
 export default async function OrganizationsListPage() {
   const organizations = await prisma.organization.findMany({

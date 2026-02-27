@@ -1,8 +1,11 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { checkOrganizationAccess, VerificationStatusMessage } from "@/lib/organization-access";
 import { OrganizationLayoutWrapper } from "@/components/navigation/OrganizationLayoutWrapper";
 import { ProgramSpendingPageClient } from "@/components/program-spending/ProgramSpendingPageClient";
+
+export const metadata: Metadata = { title: "Program Spending" };
 
 interface PageProps {
   params: Promise<{ slug: string }>;
