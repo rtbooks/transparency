@@ -832,6 +832,11 @@ export function DonationsPageClient({
                         note={`Donation${payNowDonation.campaignName ? ` — ${payNowDonation.campaignName}` : ''}`}
                       />
                     )}
+                    {method.type !== 'STRIPE' && (
+                      <p className="mt-3 text-xs italic text-gray-400">
+                        Your donation will be recorded by the organization once they confirm receipt.
+                      </p>
+                    )}
                     {method.type === 'STRIPE' && (() => {
                       const remaining = payNowDonation.amount - payNowDonation.amountReceived;
                       const pct = (method as any).stripeFeePercent ?? 2.9;

@@ -294,6 +294,11 @@ export function NewPledgeFormClient({
                         note={`Donation to ${organizationName}`}
                       />
                     )}
+                    {method.type !== 'STRIPE' && (
+                      <p className="mt-3 text-xs italic text-gray-400">
+                        Your donation will be recorded by the organization once they confirm receipt.
+                      </p>
+                    )}
                     {method.type === 'STRIPE' && (() => {
                       const pct = (method as any).stripeFeePercent ?? 2.9;
                       const fixed = (method as any).stripeFeeFixed ?? 0.30;
