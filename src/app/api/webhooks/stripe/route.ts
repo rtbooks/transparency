@@ -74,6 +74,8 @@ async function handleCheckoutCompleted(
   const metadata = session.metadata || {};
   const organizationId = metadata.organizationId;
 
+  console.log("Webhook: session metadata:", JSON.stringify(metadata));
+
   if (!organizationId) {
     console.error("Webhook: missing organizationId in session metadata");
     return;
