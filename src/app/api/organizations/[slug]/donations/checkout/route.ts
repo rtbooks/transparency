@@ -14,6 +14,7 @@ const checkoutSchema = z.object({
   donorEmail: z.string().email().optional(),
   donorMessage: z.string().optional(),
   isAnonymous: z.boolean().optional(),
+  donationId: z.string().uuid().optional(),
 });
 
 function calculateTotalWithFees(donationAmount: number, feePercent: number, feeFixed: number): number {
@@ -120,6 +121,7 @@ export async function POST(
           donorMessage: validated.donorMessage || "",
           isAnonymous: String(validated.isAnonymous || false),
           donationAmount: String(validated.amount),
+          donationId: validated.donationId || "",
         },
         success_url: `${baseUrl}/org/${slug}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: validated.campaignId
