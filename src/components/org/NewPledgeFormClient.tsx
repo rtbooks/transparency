@@ -98,6 +98,7 @@ export function NewPledgeFormClient({
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([]);
   const [createdDonationAmount, setCreatedDonationAmount] = useState(0);
+  const [createdDonationId, setCreatedDonationId] = useState<string | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
 
   useEffect(() => {
@@ -202,8 +203,10 @@ export function NewPledgeFormClient({
         throw new Error(error.error || 'Failed to create donation');
       }
 
+      const donation = await response.json();
       setDonationCreated(true);
       setCreatedDonationAmount(finalAmount);
+      setCreatedDonationId(donation.id || null);
       trackEvent('donation_created', {
         type: 'PLEDGE',
         amount: finalAmount,
@@ -312,6 +315,7 @@ export function NewPledgeFormClient({
                                     body: JSON.stringify({
                                       amount: createdDonationAmount,
                                       campaignId: selectedCampaignId || undefined,
+                                      donationId: createdDonationId || undefined,
                                     }),
                                   }
                                 );
