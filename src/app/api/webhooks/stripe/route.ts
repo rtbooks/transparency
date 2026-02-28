@@ -103,12 +103,23 @@ async function handleCheckoutCompleted(
     return;
   }
 
-  const cashAccountId = organization.donationsAccountId;
+  // Look up the Stripe payment method to get the linked clearing account
+  const stripeMethod = await prisma.organizationPaymentMethod.findFirst({
+    where: {
+      organizationId,
+      type: "STRIPE",
+      ...(connectedAccountId ? { stripeAccountId: connectedAccountId } : {}),
+    },
+  });
+
+  const clearingAccountId = stripeMethod?.accountId;
   const revenueAccountId = organization.donationsAccountId;
 
-  if (!cashAccountId || !revenueAccountId) {
+  if (!clearingAccountId || !revenueAccountId) {
     console.error(
-      "Webhook: organization missing donation account configuration:",
+      "Webhook: organization missing account configuration — " +
+      `clearingAccount: ${clearingAccountId || 'NOT SET'}, ` +
+      `revenueAccount: ${revenueAccountId || 'NOT SET'}`,
       organizationId
     );
     return;
@@ -148,14 +159,14 @@ async function handleCheckoutCompleted(
   const now = new Date();
 
   await prisma.$transaction(async (tx) => {
-    // Create transaction: DR Cash, CR Revenue
+    // Create transaction: DR Stripe Clearing (asset), CR Donation Revenue
     const transaction = await tx.transaction.create({
       data: {
         organizationId,
         transactionDate: now,
         amount,
         type: "INCOME",
-        debitAccountId: cashAccountId,
+        debitAccountId: clearingAccountId,
         creditAccountId: revenueAccountId,
         description: `Online donation via Stripe — ${donorName}`,
         contactId,
@@ -171,7 +182,7 @@ async function handleCheckoutCompleted(
     });
 
     // Update account balances
-    await updateAccountBalances(tx, cashAccountId, revenueAccountId, amount);
+    await updateAccountBalances(tx, clearingAccountId, revenueAccountId, amount);
 
     // Create donation record
     await tx.donation.create({

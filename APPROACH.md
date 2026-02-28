@@ -516,9 +516,21 @@ const transactions = await prisma.transaction.findMany({
 
 Example: Donation of $100 via Stripe
 ```
-Debit: Bank Account (Asset)     +$100
+Debit: Stripe Clearing (Asset)  +$100
 Credit: Donation Revenue         +$100
 ```
+
+When Stripe pays out to the org's bank:
+```
+Debit: Checking (Asset)          +$100
+Credit: Stripe Clearing (Asset)  -$100
+```
+
+> **Clearing-Account Pattern**: Each payment method (e.g., Stripe) is linked to an
+> accounting asset account via `OrganizationPaymentMethod.accountId`. When a Stripe
+> webhook fires, the platform debits the linked clearing account and credits the
+> org's donation revenue account. This ensures proper double-entry and makes
+> reconciliation straightforward when Stripe transfers funds to the org's bank.
 
 Example: Purchase equipment for $50
 ```

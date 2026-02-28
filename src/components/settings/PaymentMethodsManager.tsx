@@ -44,6 +44,7 @@ interface PaymentMethod {
   stripeFeePercent: number;
   stripeFeeFixed: number;
   handle: string | null;
+  accountId: string | null;
   payableTo: string | null;
   mailingAddress: string | null;
 }
@@ -116,6 +117,7 @@ export function PaymentMethodsManager({
     payoutsEnabled?: boolean;
   } | null>(null);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [accounts, setAccounts] = useState<{ id: string; name: string; code: string }[]>([]);
 
   const fetchMethods = useCallback(async () => {
     try {
@@ -135,7 +137,20 @@ export function PaymentMethodsManager({
 
   useEffect(() => {
     fetchMethods();
-  }, [fetchMethods]);
+    // Fetch asset accounts for the account selector
+    async function fetchAccounts() {
+      try {
+        const res = await fetch(`/api/organizations/${organizationSlug}/accounts?type=ASSET`);
+        if (res.ok) {
+          const data = await res.json();
+          setAccounts(data.accounts || data || []);
+        }
+      } catch {
+        // Non-critical — account selector just won't have options
+      }
+    }
+    fetchAccounts();
+  }, [fetchMethods, organizationSlug]);
 
   const addMethod = async (type: PaymentMethodType) => {
     setShowAddMenu(false);
@@ -288,6 +303,7 @@ export function PaymentMethodsManager({
           method={method}
           saving={saving === method.id}
           stripeStatus={method.type === 'STRIPE' ? stripeStatus : null}
+          accounts={accounts}
           onUpdate={(updates) => updateMethod(method.id, updates)}
           onDelete={() => deleteMethod(method.id, method.label || method.type)}
           onConnectStripe={connectStripe}
@@ -343,6 +359,7 @@ interface MethodCardProps {
   method: PaymentMethod;
   saving: boolean;
   stripeStatus: { connected: boolean; chargesEnabled?: boolean; payoutsEnabled?: boolean } | null;
+  accounts: { id: string; name: string; code: string }[];
   onUpdate: (updates: Partial<PaymentMethod>) => void;
   onDelete: () => void;
   onConnectStripe: () => void;
@@ -353,6 +370,7 @@ function MethodCard({
   method,
   saving,
   stripeStatus,
+  accounts,
   onUpdate,
   onDelete,
   onConnectStripe,
@@ -516,6 +534,30 @@ function MethodCard({
                 >
                   Save Fee Settings
                 </Button>
+              </div>
+              <div className="mt-4 border-t pt-4">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Linked Accounting Account</h4>
+                <p className="text-xs text-gray-500 mb-3">
+                  Select the asset account that represents funds held by Stripe (e.g. &quot;Stripe Clearing&quot;). Donations via Stripe will debit this account and credit your revenue account.
+                </p>
+                <select
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  value={method.accountId || ''}
+                  onChange={(e) => onUpdate({ accountId: e.target.value || null })}
+                  disabled={saving}
+                >
+                  <option value="">— Select an account —</option>
+                  {accounts.map((acct) => (
+                    <option key={acct.id} value={acct.id}>
+                      {acct.code} — {acct.name}
+                    </option>
+                  ))}
+                </select>
+                {!method.accountId && (
+                  <p className="mt-2 text-xs text-amber-600">
+                    ⚠ No account linked — Stripe donations cannot be recorded until an account is selected.
+                  </p>
+                )}
               </div>
             </div>
           ) : (

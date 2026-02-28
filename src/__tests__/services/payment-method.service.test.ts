@@ -406,6 +406,42 @@ describe('Payment Method Service', () => {
       });
     });
 
+    it('should persist accountId changes', async () => {
+      await updatePaymentMethod('pm-1', 'org-1', { accountId: 'acct-clearing-1' });
+
+      expect(mockOpm.update).toHaveBeenCalledWith({
+        where: { id: 'pm-1', organizationId: 'org-1' },
+        data: expect.objectContaining({ accountId: 'acct-clearing-1' }),
+      });
+    });
+
+    it('should persist accountId as null to clear it', async () => {
+      await updatePaymentMethod('pm-1', 'org-1', { accountId: null });
+
+      expect(mockOpm.update).toHaveBeenCalledWith({
+        where: { id: 'pm-1', organizationId: 'org-1' },
+        data: expect.objectContaining({ accountId: null }),
+      });
+    });
+
+    it('should persist stripeFeePercent changes', async () => {
+      await updatePaymentMethod('pm-1', 'org-1', { stripeFeePercent: 2.2 });
+
+      expect(mockOpm.update).toHaveBeenCalledWith({
+        where: { id: 'pm-1', organizationId: 'org-1' },
+        data: expect.objectContaining({ stripeFeePercent: 2.2 }),
+      });
+    });
+
+    it('should persist stripeFeeFixed changes', async () => {
+      await updatePaymentMethod('pm-1', 'org-1', { stripeFeeFixed: 0.25 });
+
+      expect(mockOpm.update).toHaveBeenCalledWith({
+        where: { id: 'pm-1', organizationId: 'org-1' },
+        data: expect.objectContaining({ stripeFeeFixed: 0.25 }),
+      });
+    });
+
     it('should persist multiple fields in a single update', async () => {
       await updatePaymentMethod('pm-1', 'org-1', {
         isEnabled: true,
@@ -445,6 +481,9 @@ describe('Payment Method Service', () => {
       expect(callData).not.toHaveProperty('handle');
       expect(callData).not.toHaveProperty('payableTo');
       expect(callData).not.toHaveProperty('mailingAddress');
+      expect(callData).not.toHaveProperty('accountId');
+      expect(callData).not.toHaveProperty('stripeFeePercent');
+      expect(callData).not.toHaveProperty('stripeFeeFixed');
     });
 
     it('should send empty data object when no fields provided', async () => {

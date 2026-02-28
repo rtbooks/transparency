@@ -25,6 +25,7 @@ const createPaymentMethodSchema = z.object({
   label: z.string().nullable().optional(),
   instructions: z.string().nullable().optional(),
   handle: z.string().nullable().optional(),
+  accountId: z.string().nullable().optional(),
   payableTo: z.string().nullable().optional(),
   mailingAddress: z.string().nullable().optional(),
 });

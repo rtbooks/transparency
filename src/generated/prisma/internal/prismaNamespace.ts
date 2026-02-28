@@ -2654,6 +2654,7 @@ export const OrganizationPaymentMethodScalarFieldEnum = {
   stripeFeePercent: 'stripeFeePercent',
   stripeFeeFixed: 'stripeFeeFixed',
   handle: 'handle',
+  accountId: 'accountId',
   payableTo: 'payableTo',
   mailingAddress: 'mailingAddress',
   createdAt: 'createdAt',
