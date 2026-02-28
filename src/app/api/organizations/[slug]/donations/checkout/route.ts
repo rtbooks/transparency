@@ -53,6 +53,12 @@ export async function POST(
       !stripeMethod.isEnabled ||
       !stripeMethod.stripeChargesEnabled
     ) {
+      console.error("Stripe checkout blocked for org:", slug, {
+        found: !!stripeMethod,
+        stripeAccountId: !!stripeMethod?.stripeAccountId,
+        isEnabled: stripeMethod?.isEnabled ?? null,
+        stripeChargesEnabled: stripeMethod?.stripeChargesEnabled ?? null,
+      });
       return NextResponse.json(
         { error: "Online payments are not available for this organization" },
         { status: 400 }
