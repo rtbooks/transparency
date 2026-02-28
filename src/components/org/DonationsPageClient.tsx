@@ -16,6 +16,9 @@ interface Payment {
   amount: number;
   date: string;
   notes?: string | null;
+  description?: string | null;
+  paymentMethod?: string | null;
+  referenceNumber?: string | null;
 }
 
 type PaymentMethodType =
@@ -609,14 +612,30 @@ export function DonationsPageClient({
                       {donation.payments.map((payment) => (
                         <div
                           key={payment.id}
-                          className="flex items-center justify-between text-sm"
+                          className="rounded-md bg-gray-50 px-3 py-2 text-sm"
                         >
-                          <span className="text-gray-600">
-                            {new Date(payment.date).toLocaleDateString()}
-                          </span>
-                          <span className="font-medium text-gray-900">
-                            {formatCurrency(payment.amount)}
-                          </span>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">
+                              {new Date(payment.date).toLocaleDateString()}
+                            </span>
+                            <span className="font-medium text-gray-900">
+                              {formatCurrency(payment.amount)}
+                            </span>
+                          </div>
+                          <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-gray-500">
+                            {payment.paymentMethod && (
+                              <span>{METHOD_LABELS[payment.paymentMethod as PaymentMethodType] || payment.paymentMethod}</span>
+                            )}
+                            {payment.referenceNumber && (
+                              <span>Ref: {payment.referenceNumber.length > 20 ? payment.referenceNumber.slice(0, 20) + '…' : payment.referenceNumber}</span>
+                            )}
+                          </div>
+                          {payment.description && (
+                            <p className="mt-1 text-xs text-gray-500">{payment.description}</p>
+                          )}
+                          {payment.notes && (
+                            <p className="mt-1 text-xs italic text-gray-400">{payment.notes}</p>
+                          )}
                         </div>
                       ))}
                     </div>
