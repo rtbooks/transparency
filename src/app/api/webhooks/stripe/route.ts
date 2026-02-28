@@ -91,7 +91,11 @@ async function handleCheckoutCompleted(
     return;
   }
 
-  const amount = (session.amount_total || 0) / 100;
+  const donationAmount = metadata.donationAmount
+    ? parseFloat(metadata.donationAmount)
+    : 0;
+  const chargedAmount = (session.amount_total || 0) / 100;
+  const amount = donationAmount > 0 ? donationAmount : chargedAmount;
   if (amount <= 0) return;
 
   // Get org's donation accounts
@@ -159,12 +163,12 @@ async function handleCheckoutCompleted(
   const now = new Date();
 
   await prisma.$transaction(async (tx) => {
-    // Create transaction: DR Stripe Clearing (asset), CR Donation Revenue
+    // Transaction records the actual charged amount (includes processing fees)
     const transaction = await tx.transaction.create({
       data: {
         organizationId,
         transactionDate: now,
-        amount,
+        amount: chargedAmount,
         type: "INCOME",
         debitAccountId: clearingAccountId,
         creditAccountId: revenueAccountId,
@@ -181,10 +185,10 @@ async function handleCheckoutCompleted(
       },
     });
 
-    // Update account balances
-    await updateAccountBalances(tx, clearingAccountId, revenueAccountId, amount);
+    // Update account balances with the actual charged amount
+    await updateAccountBalances(tx, clearingAccountId, revenueAccountId, chargedAmount);
 
-    // Create donation record
+    // Donation records the donor's intended amount (before fees)
     await tx.donation.create({
       data: {
         organizationId,
