@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * Handle checkout.session.completed — record the donation and create accounting entries.
+ * Handle checkout.session.completed — either pay an existing pledge or create a new donation.
  */
 async function handleCheckoutCompleted(
   session: Stripe.Checkout.Session,
@@ -74,15 +74,22 @@ async function handleCheckoutCompleted(
   const metadata = session.metadata || {};
   const organizationId = metadata.organizationId;
 
+  console.log("Webhook: session metadata:", JSON.stringify(metadata));
+
   if (!organizationId) {
     console.error("Webhook: missing organizationId in session metadata");
     return;
   }
 
-  // Prevent duplicate processing
+  // Prevent duplicate processing — check both stripeSessionId and referenceNumber
   const existingTx = await prisma.transaction.findFirst({
     where: {
-      stripeSessionId: session.id,
+      OR: [
+        { stripeSessionId: session.id },
+        ...(session.payment_intent
+          ? [{ referenceNumber: session.payment_intent as string, paymentMethod: "STRIPE" as const }]
+          : []),
+      ],
       validTo: MAX_DATE,
     },
   });
@@ -91,7 +98,11 @@ async function handleCheckoutCompleted(
     return;
   }
 
-  const amount = (session.amount_total || 0) / 100;
+  const donationAmount = metadata.donationAmount
+    ? parseFloat(metadata.donationAmount)
+    : 0;
+  const chargedAmount = (session.amount_total || 0) / 100;
+  const amount = donationAmount > 0 ? donationAmount : chargedAmount;
   if (amount <= 0) return;
 
   // Get org's donation accounts
@@ -113,25 +124,121 @@ async function handleCheckoutCompleted(
   });
 
   const clearingAccountId = stripeMethod?.accountId;
-  const revenueAccountId = organization.donationsAccountId;
 
-  if (!clearingAccountId || !revenueAccountId) {
+  if (!clearingAccountId) {
     console.error(
-      "Webhook: organization missing account configuration — " +
-      `clearingAccount: ${clearingAccountId || 'NOT SET'}, ` +
-      `revenueAccount: ${revenueAccountId || 'NOT SET'}`,
+      "Webhook: organization missing Stripe clearing account",
       organizationId
     );
     return;
   }
 
-  // Find or create contact for donor
+  // Branch: paying an existing pledge vs. new donation
+  if (metadata.donationId) {
+    await handlePledgePayment(
+      session, metadata, organizationId, clearingAccountId, amount, chargedAmount
+    );
+  } else {
+    const revenueAccountId = organization.donationsAccountId;
+    if (!revenueAccountId) {
+      console.error(
+        "Webhook: organization missing donations revenue account",
+        organizationId
+      );
+      return;
+    }
+    await handleNewDonation(
+      session, metadata, organizationId, clearingAccountId, revenueAccountId, amount, chargedAmount
+    );
+  }
+
+  // Check campaign auto-complete
+  if (metadata.campaignId) {
+    const { checkAndAutoCompleteCampaign } = await import(
+      "@/services/campaign.service"
+    );
+    await checkAndAutoCompleteCampaign(metadata.campaignId).catch(() => {});
+  }
+}
+
+/**
+ * Pay an existing pledge donation via Stripe.
+ * Creates a transaction DR Stripe Clearing, CR AR (from the pledge's accrual),
+ * records the bill payment, and updates donation status.
+ */
+async function handlePledgePayment(
+  session: Stripe.Checkout.Session,
+  metadata: Record<string, string>,
+  organizationId: string,
+  clearingAccountId: string,
+  amount: number,
+  chargedAmount: number,
+) {
+  const donation = await prisma.donation.findFirst({
+    where: { id: metadata.donationId, organizationId },
+  });
+
+  if (!donation) {
+    console.error("Webhook: pledge donation not found:", metadata.donationId);
+    return;
+  }
+
+  if (!donation.billId) {
+    console.error("Webhook: pledge donation has no linked bill:", metadata.donationId);
+    return;
+  }
+
+  const { recordPayment } = await import("@/services/bill-payment.service");
+  const { recalculateBillStatus } = await import("@/services/bill.service");
+  const { recordDonationPayment } = await import("@/services/donation.service");
+
+  // recordPayment creates the transaction (DR Stripe Clearing, CR AR) and BillPayment
+  const billPayment = await recordPayment({
+    billId: donation.billId,
+    organizationId,
+    amount,
+    transactionDate: new Date(),
+    cashAccountId: clearingAccountId,
+    description: `Stripe payment for pledge — ${metadata.donorName || 'Donor'}`,
+    referenceNumber: session.payment_intent as string || null,
+    paymentMethod: "STRIPE",
+  });
+
+  // Mark the transaction with Stripe session/payment IDs for dedup (best-effort)
+  await prisma.transaction.updateMany({
+    where: { id: billPayment.transactionId },
+    data: {
+      stripeSessionId: session.id,
+      stripePaymentId: session.payment_intent as string || null,
+    },
+  }).catch((err) => console.error("Webhook: failed to set Stripe IDs on transaction:", err));
+
+  // Update bill and donation status — these must both run
+  await recalculateBillStatus(donation.billId);
+  await recordDonationPayment(donation.id, organizationId, amount);
+
+  console.log(
+    `Webhook: recorded $${amount} pledge payment for donation ${donation.id} (session: ${session.id})`
+  );
+}
+
+/**
+ * Create a new one-time donation from a Stripe checkout (no pre-existing pledge).
+ */
+async function handleNewDonation(
+  session: Stripe.Checkout.Session,
+  metadata: Record<string, string>,
+  organizationId: string,
+  clearingAccountId: string,
+  revenueAccountId: string,
+  amount: number,
+  chargedAmount: number,
+) {
   const donorName = metadata.donorName || "Anonymous Donor";
   const donorEmail = session.customer_email || session.customer_details?.email;
   let contactId: string | null = null;
 
   if (donorEmail) {
-    // Try to find existing contact by email
     const existingContact = await prisma.contact.findFirst({
       where: buildCurrentVersionWhere({
         organizationId,
@@ -143,7 +250,6 @@ async function handleCheckoutCompleted(
     }
   }
 
-  // If no contact found, create one
   if (!contactId) {
     const { createContact } = await import("@/services/contact.service");
     const contact = await createContact({
@@ -159,12 +265,11 @@ async function handleCheckoutCompleted(
   const now = new Date();
 
   await prisma.$transaction(async (tx) => {
-    // Create transaction: DR Stripe Clearing (asset), CR Donation Revenue
     const transaction = await tx.transaction.create({
       data: {
         organizationId,
         transactionDate: now,
-        amount,
+        amount: chargedAmount,
         type: "INCOME",
         debitAccountId: clearingAccountId,
         creditAccountId: revenueAccountId,
@@ -181,10 +286,8 @@ async function handleCheckoutCompleted(
       },
     });
 
-    // Update account balances
-    await updateAccountBalances(tx, clearingAccountId, revenueAccountId, amount);
+    await updateAccountBalances(tx, clearingAccountId, revenueAccountId, chargedAmount);
 
-    // Create donation record
     await tx.donation.create({
       data: {
         organizationId,
@@ -208,14 +311,6 @@ async function handleCheckoutCompleted(
       },
     });
   });
-
-  // Check campaign auto-complete
-  if (metadata.campaignId) {
-    const { checkAndAutoCompleteCampaign } = await import(
-      "@/services/campaign.service"
-    );
-    await checkAndAutoCompleteCampaign(metadata.campaignId).catch(() => {});
-  }
 
   console.log(
     `Webhook: recorded $${amount} donation for org ${organizationId} (session: ${session.id})`

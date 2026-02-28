@@ -19,8 +19,7 @@ export default async function DonationSuccessPage({ params }: Props) {
           Thank You for Your Donation!
         </h1>
         <p className="mt-2 text-gray-600">
-          Your payment has been processed successfully. You should receive
-          a confirmation email shortly.
+          Your payment has been processed successfully.
         </p>
         <div className="mt-6">
           <Link

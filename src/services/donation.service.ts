@@ -49,6 +49,9 @@ export interface DonationWithDetails extends Donation {
     amount: number;
     date: Date | string;
     notes?: string | null;
+    description?: string | null;
+    paymentMethod?: string | null;
+    referenceNumber?: string | null;
   }>;
 }
 
@@ -519,6 +522,9 @@ export async function listDonations(
             amount: tx ? Number(tx.amount) : 0,
             date: tx?.transactionDate ?? bp.createdAt,
             notes: bp.notes,
+            description: tx?.description ?? null,
+            paymentMethod: tx?.paymentMethod ?? null,
+            referenceNumber: tx?.referenceNumber ?? null,
           };
         })
       : [];

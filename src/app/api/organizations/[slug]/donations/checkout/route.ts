@@ -6,7 +6,7 @@ import { getPaymentMethodByType } from "@/services/payment-method.service";
 import { z } from "zod";
 
 const checkoutSchema = z.object({
-  amount: z.number().positive().min(1),
+  amount: z.number().positive().min(5, "Minimum donation amount for card payments is $5"),
   campaignId: z.string().nullable().optional(),
   tierId: z.string().nullable().optional(),
   unitCount: z.number().int().positive().nullable().optional(),
@@ -14,6 +14,7 @@ const checkoutSchema = z.object({
   donorEmail: z.string().email().optional(),
   donorMessage: z.string().optional(),
   isAnonymous: z.boolean().optional(),
+  donationId: z.string().uuid().optional(),
 });
 
 function calculateTotalWithFees(donationAmount: number, feePercent: number, feeFixed: number): number {
@@ -53,6 +54,12 @@ export async function POST(
       !stripeMethod.isEnabled ||
       !stripeMethod.stripeChargesEnabled
     ) {
+      console.error("Stripe checkout blocked for org:", slug, {
+        found: !!stripeMethod,
+        stripeAccountId: !!stripeMethod?.stripeAccountId,
+        isEnabled: stripeMethod?.isEnabled ?? null,
+        stripeChargesEnabled: stripeMethod?.stripeChargesEnabled ?? null,
+      });
       return NextResponse.json(
         { error: "Online payments are not available for this organization" },
         { status: 400 }
@@ -114,9 +121,12 @@ export async function POST(
           donorMessage: validated.donorMessage || "",
           isAnonymous: String(validated.isAnonymous || false),
           donationAmount: String(validated.amount),
+          donationId: validated.donationId || "",
         },
         success_url: `${baseUrl}/org/${slug}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${baseUrl}/org/${slug}/donate/cancel`,
+        cancel_url: validated.campaignId
+          ? `${baseUrl}/org/${slug}/donate/cancel?campaignId=${validated.campaignId}`
+          : `${baseUrl}/org/${slug}/donate/cancel`,
       },
       {
         stripeAccount: stripeMethod.stripeAccountId,
@@ -129,14 +139,18 @@ export async function POST(
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      const messages = error.errors.map((e) => `${e.path.join('.')}: ${e.message}`);
+      console.error("Checkout validation failed:", messages);
       return NextResponse.json(
         { error: "Invalid input", details: error.errors },
         { status: 400 }
       );
     }
     console.error("Error creating checkout session:", error);
+    const message =
+      error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: message },
       { status: 500 }
     );
   }

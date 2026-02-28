@@ -4,12 +4,18 @@ import { XCircle } from 'lucide-react';
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ campaignId?: string }>;
 }
 
 export const metadata: Metadata = { title: "Donation Cancelled" };
 
-export default async function DonationCancelPage({ params }: Props) {
+export default async function DonationCancelPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const { campaignId } = await searchParams;
+
+  const tryAgainUrl = campaignId
+    ? `/org/${slug}/donate?campaignId=${campaignId}`
+    : `/org/${slug}/donate`;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
@@ -29,7 +35,7 @@ export default async function DonationCancelPage({ params }: Props) {
             Back to Organization
           </Link>
           <Link
-            href={`/org/${slug}/donate`}
+            href={tryAgainUrl}
             className="inline-block rounded-md bg-gray-900 px-6 py-2 text-sm font-medium text-white hover:bg-gray-800"
           >
             Try Again

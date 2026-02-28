@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X, CreditCard, Smartphone, Mail, Link2, Building2, Wallet } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X, CreditCard, Smartphone, Mail, Link2, Building2, Wallet, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,6 +16,9 @@ interface Payment {
   amount: number;
   date: string;
   notes?: string | null;
+  description?: string | null;
+  paymentMethod?: string | null;
+  referenceNumber?: string | null;
 }
 
 type PaymentMethodType =
@@ -134,6 +137,8 @@ export function DonationsPageClient({
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([]);
   const [payNowDonation, setPayNowDonation] = useState<DonationItem | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
+  const [paymentMethodType, setPaymentMethodType] = useState('OTHER');
+  const [expandedPayments, setExpandedPayments] = useState<Set<string>>(new Set());
 
   const fetchDonations = useCallback(async () => {
     try {
@@ -250,6 +255,7 @@ export function DonationsPageClient({
     setPaymentDate(new Date().toISOString().split('T')[0]);
     setPaymentDescription('');
     setPaymentNotes('');
+    setPaymentMethodType('OTHER');
   };
 
   const handleStripeCheckout = async (donation: DonationItem) => {
@@ -297,6 +303,7 @@ export function DonationsPageClient({
             cashAccountId: paymentCashAccountId,
             description: paymentDescription || undefined,
             notes: paymentNotes || undefined,
+            paymentMethod: paymentMethodType,
           }),
         }
       );
@@ -604,22 +611,58 @@ export function DonationsPageClient({
                 {/* Payment history */}
                 {donation.payments.length > 0 && (
                   <div className="mt-4 border-t pt-4">
-                    <p className="mb-2 text-sm font-medium text-gray-700">Payments</p>
-                    <div className="space-y-2">
+                    <button
+                      className="flex w-full items-center gap-1 text-sm font-medium text-gray-700 hover:text-gray-900"
+                      onClick={() => setExpandedPayments((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(donation.id)) {
+                          next.delete(donation.id);
+                        } else {
+                          next.add(donation.id);
+                        }
+                        return next;
+                      })}
+                    >
+                      {expandedPayments.has(donation.id) ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                      Payments ({donation.payments.length})
+                    </button>
+                    {expandedPayments.has(donation.id) && (
+                      <div className="mt-2 space-y-2">
                       {donation.payments.map((payment) => (
                         <div
                           key={payment.id}
-                          className="flex items-center justify-between text-sm"
+                          className="rounded-md bg-gray-50 px-3 py-2 text-sm"
                         >
-                          <span className="text-gray-600">
-                            {new Date(payment.date).toLocaleDateString()}
-                          </span>
-                          <span className="font-medium text-gray-900">
-                            {formatCurrency(payment.amount)}
-                          </span>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">
+                              {new Date(payment.date).toLocaleDateString()}
+                            </span>
+                            <span className="font-medium text-gray-900">
+                              {formatCurrency(payment.amount)}
+                            </span>
+                          </div>
+                          <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-gray-500">
+                            {payment.paymentMethod && (
+                              <span>{METHOD_LABELS[payment.paymentMethod as PaymentMethodType] || payment.paymentMethod}</span>
+                            )}
+                            {payment.referenceNumber && (
+                              <span>Ref: {payment.referenceNumber.length > 20 ? payment.referenceNumber.slice(0, 20) + '…' : payment.referenceNumber}</span>
+                            )}
+                          </div>
+                          {payment.description && (
+                            <p className="mt-1 text-xs text-gray-500">{payment.description}</p>
+                          )}
+                          {payment.notes && (
+                            <p className="mt-1 text-xs italic text-gray-400">{payment.notes}</p>
+                          )}
                         </div>
                       ))}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -734,6 +777,18 @@ export function DonationsPageClient({
                     <option key={acct.id} value={acct.id}>
                       {acct.code} - {acct.name}
                     </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Payment Method</label>
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  value={paymentMethodType}
+                  onChange={(e) => setPaymentMethodType(e.target.value)}
+                >
+                  {(Object.keys(METHOD_LABELS) as PaymentMethodType[]).map((key) => (
+                    <option key={key} value={key}>{METHOD_LABELS[key]}</option>
                   ))}
                 </select>
               </div>
