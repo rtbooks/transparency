@@ -116,7 +116,9 @@ export async function POST(
           donationAmount: String(validated.amount),
         },
         success_url: `${baseUrl}/org/${slug}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${baseUrl}/org/${slug}/donate/cancel`,
+        cancel_url: validated.campaignId
+          ? `${baseUrl}/org/${slug}/donate/cancel?campaignId=${validated.campaignId}`
+          : `${baseUrl}/org/${slug}/donate/cancel`,
       },
       {
         stripeAccount: stripeMethod.stripeAccountId,
