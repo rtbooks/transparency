@@ -6,7 +6,7 @@ import { getPaymentMethodByType } from "@/services/payment-method.service";
 import { z } from "zod";
 
 const checkoutSchema = z.object({
-  amount: z.number().positive().min(1),
+  amount: z.number().positive().min(5, "Minimum donation amount for card payments is $5"),
   campaignId: z.string().nullable().optional(),
   tierId: z.string().nullable().optional(),
   unitCount: z.number().int().positive().nullable().optional(),

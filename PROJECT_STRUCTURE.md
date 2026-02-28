@@ -138,7 +138,9 @@ transparency-platform/
 ## Key Directories Explained
 
 ### `/src/app`
+
 Next.js 14 App Router structure with route groups for organization:
+
 - `(auth)`: Authentication pages
 - `(platform)`: Platform admin (super admin) pages
 - `org/[slug]`: Organization-specific pages (both public and admin) - **Note: Uses `/org/` prefix**
@@ -146,6 +148,7 @@ Next.js 14 App Router structure with route groups for organization:
 - `api/`: API routes
 
 ### `/src/components`
+
 - `ui/`: Base UI components from Shadcn/ui
 - `org/`: Organization-specific business components
 - `dashboard/`: Dashboard and charting components
@@ -154,21 +157,26 @@ Next.js 14 App Router structure with route groups for organization:
 - `shared/`: Shared utility components
 
 ### `/src/lib`
+
 - Core business logic and utilities
 - `accounting/`: Financial calculations and ledger logic
 - Database clients (Prisma, Stripe)
 - Validation schemas (Zod)
 
 ### `/src/hooks`
+
 Custom React hooks for data fetching and state management
 
 ### `/src/types`
+
 TypeScript type definitions
 
 ### `/prisma`
+
 Database schema and migrations
 
 ### `/tests`
+
 Test files organized by type (unit, integration, e2e)
 
 ## Route Structure Examples
@@ -176,6 +184,7 @@ Test files organized by type (unit, integration, e2e)
 **IMPORTANT: All organization routes use the `/org/` prefix**
 
 ### Public Routes
+
 - `/` - Landing page
 - `/org/grit-hoops` - GRIT org public dashboard
 - `/org/grit-hoops/donate` - Donation page for GRIT
@@ -183,11 +192,13 @@ Test files organized by type (unit, integration, e2e)
 - `/register` - Registration page
 
 ### Donor Routes (Authenticated)
+
 - `/profile` - Donor profile
 - `/profile/donations` - Donation history
 - `/profile/settings` - Donor settings
 
 ### Organization Admin Routes (Authenticated + Org Admin Role)
+
 - `/org/grit-hoops/dashboard` - Admin dashboard
 - `/org/grit-hoops/dashboard/transactions` - Transaction management
 - `/org/grit-hoops/dashboard/transactions/new` - Record new transaction
@@ -197,6 +208,7 @@ Test files organized by type (unit, integration, e2e)
 - `/org/grit-hoops/dashboard/settings` - Organization settings
 
 ### Platform Admin Routes (Authenticated + Platform Admin Role)
+
 - `/admin` - Platform admin dashboard
 - `/admin/organizations` - Manage all organizations
 - `/admin/users` - Manage all users
@@ -205,11 +217,13 @@ Test files organized by type (unit, integration, e2e)
 ## API Routes
 
 ### Public APIs
+
 - `GET /api/organizations/[slug]` - Get org public data
 - `GET /api/organizations/[slug]/transactions` - Get transactions (public view)
 - `GET /api/organizations/[slug]/program-spending` - Get program spending
 
 ### Protected APIs (Org Admin)
+
 - `POST /api/organizations/[slug]/transactions` - Create transaction
 - `PUT /api/organizations/[slug]/transactions/[id]` - Update transaction
 - `GET /api/organizations/[slug]/accounts` - Get chart of accounts
@@ -217,54 +231,20 @@ Test files organized by type (unit, integration, e2e)
 - `POST /api/organizations/[slug]/program-spending` - Create program spending item
 
 ### Donation APIs
+
 - `POST /api/donations/create-checkout-session` - Create Stripe checkout
 - `POST /api/webhooks/stripe` - Stripe webhook handler
 
 ### Platform Admin APIs
+
 - `GET /api/admin/organizations` - List all orgs
 - `POST /api/admin/organizations` - Create organization
 - `GET /api/admin/analytics` - Platform analytics
 
-## Environment Variables
-
-Create a `.env.local` file with:
-
-```bash
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/transparency"
-
-# Authentication (Choose one)
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-
-# OR Supabase
-# NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-# NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
-# SUPABASE_SERVICE_ROLE_KEY=eyJhbG...
-
-# Stripe
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-
-# File Storage (Cloudflare R2)
-R2_ACCOUNT_ID=...
-R2_ACCESS_KEY_ID=...
-R2_SECRET_ACCESS_KEY=...
-R2_BUCKET_NAME=transparency-uploads
-NEXT_PUBLIC_R2_PUBLIC_URL=https://...
-
-# Email (Optional - for now)
-# RESEND_API_KEY=re_...
-
-# App Config
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
 ## Development Workflow
 
 1. **Setup**
+
    ```bash
    npm install
    npx prisma generate
@@ -272,11 +252,13 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
    ```
 
 2. **Development**
+
    ```bash
    npm run dev  # Start Next.js dev server
    ```
 
 3. **Database Management**
+
    ```bash
    npx prisma studio  # Open Prisma Studio
    npx prisma migrate dev --name description  # Create migration
@@ -284,6 +266,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
    ```
 
 4. **Testing**
+
    ```bash
    npm run test        # Run unit tests
    npm run test:e2e    # Run E2E tests
@@ -303,15 +286,3 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 4. Create pull request
 5. Merge to main after review
 6. Deploy automatically (via Vercel)
-
-## Deployment
-
-### Vercel (Recommended)
-1. Connect GitHub repo to Vercel
-2. Add environment variables in Vercel dashboard
-3. Deploy automatically on push to main
-
-### Alternative (Railway/Fly.io)
-1. Install CLI
-2. Configure `railway.json` or `fly.toml`
-3. Deploy with `railway up` or `fly deploy`

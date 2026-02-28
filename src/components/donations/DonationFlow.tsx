@@ -97,6 +97,7 @@ export function DonationFlow({
 
   const parsedAmount = parseFloat(amount);
   const isValidAmount = !isNaN(parsedAmount) && parsedAmount >= 1;
+  const isValidStripeAmount = !isNaN(parsedAmount) && parsedAmount >= 5;
 
   // Fee calculation using the selected Stripe method's configured rates
   const stripeMethod = methods.find((m) => m.type === 'STRIPE');
@@ -358,13 +359,18 @@ export function DonationFlow({
             {/* Stripe: show fee info + direct checkout */}
             {selectedMethod.type === 'STRIPE' && (
               <div className="space-y-3">
+                {!isValidStripeAmount && (
+                  <p className="text-sm font-medium text-red-600">
+                    Minimum donation amount for card payments is $5.
+                  </p>
+                )}
                 <p className="text-xs text-gray-500">
                   A processing fee of ${feeAmount.toFixed(2)} will be added — you&apos;ll be charged ${totalWithFees.toFixed(2)} so {organizationName} receives the full ${parsedAmount.toFixed(2)}.
                 </p>
                 <Button
                   className="w-full"
                   style={accentStyle}
-                  disabled={!donorName || !donorEmail || submitting}
+                  disabled={!donorName || !donorEmail || submitting || !isValidStripeAmount}
                   onClick={handleStripeCheckout}
                 >
                   {submitting ? (
