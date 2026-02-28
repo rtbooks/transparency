@@ -14,6 +14,7 @@ const paymentSchema = z.object({
   description: z.string().optional(),
   referenceNumber: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
+  paymentMethod: z.string().optional(),
 });
 
 /**
@@ -88,6 +89,7 @@ export async function POST(
       referenceNumber: validated.referenceNumber,
       notes: validated.notes,
       createdBy: user.id,
+      paymentMethod: validated.paymentMethod,
     });
 
     // Recalculate bill status (amountPaid, status) from linked transactions

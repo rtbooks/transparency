@@ -199,15 +199,15 @@ async function handlePledgePayment(
     cashAccountId: clearingAccountId,
     description: `Stripe payment for pledge — ${metadata.donorName || 'Donor'}`,
     referenceNumber: session.payment_intent as string || null,
+    paymentMethod: "STRIPE",
   });
 
-  // Mark the transaction with Stripe identifiers for dedup (best-effort)
+  // Mark the transaction with Stripe session/payment IDs for dedup (best-effort)
   await prisma.transaction.updateMany({
     where: { id: billPayment.transactionId },
     data: {
       stripeSessionId: session.id,
       stripePaymentId: session.payment_intent as string || null,
-      paymentMethod: "STRIPE",
     },
   }).catch((err) => console.error("Webhook: failed to set Stripe IDs on transaction:", err));
 

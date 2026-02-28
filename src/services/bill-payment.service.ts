@@ -19,6 +19,7 @@ export interface RecordPaymentInput {
   referenceNumber?: string | null;
   notes?: string | null;
   createdBy?: string;
+  paymentMethod?: string;
 }
 
 export interface LinkPaymentInput {
@@ -92,7 +93,7 @@ export async function recordPayment(
         creditAccountId,
         description: input.description || `Payment: ${bill.description}`,
         referenceNumber: input.referenceNumber ?? null,
-        paymentMethod: 'OTHER',
+        paymentMethod: (input.paymentMethod as any) || 'OTHER',
         contactId: bill.contactId,
         createdBy: input.createdBy ?? null,
       },
