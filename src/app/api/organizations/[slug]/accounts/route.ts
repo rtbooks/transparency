@@ -5,6 +5,7 @@ import { z } from 'zod';
 import {
   findAccountsByOrganization,
   findActiveAccounts,
+  getAccountsByType,
   createAccount,
   isAccountCodeAvailable,
   findAccountById,
@@ -66,14 +67,20 @@ export async function GET(
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // Check query parameter for including inactive accounts
+    // Check query parameters
     const { searchParams } = new URL(request.url);
     const includeInactive = searchParams.get('includeInactive') === 'true';
+    const typeFilter = searchParams.get('type') as 'ASSET' | 'LIABILITY' | 'EQUITY' | 'REVENUE' | 'EXPENSE' | null;
 
     // Fetch accounts (current versions only)
-    const accounts = includeInactive
-      ? await findAccountsByOrganization(organization.id)
-      : await findActiveAccounts(organization.id);
+    let accounts;
+    if (typeFilter) {
+      accounts = await getAccountsByType(organization.id, typeFilter);
+    } else if (includeInactive) {
+      accounts = await findAccountsByOrganization(organization.id);
+    } else {
+      accounts = await findActiveAccounts(organization.id);
+    }
 
     return NextResponse.json(accounts);
   } catch (error) {

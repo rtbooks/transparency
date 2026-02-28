@@ -42,6 +42,7 @@ const PaymentMethodAdminResponseSchema = z.object({
   stripeChargesEnabled: z.boolean(),
   stripePayoutsEnabled: z.boolean(),
   handle: z.string().nullable(),
+  accountId: z.string().nullable(),
   payableTo: z.string().nullable(),
   mailingAddress: z.string().nullable(),
   createdAt: z.union([z.string(), z.date()]),
@@ -82,6 +83,9 @@ const PaymentMethodUpdateRequestSchema = z.object({
   stripeChargesEnabled: z.boolean().optional(),
   stripePayoutsEnabled: z.boolean().optional(),
   handle: z.string().nullable().optional(),
+  accountId: z.string().nullable().optional(),
+  stripeFeePercent: z.number().optional(),
+  stripeFeeFixed: z.number().optional(),
   payableTo: z.string().nullable().optional(),
   mailingAddress: z.string().nullable().optional(),
 });
@@ -103,6 +107,7 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: true,
         stripePayoutsEnabled: true,
         handle: null,
+        accountId: null,
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -126,6 +131,7 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: null,
+        accountId: null,
         payableTo: 'Acme Nonprofit Inc.',
         mailingAddress: '123 Main St, City, ST 12345',
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -149,6 +155,7 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: '@acme-nonprofit',
+        accountId: null,
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -172,6 +179,7 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: null,
+        accountId: null,
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -195,6 +203,7 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: null,
+        accountId: null,
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -218,6 +227,7 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: null,
+        accountId: null,
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -241,6 +251,7 @@ describe('Payment Methods API Contract Tests', () => {
         stripeChargesEnabled: false,
         stripePayoutsEnabled: false,
         handle: null,
+        accountId: null,
         payableTo: null,
         mailingAddress: null,
         createdAt: '2026-01-15T00:00:00.000Z',
@@ -431,6 +442,26 @@ describe('Payment Methods API Contract Tests', () => {
 
     it('should accept mailingAddress update', () => {
       const result = PaymentMethodUpdateRequestSchema.safeParse({ mailingAddress: '456 Oak Ave' });
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept accountId update', () => {
+      const result = PaymentMethodUpdateRequestSchema.safeParse({ accountId: 'acct-clearing-1' });
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept null accountId to clear it', () => {
+      const result = PaymentMethodUpdateRequestSchema.safeParse({ accountId: null });
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept stripeFeePercent update', () => {
+      const result = PaymentMethodUpdateRequestSchema.safeParse({ stripeFeePercent: 2.2 });
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept stripeFeeFixed update', () => {
+      const result = PaymentMethodUpdateRequestSchema.safeParse({ stripeFeeFixed: 0.25 });
       expect(result.success).toBe(true);
     });
 

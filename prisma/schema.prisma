@@ -984,6 +984,9 @@ model OrganizationPaymentMethod {
   // Digital payment handles (Venmo, PayPal, Cash App, Zelle)
   handle     String? // @handle or email address
 
+  // Accounting linkage — which asset account receives funds from this method
+  accountId String? @map("account_id") // Stable entity ID of the linked Account
+
   // Check / mail
   payableTo      String? @map("payable_to") // "Make checks payable to..."
   mailingAddress String? @map("mailing_address") @db.Text
