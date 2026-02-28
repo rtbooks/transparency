@@ -137,14 +137,18 @@ export async function POST(
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      const messages = error.errors.map((e) => `${e.path.join('.')}: ${e.message}`);
+      console.error("Checkout validation failed:", messages);
       return NextResponse.json(
         { error: "Invalid input", details: error.errors },
         { status: 400 }
       );
     }
     console.error("Error creating checkout session:", error);
+    const message =
+      error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: message },
       { status: 500 }
     );
   }

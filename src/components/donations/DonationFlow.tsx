@@ -131,7 +131,10 @@ export function DonationFlow({
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || 'Failed to start checkout');
+        const detail = data.details
+          ? data.details.map((d: { path: string[]; message: string }) => d.message).join(', ')
+          : '';
+        alert(detail || data.error || 'Failed to start checkout');
       }
     } catch {
       alert('Failed to start checkout');
