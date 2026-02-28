@@ -79,10 +79,15 @@ async function handleCheckoutCompleted(
     return;
   }
 
-  // Prevent duplicate processing
+  // Prevent duplicate processing — check both stripeSessionId and referenceNumber
   const existingTx = await prisma.transaction.findFirst({
     where: {
-      stripeSessionId: session.id,
+      OR: [
+        { stripeSessionId: session.id },
+        ...(session.payment_intent
+          ? [{ referenceNumber: session.payment_intent as string, paymentMethod: "STRIPE" as const }]
+          : []),
+      ],
       validTo: MAX_DATE,
     },
   });
@@ -196,7 +201,7 @@ async function handlePledgePayment(
     referenceNumber: session.payment_intent as string || null,
   });
 
-  // Mark the transaction with Stripe identifiers for dedup
+  // Mark the transaction with Stripe identifiers for dedup (best-effort)
   await prisma.transaction.updateMany({
     where: { id: billPayment.transactionId },
     data: {
@@ -204,8 +209,9 @@ async function handlePledgePayment(
       stripePaymentId: session.payment_intent as string || null,
       paymentMethod: "STRIPE",
     },
-  });
+  }).catch((err) => console.error("Webhook: failed to set Stripe IDs on transaction:", err));
 
+  // Update bill and donation status — these must both run
   await recalculateBillStatus(donation.billId);
   await recordDonationPayment(donation.id, organizationId, amount);
 
