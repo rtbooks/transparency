@@ -5,7 +5,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
+import { updateAccountBalances, reverseAccountBalances } from '@/lib/accounting/balance-calculator';
 import { MAX_DATE, buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 import type { Donation, Bill } from '@/generated/prisma/client';
 import type { Prisma } from '@/generated/prisma/client';
@@ -335,13 +335,21 @@ export async function cancelDonation(
   }
 
   return await prisma.$transaction(async (tx) => {
-    // Soft-delete the accrual transaction
+    // Reverse account balances and soft-delete the accrual transaction
     if (donation.transactionId) {
       const accrualTx = await tx.transaction.findFirst({
         where: buildCurrentVersionWhere({ id: donation.transactionId }),
       });
       if (accrualTx) {
         const now = new Date();
+        // Reverse the balance impact of the accrual transaction
+        await reverseAccountBalances(
+          tx,
+          accrualTx.debitAccountId,
+          accrualTx.creditAccountId,
+          Number(accrualTx.amount)
+        );
+        // Soft-delete the accrual transaction
         await tx.transaction.updateMany({
           where: { versionId: accrualTx.versionId, systemTo: MAX_DATE },
           data: { validTo: now, systemTo: now, isDeleted: true, deletedAt: now, deletedBy: cancelledBy },

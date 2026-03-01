@@ -507,10 +507,9 @@ describe('Void Transaction Linked to Bill Payment', () => {
     });
     expect(remainingPayments).toHaveLength(0);
 
-    // recalculateBillStatus doesn't yet reset PAID→PENDING when all payments are voided.
-    // This verifies the current behavior (known limitation — bill stays PAID status,
-    // but amountPaid goes to 0 since BillPayment records were deleted).
+    // After all payments voided, bill should revert to PENDING with zero paid
     const recalced = await recalculateBillStatus(bill.id);
+    expect(recalced.status).toBe('PENDING');
     expect(Number(recalced.amountPaid)).toBeCloseTo(0, 2);
   });
 });
@@ -1232,17 +1231,11 @@ describe('Donation E2E: Pledge → Manual Payment → Void → Re-pay via Stripe
     await db.assertBalance(db.accounts.checking, checkingBefore, 'checking restored');
     await db.assertBalance(db.accounts.ar, arBefore + 600, 'AR restored');
 
-    // Recalculate bill — should show no payments
+    // Recalculate bill — should revert to PENDING with no payments
     await recalculateBillStatus(donation.billId!);
     const billAfterVoid = await db.prisma.bill.findFirst({ where: { id: donation.billId! } });
     expect(Number(billAfterVoid!.amountPaid)).toBeCloseTo(0, 2);
-
-    // NOTE: recalculateBillStatus doesn't reset PAID→PENDING when all payments are voided.
-    // This is a known limitation. Manually fix the status so we can test the re-payment flow.
-    await db.prisma.bill.update({
-      where: { id: donation.billId! },
-      data: { status: 'PENDING' },
-    });
+    expect(billAfterVoid!.status).toBe('PENDING');
 
     // Re-pay via Stripe (clearing account)
     await recordPayment({
@@ -1296,17 +1289,9 @@ describe('Donation E2E: Cancel Unpaid Pledge', () => {
     const bill = await db.prisma.bill.findFirst({ where: { id: donation.billId! } });
     expect(bill!.status).toBe('CANCELLED');
 
-    // NOTE: cancelDonation soft-deletes the accrual transaction but does NOT
-    // call reverseAccountBalances. This means the AR and Revenue balances
-    // remain inflated after cancellation — a known balance integrity issue.
-    // The balances SHOULD return to arBefore/revenueBefore but currently don't.
-    const arAfter = await db.getAccountBalance(db.accounts.ar);
-    const revenueAfter = await db.getAccountBalance(db.accounts.revenue);
-
-    // Document the current (incorrect) behavior:
-    // Balances are NOT reversed — this test documents the bug
-    expect(arAfter).toBeCloseTo(arBefore + 350, 2);
-    expect(revenueAfter).toBeCloseTo(revenueBefore + 350, 2);
+    // Balances should be fully reversed — AR and Revenue back to original
+    await db.assertBalance(db.accounts.ar, arBefore, 'AR restored after cancel');
+    await db.assertBalance(db.accounts.revenue, revenueBefore, 'revenue restored after cancel');
   });
 });
 

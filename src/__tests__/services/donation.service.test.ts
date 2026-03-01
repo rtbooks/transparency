@@ -62,6 +62,7 @@ jest.mock('@/lib/prisma', () => ({
 
 jest.mock('@/lib/accounting/balance-calculator', () => ({
   updateAccountBalances: jest.fn(),
+  reverseAccountBalances: jest.fn(),
 }));
 
 import {
@@ -340,16 +341,21 @@ describe('Donation Service', () => {
 
   describe('cancelDonation', () => {
     it('should cancel donation + bill + soft-delete transaction', async () => {
-      const accrualTx = { id: 'txn-1', versionId: 'v-txn-1' };
+      const accrualTx = { id: 'txn-1', versionId: 'v-txn-1', debitAccountId: 'ar-acct', creditAccountId: 'rev-acct', amount: 500 };
       (prisma.donation.findFirst as jest.Mock).mockResolvedValue({ ...baseDonation });
       mockTx.transaction.findFirst.mockResolvedValue(accrualTx);
       mockTx.transaction.updateMany.mockResolvedValue({ count: 1 });
       mockTx.bill.update.mockResolvedValue({});
       mockTx.donation.update.mockResolvedValue({ ...baseDonation, status: 'CANCELLED' });
 
+      const { reverseAccountBalances } = require('@/lib/accounting/balance-calculator');
+
       const result = await cancelDonation('donation-1', 'org-1', 'admin-1');
 
       expect(result.status).toBe('CANCELLED');
+
+      // Reverse account balances
+      expect(reverseAccountBalances).toHaveBeenCalledWith(mockTx, 'ar-acct', 'rev-acct', 500);
 
       // Soft-delete transaction (temporal: updateMany with closing fields)
       expect(mockTx.transaction.updateMany).toHaveBeenCalledWith(

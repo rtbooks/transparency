@@ -289,6 +289,10 @@ export async function recalculateBillStatus(billId: string): Promise<Bill> {
     } else if (totalPaid > 0) {
       newStatus = 'PARTIAL';
       paidInFullDate = null;
+    } else if (bill.status === 'PAID' || bill.status === 'PARTIAL') {
+      // All payments removed (e.g., voided) — revert to PENDING
+      newStatus = 'PENDING';
+      paidInFullDate = null;
     }
 
     return await tx.bill.update({
