@@ -78,25 +78,29 @@ export async function POST(
     const body = await request.json();
     const validated = paymentSchema.parse(body);
 
-    // Record the bill payment (creates transaction + updates bill status)
-    const billPayment = await recordPayment({
-      billId: donation.billId,
-      organizationId: organization.id,
-      amount: validated.amount,
-      transactionDate: new Date(validated.transactionDate.length === 10 ? validated.transactionDate + 'T12:00:00' : validated.transactionDate),
-      cashAccountId: validated.cashAccountId,
-      description: validated.description,
-      referenceNumber: validated.referenceNumber,
-      notes: validated.notes,
-      createdBy: user.id,
-      paymentMethod: validated.paymentMethod,
+    // Record payment, recalculate bill, and update donation atomically
+    const billPayment = await prisma.$transaction(async (tx) => {
+      const payment = await recordPayment({
+        billId: donation.billId!,
+        organizationId: organization.id,
+        amount: validated.amount,
+        transactionDate: new Date(validated.transactionDate.length === 10 ? validated.transactionDate + 'T12:00:00' : validated.transactionDate),
+        cashAccountId: validated.cashAccountId,
+        description: validated.description,
+        referenceNumber: validated.referenceNumber,
+        notes: validated.notes,
+        createdBy: user.id,
+        paymentMethod: validated.paymentMethod,
+      }, tx);
+
+      // Recalculate bill status within the same transaction
+      await recalculateBillStatus(donation.billId!, tx);
+
+      // Update the donation's received amount and status
+      await recordDonationPayment(id, organization.id, validated.amount, tx);
+
+      return payment;
     });
-
-    // Recalculate bill status (amountPaid, status) from linked transactions
-    await recalculateBillStatus(donation.billId);
-
-    // Update the donation's received amount and status
-    await recordDonationPayment(id, organization.id, validated.amount);
 
     return NextResponse.json(billPayment, { status: 201 });
   } catch (error: any) {

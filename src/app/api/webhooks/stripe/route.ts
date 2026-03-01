@@ -192,19 +192,28 @@ async function handlePledgePayment(
   const { recalculateBillStatus } = await import("@/services/bill.service");
   const { recordDonationPayment } = await import("@/services/donation.service");
 
-  // recordPayment creates the transaction (DR Stripe Clearing, CR AR) and BillPayment
-  const billPayment = await recordPayment({
-    billId: donation.billId,
-    organizationId,
-    amount,
-    transactionDate: new Date(),
-    cashAccountId: clearingAccountId,
-    description: `Stripe payment for pledge — ${metadata.donorName || 'Donor'}`,
-    referenceNumber: session.payment_intent as string || null,
-    paymentMethod: "STRIPE",
+  // Run all operations atomically in a single transaction
+  const billPayment = await prisma.$transaction(async (tx) => {
+    // recordPayment creates the transaction (DR Stripe Clearing, CR AR) and BillPayment
+    const payment = await recordPayment({
+      billId: donation.billId!,
+      organizationId,
+      amount,
+      transactionDate: new Date(),
+      cashAccountId: clearingAccountId,
+      description: `Stripe payment for pledge — ${metadata.donorName || 'Donor'}`,
+      referenceNumber: session.payment_intent as string || null,
+      paymentMethod: "STRIPE",
+    }, tx);
+
+    // Update bill and donation status atomically
+    await recalculateBillStatus(donation.billId!, tx);
+    await recordDonationPayment(donation.id, organizationId, amount, tx);
+
+    return payment;
   });
 
-  // Mark the transaction with Stripe session/payment IDs for dedup (best-effort)
+  // Mark the transaction with Stripe session/payment IDs for dedup (best-effort, outside tx)
   await prisma.transaction.updateMany({
     where: { id: billPayment.transactionId },
     data: {
@@ -212,10 +221,6 @@ async function handlePledgePayment(
       stripePaymentId: session.payment_intent as string || null,
     },
   }).catch((err) => console.error("Webhook: failed to set Stripe IDs on transaction:", err));
-
-  // Update bill and donation status — these must both run
-  await recalculateBillStatus(donation.billId);
-  await recordDonationPayment(donation.id, organizationId, amount);
 
   console.log(
     `Webhook: recorded $${amount} pledge payment for donation ${donation.id} (session: ${session.id})`

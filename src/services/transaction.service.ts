@@ -220,7 +220,7 @@ export async function editTransaction(
       });
       const billIds = [...new Set(billPayments.map(bp => bp.billId))];
       for (const billId of billIds) {
-        await recalculateBillStatus(billId);
+        await recalculateBillStatus(billId, tx);
       }
     }
 
@@ -331,7 +331,7 @@ export async function voidTransaction(
       });
       const billIds = [...new Set(billPayments.map(bp => bp.billId))];
       for (const billId of billIds) {
-        await recalculateBillStatus(billId);
+        await recalculateBillStatus(billId, tx);
       }
     }
 

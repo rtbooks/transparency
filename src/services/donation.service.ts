@@ -375,13 +375,16 @@ export async function cancelDonation(
 /**
  * Record a payment received against a pledge donation.
  * Updates amountReceived and status on the Donation; delegates bill payment to bill-payment service.
+ * Accepts an optional transaction client for atomicity with the caller's transaction.
  */
 export async function recordDonationPayment(
   donationId: string,
   organizationId: string,
-  paymentAmount: number
+  paymentAmount: number,
+  txClient?: any
 ): Promise<Donation> {
-  const donation = await prisma.donation.findFirst({
+  const db = txClient || prisma;
+  const donation = await db.donation.findFirst({
     where: { id: donationId, organizationId },
   });
 
@@ -397,7 +400,7 @@ export async function recordDonationPayment(
   const totalAmount = Number(donation.amount);
   const isFullyPaid = newReceived >= totalAmount;
 
-  return await prisma.donation.update({
+  return await db.donation.update({
     where: { id: donationId },
     data: {
       amountReceived: newReceived as unknown as Prisma.Decimal,
@@ -411,15 +414,17 @@ export async function recordDonationPayment(
  * Sync a Donation's status from its linked Bill after a bill payment is recorded.
  * Called from the bills payment API to keep donation status in sync.
  * No-op if the bill has no linked donation.
+ * Accepts an optional transaction client for atomicity with the caller's transaction.
  */
-export async function syncDonationFromBill(billId: string): Promise<void> {
-  const donation = await prisma.donation.findFirst({
+export async function syncDonationFromBill(billId: string, txClient?: any): Promise<void> {
+  const db = txClient || prisma;
+  const donation = await db.donation.findFirst({
     where: { billId },
   });
 
   if (!donation) return; // Bill has no linked donation — nothing to sync
 
-  const bill = await prisma.bill.findUnique({
+  const bill = await db.bill.findUnique({
     where: { id: billId },
   });
 
@@ -443,7 +448,7 @@ export async function syncDonationFromBill(billId: string): Promise<void> {
     newStatus !== donation.status ||
     amountPaid !== Number(donation.amountReceived)
   ) {
-    await prisma.donation.update({
+    await db.donation.update({
       where: { id: donation.id },
       data: {
         amountReceived: amountPaid as unknown as Prisma.Decimal,

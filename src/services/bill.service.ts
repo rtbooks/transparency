@@ -253,9 +253,10 @@ export async function listBills(
 /**
  * Recalculate bill status from linked transaction amounts.
  * Sets PAID (with paidInFullDate) if fully paid, PARTIAL if partially paid.
+ * Accepts an optional transaction client for atomicity with the caller's transaction.
  */
-export async function recalculateBillStatus(billId: string): Promise<Bill> {
-  return await prisma.$transaction(async (tx) => {
+export async function recalculateBillStatus(billId: string, txClient?: any): Promise<Bill> {
+  const run = async (tx: any) => {
     const bill = await tx.bill.findUniqueOrThrow({ where: { id: billId } });
 
     // Derive total paid from linked transactions (not a separate amount column)
@@ -266,14 +267,14 @@ export async function recalculateBillStatus(billId: string): Promise<Bill> {
     // Resolve transaction amounts (bitemporal entities)
     let totalPaid = 0;
     if (payments.length > 0) {
-      const txnIds = payments.map(p => p.transactionId);
+      const txnIds = payments.map((p: any) => p.transactionId);
       const transactions = await tx.transaction.findMany({
         where: buildEntitiesWhere(txnIds),
         select: { id: true, amount: true },
       });
-      const txnMap = new Map(transactions.map(t => [t.id, t]));
-      totalPaid = payments.reduce((sum, p) => {
-        const txn = txnMap.get(p.transactionId);
+      const txnMap = new Map(transactions.map((t: any) => [t.id, t]));
+      totalPaid = payments.reduce((sum: number, p: any) => {
+        const txn: any = txnMap.get(p.transactionId);
         return sum + (txn ? parseFloat(txn.amount.toString()) : 0);
       }, 0);
     }
@@ -303,7 +304,13 @@ export async function recalculateBillStatus(billId: string): Promise<Bill> {
         paidInFullDate,
       },
     });
-  });
+  };
+
+  // Use provided transaction client or create a new one
+  if (txClient) {
+    return run(txClient);
+  }
+  return prisma.$transaction(run);
 }
 
 /**
