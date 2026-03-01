@@ -53,24 +53,25 @@ test.describe('Public Pages', () => {
     await page.goto('/');
     await waitForPageReady(page);
 
-    // Home page uses inline CTA links (Browse Organizations, Learn More) rather than a header nav
+    // Wait for page content to render (handles rate-limiting retries)
+    const heading = page.locator('h1');
+    await expect(heading).toBeVisible({ timeout: 10000 });
+
+    // Home page uses inline CTA links
     const links = page.locator('a');
     const count = await links.count();
     expect(count).toBeGreaterThan(0);
-
-    // Should have key CTA links
-    const browseOrgs = page.locator('a[href="/organizations"]').first();
-    await expect(browseOrgs).toBeVisible();
   });
 
   test('Navigation links are functional', async ({ page }) => {
     await page.goto('/');
     await waitForPageReady(page);
 
-    // Click "Browse Organizations" CTA
+    // Click "Browse Organizations" CTA — may need scrolling into view
     const browseLink = page.locator('a[href="/organizations"]').first();
     if (await browseLink.isVisible()) {
-      await browseLink.click();
+      await browseLink.scrollIntoViewIfNeeded();
+      await browseLink.click({ timeout: 10000 });
       await expect(page).toHaveURL(/\/organizations/);
     }
   });

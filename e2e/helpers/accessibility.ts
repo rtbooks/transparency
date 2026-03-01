@@ -34,6 +34,8 @@ export async function checkAccessibility(
       .join('\n');
     expect(serious, `Accessibility violations found:\n${summary}`).toHaveLength(0);
   }
+
+  return serious;
 }
 
 /**
