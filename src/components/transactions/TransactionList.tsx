@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import Link from "next/link";
 import { Transaction, Account } from "@/generated/prisma/client";
 import { AsOfDatePicker } from "@/components/temporal";
 import {
@@ -38,7 +39,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatCurrency, formatTransactionAmount } from "@/lib/utils/account-tree";
-import { ChevronLeft, ChevronRight, Download, Search, Info, Pencil, Ban, MoreVertical, CalendarClock, Eye, CheckCircle2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Search, Info, Pencil, Ban, MoreVertical, CalendarClock, Eye, CheckCircle2, X, FileText } from "lucide-react";
 import { format, subDays, subMonths, startOfDay } from "date-fns";
 import { EditTransactionForm } from "./EditTransactionForm";
 import { VoidTransactionDialog } from "./VoidTransactionDialog";
@@ -116,6 +117,10 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
   const [showVoided, setShowVoided] = useState(false);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
 
+  // Linked bills for selected transaction
+  const [linkedBills, setLinkedBills] = useState<Array<{ id: string; billId: string; description: string; direction: string; status: string }>>([]);
+  const [linkedBillsLoading, setLinkedBillsLoading] = useState(false);
+
   // Compute effective start/end dates from period selection
   const { startDate, endDate } = useMemo(() => {
     if (period === "custom") {
@@ -136,6 +141,33 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
     asOfDate: string;
     isHistoricalView: boolean;
   } | null>(null);
+
+  // Fetch linked bills when a transaction is selected
+  useEffect(() => {
+    if (!selectedTransaction) {
+      setLinkedBills([]);
+      return;
+    }
+    let cancelled = false;
+    async function fetchLinkedBills() {
+      setLinkedBillsLoading(true);
+      try {
+        const res = await fetch(
+          `/api/organizations/${organizationSlug}/transactions/${selectedTransaction!.id}/bills`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (!cancelled) setLinkedBills(data.bills || []);
+        }
+      } catch {
+        // ignore — bills section is optional
+      } finally {
+        if (!cancelled) setLinkedBillsLoading(false);
+      }
+    }
+    fetchLinkedBills();
+    return () => { cancelled = true; };
+  }, [selectedTransaction, organizationSlug]);
 
   const fetchTransactions = async () => {
     try {
@@ -745,6 +777,34 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
                   <span className="font-medium">ID:</span> {selectedTransaction.id.slice(0, 8)}...
                 </div>
               </div>
+
+              {/* Linked Bills */}
+              {linkedBillsLoading ? (
+                <div className="text-sm text-gray-500">Loading linked bills…</div>
+              ) : linkedBills.length > 0 && (
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Linked Bills</label>
+                  <div className="mt-1 space-y-2">
+                    {linkedBills.map((bill) => (
+                      <Link
+                        key={bill.id}
+                        href={`/org/${organizationSlug}/bills?highlight=${bill.billId}`}
+                        className="flex items-center gap-2 rounded-lg border bg-gray-50 p-3 text-sm hover:bg-gray-100 transition-colors"
+                        onClick={() => setSelectedTransaction(null)}
+                      >
+                        <FileText className="h-4 w-4 text-gray-500" />
+                        <span className="text-gray-900">{bill.description}</span>
+                        <Badge variant="outline" className="ml-auto text-xs">
+                          {bill.direction === 'RECEIVABLE' ? 'Receivable' : 'Payable'}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {bill.status}
+                        </Badge>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Attachments */}
               <AttachmentSection
