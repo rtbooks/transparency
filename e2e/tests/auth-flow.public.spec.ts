@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { waitForPageReady } from '../helpers/accessibility';
 
 // Use env var or fall back to a slug that may not exist (tests handle this)
 const ORG_SLUG = process.env.E2E_ORG_SLUG || 'grit-hoops';
