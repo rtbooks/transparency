@@ -305,7 +305,7 @@ export async function recalculateBillStatus(billId: string): Promise<Bill> {
 /**
  * Cancel a bill. Throws if the bill is already PAID.
  */
-export async function cancelBill(id: string, orgId: string): Promise<Bill> {
+export async function cancelBill(id: string, orgId: string, userId?: string): Promise<Bill> {
   return await prisma.$transaction(async (tx) => {
     const bill = await tx.bill.findFirst({
       where: { id, organizationId: orgId },
@@ -323,9 +323,25 @@ export async function cancelBill(id: string, orgId: string): Promise<Bill> {
       throw new Error('Bill is already cancelled');
     }
 
-    return await tx.bill.update({
+    const updated = await tx.bill.update({
       where: { id },
       data: { status: 'CANCELLED' },
     });
+
+    // Void the accrual transaction if present
+    if (bill.accrualTransactionId && userId) {
+      const { voidTransaction } = await import('@/services/transaction.service');
+      await voidTransaction(
+        bill.accrualTransactionId,
+        orgId,
+        { voidReason: `Bill cancelled: ${bill.description}` },
+        userId
+      ).catch((err) => {
+        // Best-effort: transaction may already be voided or deleted
+        console.warn('Failed to void accrual transaction on bill cancel:', err.message);
+      });
+    }
+
+    return updated;
   });
 }
