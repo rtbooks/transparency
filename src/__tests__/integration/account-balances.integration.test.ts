@@ -678,3 +678,238 @@ describe('Edit Transaction: Swap Both Accounts', () => {
     await db.assertBalance(db.accounts.equity, equityBefore + 200, 'equity has credit');
   });
 });
+
+// ── Reimbursement Billing Scenarios ────────────────────────────────────
+
+describe('Reimbursement Bill Lifecycle', () => {
+  it('should create accrual that credits EXPENSE (not revenue) for reimbursement', async () => {
+    const arBefore = await db.getAccountBalance(db.accounts.ar);
+    const expenseBefore = await db.getAccountBalance(db.accounts.expense);
+    const revenueBefore = await db.getAccountBalance(db.accounts.revenue);
+
+    // Reimbursement: DR AR, CR Expense
+    const bill = await createBill({
+      organizationId: db.orgId,
+      contactId: db.contactId,
+      direction: 'RECEIVABLE',
+      amount: 300,
+      description: 'Expense reimbursement',
+      issueDate: new Date(),
+      liabilityOrAssetAccountId: db.accounts.ar,
+      expenseOrRevenueAccountId: db.accounts.expense,
+      isReimbursement: true,
+      createdBy: db.userId,
+    });
+
+    expect(bill.status).toBe('PENDING');
+    // AR should increase (asset debit)
+    await db.assertBalance(db.accounts.ar, arBefore + 300, 'AR debited for reimbursement');
+    // Expense should DECREASE (credit to expense reduces it)
+    await db.assertBalance(db.accounts.expense, expenseBefore - 300, 'expense credited for reimbursement');
+    // Revenue should be untouched
+    await db.assertBalance(db.accounts.revenue, revenueBefore, 'revenue unchanged');
+  });
+
+  it('should correctly handle full payment of reimbursement bill', async () => {
+    const arBefore = await db.getAccountBalance(db.accounts.ar);
+    const expenseBefore = await db.getAccountBalance(db.accounts.expense);
+    const checkingBefore = await db.getAccountBalance(db.accounts.checking);
+
+    // Create reimbursement bill: DR AR, CR Expense
+    const bill = await createBill({
+      organizationId: db.orgId,
+      contactId: db.contactId,
+      direction: 'RECEIVABLE',
+      amount: 500,
+      description: 'Full reimbursement payment test',
+      issueDate: new Date(),
+      liabilityOrAssetAccountId: db.accounts.ar,
+      expenseOrRevenueAccountId: db.accounts.expense,
+      isReimbursement: true,
+      createdBy: db.userId,
+    });
+
+    await db.assertBalance(db.accounts.ar, arBefore + 500, 'AR after accrual');
+    await db.assertBalance(db.accounts.expense, expenseBefore - 500, 'expense after accrual');
+
+    // Record full payment: DR Cash, CR AR
+    await recordPayment({
+      billId: bill.id,
+      organizationId: db.orgId,
+      amount: 500,
+      transactionDate: new Date(),
+      cashAccountId: db.accounts.checking,
+      description: 'Reimbursement payment received',
+      createdBy: db.userId,
+    });
+
+    // AR should net back to original (debit 500 from accrual, credit 500 from payment)
+    await db.assertBalance(db.accounts.ar, arBefore, 'AR nets to zero');
+    // Checking should have the cash
+    await db.assertBalance(db.accounts.checking, checkingBefore + 500, 'checking received payment');
+    // Expense should remain reduced (only the accrual touched it)
+    await db.assertBalance(db.accounts.expense, expenseBefore - 500, 'expense stays reduced');
+
+    const recalced = await recalculateBillStatus(bill.id);
+    expect(recalced.status).toBe('PAID');
+    expect(Number(recalced.amountPaid)).toBeCloseTo(500, 2);
+  });
+
+  it('should handle partial payment then void of reimbursement bill', async () => {
+    const arBefore = await db.getAccountBalance(db.accounts.ar);
+    const expenseBefore = await db.getAccountBalance(db.accounts.expense);
+    const checkingBefore = await db.getAccountBalance(db.accounts.checking);
+
+    // Create reimbursement bill for $800
+    const bill = await createBill({
+      organizationId: db.orgId,
+      contactId: db.contactId,
+      direction: 'RECEIVABLE',
+      amount: 800,
+      description: 'Partial+void reimbursement test',
+      issueDate: new Date(),
+      liabilityOrAssetAccountId: db.accounts.ar,
+      expenseOrRevenueAccountId: db.accounts.expense,
+      isReimbursement: true,
+      createdBy: db.userId,
+    });
+
+    await db.assertBalance(db.accounts.ar, arBefore + 800, 'AR after accrual');
+    await db.assertBalance(db.accounts.expense, expenseBefore - 800, 'expense after accrual');
+
+    // Record partial payment of $300
+    const payment1 = await recordPayment({
+      billId: bill.id,
+      organizationId: db.orgId,
+      amount: 300,
+      transactionDate: new Date(),
+      cashAccountId: db.accounts.checking,
+      description: 'Partial reimbursement payment 1',
+      createdBy: db.userId,
+    });
+
+    await db.assertBalance(db.accounts.ar, arBefore + 500, 'AR after partial payment');
+    await db.assertBalance(db.accounts.checking, checkingBefore + 300, 'checking after partial');
+    await db.assertBalance(db.accounts.expense, expenseBefore - 800, 'expense unchanged by payment');
+
+    let recalced = await recalculateBillStatus(bill.id);
+    expect(recalced.status).toBe('PARTIAL');
+    expect(Number(recalced.amountPaid)).toBeCloseTo(300, 2);
+
+    // Void the partial payment
+    await voidTransaction(
+      payment1.transactionId,
+      db.orgId,
+      { voidReason: 'Incorrect payment' },
+      db.userId
+    );
+
+    // AR and checking should revert to post-accrual state
+    await db.assertBalance(db.accounts.ar, arBefore + 800, 'AR restored after void');
+    await db.assertBalance(db.accounts.checking, checkingBefore, 'checking restored after void');
+    await db.assertBalance(db.accounts.expense, expenseBefore - 800, 'expense still reduced');
+  });
+
+  it('should handle two partial payments then void of first payment', async () => {
+    const arBefore = await db.getAccountBalance(db.accounts.ar);
+    const expenseBefore = await db.getAccountBalance(db.accounts.expense);
+    const checkingBefore = await db.getAccountBalance(db.accounts.checking);
+
+    // Create reimbursement bill for $600
+    const bill = await createBill({
+      organizationId: db.orgId,
+      contactId: db.contactId,
+      direction: 'RECEIVABLE',
+      amount: 600,
+      description: 'Two payments void first',
+      issueDate: new Date(),
+      liabilityOrAssetAccountId: db.accounts.ar,
+      expenseOrRevenueAccountId: db.accounts.expense,
+      isReimbursement: true,
+      createdBy: db.userId,
+    });
+
+    // First payment: $200
+    const payment1 = await recordPayment({
+      billId: bill.id,
+      organizationId: db.orgId,
+      amount: 200,
+      transactionDate: new Date(),
+      cashAccountId: db.accounts.checking,
+      description: 'Payment 1 of 2',
+      createdBy: db.userId,
+    });
+
+    // Second payment: $250
+    await recordPayment({
+      billId: bill.id,
+      organizationId: db.orgId,
+      amount: 250,
+      transactionDate: new Date(),
+      cashAccountId: db.accounts.checking,
+      description: 'Payment 2 of 2',
+      createdBy: db.userId,
+    });
+
+    // After both payments: AR reduced by 450, checking up by 450
+    await db.assertBalance(db.accounts.ar, arBefore + 150, 'AR after two payments');
+    await db.assertBalance(db.accounts.checking, checkingBefore + 450, 'checking after two payments');
+    await db.assertBalance(db.accounts.expense, expenseBefore - 600, 'expense from accrual only');
+
+    let recalced = await recalculateBillStatus(bill.id);
+    expect(recalced.status).toBe('PARTIAL');
+    expect(Number(recalced.amountPaid)).toBeCloseTo(450, 2);
+
+    // Void the FIRST payment ($200)
+    await voidTransaction(
+      payment1.transactionId,
+      db.orgId,
+      { voidReason: 'First payment was erroneous' },
+      db.userId
+    );
+
+    // Only payment2 ($250) should remain effective
+    await db.assertBalance(db.accounts.ar, arBefore + 350, 'AR after voiding first payment');
+    await db.assertBalance(db.accounts.checking, checkingBefore + 250, 'checking after voiding first');
+    await db.assertBalance(db.accounts.expense, expenseBefore - 600, 'expense unchanged by void');
+
+    recalced = await recalculateBillStatus(bill.id);
+    expect(recalced.status).toBe('PARTIAL');
+    expect(Number(recalced.amountPaid)).toBeCloseTo(250, 2);
+  });
+
+  it('should handle voiding accrual transaction on reimbursement bill', async () => {
+    const arBefore = await db.getAccountBalance(db.accounts.ar);
+    const expenseBefore = await db.getAccountBalance(db.accounts.expense);
+
+    // Create reimbursement bill
+    const bill = await createBill({
+      organizationId: db.orgId,
+      contactId: db.contactId,
+      direction: 'RECEIVABLE',
+      amount: 400,
+      description: 'Void accrual test',
+      issueDate: new Date(),
+      liabilityOrAssetAccountId: db.accounts.ar,
+      expenseOrRevenueAccountId: db.accounts.expense,
+      isReimbursement: true,
+      createdBy: db.userId,
+    });
+
+    await db.assertBalance(db.accounts.ar, arBefore + 400, 'AR after accrual');
+    await db.assertBalance(db.accounts.expense, expenseBefore - 400, 'expense after accrual');
+
+    // Void the accrual transaction directly (simulates cancelling the bill)
+    expect(bill.accrualTransactionId).not.toBeNull();
+    await voidTransaction(
+      bill.accrualTransactionId!,
+      db.orgId,
+      { voidReason: 'Reimbursement bill cancelled' },
+      db.userId
+    );
+
+    // All balances should return to original
+    await db.assertBalance(db.accounts.ar, arBefore, 'AR restored after void');
+    await db.assertBalance(db.accounts.expense, expenseBefore, 'expense restored after void');
+  });
+});
