@@ -7,8 +7,8 @@ import { checkAccessibility, waitForPageReady } from '../helpers/accessibility';
  */
 test.describe('Navigation Smoke Test', () => {
   // These tests require a valid org slug in the seeded test data.
-  // Set E2E_ORG_SLUG env var or default to 'test-org'.
-  const slug = process.env.E2E_ORG_SLUG || 'grit-hoops';
+  // Set E2E_ORG_SLUG env var or default to 'e2e-test-org'.
+  const slug = process.env.E2E_ORG_SLUG || 'e2e-test-org';
 
   // All sidebar nav paths for an admin user
   const orgPages = [

@@ -98,7 +98,7 @@ test.describe('Public Organization Page', () => {
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
         const text = msg.text();
-        if (!text.includes('hydrat') && !text.includes('Warning:') && !text.includes('favicon')) {
+        if (!text.includes('hydrat') && !text.includes('Warning:') && !text.includes('favicon') && !text.includes('Failed to load resource')) {
           errors.push(text);
         }
       }

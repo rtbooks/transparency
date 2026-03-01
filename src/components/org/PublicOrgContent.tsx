@@ -218,7 +218,7 @@ export function PublicOrgContent({
                     </p>
                     <div className="mt-3 flex gap-2">
                       <Link href={`/org/${organization.slug}/donate/${campaign.id}`}>
-                        <Button size="sm" variant="default" className="bg-green-600 hover:bg-green-700">
+                        <Button size="sm" variant="default" className="bg-green-700 hover:bg-green-800 text-white">
                           <Heart className="mr-1 h-3 w-3" /> Donate
                         </Button>
                       </Link>

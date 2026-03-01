@@ -6,7 +6,7 @@ import { waitForPageReady } from '../helpers/accessibility';
  * These run in the mobile-chrome project with narrower viewport.
  */
 test.describe('Responsive Layout', () => {
-  const slug = process.env.E2E_ORG_SLUG || 'grit-hoops';
+  const slug = process.env.E2E_ORG_SLUG || 'e2e-test-org';
 
   test('Dashboard renders properly on mobile', async ({ page }) => {
     await page.goto(`/org/${slug}/dashboard`);

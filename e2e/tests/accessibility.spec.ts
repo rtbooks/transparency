@@ -6,7 +6,7 @@ import { checkAccessibility, waitForPageReady } from '../helpers/accessibility';
  * Uses axe-core to check WCAG 2.1 AA compliance.
  */
 test.describe('Accessibility Audit', () => {
-  const slug = process.env.E2E_ORG_SLUG || 'grit-hoops';
+  const slug = process.env.E2E_ORG_SLUG || 'e2e-test-org';
 
   // Exclude third-party Clerk UI components from audit
   const axeOptions = {

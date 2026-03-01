@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
  * Verifies the application handles error states gracefully.
  */
 test.describe('Error Handling', () => {
-  const slug = process.env.E2E_ORG_SLUG || 'grit-hoops';
+  const slug = process.env.E2E_ORG_SLUG || 'e2e-test-org';
 
   test('404 page renders for invalid org routes', async ({ page }) => {
     const response = await page.goto('/org/non-existent-org-slug-xyz/dashboard');
