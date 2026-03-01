@@ -117,3 +117,9 @@ temp/
 
 # Stripe CLI
 .stripe-cli
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

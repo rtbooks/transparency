@@ -126,7 +126,9 @@ export default async function OrganizationPublicPage({
     }
 
     programSpending = spendingRows.map(s => ({
-      ...s,
+      id: s.id,
+      title: s.title,
+      status: s.status,
       amount: Number(s.estimatedAmount),
       imageUrl: imageMap.get(s.id) || null,
     }));

@@ -126,3 +126,75 @@ jobs:
           SKIP_ENV_VALIDATION: true
           # Use dummy Clerk key - layout will skip ClerkProvider when it detects test keys
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsuaW5jbHVkZWQuZWxlY3RyaWMtNDIuaWNs
+
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    # Only run E2E on main branch or when explicitly triggered
+    if: github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'e2e')
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: transparency
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: transparency_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://transparency:testpassword@localhost:5432/transparency_test
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://transparency:testpassword@localhost:5432/transparency_test
+
+      - name: Seed E2E test data
+        if: env.E2E_CLERK_USER_ID != ''
+        run: npx tsx e2e/seed.ts
+        env:
+          DATABASE_URL: postgresql://transparency:testpassword@localhost:5432/transparency_test
+          E2E_CLERK_USER_ID: ${{ secrets.E2E_CLERK_USER_ID }}
+
+      - name: Run E2E tests (public pages only)
+        run: npx playwright test --project=public
+        env:
+          DATABASE_URL: postgresql://transparency:testpassword@localhost:5432/transparency_test
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          E2E_ORG_SLUG: e2e-test-org
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

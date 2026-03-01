@@ -8,7 +8,7 @@ export function ForNonprofits() {
           <h2 className="mb-6 text-center text-4xl font-bold">
             Ready to Stand Out?
           </h2>
-          <p className="mb-8 text-center text-xl text-blue-100">
+          <p className="mb-8 text-center text-xl text-blue-50">
             Join the movement of nonprofits building unprecedented trust through 
             complete financial transparency.
           </p>
@@ -17,7 +17,7 @@ export function ForNonprofits() {
             <div className="rounded-lg bg-blue-700 p-6">
               <div className="mb-2 text-3xl">🤝</div>
               <h3 className="mb-2 text-lg font-semibold">Build Trust</h3>
-              <p className="text-sm text-blue-100">
+              <p className="text-sm text-blue-50">
                 Donors give more when they can see exactly where their money goes.
               </p>
             </div>
@@ -25,7 +25,7 @@ export function ForNonprofits() {
             <div className="rounded-lg bg-blue-700 p-6">
               <div className="mb-2 text-3xl">⏱️</div>
               <h3 className="mb-2 text-lg font-semibold">Save Time</h3>
-              <p className="text-sm text-blue-100">
+              <p className="text-sm text-blue-50">
                 Automated dashboards replace manual financial reports and updates.
               </p>
             </div>
@@ -33,7 +33,7 @@ export function ForNonprofits() {
             <div className="rounded-lg bg-blue-700 p-6">
               <div className="mb-2 text-3xl">🌟</div>
               <h3 className="mb-2 text-lg font-semibold">Stand Out</h3>
-              <p className="text-sm text-blue-100">
+              <p className="text-sm text-blue-50">
                 Differentiate from competitors who only share annual summaries.
               </p>
             </div>
@@ -46,7 +46,7 @@ export function ForNonprofits() {
             >
               Get Started Free
             </Link>
-            <p className="mt-4 text-sm text-blue-100">
+            <p className="mt-4 text-sm text-blue-50">
               No credit card required · Set up in minutes
             </p>
           </div>
