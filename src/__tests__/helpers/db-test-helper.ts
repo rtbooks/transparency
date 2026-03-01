@@ -128,6 +128,7 @@ export class DbTestHelper {
       // Delete in dependency order — BillPayment cascades from Bill via onDelete: Cascade
       await this.prisma.donation.deleteMany({ where: { organizationId: this.orgId } });
       await this.prisma.bill.deleteMany({ where: { organizationId: this.orgId } });
+      await this.prisma.fiscalPeriod.deleteMany({ where: { organizationId: this.orgId } });
       await this.prisma.transaction.deleteMany({ where: { organizationId: this.orgId } });
       await this.prisma.account.deleteMany({ where: { organizationId: this.orgId } });
       await this.prisma.contact.deleteMany({ where: { organizationId: this.orgId } });
@@ -171,5 +172,94 @@ export class DbTestHelper {
     for (const [key, id] of Object.entries(this.accounts)) {
       await this.assertBalance(id, 0, key);
     }
+  }
+
+  /** Link the org's fundBalanceAccountId so fiscal close tests work.
+   *  Uses bitemporal close+create pattern since org table has immutability triggers. */
+  async setFundBalanceAccount(accountId: string) {
+    const { closeVersion } = await import('@/lib/temporal/temporal-utils');
+    const now = new Date();
+
+    // Find the current org version
+    const current = await this.prisma.organization.findFirst({
+      where: { id: this.orgId, validTo: MAX_DATE },
+    });
+    if (!current) throw new Error('Org not found');
+
+    // Close current version
+    await closeVersion(this.prisma.organization, current.versionId, now, 'organization');
+
+    // Create new version with fundBalanceAccountId set
+    await this.prisma.organization.create({
+      data: {
+        id: current.id,
+        name: current.name,
+        slug: current.slug,
+        verificationStatus: current.verificationStatus,
+        fundBalanceAccountId: accountId,
+        versionId: crypto.randomUUID(),
+        validFrom: now,
+        validTo: MAX_DATE,
+        systemFrom: now,
+        systemTo: MAX_DATE,
+        changedBy: this.userId,
+      },
+    });
+  }
+
+  /** Deactivate an account (for error path testing) — uses bitemporal close+create */
+  async deactivateAccount(accountId: string) {
+    const { closeVersion } = await import('@/lib/temporal/temporal-utils');
+    const now = new Date();
+    const current = await this.prisma.account.findFirst({
+      where: { id: accountId, validTo: MAX_DATE },
+    });
+    if (!current) throw new Error(`Account ${accountId} not found`);
+    await closeVersion(this.prisma.account, current.versionId, now, 'account');
+    await this.prisma.account.create({
+      data: {
+        id: current.id,
+        organizationId: current.organizationId,
+        code: current.code,
+        name: current.name,
+        type: current.type,
+        currentBalance: current.currentBalance,
+        isActive: false,
+        versionId: crypto.randomUUID(),
+        validFrom: now,
+        validTo: MAX_DATE,
+        systemFrom: now,
+        systemTo: MAX_DATE,
+        changedBy: this.userId,
+      },
+    });
+  }
+
+  /** Re-activate an account */
+  async activateAccount(accountId: string) {
+    const { closeVersion } = await import('@/lib/temporal/temporal-utils');
+    const now = new Date();
+    const current = await this.prisma.account.findFirst({
+      where: { id: accountId, validTo: MAX_DATE },
+    });
+    if (!current) throw new Error(`Account ${accountId} not found`);
+    await closeVersion(this.prisma.account, current.versionId, now, 'account');
+    await this.prisma.account.create({
+      data: {
+        id: current.id,
+        organizationId: current.organizationId,
+        code: current.code,
+        name: current.name,
+        type: current.type,
+        currentBalance: current.currentBalance,
+        isActive: true,
+        versionId: crypto.randomUUID(),
+        validFrom: now,
+        validTo: MAX_DATE,
+        systemFrom: now,
+        systemTo: MAX_DATE,
+        changedBy: this.userId,
+      },
+    });
   }
 }

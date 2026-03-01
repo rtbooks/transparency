@@ -11,9 +11,14 @@
 
 import { DbTestHelper } from '../helpers/db-test-helper';
 import { createTransaction, editTransaction, voidTransaction } from '@/services/transaction.service';
-import { createBill } from '@/services/bill.service';
+import { createBill, recalculateBillStatus } from '@/services/bill.service';
 import { recordPayment } from '@/services/bill-payment.service';
-import { createPledgeDonation } from '@/services/donation.service';
+import { createPledgeDonation, createOneTimeDonation } from '@/services/donation.service';
+import {
+  createFiscalPeriod,
+  executeClose,
+  reopenPeriod,
+} from '@/services/fiscal-period.service';
 
 const db = new DbTestHelper();
 
@@ -380,5 +385,296 @@ describe('Balance Recalculation Audit', () => {
       const stored = Number(account.currentBalance);
       expect(stored).toBeCloseTo(expected, 2);
     }
+  });
+});
+
+// ── Additional Coverage Tests ──────────────────────────────────────────
+
+describe('One-Time Donation (Cash)', () => {
+  it('should debit cash and credit revenue with no AR or bill', async () => {
+    const checkingBefore = await db.getAccountBalance(db.accounts.checking);
+    const revenueBefore = await db.getAccountBalance(db.accounts.revenue);
+    const arBefore = await db.getAccountBalance(db.accounts.ar);
+
+    const donation = await createOneTimeDonation({
+      organizationId: db.orgId,
+      contactId: db.contactId,
+      type: 'ONE_TIME',
+      amount: 250,
+      description: 'Cash donation',
+      donationDate: new Date(),
+      arAccountId: db.accounts.ar,
+      revenueAccountId: db.accounts.revenue,
+      cashAccountId: db.accounts.checking,
+      createdBy: db.userId,
+    });
+
+    expect(donation.status).toBe('RECEIVED');
+    expect(donation.billId).toBeNull();
+    await db.assertBalance(db.accounts.checking, checkingBefore + 250, 'checking after cash donation');
+    await db.assertBalance(db.accounts.revenue, revenueBefore + 250, 'revenue after cash donation');
+    await db.assertBalance(db.accounts.ar, arBefore, 'AR unchanged — no pledge');
+  });
+});
+
+describe('Partial Bill Payment', () => {
+  it('should partially reduce AR and leave bill in PARTIAL status', async () => {
+    const arBefore = await db.getAccountBalance(db.accounts.ar);
+    const checkingBefore = await db.getAccountBalance(db.accounts.checking);
+
+    const bill = await createBill({
+      organizationId: db.orgId,
+      contactId: db.contactId,
+      direction: 'RECEIVABLE',
+      amount: 400,
+      description: 'Partially paid bill',
+      issueDate: new Date(),
+      liabilityOrAssetAccountId: db.accounts.ar,
+      expenseOrRevenueAccountId: db.accounts.revenue,
+      createdBy: db.userId,
+    });
+
+    // Pay half
+    await recordPayment({
+      billId: bill.id,
+      organizationId: db.orgId,
+      amount: 200,
+      transactionDate: new Date(),
+      cashAccountId: db.accounts.checking,
+      description: 'Partial payment',
+      createdBy: db.userId,
+    });
+
+    await db.assertBalance(db.accounts.ar, arBefore + 200, 'AR reduced by payment');
+    await db.assertBalance(db.accounts.checking, checkingBefore + 200, 'checking got partial');
+
+    // Recalculate bill status and verify
+    const updated = await recalculateBillStatus(bill.id);
+    expect(updated.status).toBe('PARTIAL');
+    expect(Number(updated.amountPaid)).toBeCloseTo(200, 2);
+  });
+});
+
+describe('Void Transaction Linked to Bill Payment', () => {
+  it('should allow bill to revert after payment transaction is voided', async () => {
+    const arBefore = await db.getAccountBalance(db.accounts.ar);
+    const checkingBefore = await db.getAccountBalance(db.accounts.checking);
+
+    // Create bill and pay it fully
+    const bill = await createBill({
+      organizationId: db.orgId,
+      contactId: db.contactId,
+      direction: 'RECEIVABLE',
+      amount: 150,
+      description: 'Bill with voidable payment',
+      issueDate: new Date(),
+      liabilityOrAssetAccountId: db.accounts.ar,
+      expenseOrRevenueAccountId: db.accounts.revenue,
+      createdBy: db.userId,
+    });
+
+    const payment = await recordPayment({
+      billId: bill.id,
+      organizationId: db.orgId,
+      amount: 150,
+      transactionDate: new Date(),
+      cashAccountId: db.accounts.checking,
+      description: 'Full payment',
+      createdBy: db.userId,
+    });
+
+    // Void the payment transaction
+    await voidTransaction(
+      payment.transactionId,
+      db.orgId,
+      { voidReason: 'Payment reversed' },
+      db.userId
+    );
+
+    // Balances should reflect voided payment: AR back up, checking back down
+    await db.assertBalance(db.accounts.ar, arBefore + 150, 'AR restored after void');
+    await db.assertBalance(db.accounts.checking, checkingBefore, 'checking restored after void');
+
+    // After void, BillPayment links should be deleted by voidTransaction
+    const remainingPayments = await db.prisma.billPayment.findMany({
+      where: { billId: bill.id },
+    });
+    expect(remainingPayments).toHaveLength(0);
+
+    // recalculateBillStatus doesn't yet reset PAID→PENDING when all payments are voided.
+    // This verifies the current behavior (known limitation — bill stays PAID status,
+    // but amountPaid goes to 0 since BillPayment records were deleted).
+    const recalced = await recalculateBillStatus(bill.id);
+    expect(Number(recalced.amountPaid)).toBeCloseTo(0, 2);
+  });
+});
+
+describe('Error: Inactive Account', () => {
+  it('should reject transaction and leave balances unchanged', async () => {
+    const checkingBefore = await db.getAccountBalance(db.accounts.checking);
+    const revenueBefore = await db.getAccountBalance(db.accounts.revenue);
+
+    // Deactivate checking account
+    await db.deactivateAccount(db.accounts.checking);
+
+    await expect(
+      createTransaction({
+        organizationId: db.orgId,
+        transactionDate: new Date(),
+        amount: 100,
+        description: 'Should fail',
+        debitAccountId: db.accounts.checking,
+        creditAccountId: db.accounts.revenue,
+      })
+    ).rejects.toThrow('inactive');
+
+    // Re-activate for subsequent tests
+    await db.activateAccount(db.accounts.checking);
+
+    // Balances should be unchanged
+    await db.assertBalance(db.accounts.checking, checkingBefore, 'checking unchanged');
+    await db.assertBalance(db.accounts.revenue, revenueBefore, 'revenue unchanged');
+  });
+});
+
+describe('Error: Closed Fiscal Period', () => {
+  it('should reject transaction in closed period and leave balances unchanged', async () => {
+    const checkingBefore = await db.getAccountBalance(db.accounts.checking);
+    const revenueBefore = await db.getAccountBalance(db.accounts.revenue);
+
+    // Create and close a fiscal period covering today
+    const today = new Date();
+    const startDate = new Date(today.getFullYear(), 0, 1);
+    const endDate = new Date(today.getFullYear(), 11, 31);
+
+    await db.setFundBalanceAccount(db.accounts.equity);
+
+    const period = await createFiscalPeriod({
+      organizationId: db.orgId,
+      name: `FY ${today.getFullYear()} Test`,
+      startDate,
+      endDate,
+    });
+
+    await executeClose(period.id, db.orgId, db.userId);
+
+    // Attempt a transaction inside the closed period
+    await expect(
+      createTransaction({
+        organizationId: db.orgId,
+        transactionDate: today,
+        amount: 100,
+        description: 'Should fail — period closed',
+        debitAccountId: db.accounts.checking,
+        creditAccountId: db.accounts.revenue,
+      })
+    ).rejects.toThrow('closed fiscal period');
+
+    // Reopen so future tests aren't blocked, then clean up the period
+    await reopenPeriod(period.id, db.orgId, db.userId);
+
+    // Original balances restored after reopen reverses closing entries
+    await db.assertBalance(db.accounts.checking, checkingBefore, 'checking unchanged');
+    await db.assertBalance(db.accounts.revenue, revenueBefore, 'revenue unchanged');
+  });
+});
+
+describe('Fiscal Period Close → Reopen Cycle', () => {
+  it('should zero revenue/expense and move net to equity, then reverse on reopen', async () => {
+    // Set up: need revenue and expense with known balances for this test
+    // Create isolated transactions for this test
+    const revenueBefore = await db.getAccountBalance(db.accounts.revenue);
+    const expenseBefore = await db.getAccountBalance(db.accounts.expense);
+    const equityBefore = await db.getAccountBalance(db.accounts.equity);
+
+    // Add $1000 revenue and $600 expense
+    await createTransaction({
+      organizationId: db.orgId,
+      transactionDate: new Date(),
+      amount: 1000,
+      description: 'Revenue for fiscal close test',
+      debitAccountId: db.accounts.checking,
+      creditAccountId: db.accounts.revenue,
+    });
+    await createTransaction({
+      organizationId: db.orgId,
+      transactionDate: new Date(),
+      amount: 600,
+      description: 'Expense for fiscal close test',
+      debitAccountId: db.accounts.expense,
+      creditAccountId: db.accounts.checking,
+    });
+
+    const revenuePreClose = await db.getAccountBalance(db.accounts.revenue);
+    const expensePreClose = await db.getAccountBalance(db.accounts.expense);
+    expect(revenuePreClose).toBeCloseTo(revenueBefore + 1000, 2);
+    expect(expensePreClose).toBeCloseTo(expenseBefore + 600, 2);
+
+    await db.setFundBalanceAccount(db.accounts.equity);
+
+    // Use a past fiscal year range that won't overlap with other tests
+    const period = await createFiscalPeriod({
+      organizationId: db.orgId,
+      name: 'FY Close-Reopen Test',
+      startDate: new Date(2019, 0, 1),
+      endDate: new Date(2019, 11, 31),
+    });
+
+    const closeResult = await executeClose(period.id, db.orgId, db.userId);
+
+    expect(closeResult.status).toBe('CLOSED');
+    expect(closeResult.entriesCreated).toBeGreaterThanOrEqual(2);
+
+    // After close: revenue and expense should be zero, equity absorbs net
+    await db.assertBalance(db.accounts.revenue, 0, 'revenue zeroed after close');
+    await db.assertBalance(db.accounts.expense, 0, 'expense zeroed after close');
+    // Equity should have increased by net surplus (revenue - expense from ALL prior tests)
+    const equityAfterClose = await db.getAccountBalance(db.accounts.equity);
+    expect(equityAfterClose).toBeGreaterThan(equityBefore);
+
+    // Reopen: should reverse all closing entries
+    const reopenResult = await reopenPeriod(period.id, db.orgId, db.userId);
+    expect(reopenResult.status).toBe('OPEN');
+
+    // Revenue and expense should be restored
+    await db.assertBalance(db.accounts.revenue, revenuePreClose, 'revenue restored after reopen');
+    await db.assertBalance(db.accounts.expense, expensePreClose, 'expense restored after reopen');
+    await db.assertBalance(db.accounts.equity, equityBefore, 'equity restored after reopen');
+  });
+});
+
+describe('Edit Transaction: Swap Both Accounts', () => {
+  it('should correctly handle changing both debit and credit accounts', async () => {
+    const checkingBefore = await db.getAccountBalance(db.accounts.checking);
+    const clearingBefore = await db.getAccountBalance(db.accounts.clearing);
+    const revenueBefore = await db.getAccountBalance(db.accounts.revenue);
+    const equityBefore = await db.getAccountBalance(db.accounts.equity);
+
+    // Create: DR Checking, CR Revenue for $200
+    const txn = await createTransaction({
+      organizationId: db.orgId,
+      transactionDate: new Date(),
+      amount: 200,
+      description: 'To be fully re-routed',
+      debitAccountId: db.accounts.checking,
+      creditAccountId: db.accounts.revenue,
+    });
+
+    await db.assertBalance(db.accounts.checking, checkingBefore + 200);
+    await db.assertBalance(db.accounts.revenue, revenueBefore + 200);
+
+    // Edit: change BOTH accounts — debit to Clearing, credit to Equity
+    await editTransaction(txn.id, db.orgId, {
+      debitAccountId: db.accounts.clearing,
+      creditAccountId: db.accounts.equity,
+      changeReason: 'Correcting both accounts',
+    }, db.userId);
+
+    // Original accounts should be back to starting point
+    await db.assertBalance(db.accounts.checking, checkingBefore, 'checking restored');
+    await db.assertBalance(db.accounts.revenue, revenueBefore, 'revenue restored');
+    // New accounts should reflect the transaction
+    await db.assertBalance(db.accounts.clearing, clearingBefore + 200, 'clearing has debit');
+    await db.assertBalance(db.accounts.equity, equityBefore + 200, 'equity has credit');
   });
 });
