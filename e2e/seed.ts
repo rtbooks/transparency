@@ -57,18 +57,29 @@ async function seed() {
       await cleanupOrg(prisma, existingOrg.id);
     }
 
-    // Clean up any existing user with this authId
-    const existingUser = await prisma.user.findUnique({
+    // Find existing user by authId or email
+    const existingByAuth = await prisma.user.findUnique({
       where: { authId: clerkUserId },
+    });
+    const existingByEmail = existingByAuth ? null : await prisma.user.findUnique({
+      where: { email: 'e2e-test@radbooks.org' },
     });
 
     const now = new Date();
 
     // Create or reuse the user
     let userId: string;
-    if (existingUser) {
-      userId = existingUser.id;
-      console.log(`  Using existing user: ${existingUser.email} (${userId})`);
+    if (existingByAuth) {
+      userId = existingByAuth.id;
+      console.log(`  Using existing user: ${existingByAuth.email} (${userId})`);
+    } else if (existingByEmail) {
+      // Update authId to match current Clerk user
+      await prisma.user.update({
+        where: { id: existingByEmail.id },
+        data: { authId: clerkUserId },
+      });
+      userId = existingByEmail.id;
+      console.log(`  Updated user authId: ${existingByEmail.email} (${userId})`);
     } else {
       const user = await prisma.user.create({
         data: {

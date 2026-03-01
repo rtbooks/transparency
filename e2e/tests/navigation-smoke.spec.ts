@@ -64,10 +64,10 @@ test.describe('Navigation Smoke Test', () => {
 
   test('Sidebar navigation links are visible', async ({ page }) => {
     await page.goto(`/org/${slug}/dashboard`);
-    await waitForPageReady(page);
+    await page.waitForLoadState('load');
 
-    // Desktop sidebar should have navigation items
-    const sidebar = page.locator('nav, [role="navigation"]').first();
+    // Sidebar is the complementary/aside region with nav links
+    const sidebar = page.locator('aside nav, [role="complementary"] nav').first();
     if (await sidebar.isVisible()) {
       const links = sidebar.locator('a');
       const count = await links.count();

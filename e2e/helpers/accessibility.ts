@@ -56,5 +56,5 @@ export function collectConsoleErrors(page: Page): string[] {
  * Wait for the page to be fully loaded (no pending network requests).
  */
 export async function waitForPageReady(page: Page) {
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
 }
