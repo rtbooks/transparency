@@ -20,6 +20,10 @@ export default defineConfig({
     baseURL: 'http://localhost:3001',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    headless: !process.env.HEADED,
+    launchOptions: {
+      slowMo: process.env.HEADED ? 250 : 0,
+    },
   },
 
   projects: [
