@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { ReportNavTabs } from '@/components/reports/ReportNavTabs';
 import {
   BarChart,
   Bar,
@@ -37,6 +38,7 @@ interface AssetData {
 }
 
 interface ReportsDashboardClientProps {
+  organizationSlug: string;
   organizationName: string;
   fiscalYearLabel: string;
   fiscalYears: Array<{ label: string; startDate: string }>;
@@ -55,6 +57,7 @@ function formatDollar(value: number) {
 }
 
 export function ReportsDashboardClient({
+  organizationSlug,
   organizationName,
   fiscalYearLabel,
   fiscalYears,
@@ -81,6 +84,8 @@ export function ReportsDashboardClient({
 
   return (
     <div>
+      <ReportNavTabs organizationSlug={organizationSlug} />
+
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">

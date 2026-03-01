@@ -117,11 +117,11 @@ export default async function OrganizationPublicPage({
         })
       : [];
 
-    // Map: spendingId -> first image URL
+    // Map: spendingId -> first image proxy URL
     const imageMap = new Map<string, string>();
     for (const att of imageAttachments) {
       if (!imageMap.has(att.entityId)) {
-        imageMap.set(att.entityId, att.blobUrl);
+        imageMap.set(att.entityId, `/api/organizations/${slug}/attachments/${att.id}/public-image`);
       }
     }
 

@@ -191,8 +191,8 @@ export async function generateIncomeStatement(
   });
 
   // Calculate activity per account using correct debit/credit rules:
-  // - EXPENSE accounts: debits increase (positive activity)
-  // - REVENUE accounts: credits increase (positive activity)
+  // - EXPENSE accounts: debits increase, credits decrease (net activity)
+  // - REVENUE accounts: credits increase, debits decrease (net activity)
   const accountActivity = new Map<string, number>();
 
   transactions.forEach((tx) => {
@@ -204,6 +204,12 @@ export async function generateIncomeStatement(
         tx.debitAccountId,
         (accountActivity.get(tx.debitAccountId) || 0) + amount
       );
+    } else if (debitType === 'REVENUE') {
+      // Debit to revenue = reduction (e.g., refund)
+      accountActivity.set(
+        tx.debitAccountId,
+        (accountActivity.get(tx.debitAccountId) || 0) - amount
+      );
     }
 
     const creditType = accountTypeMap.get(tx.creditAccountId);
@@ -211,6 +217,12 @@ export async function generateIncomeStatement(
       accountActivity.set(
         tx.creditAccountId,
         (accountActivity.get(tx.creditAccountId) || 0) + amount
+      );
+    } else if (creditType === 'EXPENSE') {
+      // Credit to expense = reduction (e.g., reimbursement)
+      accountActivity.set(
+        tx.creditAccountId,
+        (accountActivity.get(tx.creditAccountId) || 0) - amount
       );
     }
   });

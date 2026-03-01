@@ -1,6 +1,7 @@
 'use client';
 
 import { PeriodSelector } from '@/components/reports/PeriodSelector';
+import { ReportNavTabs } from '@/components/reports/ReportNavTabs';
 import { ReportTable, useReportCSV } from '@/components/reports/ReportTable';
 import type { ReportSection, ReportRow } from '@/components/reports/ReportTable';
 import { ReportExportButtons } from '@/components/reports/ReportExportButtons';
@@ -31,6 +32,7 @@ interface BalanceSheetSectionData {
 }
 
 interface BalanceSheetClientProps {
+  organizationSlug: string;
   organizationName: string;
   reportData: {
     current: BalanceSheetSectionData;
@@ -62,6 +64,7 @@ function buildBalanceRow(
 }
 
 export function BalanceSheetClient({
+  organizationSlug,
   organizationName,
   reportData,
   fiscalYears,
@@ -150,6 +153,8 @@ export function BalanceSheetClient({
 
   return (
     <div>
+      <ReportNavTabs organizationSlug={organizationSlug} />
+
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Balance Sheet</h1>
