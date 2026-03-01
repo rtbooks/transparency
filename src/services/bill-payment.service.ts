@@ -32,9 +32,11 @@ export interface LinkPaymentInput {
  * Record a payment on a bill — creates both a Transaction and a BillPayment atomically
  */
 export async function recordPayment(
-  input: RecordPaymentInput
+  input: RecordPaymentInput,
+  txClient?: any
 ): Promise<BillPayment> {
-  const bill = await prisma.bill.findFirst({
+  const db = txClient || prisma;
+  const bill = await db.bill.findFirst({
     where: { id: input.billId, organizationId: input.organizationId },
   });
 
@@ -53,7 +55,7 @@ export async function recordPayment(
 
   // Resolve accrual transaction explicitly (bitemporal entity)
   const accrualTransaction = bill.accrualTransactionId
-    ? await prisma.transaction.findFirst({
+    ? await db.transaction.findFirst({
         where: buildCurrentVersionWhere({ id: bill.accrualTransactionId }),
       })
     : null;
@@ -81,7 +83,7 @@ export async function recordPayment(
   // so they are transfers, not income/expense.
   const transactionType = 'TRANSFER';
 
-  return await prisma.$transaction(async (tx) => {
+  const run = async (tx: any) => {
     // Create the transaction
     const transaction = await tx.transaction.create({
       data: {
@@ -117,7 +119,13 @@ export async function recordPayment(
     });
 
     return billPayment;
-  });
+  };
+
+  // Use provided transaction client or create a new one
+  if (txClient) {
+    return run(txClient);
+  }
+  return prisma.$transaction(run);
 }
 
 /**
@@ -149,18 +157,20 @@ export async function linkPayment(
     throw new Error(`Transaction amount (${txAmount}) exceeds remaining balance (${remaining})`);
   }
 
-  const billPayment = await prisma.billPayment.create({
-    data: {
-      billId: input.billId,
-      transactionId: input.transactionId,
-      notes: input.notes ?? null,
-    },
+  return await prisma.$transaction(async (tx) => {
+    const billPayment = await tx.billPayment.create({
+      data: {
+        billId: input.billId,
+        transactionId: input.transactionId,
+        notes: input.notes ?? null,
+      },
+    });
+
+    // Recalculate bill status within the same transaction
+    await recalculateBillStatus(input.billId, tx);
+
+    return billPayment;
   });
-
-  // Recalculate bill status after adding payment
-  await recalculateBillStatus(input.billId);
-
-  return billPayment;
 }
 
 /**

@@ -89,23 +89,27 @@ export async function POST(
       return NextResponse.json({ error: 'Invalid account selection' }, { status: 400 });
     }
 
-    const billPayment = await recordPayment({
-      billId,
-      organizationId: organization.id,
-      amount: validated.amount,
-      transactionDate: new Date(validated.transactionDate.length === 10 ? validated.transactionDate + 'T12:00:00' : validated.transactionDate),
-      cashAccountId: validated.cashAccountId,
-      description: validated.description,
-      referenceNumber: validated.referenceNumber ?? null,
-      notes: validated.notes ?? null,
-      createdBy: user.id,
+    const billPayment = await prisma.$transaction(async (tx) => {
+      const payment = await recordPayment({
+        billId,
+        organizationId: organization.id,
+        amount: validated.amount,
+        transactionDate: new Date(validated.transactionDate.length === 10 ? validated.transactionDate + 'T12:00:00' : validated.transactionDate),
+        cashAccountId: validated.cashAccountId,
+        description: validated.description,
+        referenceNumber: validated.referenceNumber ?? null,
+        notes: validated.notes ?? null,
+        createdBy: user.id,
+      }, tx);
+
+      // Recalculate bill status within the same transaction
+      await recalculateBillStatus(billId, tx);
+
+      // Sync linked donation status (no-op if bill has no donation)
+      await syncDonationFromBill(billId, tx);
+
+      return payment;
     });
-
-    // Recalculate bill status after payment
-    await recalculateBillStatus(billId);
-
-    // Sync linked donation status (no-op if bill has no donation)
-    await syncDonationFromBill(billId);
 
     return NextResponse.json(billPayment, { status: 201 });
   } catch (error) {

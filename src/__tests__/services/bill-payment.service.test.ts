@@ -305,20 +305,20 @@ describe('BillPayment Service', () => {
         transactionId: 'txn-existing-1',
         notes: 'Link note',
       };
-      (prisma.billPayment.create as jest.Mock).mockResolvedValue(createdBp);
+      (mockTx.billPayment.create as jest.Mock).mockResolvedValue(createdBp);
       (recalculateBillStatus as jest.Mock).mockResolvedValue({ id: 'bill-1', status: 'PARTIAL' });
 
       const result = await linkPayment(linkInput, 'org-1');
 
       expect(result).toEqual(createdBp);
-      expect(prisma.billPayment.create).toHaveBeenCalledWith({
+      expect(mockTx.billPayment.create).toHaveBeenCalledWith({
         data: {
           billId: 'bill-1',
           transactionId: 'txn-existing-1',
           notes: 'Link note',
         },
       });
-      expect(recalculateBillStatus).toHaveBeenCalledWith('bill-1');
+      expect(recalculateBillStatus).toHaveBeenCalledWith('bill-1', mockTx);
     });
 
     it('should throw when bill is not found', async () => {
@@ -369,7 +369,7 @@ describe('BillPayment Service', () => {
         amount: 100,
         organizationId: 'org-1',
       });
-      (prisma.billPayment.create as jest.Mock).mockResolvedValue({
+      (mockTx.billPayment.create as jest.Mock).mockResolvedValue({
         id: 'bp-2',
         billId: 'bill-1',
         transactionId: 'txn-existing-1',
@@ -379,7 +379,7 @@ describe('BillPayment Service', () => {
 
       await linkPayment(linkNoNotes, 'org-1');
 
-      expect(prisma.billPayment.create).toHaveBeenCalledWith({
+      expect(mockTx.billPayment.create).toHaveBeenCalledWith({
         data: expect.objectContaining({ notes: null }),
       });
     });
