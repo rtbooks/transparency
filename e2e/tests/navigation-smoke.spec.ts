@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { checkAccessibility, waitForPageReady } from '../helpers/accessibility';
+import { waitForPageReady } from '../helpers/accessibility';
 
 /**
  * Navigation smoke test — visits every sidebar link for an authenticated user
