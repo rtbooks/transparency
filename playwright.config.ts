@@ -12,7 +12,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI
     ? [['html', { open: 'never' }], ['github']]
-    : [['html', { open: 'on-failure' }]],
+    : [['list'], ['html', { open: 'never' }]],
   timeout: 30 * 1000,
   expect: { timeout: 10 * 1000 },
 
