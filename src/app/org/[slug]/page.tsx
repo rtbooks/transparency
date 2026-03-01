@@ -80,7 +80,7 @@ export default async function OrganizationPublicPage({
 
   // Fetch additional public data when transparency is enabled
   let campaigns: Array<{ id: string; name: string; targetAmount: number | null; status: string }> = [];
-  let programSpending: Array<{ id: string; title: string; amount: number; status: string }> = [];
+  let programSpending: Array<{ id: string; title: string; amount: number; status: string; imageUrl?: string | null }> = [];
 
   if (organization.publicTransparency) {
     const [campaignRows, spendingRows] = await Promise.all([
@@ -94,7 +94,7 @@ export default async function OrganizationPublicPage({
         where: buildCurrentVersionWhere({ organizationId: organization.id }),
         select: { id: true, title: true, estimatedAmount: true, status: true },
         orderBy: { createdAt: 'desc' },
-        take: 10,
+        take: 6,
       }),
     ]);
 
@@ -104,9 +104,31 @@ export default async function OrganizationPublicPage({
       status: c.status,
     }));
 
+    // Fetch first image attachment for each spending item
+    const spendingIds = spendingRows.map(s => s.id);
+    const imageAttachments = spendingIds.length > 0
+      ? await prisma.attachment.findMany({
+          where: {
+            entityType: 'PROGRAM_SPENDING',
+            entityId: { in: spendingIds },
+            mimeType: { startsWith: 'image/' },
+          },
+          orderBy: { uploadedAt: 'asc' },
+        })
+      : [];
+
+    // Map: spendingId -> first image URL
+    const imageMap = new Map<string, string>();
+    for (const att of imageAttachments) {
+      if (!imageMap.has(att.entityId)) {
+        imageMap.set(att.entityId, att.blobUrl);
+      }
+    }
+
     programSpending = spendingRows.map(s => ({
       ...s,
       amount: Number(s.estimatedAmount),
+      imageUrl: imageMap.get(s.id) || null,
     }));
   }
 

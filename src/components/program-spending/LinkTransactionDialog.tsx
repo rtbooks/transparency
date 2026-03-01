@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,6 +54,9 @@ export function LinkTransactionDialog({
   const [search, setSearch] = useState('');
   const [linking, setLinking] = useState<string | null>(null);
 
+  const existingIdsRef = useRef(existingTransactionIds);
+  existingIdsRef.current = existingTransactionIds;
+
   const fetchTransactions = useCallback(async () => {
     try {
       setLoading(true);
@@ -68,7 +71,7 @@ export function LinkTransactionDialog({
 
       // Filter out already-linked transactions
       const filtered = (data.transactions || []).filter(
-        (tx: Transaction) => !existingTransactionIds.includes(tx.id)
+        (tx: Transaction) => !existingIdsRef.current.includes(tx.id)
       );
       setTransactions(filtered);
     } catch {
@@ -76,7 +79,8 @@ export function LinkTransactionDialog({
     } finally {
       setLoading(false);
     }
-  }, [organizationSlug, search, existingTransactionIds, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [organizationSlug, search]);
 
   useEffect(() => {
     if (open) fetchTransactions();

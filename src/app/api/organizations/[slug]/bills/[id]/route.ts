@@ -103,7 +103,7 @@ export async function PATCH(
 
     // Handle cancel as a special case
     if (validated.status === 'CANCELLED') {
-      const cancelled = await cancelBill(id, organization.id);
+      const cancelled = await cancelBill(id, organization.id, user.id);
       return NextResponse.json(cancelled);
     }
 

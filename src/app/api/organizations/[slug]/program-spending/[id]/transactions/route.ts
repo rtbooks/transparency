@@ -123,10 +123,43 @@ export async function POST(
       return NextResponse.json({ error: 'Transaction not found' }, { status: 400 });
     }
 
+    // Prevent linking a transaction already linked to another spending item
+    const existingLink = await prisma.programSpendingTransaction.findFirst({
+      where: { transactionId: validated.transactionId },
+    });
+    if (existingLink && existingLink.programSpendingId !== id) {
+      return NextResponse.json(
+        { error: 'This transaction is already linked to another program spending item' },
+        { status: 409 }
+      );
+    }
+
+    // Look up account types to determine sign
+    const [debitAcct, creditAcct] = await Promise.all([
+      prisma.account.findFirst({
+        where: buildCurrentVersionWhere({ id: tx.debitAccountId }),
+        select: { type: true },
+      }),
+      prisma.account.findFirst({
+        where: buildCurrentVersionWhere({ id: tx.creditAccountId }),
+        select: { type: true },
+      }),
+    ]);
+
+    // Determine signed amount: debit to expense = positive (spending),
+    // credit to expense = negative (refund/reduction)
+    let signedAmount = validated.amount;
+    if (debitAcct?.type === 'EXPENSE' && creditAcct?.type !== 'EXPENSE') {
+      signedAmount = Math.abs(validated.amount);
+    } else if (creditAcct?.type === 'EXPENSE' && debitAcct?.type !== 'EXPENSE') {
+      signedAmount = -Math.abs(validated.amount);
+    }
+    // If both sides are expense accounts (transfer between), keep positive
+
     const link = await linkTransaction(
       id,
       validated.transactionId,
-      validated.amount as unknown as Prisma.Decimal,
+      signedAmount as unknown as Prisma.Decimal,
       user.id
     );
 
