@@ -1,13 +1,100 @@
 /**
  * Transaction Service
- * Business logic for editing and voiding transactions with bi-temporal versioning.
+ * Business logic for creating, editing, and voiding transactions with bi-temporal versioning.
  */
 
 import { prisma } from '@/lib/prisma';
 import { updateAccountBalances, reverseAccountBalances } from '@/lib/accounting/balance-calculator';
-import { MAX_DATE, closeVersion } from '@/lib/temporal/temporal-utils';
+import { MAX_DATE, closeVersion, buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { recalculateBillStatus } from '@/services/bill.service';
 import { isDateInClosedPeriod } from '@/services/fiscal-period.service';
+import type { PaymentMethod, Transaction } from '@/generated/prisma/client';
+
+export interface CreateTransactionInput {
+  organizationId: string;
+  transactionDate: Date;
+  amount: number;
+  description: string;
+  debitAccountId: string;
+  creditAccountId: string;
+  referenceNumber?: string | null;
+  contactId?: string | null;
+  paymentMethod?: PaymentMethod;
+}
+
+/**
+ * Create a new transaction with double-entry balance updates.
+ * Validates accounts, checks fiscal period, determines transaction type,
+ * and atomically creates the record + updates account balances.
+ */
+export async function createTransaction(input: CreateTransactionInput): Promise<Transaction> {
+  // Verify both accounts exist and belong to the organization
+  const [debitAccount, creditAccount] = await Promise.all([
+    prisma.account.findFirst({
+      where: buildCurrentVersionWhere({ id: input.debitAccountId }),
+    }),
+    prisma.account.findFirst({
+      where: buildCurrentVersionWhere({ id: input.creditAccountId }),
+    }),
+  ]);
+
+  if (
+    !debitAccount ||
+    !creditAccount ||
+    debitAccount.organizationId !== input.organizationId ||
+    creditAccount.organizationId !== input.organizationId
+  ) {
+    throw new Error('Invalid account selection');
+  }
+
+  if (!debitAccount.isActive || !creditAccount.isActive) {
+    throw new Error('Cannot use inactive accounts for transactions');
+  }
+
+  // Check if the transaction date falls in a closed fiscal period
+  const closedCheck = await isDateInClosedPeriod(input.organizationId, input.transactionDate);
+  if (closedCheck.closed) {
+    throw new Error(`Cannot create transaction in closed fiscal period "${closedCheck.periodName}"`);
+  }
+
+  // Determine transaction type based on account types
+  let transactionType: 'INCOME' | 'EXPENSE' | 'TRANSFER';
+  if (debitAccount.type === 'ASSET' && creditAccount.type === 'REVENUE') {
+    transactionType = 'INCOME';
+  } else if (debitAccount.type === 'EXPENSE' && creditAccount.type === 'ASSET') {
+    transactionType = 'EXPENSE';
+  } else if (debitAccount.type === 'ASSET' && creditAccount.type === 'ASSET') {
+    transactionType = 'TRANSFER';
+  } else {
+    transactionType = 'INCOME'; // Default for general entries
+  }
+
+  return prisma.$transaction(async (tx) => {
+    const newTransaction = await tx.transaction.create({
+      data: {
+        organizationId: input.organizationId,
+        transactionDate: input.transactionDate,
+        amount: input.amount,
+        type: transactionType,
+        debitAccountId: input.debitAccountId,
+        creditAccountId: input.creditAccountId,
+        description: input.description,
+        referenceNumber: input.referenceNumber ?? null,
+        contactId: input.contactId ?? null,
+        paymentMethod: input.paymentMethod ?? 'OTHER',
+      },
+    });
+
+    await updateAccountBalances(
+      tx,
+      input.debitAccountId,
+      input.creditAccountId,
+      input.amount
+    );
+
+    return newTransaction;
+  });
+}
 
 export interface EditTransactionInput {
   transactionDate?: string;

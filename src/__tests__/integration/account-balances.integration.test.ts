@@ -10,11 +10,10 @@
  */
 
 import { DbTestHelper } from '../helpers/db-test-helper';
-import { updateAccountBalances, reverseAccountBalances } from '@/lib/accounting/balance-calculator';
+import { createTransaction, editTransaction, voidTransaction } from '@/services/transaction.service';
 import { createBill } from '@/services/bill.service';
 import { recordPayment } from '@/services/bill-payment.service';
-import { createPledgeDonation, createOneTimeDonation } from '@/services/donation.service';
-import { editTransaction, voidTransaction } from '@/services/transaction.service';
+import { createPledgeDonation } from '@/services/donation.service';
 
 const db = new DbTestHelper();
 
@@ -32,20 +31,13 @@ describe('Transaction Create → Balance Update', () => {
     await db.assertBalance(db.accounts.revenue, 0, 'revenue before');
 
     // Create transaction: DR Checking (ASSET +500), CR Revenue (REVENUE +500)
-    await db.prisma.$transaction(async (tx) => {
-      await tx.transaction.create({
-        data: {
-          organizationId: db.orgId,
-          transactionDate: new Date(),
-          amount: 500,
-          type: 'INCOME',
-          debitAccountId: db.accounts.checking,
-          creditAccountId: db.accounts.revenue,
-          description: 'Test donation deposit',
-          paymentMethod: 'OTHER',
-        },
-      });
-      await updateAccountBalances(tx, db.accounts.checking, db.accounts.revenue, 500);
+    await createTransaction({
+      organizationId: db.orgId,
+      transactionDate: new Date(),
+      amount: 500,
+      description: 'Test donation deposit',
+      debitAccountId: db.accounts.checking,
+      creditAccountId: db.accounts.revenue,
     });
 
     await db.assertBalance(db.accounts.checking, 500, 'checking after');
@@ -56,20 +48,13 @@ describe('Transaction Create → Balance Update', () => {
     const checkingBefore = await db.getAccountBalance(db.accounts.checking);
 
     // Create transaction: DR Expense (EXPENSE +200), CR Checking (ASSET -200)
-    await db.prisma.$transaction(async (tx) => {
-      await tx.transaction.create({
-        data: {
-          organizationId: db.orgId,
-          transactionDate: new Date(),
-          amount: 200,
-          type: 'EXPENSE',
-          debitAccountId: db.accounts.expense,
-          creditAccountId: db.accounts.checking,
-          description: 'Test expense payment',
-          paymentMethod: 'OTHER',
-        },
-      });
-      await updateAccountBalances(tx, db.accounts.expense, db.accounts.checking, 200);
+    await createTransaction({
+      organizationId: db.orgId,
+      transactionDate: new Date(),
+      amount: 200,
+      description: 'Test expense payment',
+      debitAccountId: db.accounts.expense,
+      creditAccountId: db.accounts.checking,
     });
 
     await db.assertBalance(db.accounts.checking, checkingBefore - 200, 'checking after expense');
@@ -83,21 +68,13 @@ describe('Transaction Void → Balance Reversal', () => {
     const revenueBefore = await db.getAccountBalance(db.accounts.revenue);
 
     // Create a transaction
-    const txn = await db.prisma.$transaction(async (tx) => {
-      const t = await tx.transaction.create({
-        data: {
-          organizationId: db.orgId,
-          transactionDate: new Date(),
-          amount: 300,
-          type: 'INCOME',
-          debitAccountId: db.accounts.checking,
-          creditAccountId: db.accounts.revenue,
-          description: 'To be voided',
-          paymentMethod: 'OTHER',
-        },
-      });
-      await updateAccountBalances(tx, db.accounts.checking, db.accounts.revenue, 300);
-      return t;
+    const txn = await createTransaction({
+      organizationId: db.orgId,
+      transactionDate: new Date(),
+      amount: 300,
+      description: 'To be voided',
+      debitAccountId: db.accounts.checking,
+      creditAccountId: db.accounts.revenue,
     });
 
     // Verify balances changed
@@ -119,21 +96,13 @@ describe('Transaction Edit → Reverse Old + Apply New', () => {
     const revenueBefore = await db.getAccountBalance(db.accounts.revenue);
 
     // Create transaction for $400
-    const txn = await db.prisma.$transaction(async (tx) => {
-      const t = await tx.transaction.create({
-        data: {
-          organizationId: db.orgId,
-          transactionDate: new Date(),
-          amount: 400,
-          type: 'INCOME',
-          debitAccountId: db.accounts.checking,
-          creditAccountId: db.accounts.revenue,
-          description: 'To be edited',
-          paymentMethod: 'OTHER',
-        },
-      });
-      await updateAccountBalances(tx, db.accounts.checking, db.accounts.revenue, 400);
-      return t;
+    const txn = await createTransaction({
+      organizationId: db.orgId,
+      transactionDate: new Date(),
+      amount: 400,
+      description: 'To be edited',
+      debitAccountId: db.accounts.checking,
+      creditAccountId: db.accounts.revenue,
     });
 
     await db.assertBalance(db.accounts.checking, checkingBefore + 400);
@@ -155,21 +124,13 @@ describe('Transaction Edit → Reverse Old + Apply New', () => {
     const revenueBefore = await db.getAccountBalance(db.accounts.revenue);
 
     // Create: DR Checking, CR Revenue for $150
-    const txn = await db.prisma.$transaction(async (tx) => {
-      const t = await tx.transaction.create({
-        data: {
-          organizationId: db.orgId,
-          transactionDate: new Date(),
-          amount: 150,
-          type: 'INCOME',
-          debitAccountId: db.accounts.checking,
-          creditAccountId: db.accounts.revenue,
-          description: 'To be re-routed',
-          paymentMethod: 'OTHER',
-        },
-      });
-      await updateAccountBalances(tx, db.accounts.checking, db.accounts.revenue, 150);
-      return t;
+    const txn = await createTransaction({
+      organizationId: db.orgId,
+      transactionDate: new Date(),
+      amount: 150,
+      description: 'To be re-routed',
+      debitAccountId: db.accounts.checking,
+      creditAccountId: db.accounts.revenue,
     });
 
     // Edit: change debit account from Checking to Clearing
