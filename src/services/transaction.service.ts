@@ -97,7 +97,7 @@ export async function createTransaction(input: CreateTransactionInput): Promise<
 }
 
 export interface EditTransactionInput {
-  transactionDate?: string;
+  transactionDate?: Date;
   amount?: number;
   description?: string;
   debitAccountId?: string;
