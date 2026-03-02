@@ -53,6 +53,11 @@ jest.mock('@/services/bill.service', () => ({
   recalculateBillStatus: jest.fn(),
 }));
 
+// Mock fiscal period check (called by createTransactionRecord)
+jest.mock('@/services/fiscal-period.service', () => ({
+  isDateInClosedPeriod: jest.fn().mockResolvedValue({ closed: false }),
+}));
+
 import {
   recordPayment,
   linkPayment,

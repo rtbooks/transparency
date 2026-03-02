@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { getStripe, STRIPE_WEBHOOK_SECRET } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { buildCurrentVersionWhere, MAX_DATE } from "@/lib/temporal/temporal-utils";
-import { updateAccountBalances } from "@/lib/accounting/balance-calculator";
+import { createTransactionRecord } from "@/services/transaction.service";
 
 /**
  * POST /api/webhooks/stripe
@@ -270,28 +270,19 @@ async function handleNewDonation(
   const now = new Date();
 
   await prisma.$transaction(async (tx) => {
-    const transaction = await tx.transaction.create({
-      data: {
-        organizationId,
-        transactionDate: now,
-        amount: chargedAmount,
-        type: "INCOME",
-        debitAccountId: clearingAccountId,
-        creditAccountId: revenueAccountId,
-        description: `Online donation via Stripe — ${donorName}`,
-        contactId,
-        paymentMethod: "STRIPE",
-        stripeSessionId: session.id,
-        stripePaymentId: session.payment_intent as string || null,
-        versionId: crypto.randomUUID(),
-        validFrom: now,
-        validTo: MAX_DATE,
-        systemFrom: now,
-        systemTo: MAX_DATE,
-      },
+    const transaction = await createTransactionRecord(tx, {
+      organizationId,
+      transactionDate: now,
+      amount: chargedAmount,
+      type: 'INCOME',
+      debitAccountId: clearingAccountId,
+      creditAccountId: revenueAccountId,
+      description: `Online donation via Stripe — ${donorName}`,
+      contactId,
+      paymentMethod: 'STRIPE',
+      stripeSessionId: session.id,
+      stripePaymentId: session.payment_intent as string || null,
     });
-
-    await updateAccountBalances(tx, clearingAccountId, revenueAccountId, chargedAmount);
 
     await tx.donation.create({
       data: {

@@ -1,6 +1,11 @@
 /**
  * Transaction Service
  * Business logic for creating, editing, and voiding transactions with bi-temporal versioning.
+ *
+ * ARCHITECTURE: All transaction creation flows MUST go through createTransactionRecord()
+ * to ensure consistent temporal fields, balance updates, and fiscal period checks.
+ * - createTransaction() — high-level API for manual recording (validates accounts, classifies type)
+ * - createTransactionRecord() — low-level API for service-to-service use (accepts tx client)
  */
 
 import { prisma } from '@/lib/prisma';
@@ -8,7 +13,7 @@ import { updateAccountBalances, reverseAccountBalances } from '@/lib/accounting/
 import { MAX_DATE, closeVersion, buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { recalculateBillStatus } from '@/services/bill.service';
 import { isDateInClosedPeriod } from '@/services/fiscal-period.service';
-import type { PaymentMethod, Transaction } from '@/generated/prisma/client';
+import type { PaymentMethod, TransactionType, Transaction } from '@/generated/prisma/client';
 
 export interface CreateTransactionInput {
   organizationId: string;
@@ -23,9 +28,86 @@ export interface CreateTransactionInput {
 }
 
 /**
+ * Low-level input for createTransactionRecord().
+ * All fields that a transaction record needs — callers must supply type explicitly.
+ */
+export interface CreateTransactionRecordInput {
+  organizationId: string;
+  transactionDate: Date;
+  amount: number;
+  type: TransactionType;
+  debitAccountId: string;
+  creditAccountId: string;
+  description: string;
+  referenceNumber?: string | null;
+  contactId?: string | null;
+  paymentMethod?: PaymentMethod;
+  createdBy?: string | null;
+  category?: string | null;
+  stripeSessionId?: string | null;
+  stripePaymentId?: string | null;
+  skipFiscalPeriodCheck?: boolean;
+}
+
+/**
+ * Create a transaction record AND update account balances atomically.
+ * This is the single source of truth for creating transactions — all services
+ * (bill, donation, payment, webhook, fiscal period) MUST use this function.
+ *
+ * Must be called within a Prisma $transaction context (the caller's tx client).
+ * Handles: temporal field setup, balance updates, and fiscal period validation.
+ */
+export async function createTransactionRecord(
+  tx: any,
+  input: CreateTransactionRecordInput
+): Promise<Transaction> {
+  // Check fiscal period (skippable for closing entries)
+  if (!input.skipFiscalPeriodCheck) {
+    const closedCheck = await isDateInClosedPeriod(input.organizationId, input.transactionDate);
+    if (closedCheck.closed) {
+      throw new Error(`Cannot create transaction in closed fiscal period "${closedCheck.periodName}"`);
+    }
+  }
+
+  const now = new Date();
+
+  const transaction = await tx.transaction.create({
+    data: {
+      organizationId: input.organizationId,
+      transactionDate: input.transactionDate,
+      amount: input.amount,
+      type: input.type,
+      debitAccountId: input.debitAccountId,
+      creditAccountId: input.creditAccountId,
+      description: input.description,
+      referenceNumber: input.referenceNumber ?? null,
+      contactId: input.contactId ?? null,
+      paymentMethod: input.paymentMethod ?? 'OTHER',
+      createdBy: input.createdBy ?? null,
+      category: input.category ?? null,
+      stripeSessionId: input.stripeSessionId ?? null,
+      stripePaymentId: input.stripePaymentId ?? null,
+      // Temporal fields — explicit for clarity even though schema has defaults
+      versionId: crypto.randomUUID(),
+      validFrom: now,
+      validTo: MAX_DATE,
+      systemFrom: now,
+      systemTo: MAX_DATE,
+    },
+  });
+
+  await updateAccountBalances(tx, input.debitAccountId, input.creditAccountId, input.amount);
+
+  return transaction;
+}
+
+/**
  * Create a new transaction with double-entry balance updates.
- * Validates accounts, checks fiscal period, determines transaction type,
+ * High-level API: validates accounts, checks fiscal period, determines transaction type,
  * and atomically creates the record + updates account balances.
+ *
+ * Use this for manually-recorded transactions (the "Record Transaction" UI).
+ * For service-to-service use (bills, donations, etc.), use createTransactionRecord() directly.
  */
 export async function createTransaction(input: CreateTransactionInput): Promise<Transaction> {
   // Verify both accounts exist and belong to the organization
@@ -51,14 +133,8 @@ export async function createTransaction(input: CreateTransactionInput): Promise<
     throw new Error('Cannot use inactive accounts for transactions');
   }
 
-  // Check if the transaction date falls in a closed fiscal period
-  const closedCheck = await isDateInClosedPeriod(input.organizationId, input.transactionDate);
-  if (closedCheck.closed) {
-    throw new Error(`Cannot create transaction in closed fiscal period "${closedCheck.periodName}"`);
-  }
-
   // Determine transaction type based on account types
-  let transactionType: 'INCOME' | 'EXPENSE' | 'TRANSFER';
+  let transactionType: TransactionType;
   if (debitAccount.type === 'ASSET' && creditAccount.type === 'REVENUE') {
     transactionType = 'INCOME';
   } else if (debitAccount.type === 'EXPENSE' && creditAccount.type === 'ASSET') {
@@ -70,29 +146,18 @@ export async function createTransaction(input: CreateTransactionInput): Promise<
   }
 
   return prisma.$transaction(async (tx) => {
-    const newTransaction = await tx.transaction.create({
-      data: {
-        organizationId: input.organizationId,
-        transactionDate: input.transactionDate,
-        amount: input.amount,
-        type: transactionType,
-        debitAccountId: input.debitAccountId,
-        creditAccountId: input.creditAccountId,
-        description: input.description,
-        referenceNumber: input.referenceNumber ?? null,
-        contactId: input.contactId ?? null,
-        paymentMethod: input.paymentMethod ?? 'OTHER',
-      },
+    return createTransactionRecord(tx, {
+      organizationId: input.organizationId,
+      transactionDate: input.transactionDate,
+      amount: input.amount,
+      type: transactionType,
+      debitAccountId: input.debitAccountId,
+      creditAccountId: input.creditAccountId,
+      description: input.description,
+      referenceNumber: input.referenceNumber,
+      contactId: input.contactId,
+      paymentMethod: input.paymentMethod,
     });
-
-    await updateAccountBalances(
-      tx,
-      input.debitAccountId,
-      input.creditAccountId,
-      input.amount
-    );
-
-    return newTransaction;
   });
 }
 
@@ -178,16 +243,12 @@ export async function editTransaction(
         paymentMethod: current.paymentMethod,
         referenceNumber: input.referenceNumber !== undefined ? input.referenceNumber : current.referenceNumber,
         contactId: input.contactId !== undefined ? input.contactId : current.contactId,
-        donorUserId: current.donorUserId,
-        donorName: current.donorName,
-        isAnonymous: current.isAnonymous,
-        receiptUrl: current.receiptUrl,
         notes: input.notes !== undefined ? input.notes : current.notes,
-        bankTransactionId: null,
+        bankTransactionId: current.bankTransactionId,
         reconciled: current.reconciled,
         reconciledAt: current.reconciledAt,
-        stripeSessionId: null,
-        stripePaymentId: null,
+        stripeSessionId: current.stripeSessionId,
+        stripePaymentId: current.stripePaymentId,
         createdAt: current.createdAt,
         createdBy: current.createdBy,
         // Temporal fields
@@ -281,10 +342,6 @@ export async function voidTransaction(
         category: current.category,
         paymentMethod: current.paymentMethod,
         referenceNumber: current.referenceNumber,
-        donorUserId: current.donorUserId,
-        donorName: current.donorName,
-        isAnonymous: current.isAnonymous,
-        receiptUrl: current.receiptUrl,
         notes: current.notes,
         bankTransactionId: null,
         reconciled: current.reconciled,
