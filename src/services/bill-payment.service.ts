@@ -5,7 +5,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { recalculateBillStatus } from '@/services/bill.service';
-import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
+import { createTransactionRecord } from '@/services/transaction.service';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import type { BillPayment } from '@/generated/prisma/client';
 
@@ -84,30 +84,20 @@ export async function recordPayment(
   const transactionType = 'TRANSFER';
 
   const run = async (tx: any) => {
-    // Create the transaction
-    const transaction = await tx.transaction.create({
-      data: {
-        organizationId: input.organizationId,
-        transactionDate: input.transactionDate,
-        amount: input.amount,
-        type: transactionType as any,
-        debitAccountId,
-        creditAccountId,
-        description: input.description || `Payment: ${bill.description}`,
-        referenceNumber: input.referenceNumber ?? null,
-        paymentMethod: (input.paymentMethod as any) || 'OTHER',
-        contactId: bill.contactId,
-        createdBy: input.createdBy ?? null,
-      },
-    });
-
-    // Update account balances
-    await updateAccountBalances(
-      tx,
+    // Create the transaction via the centralized function
+    const transaction = await createTransactionRecord(tx, {
+      organizationId: input.organizationId,
+      transactionDate: input.transactionDate,
+      amount: input.amount,
+      type: transactionType as any,
       debitAccountId,
       creditAccountId,
-      input.amount
-    );
+      description: input.description || `Payment: ${bill.description}`,
+      referenceNumber: input.referenceNumber,
+      paymentMethod: (input.paymentMethod as any) || 'OTHER',
+      contactId: bill.contactId,
+      createdBy: input.createdBy,
+    });
 
     // Create the bill payment link (amount derived from transaction)
     const billPayment = await tx.billPayment.create({

@@ -4,8 +4,8 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
 import { MAX_DATE, buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap } from '@/lib/temporal/temporal-utils';
+import { createTransactionRecord } from '@/services/transaction.service';
 import type { Bill, BillPayment, Transaction } from '@/generated/prisma/client';
 
 // Valid status transitions
@@ -67,31 +67,20 @@ export async function createBill(input: CreateBillInput): Promise<Bill> {
       ? 'EXPENSE'
       : input.isReimbursement ? 'EXPENSE' : 'INCOME';
 
-    const now = new Date();
     const txDescription = input.description || 'No description';
 
-    // Create the accrual transaction
-    const accrualTransaction = await tx.transaction.create({
-      data: {
-        organizationId: input.organizationId,
-        transactionDate: input.issueDate,
-        amount: input.amount,
-        type: transactionType,
-        debitAccountId,
-        creditAccountId,
-        description: txDescription,
-        contactId: input.contactId,
-        paymentMethod: 'OTHER',
-        versionId: crypto.randomUUID(),
-        validFrom: now,
-        validTo: MAX_DATE,
-        systemFrom: now,
-        systemTo: MAX_DATE,
-      },
+    // Create the accrual transaction via the centralized function
+    const accrualTransaction = await createTransactionRecord(tx, {
+      organizationId: input.organizationId,
+      transactionDate: input.issueDate,
+      amount: input.amount,
+      type: transactionType as any,
+      debitAccountId,
+      creditAccountId,
+      description: txDescription,
+      contactId: input.contactId,
+      paymentMethod: 'OTHER',
     });
-
-    // Update account balances
-    await updateAccountBalances(tx, debitAccountId, creditAccountId, input.amount);
 
     // Create the bill linked to the accrual transaction
     const bill = await tx.bill.create({

@@ -65,6 +65,11 @@ jest.mock('@/lib/accounting/balance-calculator', () => ({
   reverseAccountBalances: jest.fn(),
 }));
 
+// Mock fiscal period check (called by createTransactionRecord)
+jest.mock('@/services/fiscal-period.service', () => ({
+  isDateInClosedPeriod: jest.fn().mockResolvedValue({ closed: false }),
+}));
+
 import {
   createPledgeDonation,
   createOneTimeDonation,

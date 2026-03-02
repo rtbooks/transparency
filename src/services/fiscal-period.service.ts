@@ -5,7 +5,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere, MAX_DATE } from '@/lib/temporal/temporal-utils';
-import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
+import { createTransactionRecord } from '@/services/transaction.service';
 import type { FiscalPeriodStatus } from '@/generated/prisma/client';
 
 export interface CreateFiscalPeriodInput {
@@ -211,31 +211,21 @@ export async function executeClose(
   await prisma.$transaction(async (tx) => {
     // Generate a closing transaction for each temp account
     for (const entry of preview.entries) {
-      const transaction = await tx.transaction.create({
-        data: {
-          organizationId,
-          transactionDate: closingDate,
-          amount: entry.amount,
-          type: 'CLOSING',
-          debitAccountId: entry.closingDebitAccountId,
-          creditAccountId: entry.closingCreditAccountId,
-          description: `Year-end closing entry — ${period.name}`,
-          category: 'Closing Entry',
-          paymentMethod: 'OTHER',
-          createdBy: userId,
-          changedBy: userId,
-        },
+      const transaction = await createTransactionRecord(tx, {
+        organizationId,
+        transactionDate: closingDate,
+        amount: entry.amount,
+        type: 'CLOSING',
+        debitAccountId: entry.closingDebitAccountId,
+        creditAccountId: entry.closingCreditAccountId,
+        description: `Year-end closing entry — ${period.name}`,
+        category: 'Closing Entry',
+        paymentMethod: 'OTHER',
+        createdBy: userId,
+        skipFiscalPeriodCheck: true,
       });
 
       closingTransactionIds.push(transaction.id);
-
-      // Update account balances using normal double-entry logic
-      await updateAccountBalances(
-        tx,
-        entry.closingDebitAccountId,
-        entry.closingCreditAccountId,
-        entry.amount
-      );
     }
 
     // Mark period as closed

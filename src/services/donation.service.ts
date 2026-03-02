@@ -5,8 +5,9 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { updateAccountBalances, reverseAccountBalances } from '@/lib/accounting/balance-calculator';
+import { reverseAccountBalances } from '@/lib/accounting/balance-calculator';
 import { MAX_DATE, buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
+import { createTransactionRecord } from '@/services/transaction.service';
 import type { Donation, Bill } from '@/generated/prisma/client';
 import type { Prisma } from '@/generated/prisma/client';
 
@@ -69,31 +70,20 @@ export async function createPledgeDonation(input: CreateDonationInput): Promise<
   }
 
   const donation = await prisma.$transaction(async (tx) => {
-    const now = new Date();
     const desc = input.description || 'Pledge donation';
 
     // Create accrual transaction: DR AR, CR Revenue
-    const transaction = await tx.transaction.create({
-      data: {
-        organizationId: input.organizationId,
-        transactionDate: input.donationDate,
-        amount: input.amount,
-        type: 'INCOME',
-        debitAccountId: input.arAccountId,
-        creditAccountId: input.revenueAccountId,
-        description: desc,
-        contactId: input.contactId,
-        paymentMethod: 'OTHER',
-        versionId: crypto.randomUUID(),
-        validFrom: now,
-        validTo: MAX_DATE,
-        systemFrom: now,
-        systemTo: MAX_DATE,
-      },
+    const transaction = await createTransactionRecord(tx, {
+      organizationId: input.organizationId,
+      transactionDate: input.donationDate,
+      amount: input.amount,
+      type: 'INCOME',
+      debitAccountId: input.arAccountId,
+      creditAccountId: input.revenueAccountId,
+      description: desc,
+      contactId: input.contactId,
+      paymentMethod: 'OTHER',
     });
-
-    // Update account balances
-    await updateAccountBalances(tx, input.arAccountId, input.revenueAccountId, input.amount);
 
     // Create the bill for A/R lifecycle
     const bill = await tx.bill.create({
@@ -162,31 +152,20 @@ export async function createOneTimeDonation(input: CreateDonationInput): Promise
   }
 
   const donation = await prisma.$transaction(async (tx) => {
-    const now = new Date();
     const desc = input.description || 'One-time donation';
 
     // Create cash receipt transaction: DR Cash, CR Revenue
-    const transaction = await tx.transaction.create({
-      data: {
-        organizationId: input.organizationId,
-        transactionDate: input.donationDate,
-        amount: input.amount,
-        type: 'INCOME',
-        debitAccountId: input.cashAccountId!,
-        creditAccountId: input.revenueAccountId,
-        description: desc,
-        contactId: input.contactId,
-        paymentMethod: 'OTHER',
-        versionId: crypto.randomUUID(),
-        validFrom: now,
-        validTo: MAX_DATE,
-        systemFrom: now,
-        systemTo: MAX_DATE,
-      },
+    const transaction = await createTransactionRecord(tx, {
+      organizationId: input.organizationId,
+      transactionDate: input.donationDate,
+      amount: input.amount,
+      type: 'INCOME',
+      debitAccountId: input.cashAccountId!,
+      creditAccountId: input.revenueAccountId,
+      description: desc,
+      contactId: input.contactId,
+      paymentMethod: 'OTHER',
     });
-
-    // Update account balances
-    await updateAccountBalances(tx, input.cashAccountId!, input.revenueAccountId, input.amount);
 
     // Create the donation record (immediately received)
     return await tx.donation.create({
