@@ -665,7 +665,7 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
         open={!!selectedTransaction}
         onOpenChange={(open) => !open && setSelectedTransaction(null)}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Transaction Details</DialogTitle>
             <DialogDescription>
@@ -675,7 +675,7 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
           </DialogHeader>
 
           {selectedTransaction && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-gray-700">Type</label>
@@ -726,28 +726,29 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
                 </div>
               )}
 
-              <div>
-                <label className="text-sm font-medium text-gray-700">Debit Account</label>
-                <div className="mt-1 rounded-lg border bg-gray-50 p-3">
-                  <div className="font-mono text-sm font-medium">
-                    {selectedTransaction.debitAccount.code}
-                  </div>
-                  <div className="text-gray-900">{selectedTransaction.debitAccount.name}</div>
-                  <div className="mt-1 text-xs text-gray-500">
-                    {selectedTransaction.debitAccount.type}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Debit Account</label>
+                  <div className="mt-1 rounded-lg border bg-gray-50 p-2">
+                    <div className="font-mono text-sm font-medium">
+                      {selectedTransaction.debitAccount.code}
+                    </div>
+                    <div className="text-sm text-gray-900">{selectedTransaction.debitAccount.name}</div>
+                    <div className="text-xs text-gray-500">
+                      {selectedTransaction.debitAccount.type}
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-700">Credit Account</label>
-                <div className="mt-1 rounded-lg border bg-gray-50 p-3">
-                  <div className="font-mono text-sm font-medium">
-                    {selectedTransaction.creditAccount.code}
-                  </div>
-                  <div className="text-gray-900">{selectedTransaction.creditAccount.name}</div>
-                  <div className="mt-1 text-xs text-gray-500">
-                    {selectedTransaction.creditAccount.type}
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Credit Account</label>
+                  <div className="mt-1 rounded-lg border bg-gray-50 p-2">
+                    <div className="font-mono text-sm font-medium">
+                      {selectedTransaction.creditAccount.code}
+                    </div>
+                    <div className="text-sm text-gray-900">{selectedTransaction.creditAccount.name}</div>
+                    <div className="text-xs text-gray-500">
+                      {selectedTransaction.creditAccount.type}
+                    </div>
                   </div>
                 </div>
               </div>

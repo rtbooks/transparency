@@ -24,7 +24,7 @@ export interface CreateTransactionInput {
   creditAccountId: string;
   referenceNumber?: string | null;
   contactId?: string | null;
-  paymentMethod?: PaymentMethod;
+  paymentMethod?: PaymentMethod | null;
 }
 
 /**
@@ -41,11 +41,9 @@ export interface CreateTransactionRecordInput {
   description: string;
   referenceNumber?: string | null;
   contactId?: string | null;
-  paymentMethod?: PaymentMethod;
+  paymentMethod?: PaymentMethod | null;
   createdBy?: string | null;
   category?: string | null;
-  stripeSessionId?: string | null;
-  stripePaymentId?: string | null;
   skipFiscalPeriodCheck?: boolean;
 }
 
@@ -82,11 +80,9 @@ export async function createTransactionRecord(
       description: input.description,
       referenceNumber: input.referenceNumber ?? null,
       contactId: input.contactId ?? null,
-      paymentMethod: input.paymentMethod ?? 'OTHER',
+      paymentMethod: input.paymentMethod ?? null,
       createdBy: input.createdBy ?? null,
       category: input.category ?? null,
-      stripeSessionId: input.stripeSessionId ?? null,
-      stripePaymentId: input.stripePaymentId ?? null,
       // Temporal fields — explicit for clarity even though schema has defaults
       versionId: crypto.randomUUID(),
       validFrom: now,
@@ -247,8 +243,6 @@ export async function editTransaction(
         bankTransactionId: current.bankTransactionId,
         reconciled: current.reconciled,
         reconciledAt: current.reconciledAt,
-        stripeSessionId: current.stripeSessionId,
-        stripePaymentId: current.stripePaymentId,
         createdAt: current.createdAt,
         createdBy: current.createdBy,
         // Temporal fields
@@ -346,8 +340,6 @@ export async function voidTransaction(
         bankTransactionId: null,
         reconciled: current.reconciled,
         reconciledAt: current.reconciledAt,
-        stripeSessionId: null,
-        stripePaymentId: null,
         createdAt: current.createdAt,
         createdBy: current.createdBy,
         // Temporal fields

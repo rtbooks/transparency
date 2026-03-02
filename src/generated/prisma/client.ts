@@ -67,6 +67,11 @@ export type Account = Prisma.AccountModel
  */
 export type Transaction = Prisma.TransactionModel
 /**
+ * Model StripePayment
+ * 
+ */
+export type StripePayment = Prisma.StripePaymentModel
+/**
  * Model ProgramSpending
  * 
  */

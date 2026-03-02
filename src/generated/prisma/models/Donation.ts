@@ -58,6 +58,7 @@ export type DonationMinAggregateOutputType = {
   tierId: string | null
   transactionId: string | null
   billId: string | null
+  paymentMethod: $Enums.PaymentMethod | null
   createdBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -83,6 +84,7 @@ export type DonationMaxAggregateOutputType = {
   tierId: string | null
   transactionId: string | null
   billId: string | null
+  paymentMethod: $Enums.PaymentMethod | null
   createdBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -108,6 +110,7 @@ export type DonationCountAggregateOutputType = {
   tierId: number
   transactionId: number
   billId: number
+  paymentMethod: number
   createdBy: number
   createdAt: number
   updatedAt: number
@@ -147,6 +150,7 @@ export type DonationMinAggregateInputType = {
   tierId?: true
   transactionId?: true
   billId?: true
+  paymentMethod?: true
   createdBy?: true
   createdAt?: true
   updatedAt?: true
@@ -172,6 +176,7 @@ export type DonationMaxAggregateInputType = {
   tierId?: true
   transactionId?: true
   billId?: true
+  paymentMethod?: true
   createdBy?: true
   createdAt?: true
   updatedAt?: true
@@ -197,6 +202,7 @@ export type DonationCountAggregateInputType = {
   tierId?: true
   transactionId?: true
   billId?: true
+  paymentMethod?: true
   createdBy?: true
   createdAt?: true
   updatedAt?: true
@@ -309,6 +315,7 @@ export type DonationGroupByOutputType = {
   tierId: string | null
   transactionId: string | null
   billId: string | null
+  paymentMethod: $Enums.PaymentMethod | null
   createdBy: string | null
   createdAt: Date
   updatedAt: Date
@@ -357,6 +364,7 @@ export type DonationWhereInput = {
   tierId?: Prisma.StringNullableFilter<"Donation"> | string | null
   transactionId?: Prisma.StringNullableFilter<"Donation"> | string | null
   billId?: Prisma.StringNullableFilter<"Donation"> | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodNullableFilter<"Donation"> | $Enums.PaymentMethod | null
   createdBy?: Prisma.StringNullableFilter<"Donation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
@@ -384,6 +392,7 @@ export type DonationOrderByWithRelationInput = {
   tierId?: Prisma.SortOrderInput | Prisma.SortOrder
   transactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   billId?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -414,6 +423,7 @@ export type DonationWhereUniqueInput = Prisma.AtLeast<{
   campaignId?: Prisma.StringNullableFilter<"Donation"> | string | null
   unitCount?: Prisma.IntNullableFilter<"Donation"> | number | null
   tierId?: Prisma.StringNullableFilter<"Donation"> | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodNullableFilter<"Donation"> | $Enums.PaymentMethod | null
   createdBy?: Prisma.StringNullableFilter<"Donation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
@@ -441,6 +451,7 @@ export type DonationOrderByWithAggregationInput = {
   tierId?: Prisma.SortOrderInput | Prisma.SortOrder
   transactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   billId?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -474,6 +485,7 @@ export type DonationScalarWhereWithAggregatesInput = {
   tierId?: Prisma.StringNullableWithAggregatesFilter<"Donation"> | string | null
   transactionId?: Prisma.StringNullableWithAggregatesFilter<"Donation"> | string | null
   billId?: Prisma.StringNullableWithAggregatesFilter<"Donation"> | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodNullableWithAggregatesFilter<"Donation"> | $Enums.PaymentMethod | null
   createdBy?: Prisma.StringNullableWithAggregatesFilter<"Donation"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Donation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Donation"> | Date | string
@@ -497,6 +509,7 @@ export type DonationCreateInput = {
   unitCount?: number | null
   transactionId?: string | null
   billId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -524,6 +537,7 @@ export type DonationUncheckedCreateInput = {
   tierId?: string | null
   transactionId?: string | null
   billId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -547,6 +561,7 @@ export type DonationUpdateInput = {
   unitCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -574,6 +589,7 @@ export type DonationUncheckedUpdateInput = {
   tierId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -599,6 +615,7 @@ export type DonationCreateManyInput = {
   tierId?: string | null
   transactionId?: string | null
   billId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -622,6 +639,7 @@ export type DonationUpdateManyMutationInput = {
   unitCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -647,6 +665,7 @@ export type DonationUncheckedUpdateManyInput = {
   tierId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -682,6 +701,7 @@ export type DonationCountOrderByAggregateInput = {
   tierId?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
   billId?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -713,6 +733,7 @@ export type DonationMaxOrderByAggregateInput = {
   tierId?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
   billId?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -738,6 +759,7 @@ export type DonationMinOrderByAggregateInput = {
   tierId?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
   billId?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -859,6 +881,7 @@ export type DonationCreateWithoutCampaignInput = {
   unitCount?: number | null
   transactionId?: string | null
   billId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -884,6 +907,7 @@ export type DonationUncheckedCreateWithoutCampaignInput = {
   tierId?: string | null
   transactionId?: string | null
   billId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -938,6 +962,7 @@ export type DonationScalarWhereInput = {
   tierId?: Prisma.StringNullableFilter<"Donation"> | string | null
   transactionId?: Prisma.StringNullableFilter<"Donation"> | string | null
   billId?: Prisma.StringNullableFilter<"Donation"> | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodNullableFilter<"Donation"> | $Enums.PaymentMethod | null
   createdBy?: Prisma.StringNullableFilter<"Donation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
@@ -961,6 +986,7 @@ export type DonationCreateWithoutTierInput = {
   unitCount?: number | null
   transactionId?: string | null
   billId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -986,6 +1012,7 @@ export type DonationUncheckedCreateWithoutTierInput = {
   unitCount?: number | null
   transactionId?: string | null
   billId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1036,6 +1063,7 @@ export type DonationCreateManyCampaignInput = {
   tierId?: string | null
   transactionId?: string | null
   billId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1059,6 +1087,7 @@ export type DonationUpdateWithoutCampaignInput = {
   unitCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1084,6 +1113,7 @@ export type DonationUncheckedUpdateWithoutCampaignInput = {
   tierId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1108,6 +1138,7 @@ export type DonationUncheckedUpdateManyWithoutCampaignInput = {
   tierId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1132,6 +1163,7 @@ export type DonationCreateManyTierInput = {
   unitCount?: number | null
   transactionId?: string | null
   billId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
   createdBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1155,6 +1187,7 @@ export type DonationUpdateWithoutTierInput = {
   unitCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1180,6 +1213,7 @@ export type DonationUncheckedUpdateWithoutTierInput = {
   unitCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1204,6 +1238,7 @@ export type DonationUncheckedUpdateManyWithoutTierInput = {
   unitCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1231,6 +1266,7 @@ export type DonationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   tierId?: boolean
   transactionId?: boolean
   billId?: boolean
+  paymentMethod?: boolean
   createdBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1258,6 +1294,7 @@ export type DonationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   tierId?: boolean
   transactionId?: boolean
   billId?: boolean
+  paymentMethod?: boolean
   createdBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1285,6 +1322,7 @@ export type DonationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   tierId?: boolean
   transactionId?: boolean
   billId?: boolean
+  paymentMethod?: boolean
   createdBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1312,12 +1350,13 @@ export type DonationSelectScalar = {
   tierId?: boolean
   transactionId?: boolean
   billId?: boolean
+  paymentMethod?: boolean
   createdBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type DonationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "contactId" | "type" | "status" | "amount" | "amountReceived" | "description" | "donorMessage" | "isAnonymous" | "isTaxDeductible" | "donationDate" | "receivedDate" | "dueDate" | "campaignId" | "unitCount" | "tierId" | "transactionId" | "billId" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["donation"]>
+export type DonationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "contactId" | "type" | "status" | "amount" | "amountReceived" | "description" | "donorMessage" | "isAnonymous" | "isTaxDeductible" | "donationDate" | "receivedDate" | "dueDate" | "campaignId" | "unitCount" | "tierId" | "transactionId" | "billId" | "paymentMethod" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["donation"]>
 export type DonationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   campaign?: boolean | Prisma.Donation$campaignArgs<ExtArgs>
   tier?: boolean | Prisma.Donation$tierArgs<ExtArgs>
@@ -1357,6 +1396,7 @@ export type $DonationPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     tierId: string | null
     transactionId: string | null
     billId: string | null
+    paymentMethod: $Enums.PaymentMethod | null
     createdBy: string | null
     createdAt: Date
     updatedAt: Date
@@ -1804,6 +1844,7 @@ export interface DonationFieldRefs {
   readonly tierId: Prisma.FieldRef<"Donation", 'String'>
   readonly transactionId: Prisma.FieldRef<"Donation", 'String'>
   readonly billId: Prisma.FieldRef<"Donation", 'String'>
+  readonly paymentMethod: Prisma.FieldRef<"Donation", 'PaymentMethod'>
   readonly createdBy: Prisma.FieldRef<"Donation", 'String'>
   readonly createdAt: Prisma.FieldRef<"Donation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Donation", 'DateTime'>

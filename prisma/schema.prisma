@@ -244,10 +244,10 @@ model Transaction {
   creditAccountId String @map("credit_account_id")
 
   // Metadata
-  description     String        @db.Text
+  description     String         @db.Text
   category        String? // e.g., "Donation", "Equipment", "Travel"
-  paymentMethod   PaymentMethod @map("payment_method")
-  referenceNumber String?       @map("reference_number") // Check #, Venmo ID, etc.
+  paymentMethod   PaymentMethod? @map("payment_method")
+  referenceNumber String?        @map("reference_number") // Check #, Venmo ID, etc.
 
   // Contact reference (unified payee/payer)
   contactId String? @map("contact_id")
@@ -259,10 +259,6 @@ model Transaction {
   bankTransactionId String?   @map("bank_transaction_id")
   reconciled        Boolean   @default(false)
   reconciledAt      DateTime? @map("reconciled_at")
-
-  // Stripe integration
-  stripeSessionId String? @map("stripe_session_id")
-  stripePaymentId String? @map("stripe_payment_id")
 
   // Metadata
   createdAt DateTime @default(now()) @map("created_at")
@@ -314,6 +310,46 @@ enum PaymentMethod {
   ZELLE
   BANK_TRANSFER
   OTHER
+}
+
+// ============================================
+// STRIPE PAYMENTS
+// ============================================
+
+model StripePayment {
+  id               String              @id @default(uuid())
+  organizationId   String              @map("organization_id")
+
+  // Stripe identifiers
+  stripeSessionId  String              @unique @map("stripe_session_id")
+  stripePaymentId  String?             @map("stripe_payment_id") // payment_intent ID
+
+  // Payment details
+  amount           Decimal             @db.Decimal(12, 2)
+  stripeFeeAmount  Decimal?            @map("stripe_fee_amount") @db.Decimal(12, 2)
+  status           StripePaymentStatus @default(COMPLETED)
+
+  // Links to domain records
+  transactionId    String              @map("transaction_id") // The accounting entry
+  donationId       String?             @map("donation_id")     // Optional: when it's a donation
+  billPaymentId    String?             @map("bill_payment_id") // Optional: when it pays a bill
+
+  // Raw metadata for debugging
+  metadata         Json?               @db.JsonB
+
+  createdAt        DateTime            @default(now()) @map("created_at")
+
+  @@index([organizationId], name: "idx_stripe_payment_org")
+  @@index([transactionId], name: "idx_stripe_payment_transaction")
+  @@index([donationId], name: "idx_stripe_payment_donation")
+  @@index([billPaymentId], name: "idx_stripe_payment_bill_payment")
+  @@map("stripe_payments")
+}
+
+enum StripePaymentStatus {
+  COMPLETED
+  REFUNDED
+  DISPUTED
 }
 
 // ============================================
@@ -720,6 +756,7 @@ model Donation {
   // Accounting links (entity IDs — transactions are bitemporal)
   transactionId String? @unique @map("transaction_id")
   billId        String? @unique @map("bill_id") // Only for pledges → Bill for A/R lifecycle
+  paymentMethod PaymentMethod? @map("payment_method") // How the donation was received
 
   // Metadata
   createdBy String?  @map("created_by")
@@ -872,10 +909,11 @@ enum BillStatus {
 }
 
 model BillPayment {
-  id            String  @id @default(uuid())
-  billId        String  @map("bill_id")
-  transactionId String  @map("transaction_id")
-  notes         String? @db.Text
+  id            String         @id @default(uuid())
+  billId        String         @map("bill_id")
+  transactionId String         @map("transaction_id")
+  paymentMethod PaymentMethod? @map("payment_method")
+  notes         String?        @db.Text
 
   createdAt DateTime @default(now()) @map("created_at")
 

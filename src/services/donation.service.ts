@@ -31,6 +31,7 @@ export interface CreateDonationInput {
   arAccountId: string;       // Accounts Receivable (for pledges)
   revenueAccountId: string;  // Revenue / campaign account
   cashAccountId?: string;    // Cash/Bank account (for one-time donations)
+  paymentMethod?: string | null;
   createdBy?: string;
 }
 
@@ -82,7 +83,7 @@ export async function createPledgeDonation(input: CreateDonationInput): Promise<
       creditAccountId: input.revenueAccountId,
       description: desc,
       contactId: input.contactId,
-      paymentMethod: 'OTHER',
+      paymentMethod: null, // Accrual entry — not a payment
     });
 
     // Create the bill for A/R lifecycle
@@ -164,7 +165,7 @@ export async function createOneTimeDonation(input: CreateDonationInput): Promise
       creditAccountId: input.revenueAccountId,
       description: desc,
       contactId: input.contactId,
-      paymentMethod: 'OTHER',
+      paymentMethod: (input.paymentMethod as any) || null,
     });
 
     // Create the donation record (immediately received)
@@ -187,6 +188,7 @@ export async function createOneTimeDonation(input: CreateDonationInput): Promise
         tierId: input.tierId ?? null,
         transactionId: transaction.id,
         billId: null,
+        paymentMethod: (input.paymentMethod as any) || null,
         createdBy: input.createdBy ?? null,
       },
     });
@@ -515,7 +517,7 @@ export async function listDonations(
             date: tx?.transactionDate ?? bp.createdAt,
             notes: bp.notes,
             description: tx?.description ?? null,
-            paymentMethod: tx?.paymentMethod ?? null,
+            paymentMethod: bp.paymentMethod ?? tx?.paymentMethod ?? null,
             referenceNumber: tx?.referenceNumber ?? null,
           };
         })

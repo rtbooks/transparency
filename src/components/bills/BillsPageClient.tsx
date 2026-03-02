@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { BillList } from "./BillList";
 import { BillForm } from "./BillForm";
 import { AgingSummary } from "./AgingSummary";
@@ -30,10 +31,19 @@ interface BillsPageClientProps {
 }
 
 export function BillsPageClient({ organizationSlug, accounts, canEdit = true }: BillsPageClientProps) {
+  const searchParams = useSearchParams();
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [directionFilter, setDirectionFilter] = useState<DirectionFilter>("ALL");
   const [openBillId, setOpenBillId] = useState<string | null>(null);
+
+  // Open bill detail when navigating with ?highlight=<billId>
+  useEffect(() => {
+    const highlightId = searchParams.get("highlight");
+    if (highlightId) {
+      setOpenBillId(highlightId);
+    }
+  }, [searchParams]);
 
   return (
     <>

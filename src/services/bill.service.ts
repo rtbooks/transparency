@@ -79,7 +79,7 @@ export async function createBill(input: CreateBillInput): Promise<Bill> {
       creditAccountId,
       description: txDescription,
       contactId: input.contactId,
-      paymentMethod: 'OTHER',
+      paymentMethod: null, // Accrual entry — not a payment
     });
 
     // Create the bill linked to the accrual transaction

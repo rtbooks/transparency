@@ -104,6 +104,7 @@ export async function recordPayment(
       data: {
         billId: input.billId,
         transactionId: transaction.id,
+        paymentMethod: (input.paymentMethod as any) || null,
         notes: input.notes ?? null,
       },
     });
