@@ -60,13 +60,32 @@ export async function createTransaction(input: CreateTransactionInput): Promise<
   // Determine transaction type based on account types
   let transactionType: 'INCOME' | 'EXPENSE' | 'TRANSFER';
   if (debitAccount.type === 'ASSET' && creditAccount.type === 'REVENUE') {
+    // Cash/bank (asset) paying down revenue -> income
     transactionType = 'INCOME';
   } else if (debitAccount.type === 'EXPENSE' && creditAccount.type === 'ASSET') {
+    // Recording an expense paid from an asset account
     transactionType = 'EXPENSE';
   } else if (debitAccount.type === 'ASSET' && creditAccount.type === 'ASSET') {
+    // Moving value between asset accounts
+    transactionType = 'TRANSFER';
+  } else if (
+    // Transfers between liability accounts
+    debitAccount.type === 'LIABILITY' &&
+    creditAccount.type === 'LIABILITY'
+  ) {
+    transactionType = 'TRANSFER';
+  } else if (
+    // Transfers between equity accounts
+    debitAccount.type === 'EQUITY' &&
+    creditAccount.type === 'EQUITY'
+  ) {
     transactionType = 'TRANSFER';
   } else {
-    transactionType = 'INCOME'; // Default for general entries
+    // Any other combination is currently not supported. Fail fast instead of
+    // silently misclassifying the transaction.
+    throw new Error(
+      `Unsupported transaction account type combination: debit=${debitAccount.type}, credit=${creditAccount.type}`
+    );
   }
 
   return prisma.$transaction(async (tx) => {
