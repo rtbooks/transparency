@@ -60,32 +60,32 @@ export async function createTransaction(input: CreateTransactionInput): Promise<
   // Determine transaction type based on account types
   let transactionType: 'INCOME' | 'EXPENSE' | 'TRANSFER';
   if (debitAccount.type === 'ASSET' && creditAccount.type === 'REVENUE') {
-    // Cash/bank (asset) paying down revenue -> income
+    // Cash/bank (asset) receiving revenue
     transactionType = 'INCOME';
+  } else if (debitAccount.type === 'ASSET' && creditAccount.type === 'LIABILITY') {
+    // Paying off a liability from an asset account (e.g., bill payment)
+    transactionType = 'EXPENSE';
   } else if (debitAccount.type === 'EXPENSE' && creditAccount.type === 'ASSET') {
     // Recording an expense paid from an asset account
     transactionType = 'EXPENSE';
-  } else if (debitAccount.type === 'ASSET' && creditAccount.type === 'ASSET') {
-    // Moving value between asset accounts
-    transactionType = 'TRANSFER';
+  } else if (debitAccount.type === 'EXPENSE' && creditAccount.type === 'LIABILITY') {
+    // Accruing an expense (e.g., recording a bill)
+    transactionType = 'EXPENSE';
+  } else if (debitAccount.type === 'LIABILITY' && creditAccount.type === 'ASSET') {
+    // Receiving funds that increase a liability (e.g., loan proceeds)
+    transactionType = 'INCOME';
+  } else if (debitAccount.type === 'LIABILITY' && creditAccount.type === 'REVENUE') {
+    // Revenue recognition reducing a liability (e.g., deferred revenue)
+    transactionType = 'INCOME';
   } else if (
-    // Transfers between liability accounts
-    debitAccount.type === 'LIABILITY' &&
-    creditAccount.type === 'LIABILITY'
+    debitAccount.type === creditAccount.type
   ) {
-    transactionType = 'TRANSFER';
-  } else if (
-    // Transfers between equity accounts
-    debitAccount.type === 'EQUITY' &&
-    creditAccount.type === 'EQUITY'
-  ) {
+    // Same account type on both sides (asset-asset, liability-liability, equity-equity)
     transactionType = 'TRANSFER';
   } else {
-    // Any other combination is currently not supported. Fail fast instead of
-    // silently misclassifying the transaction.
-    throw new Error(
-      `Unsupported transaction account type combination: debit=${debitAccount.type}, credit=${creditAccount.type}`
-    );
+    // Any other combination — classify as TRANSFER rather than failing,
+    // since the user explicitly chose both accounts
+    transactionType = 'TRANSFER';
   }
 
   return prisma.$transaction(async (tx) => {
@@ -116,7 +116,7 @@ export async function createTransaction(input: CreateTransactionInput): Promise<
 }
 
 export interface EditTransactionInput {
-  transactionDate?: Date;
+  transactionDate?: string;
   amount?: number;
   description?: string;
   debitAccountId?: string;
@@ -125,6 +125,10 @@ export interface EditTransactionInput {
   contactId?: string | null;
   category?: string | null;
   notes?: string | null;
+  donorUserId?: string | null;
+  donorName?: string | null;
+  isAnonymous?: boolean;
+  receiptUrl?: string | null;
   changeReason: string;
 }
 
