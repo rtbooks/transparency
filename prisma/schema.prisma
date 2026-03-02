@@ -561,6 +561,60 @@ model BankStatementLineMatch {
 }
 
 // ============================================
+// RECONCILIATION
+// ============================================
+
+enum AccountReconciliationStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+model AccountReconciliation {
+  id             String @id @default(uuid())
+  organizationId String @map("organization_id")
+  accountId      String @map("account_id")
+
+  // Period being reconciled
+  periodStart      DateTime @map("period_start")
+  periodEnd        DateTime @map("period_end")
+  beginningBalance Decimal  @map("beginning_balance") @db.Decimal(12, 2)
+  endingBalance    Decimal  @map("ending_balance") @db.Decimal(12, 2)
+
+  // Status
+  status      AccountReconciliationStatus @default(IN_PROGRESS)
+  completedBy String?                     @map("completed_by")
+  completedAt DateTime?                   @map("completed_at")
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  items ReconciliationItem[]
+
+  @@index([organizationId, accountId], name: "idx_recon_org_account")
+  @@index([accountId, periodEnd], name: "idx_recon_account_period")
+  @@map("account_reconciliations")
+}
+
+model ReconciliationItem {
+  id               String @id @default(uuid())
+  reconciliationId String @map("reconciliation_id")
+  transactionId    String @map("transaction_id") // Transaction.id (stable entity ID)
+  cleared          Boolean @default(true)
+  amount           Decimal @map("amount") @db.Decimal(12, 2) // net effect on the account
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  reconciliation AccountReconciliation @relation(fields: [reconciliationId], references: [id], onDelete: Cascade)
+
+  @@unique([reconciliationId, transactionId], name: "uq_recon_item_txn")
+  @@index([reconciliationId], name: "idx_recon_item_recon")
+  @@map("reconciliation_items")
+}
+
+// ============================================
 // AUDIT LOG (Optional but recommended)
 // ============================================
 

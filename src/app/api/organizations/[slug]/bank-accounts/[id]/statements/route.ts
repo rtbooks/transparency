@@ -124,7 +124,8 @@ export async function POST(
 
     const safeDateParse = (s: string) => new Date(s.length === 10 ? s + 'T12:00:00' : s);
 
-    // Create statement and lines in a transaction
+    // Create statement and lines in a transaction (with deduplication)
+    let duplicatesSkipped = 0;
     const statement = await prisma.$transaction(async (tx) => {
       const stmt = await tx.bankStatement.create({
         data: {
@@ -140,17 +141,50 @@ export async function POST(
         },
       });
 
-      // Create statement lines
-      await tx.bankStatementLine.createMany({
-        data: parsed.lines.map((line) => ({
-          bankStatementId: stmt.id,
-          transactionDate: line.transactionDate,
-          description: line.description,
-          referenceNumber: line.referenceNumber || null,
-          amount: line.amount,
-          category: line.category || null,
-        })),
+      // Deduplicate: check existing lines for this bank account
+      const existingLines = await tx.bankStatementLine.findMany({
+        where: {
+          bankStatement: { bankAccountId },
+        },
+        select: {
+          transactionDate: true,
+          amount: true,
+          description: true,
+        },
       });
+
+      // Build a set of existing line fingerprints for fast lookup
+      const existingFingerprints = new Set(
+        existingLines.map((l) =>
+          `${l.transactionDate.toISOString().slice(0, 10)}|${Number(l.amount).toFixed(2)}|${l.description.trim().toLowerCase()}`
+        )
+      );
+
+      // Filter out duplicates
+      const newLines = parsed.lines.filter((line) => {
+        const fingerprint = `${line.transactionDate.toISOString().slice(0, 10)}|${Number(line.amount).toFixed(2)}|${line.description.trim().toLowerCase()}`;
+        if (existingFingerprints.has(fingerprint)) {
+          duplicatesSkipped++;
+          return false;
+        }
+        // Add to set so we don't import duplicates within the same file
+        existingFingerprints.add(fingerprint);
+        return true;
+      });
+
+      // Create statement lines (only non-duplicates)
+      if (newLines.length > 0) {
+        await tx.bankStatementLine.createMany({
+          data: newLines.map((line) => ({
+            bankStatementId: stmt.id,
+            transactionDate: line.transactionDate,
+            description: line.description,
+            referenceNumber: line.referenceNumber || null,
+            amount: line.amount,
+            category: line.category || null,
+          })),
+        });
+      }
 
       // Save column mapping to bank account for future imports
       if (parsed.detectedMapping && !bankAccount.csvColumnMapping) {
@@ -171,7 +205,9 @@ export async function POST(
 
     return NextResponse.json({
       statement: result,
-      linesImported: parsed.lines.length,
+      linesImported: parsed.lines.length - duplicatesSkipped,
+      duplicatesSkipped,
+      totalParsed: parsed.lines.length,
       warnings: parsed.warnings,
     }, { status: 201 });
   } catch (error: any) {

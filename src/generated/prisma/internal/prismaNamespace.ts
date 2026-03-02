@@ -396,6 +396,8 @@ export const ModelName = {
   BankStatement: 'BankStatement',
   BankStatementLine: 'BankStatementLine',
   BankStatementLineMatch: 'BankStatementLineMatch',
+  AccountReconciliation: 'AccountReconciliation',
+  ReconciliationItem: 'ReconciliationItem',
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
   AccessRequest: 'AccessRequest',
@@ -423,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "stripePayment" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "campaignTier" | "donation" | "contact" | "bill" | "billPayment" | "attachment" | "fiscalPeriod" | "organizationPaymentMethod"
+    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "stripePayment" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "accountReconciliation" | "reconciliationItem" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "campaignTier" | "donation" | "contact" | "bill" | "billPayment" | "attachment" | "fiscalPeriod" | "organizationPaymentMethod"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1312,6 +1314,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.BankStatementLineMatchCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.BankStatementLineMatchCountAggregateOutputType> | number
+        }
+      }
+    }
+    AccountReconciliation: {
+      payload: Prisma.$AccountReconciliationPayload<ExtArgs>
+      fields: Prisma.AccountReconciliationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AccountReconciliationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountReconciliationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AccountReconciliationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountReconciliationPayload>
+        }
+        findFirst: {
+          args: Prisma.AccountReconciliationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountReconciliationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AccountReconciliationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountReconciliationPayload>
+        }
+        findMany: {
+          args: Prisma.AccountReconciliationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountReconciliationPayload>[]
+        }
+        create: {
+          args: Prisma.AccountReconciliationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountReconciliationPayload>
+        }
+        createMany: {
+          args: Prisma.AccountReconciliationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AccountReconciliationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountReconciliationPayload>[]
+        }
+        delete: {
+          args: Prisma.AccountReconciliationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountReconciliationPayload>
+        }
+        update: {
+          args: Prisma.AccountReconciliationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountReconciliationPayload>
+        }
+        deleteMany: {
+          args: Prisma.AccountReconciliationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AccountReconciliationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AccountReconciliationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountReconciliationPayload>[]
+        }
+        upsert: {
+          args: Prisma.AccountReconciliationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AccountReconciliationPayload>
+        }
+        aggregate: {
+          args: Prisma.AccountReconciliationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAccountReconciliation>
+        }
+        groupBy: {
+          args: Prisma.AccountReconciliationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AccountReconciliationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AccountReconciliationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AccountReconciliationCountAggregateOutputType> | number
+        }
+      }
+    }
+    ReconciliationItem: {
+      payload: Prisma.$ReconciliationItemPayload<ExtArgs>
+      fields: Prisma.ReconciliationItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReconciliationItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReconciliationItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReconciliationItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReconciliationItemPayload>
+        }
+        findFirst: {
+          args: Prisma.ReconciliationItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReconciliationItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReconciliationItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReconciliationItemPayload>
+        }
+        findMany: {
+          args: Prisma.ReconciliationItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReconciliationItemPayload>[]
+        }
+        create: {
+          args: Prisma.ReconciliationItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReconciliationItemPayload>
+        }
+        createMany: {
+          args: Prisma.ReconciliationItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReconciliationItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReconciliationItemPayload>[]
+        }
+        delete: {
+          args: Prisma.ReconciliationItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReconciliationItemPayload>
+        }
+        update: {
+          args: Prisma.ReconciliationItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReconciliationItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.ReconciliationItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReconciliationItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReconciliationItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReconciliationItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.ReconciliationItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReconciliationItemPayload>
+        }
+        aggregate: {
+          args: Prisma.ReconciliationItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReconciliationItem>
+        }
+        groupBy: {
+          args: Prisma.ReconciliationItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReconciliationItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReconciliationItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReconciliationItemCountAggregateOutputType> | number
         }
       }
     }
@@ -2517,6 +2667,36 @@ export const BankStatementLineMatchScalarFieldEnum = {
 export type BankStatementLineMatchScalarFieldEnum = (typeof BankStatementLineMatchScalarFieldEnum)[keyof typeof BankStatementLineMatchScalarFieldEnum]
 
 
+export const AccountReconciliationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  accountId: 'accountId',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  beginningBalance: 'beginningBalance',
+  endingBalance: 'endingBalance',
+  status: 'status',
+  completedBy: 'completedBy',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AccountReconciliationScalarFieldEnum = (typeof AccountReconciliationScalarFieldEnum)[keyof typeof AccountReconciliationScalarFieldEnum]
+
+
+export const ReconciliationItemScalarFieldEnum = {
+  id: 'id',
+  reconciliationId: 'reconciliationId',
+  transactionId: 'transactionId',
+  cleared: 'cleared',
+  amount: 'amount',
+  createdAt: 'createdAt'
+} as const
+
+export type ReconciliationItemScalarFieldEnum = (typeof ReconciliationItemScalarFieldEnum)[keyof typeof ReconciliationItemScalarFieldEnum]
+
+
 export const AuditLogScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
@@ -3046,6 +3226,20 @@ export type ListEnumStatementLineStatusFieldRefInput<$PrismaModel> = FieldRefInp
 
 
 /**
+ * Reference to a field of type 'AccountReconciliationStatus'
+ */
+export type EnumAccountReconciliationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AccountReconciliationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'AccountReconciliationStatus[]'
+ */
+export type ListEnumAccountReconciliationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AccountReconciliationStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'InvitationStatus'
  */
 export type EnumInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvitationStatus'>
@@ -3333,6 +3527,8 @@ export type GlobalOmitConfig = {
   bankStatement?: Prisma.BankStatementOmit
   bankStatementLine?: Prisma.BankStatementLineOmit
   bankStatementLineMatch?: Prisma.BankStatementLineMatchOmit
+  accountReconciliation?: Prisma.AccountReconciliationOmit
+  reconciliationItem?: Prisma.ReconciliationItemOmit
   auditLog?: Prisma.AuditLogOmit
   invitation?: Prisma.InvitationOmit
   accessRequest?: Prisma.AccessRequestOmit
