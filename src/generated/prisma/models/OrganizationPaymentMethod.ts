@@ -653,6 +653,10 @@ export type OrganizationPaymentMethodSumOrderByAggregateInput = {
   stripeFeeFixed?: Prisma.SortOrder
 }
 
+export type EnumPaymentMethodFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentMethod
+}
+
 export type FloatFieldUpdateOperationsInput = {
   set?: number
   increment?: number

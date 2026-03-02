@@ -389,6 +389,7 @@ export const ModelName = {
   OrganizationUser: 'OrganizationUser',
   Account: 'Account',
   Transaction: 'Transaction',
+  StripePayment: 'StripePayment',
   ProgramSpending: 'ProgramSpending',
   ProgramSpendingTransaction: 'ProgramSpendingTransaction',
   BankAccount: 'BankAccount',
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "campaignTier" | "donation" | "contact" | "bill" | "billPayment" | "attachment" | "fiscalPeriod" | "organizationPaymentMethod"
+    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "stripePayment" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "campaignTier" | "donation" | "contact" | "bill" | "billPayment" | "attachment" | "fiscalPeriod" | "organizationPaymentMethod"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -793,6 +794,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.TransactionCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.TransactionCountAggregateOutputType> | number
+        }
+      }
+    }
+    StripePayment: {
+      payload: Prisma.$StripePaymentPayload<ExtArgs>
+      fields: Prisma.StripePaymentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StripePaymentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripePaymentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StripePaymentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripePaymentPayload>
+        }
+        findFirst: {
+          args: Prisma.StripePaymentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripePaymentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StripePaymentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripePaymentPayload>
+        }
+        findMany: {
+          args: Prisma.StripePaymentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripePaymentPayload>[]
+        }
+        create: {
+          args: Prisma.StripePaymentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripePaymentPayload>
+        }
+        createMany: {
+          args: Prisma.StripePaymentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StripePaymentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripePaymentPayload>[]
+        }
+        delete: {
+          args: Prisma.StripePaymentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripePaymentPayload>
+        }
+        update: {
+          args: Prisma.StripePaymentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripePaymentPayload>
+        }
+        deleteMany: {
+          args: Prisma.StripePaymentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StripePaymentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StripePaymentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripePaymentPayload>[]
+        }
+        upsert: {
+          args: Prisma.StripePaymentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StripePaymentPayload>
+        }
+        aggregate: {
+          args: Prisma.StripePaymentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStripePayment>
+        }
+        groupBy: {
+          args: Prisma.StripePaymentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StripePaymentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StripePaymentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StripePaymentCountAggregateOutputType> | number
         }
       }
     }
@@ -2293,8 +2368,6 @@ export const TransactionScalarFieldEnum = {
   bankTransactionId: 'bankTransactionId',
   reconciled: 'reconciled',
   reconciledAt: 'reconciledAt',
-  stripeSessionId: 'stripeSessionId',
-  stripePaymentId: 'stripePaymentId',
   createdAt: 'createdAt',
   createdBy: 'createdBy',
   updatedAt: 'updatedAt',
@@ -2315,6 +2388,24 @@ export const TransactionScalarFieldEnum = {
 } as const
 
 export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
+
+
+export const StripePaymentScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  stripeSessionId: 'stripeSessionId',
+  stripePaymentId: 'stripePaymentId',
+  amount: 'amount',
+  stripeFeeAmount: 'stripeFeeAmount',
+  status: 'status',
+  transactionId: 'transactionId',
+  donationId: 'donationId',
+  billPaymentId: 'billPaymentId',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type StripePaymentScalarFieldEnum = (typeof StripePaymentScalarFieldEnum)[keyof typeof StripePaymentScalarFieldEnum]
 
 
 export const ProgramSpendingScalarFieldEnum = {
@@ -2529,6 +2620,7 @@ export const DonationScalarFieldEnum = {
   tierId: 'tierId',
   transactionId: 'transactionId',
   billId: 'billId',
+  paymentMethod: 'paymentMethod',
   createdBy: 'createdBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -2594,6 +2686,7 @@ export const BillPaymentScalarFieldEnum = {
   id: 'id',
   billId: 'billId',
   transactionId: 'transactionId',
+  paymentMethod: 'paymentMethod',
   notes: 'notes',
   createdAt: 'createdAt'
 } as const
@@ -2869,16 +2962,16 @@ export type ListEnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
- * Reference to a field of type 'SpendingStatus'
+ * Reference to a field of type 'StripePaymentStatus'
  */
-export type EnumSpendingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SpendingStatus'>
+export type EnumStripePaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StripePaymentStatus'>
     
 
 
 /**
- * Reference to a field of type 'SpendingStatus[]'
+ * Reference to a field of type 'StripePaymentStatus[]'
  */
-export type ListEnumSpendingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SpendingStatus[]'>
+export type ListEnumStripePaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StripePaymentStatus[]'>
     
 
 
@@ -2893,6 +2986,20 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'SpendingStatus'
+ */
+export type EnumSpendingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SpendingStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SpendingStatus[]'
+ */
+export type ListEnumSpendingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SpendingStatus[]'>
     
 
 
@@ -3219,6 +3326,7 @@ export type GlobalOmitConfig = {
   organizationUser?: Prisma.OrganizationUserOmit
   account?: Prisma.AccountOmit
   transaction?: Prisma.TransactionOmit
+  stripePayment?: Prisma.StripePaymentOmit
   programSpending?: Prisma.ProgramSpendingOmit
   programSpendingTransaction?: Prisma.ProgramSpendingTransactionOmit
   bankAccount?: Prisma.BankAccountOmit

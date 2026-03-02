@@ -56,6 +56,7 @@ export const ModelName = {
   OrganizationUser: 'OrganizationUser',
   Account: 'Account',
   Transaction: 'Transaction',
+  StripePayment: 'StripePayment',
   ProgramSpending: 'ProgramSpending',
   ProgramSpendingTransaction: 'ProgramSpendingTransaction',
   BankAccount: 'BankAccount',
@@ -218,8 +219,6 @@ export const TransactionScalarFieldEnum = {
   bankTransactionId: 'bankTransactionId',
   reconciled: 'reconciled',
   reconciledAt: 'reconciledAt',
-  stripeSessionId: 'stripeSessionId',
-  stripePaymentId: 'stripePaymentId',
   createdAt: 'createdAt',
   createdBy: 'createdBy',
   updatedAt: 'updatedAt',
@@ -240,6 +239,24 @@ export const TransactionScalarFieldEnum = {
 } as const
 
 export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
+
+
+export const StripePaymentScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  stripeSessionId: 'stripeSessionId',
+  stripePaymentId: 'stripePaymentId',
+  amount: 'amount',
+  stripeFeeAmount: 'stripeFeeAmount',
+  status: 'status',
+  transactionId: 'transactionId',
+  donationId: 'donationId',
+  billPaymentId: 'billPaymentId',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type StripePaymentScalarFieldEnum = (typeof StripePaymentScalarFieldEnum)[keyof typeof StripePaymentScalarFieldEnum]
 
 
 export const ProgramSpendingScalarFieldEnum = {
@@ -454,6 +471,7 @@ export const DonationScalarFieldEnum = {
   tierId: 'tierId',
   transactionId: 'transactionId',
   billId: 'billId',
+  paymentMethod: 'paymentMethod',
   createdBy: 'createdBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -519,6 +537,7 @@ export const BillPaymentScalarFieldEnum = {
   id: 'id',
   billId: 'billId',
   transactionId: 'transactionId',
+  paymentMethod: 'paymentMethod',
   notes: 'notes',
   createdAt: 'createdAt'
 } as const

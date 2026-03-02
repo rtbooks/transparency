@@ -220,7 +220,7 @@ export async function executeClose(
         creditAccountId: entry.closingCreditAccountId,
         description: `Year-end closing entry — ${period.name}`,
         category: 'Closing Entry',
-        paymentMethod: 'OTHER',
+        paymentMethod: null, // Closing entry — not a payment
         createdBy: userId,
         skipFiscalPeriodCheck: true,
       });

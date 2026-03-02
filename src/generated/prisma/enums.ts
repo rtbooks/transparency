@@ -83,6 +83,15 @@ export const PaymentMethod = {
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
 
 
+export const StripePaymentStatus = {
+  COMPLETED: 'COMPLETED',
+  REFUNDED: 'REFUNDED',
+  DISPUTED: 'DISPUTED'
+} as const
+
+export type StripePaymentStatus = (typeof StripePaymentStatus)[keyof typeof StripePaymentStatus]
+
+
 export const SpendingStatus = {
   PLANNED: 'PLANNED',
   PURCHASED: 'PURCHASED',

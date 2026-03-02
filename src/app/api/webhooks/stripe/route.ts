@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getStripe, STRIPE_WEBHOOK_SECRET } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
-import { buildCurrentVersionWhere, MAX_DATE } from "@/lib/temporal/temporal-utils";
+import { buildCurrentVersionWhere } from "@/lib/temporal/temporal-utils";
 import { createTransactionRecord } from "@/services/transaction.service";
+import { findStripePaymentBySessionId, createStripePayment } from "@/services/stripe-payment.service";
 
 /**
  * POST /api/webhooks/stripe
@@ -81,19 +82,9 @@ async function handleCheckoutCompleted(
     return;
   }
 
-  // Prevent duplicate processing — check both stripeSessionId and referenceNumber
-  const existingTx = await prisma.transaction.findFirst({
-    where: {
-      OR: [
-        { stripeSessionId: session.id },
-        ...(session.payment_intent
-          ? [{ referenceNumber: session.payment_intent as string, paymentMethod: "STRIPE" as const }]
-          : []),
-      ],
-      validTo: MAX_DATE,
-    },
-  });
-  if (existingTx) {
+  // Prevent duplicate processing — check StripePayment table (UNIQUE on stripeSessionId)
+  const existingPayment = await findStripePaymentBySessionId(session.id);
+  if (existingPayment) {
     console.log("Webhook: session already processed:", session.id);
     return;
   }
@@ -206,21 +197,24 @@ async function handlePledgePayment(
       paymentMethod: "STRIPE",
     }, tx);
 
+    // Create StripePayment record for idempotency and audit trail
+    await createStripePayment(tx, {
+      organizationId,
+      stripeSessionId: session.id,
+      stripePaymentId: session.payment_intent as string || null,
+      amount: chargedAmount,
+      transactionId: payment.transactionId,
+      donationId: donation.id,
+      billPaymentId: payment.id,
+      metadata: session.metadata as Record<string, unknown> || null,
+    });
+
     // Update bill and donation status atomically
     await recalculateBillStatus(donation.billId!, tx);
     await recordDonationPayment(donation.id, organizationId, amount, tx);
 
     return payment;
   });
-
-  // Mark the transaction with Stripe session/payment IDs for dedup (best-effort, outside tx)
-  await prisma.transaction.updateMany({
-    where: { id: billPayment.transactionId },
-    data: {
-      stripeSessionId: session.id,
-      stripePaymentId: session.payment_intent as string || null,
-    },
-  }).catch((err) => console.error("Webhook: failed to set Stripe IDs on transaction:", err));
 
   console.log(
     `Webhook: recorded $${amount} pledge payment for donation ${donation.id} (session: ${session.id})`
@@ -280,11 +274,9 @@ async function handleNewDonation(
       description: `Online donation via Stripe — ${donorName}`,
       contactId,
       paymentMethod: 'STRIPE',
-      stripeSessionId: session.id,
-      stripePaymentId: session.payment_intent as string || null,
     });
 
-    await tx.donation.create({
+    const donation = await tx.donation.create({
       data: {
         organizationId,
         contactId: contactId!,
@@ -303,8 +295,20 @@ async function handleNewDonation(
         tierId: metadata.tierId || null,
         transactionId: transaction.id,
         billId: null,
+        paymentMethod: 'STRIPE',
         createdBy: null,
       },
+    });
+
+    // Create StripePayment record for idempotency and audit trail
+    await createStripePayment(tx, {
+      organizationId,
+      stripeSessionId: session.id,
+      stripePaymentId: session.payment_intent as string || null,
+      amount: chargedAmount,
+      transactionId: transaction.id,
+      donationId: donation.id,
+      metadata: session.metadata as Record<string, unknown> || null,
     });
   });
 

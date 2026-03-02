@@ -52,8 +52,6 @@ export type TransactionMinAggregateOutputType = {
   bankTransactionId: string | null
   reconciled: boolean | null
   reconciledAt: Date | null
-  stripeSessionId: string | null
-  stripePaymentId: string | null
   createdAt: Date | null
   createdBy: string | null
   updatedAt: Date | null
@@ -91,8 +89,6 @@ export type TransactionMaxAggregateOutputType = {
   bankTransactionId: string | null
   reconciled: boolean | null
   reconciledAt: Date | null
-  stripeSessionId: string | null
-  stripePaymentId: string | null
   createdAt: Date | null
   createdBy: string | null
   updatedAt: Date | null
@@ -130,8 +126,6 @@ export type TransactionCountAggregateOutputType = {
   bankTransactionId: number
   reconciled: number
   reconciledAt: number
-  stripeSessionId: number
-  stripePaymentId: number
   createdAt: number
   createdBy: number
   updatedAt: number
@@ -179,8 +173,6 @@ export type TransactionMinAggregateInputType = {
   bankTransactionId?: true
   reconciled?: true
   reconciledAt?: true
-  stripeSessionId?: true
-  stripePaymentId?: true
   createdAt?: true
   createdBy?: true
   updatedAt?: true
@@ -218,8 +210,6 @@ export type TransactionMaxAggregateInputType = {
   bankTransactionId?: true
   reconciled?: true
   reconciledAt?: true
-  stripeSessionId?: true
-  stripePaymentId?: true
   createdAt?: true
   createdBy?: true
   updatedAt?: true
@@ -257,8 +247,6 @@ export type TransactionCountAggregateInputType = {
   bankTransactionId?: true
   reconciled?: true
   reconciledAt?: true
-  stripeSessionId?: true
-  stripePaymentId?: true
   createdAt?: true
   createdBy?: true
   updatedAt?: true
@@ -376,15 +364,13 @@ export type TransactionGroupByOutputType = {
   creditAccountId: string
   description: string
   category: string | null
-  paymentMethod: $Enums.PaymentMethod
+  paymentMethod: $Enums.PaymentMethod | null
   referenceNumber: string | null
   contactId: string | null
   notes: string | null
   bankTransactionId: string | null
   reconciled: boolean
   reconciledAt: Date | null
-  stripeSessionId: string | null
-  stripePaymentId: string | null
   createdAt: Date
   createdBy: string | null
   updatedAt: Date
@@ -438,15 +424,13 @@ export type TransactionWhereInput = {
   creditAccountId?: Prisma.StringFilter<"Transaction"> | string
   description?: Prisma.StringFilter<"Transaction"> | string
   category?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Transaction"> | $Enums.PaymentMethod
+  paymentMethod?: Prisma.EnumPaymentMethodNullableFilter<"Transaction"> | $Enums.PaymentMethod | null
   referenceNumber?: Prisma.StringNullableFilter<"Transaction"> | string | null
   contactId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
   bankTransactionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   reconciled?: Prisma.BoolFilter<"Transaction"> | boolean
   reconciledAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
-  stripeSessionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  stripePaymentId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
@@ -477,15 +461,13 @@ export type TransactionOrderByWithRelationInput = {
   creditAccountId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
-  paymentMethod?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
   referenceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   contactId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   bankTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   reconciled?: Prisma.SortOrder
   reconciledAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  stripeSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
-  stripePaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -520,15 +502,13 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   creditAccountId?: Prisma.StringFilter<"Transaction"> | string
   description?: Prisma.StringFilter<"Transaction"> | string
   category?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Transaction"> | $Enums.PaymentMethod
+  paymentMethod?: Prisma.EnumPaymentMethodNullableFilter<"Transaction"> | $Enums.PaymentMethod | null
   referenceNumber?: Prisma.StringNullableFilter<"Transaction"> | string | null
   contactId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
   bankTransactionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   reconciled?: Prisma.BoolFilter<"Transaction"> | boolean
   reconciledAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
-  stripeSessionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
-  stripePaymentId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   createdBy?: Prisma.StringNullableFilter<"Transaction"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
@@ -559,15 +539,13 @@ export type TransactionOrderByWithAggregationInput = {
   creditAccountId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
-  paymentMethod?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
   referenceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   contactId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   bankTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   reconciled?: Prisma.SortOrder
   reconciledAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  stripeSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
-  stripePaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -606,15 +584,13 @@ export type TransactionScalarWhereWithAggregatesInput = {
   creditAccountId?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   description?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   category?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodWithAggregatesFilter<"Transaction"> | $Enums.PaymentMethod
+  paymentMethod?: Prisma.EnumPaymentMethodNullableWithAggregatesFilter<"Transaction"> | $Enums.PaymentMethod | null
   referenceNumber?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   contactId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   bankTransactionId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   reconciled?: Prisma.BoolWithAggregatesFilter<"Transaction"> | boolean
   reconciledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Transaction"> | Date | string | null
-  stripeSessionId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
-  stripePaymentId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
   createdBy?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
@@ -645,15 +621,13 @@ export type TransactionCreateInput = {
   creditAccountId: string
   description: string
   category?: string | null
-  paymentMethod: $Enums.PaymentMethod
+  paymentMethod?: $Enums.PaymentMethod | null
   referenceNumber?: string | null
   contactId?: string | null
   notes?: string | null
   bankTransactionId?: string | null
   reconciled?: boolean
   reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
@@ -684,15 +658,13 @@ export type TransactionUncheckedCreateInput = {
   creditAccountId: string
   description: string
   category?: string | null
-  paymentMethod: $Enums.PaymentMethod
+  paymentMethod?: $Enums.PaymentMethod | null
   referenceNumber?: string | null
   contactId?: string | null
   notes?: string | null
   bankTransactionId?: string | null
   reconciled?: boolean
   reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
@@ -723,15 +695,13 @@ export type TransactionUpdateInput = {
   creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -762,15 +732,13 @@ export type TransactionUncheckedUpdateInput = {
   creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -801,15 +769,13 @@ export type TransactionCreateManyInput = {
   creditAccountId: string
   description: string
   category?: string | null
-  paymentMethod: $Enums.PaymentMethod
+  paymentMethod?: $Enums.PaymentMethod | null
   referenceNumber?: string | null
   contactId?: string | null
   notes?: string | null
   bankTransactionId?: string | null
   reconciled?: boolean
   reconciledAt?: Date | string | null
-  stripeSessionId?: string | null
-  stripePaymentId?: string | null
   createdAt?: Date | string
   createdBy?: string | null
   updatedAt?: Date | string
@@ -840,15 +806,13 @@ export type TransactionUpdateManyMutationInput = {
   creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -879,15 +843,13 @@ export type TransactionUncheckedUpdateManyInput = {
   creditAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripeSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stripePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -930,8 +892,6 @@ export type TransactionCountOrderByAggregateInput = {
   bankTransactionId?: Prisma.SortOrder
   reconciled?: Prisma.SortOrder
   reconciledAt?: Prisma.SortOrder
-  stripeSessionId?: Prisma.SortOrder
-  stripePaymentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -973,8 +933,6 @@ export type TransactionMaxOrderByAggregateInput = {
   bankTransactionId?: Prisma.SortOrder
   reconciled?: Prisma.SortOrder
   reconciledAt?: Prisma.SortOrder
-  stripeSessionId?: Prisma.SortOrder
-  stripePaymentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -1012,8 +970,6 @@ export type TransactionMinOrderByAggregateInput = {
   bankTransactionId?: Prisma.SortOrder
   reconciled?: Prisma.SortOrder
   reconciledAt?: Prisma.SortOrder
-  stripeSessionId?: Prisma.SortOrder
-  stripePaymentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -1041,8 +997,8 @@ export type EnumTransactionTypeFieldUpdateOperationsInput = {
   set?: $Enums.TransactionType
 }
 
-export type EnumPaymentMethodFieldUpdateOperationsInput = {
-  set?: $Enums.PaymentMethod
+export type NullableEnumPaymentMethodFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentMethod | null
 }
 
 
@@ -1065,8 +1021,6 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   bankTransactionId?: boolean
   reconciled?: boolean
   reconciledAt?: boolean
-  stripeSessionId?: boolean
-  stripePaymentId?: boolean
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
@@ -1104,8 +1058,6 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   bankTransactionId?: boolean
   reconciled?: boolean
   reconciledAt?: boolean
-  stripeSessionId?: boolean
-  stripePaymentId?: boolean
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
@@ -1143,8 +1095,6 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   bankTransactionId?: boolean
   reconciled?: boolean
   reconciledAt?: boolean
-  stripeSessionId?: boolean
-  stripePaymentId?: boolean
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
@@ -1182,8 +1132,6 @@ export type TransactionSelectScalar = {
   bankTransactionId?: boolean
   reconciled?: boolean
   reconciledAt?: boolean
-  stripeSessionId?: boolean
-  stripePaymentId?: boolean
   createdAt?: boolean
   createdBy?: boolean
   updatedAt?: boolean
@@ -1203,7 +1151,7 @@ export type TransactionSelectScalar = {
   changeReason?: boolean
 }
 
-export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "organizationId" | "transactionDate" | "amount" | "type" | "debitAccountId" | "creditAccountId" | "description" | "category" | "paymentMethod" | "referenceNumber" | "contactId" | "notes" | "bankTransactionId" | "reconciled" | "reconciledAt" | "stripeSessionId" | "stripePaymentId" | "createdAt" | "createdBy" | "updatedAt" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "isVoided" | "voidedAt" | "voidedBy" | "voidReason" | "changeReason", ExtArgs["result"]["transaction"]>
+export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "organizationId" | "transactionDate" | "amount" | "type" | "debitAccountId" | "creditAccountId" | "description" | "category" | "paymentMethod" | "referenceNumber" | "contactId" | "notes" | "bankTransactionId" | "reconciled" | "reconciledAt" | "createdAt" | "createdBy" | "updatedAt" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "isVoided" | "voidedAt" | "voidedBy" | "voidReason" | "changeReason", ExtArgs["result"]["transaction"]>
 
 export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Transaction"
@@ -1219,15 +1167,13 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     creditAccountId: string
     description: string
     category: string | null
-    paymentMethod: $Enums.PaymentMethod
+    paymentMethod: $Enums.PaymentMethod | null
     referenceNumber: string | null
     contactId: string | null
     notes: string | null
     bankTransactionId: string | null
     reconciled: boolean
     reconciledAt: Date | null
-    stripeSessionId: string | null
-    stripePaymentId: string | null
     createdAt: Date
     createdBy: string | null
     updatedAt: Date
@@ -1685,8 +1631,6 @@ export interface TransactionFieldRefs {
   readonly bankTransactionId: Prisma.FieldRef<"Transaction", 'String'>
   readonly reconciled: Prisma.FieldRef<"Transaction", 'Boolean'>
   readonly reconciledAt: Prisma.FieldRef<"Transaction", 'DateTime'>
-  readonly stripeSessionId: Prisma.FieldRef<"Transaction", 'String'>
-  readonly stripePaymentId: Prisma.FieldRef<"Transaction", 'String'>
   readonly createdAt: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly createdBy: Prisma.FieldRef<"Transaction", 'String'>
   readonly updatedAt: Prisma.FieldRef<"Transaction", 'DateTime'>

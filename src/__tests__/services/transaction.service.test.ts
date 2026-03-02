@@ -72,8 +72,6 @@ function makeMockTransaction(overrides: Record<string, unknown> = {}) {
     bankTransactionId: null,
     reconciled: false,
     reconciledAt: null,
-    stripeSessionId: null,
-    stripePaymentId: null,
     createdAt: new Date('2024-06-15'),
     createdBy: 'user-1',
     updatedAt: new Date('2024-06-15'),

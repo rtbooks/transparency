@@ -152,6 +152,7 @@ describe('BillPayment Service', () => {
           billId: 'bill-1',
           transactionId: 'txn-pay-1',
           notes: 'First instalment',
+          paymentMethod: null,
         },
       });
     });
