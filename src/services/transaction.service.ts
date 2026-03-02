@@ -46,8 +46,6 @@ export interface CreateTransactionRecordInput {
   category?: string | null;
   stripeSessionId?: string | null;
   stripePaymentId?: string | null;
-  donorName?: string | null;
-  isAnonymous?: boolean;
   skipFiscalPeriodCheck?: boolean;
 }
 
@@ -89,8 +87,6 @@ export async function createTransactionRecord(
       category: input.category ?? null,
       stripeSessionId: input.stripeSessionId ?? null,
       stripePaymentId: input.stripePaymentId ?? null,
-      donorName: input.donorName ?? null,
-      isAnonymous: input.isAnonymous ?? false,
       // Temporal fields — explicit for clarity even though schema has defaults
       versionId: crypto.randomUUID(),
       validFrom: now,
@@ -175,10 +171,6 @@ export interface EditTransactionInput {
   contactId?: string | null;
   category?: string | null;
   notes?: string | null;
-  donorUserId?: string | null;
-  donorName?: string | null;
-  isAnonymous?: boolean;
-  receiptUrl?: string | null;
   changeReason: string;
 }
 
@@ -251,10 +243,6 @@ export async function editTransaction(
         paymentMethod: current.paymentMethod,
         referenceNumber: input.referenceNumber !== undefined ? input.referenceNumber : current.referenceNumber,
         contactId: input.contactId !== undefined ? input.contactId : current.contactId,
-        donorUserId: input.donorUserId !== undefined ? input.donorUserId : current.donorUserId,
-        donorName: input.donorName !== undefined ? input.donorName : current.donorName,
-        isAnonymous: input.isAnonymous !== undefined ? input.isAnonymous : current.isAnonymous,
-        receiptUrl: input.receiptUrl !== undefined ? input.receiptUrl : current.receiptUrl,
         notes: input.notes !== undefined ? input.notes : current.notes,
         bankTransactionId: current.bankTransactionId,
         reconciled: current.reconciled,
@@ -354,10 +342,6 @@ export async function voidTransaction(
         category: current.category,
         paymentMethod: current.paymentMethod,
         referenceNumber: current.referenceNumber,
-        donorUserId: current.donorUserId,
-        donorName: current.donorName,
-        isAnonymous: current.isAnonymous,
-        receiptUrl: current.receiptUrl,
         notes: current.notes,
         bankTransactionId: null,
         reconciled: current.reconciled,

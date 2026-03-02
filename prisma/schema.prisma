@@ -114,7 +114,6 @@ model User {
 
   // Relationships
   organizations   OrganizationUser[]
-  donations       Transaction[]      @relation("DonorTransactions")
   contacts        Contact[]          @relation("UserContacts")
   invitationsSent Invitation[]       @relation("InvitationsSent")
   accessRequests  AccessRequest[]    @relation("AccessRequests")
@@ -250,16 +249,10 @@ model Transaction {
   paymentMethod   PaymentMethod @map("payment_method")
   referenceNumber String?       @map("reference_number") // Check #, Venmo ID, etc.
 
-  // Donor information (soft-deprecated: prefer contactId for new transactions)
-  donorUserId String? @map("donor_user_id")
-  donorName   String? @map("donor_name") // For non-user donors
-  isAnonymous Boolean @default(false) @map("is_anonymous")
-
   // Contact reference (unified payee/payer)
   contactId String? @map("contact_id")
 
   // Attachments
-  receiptUrl String? @map("receipt_url")
   notes      String? @db.Text
 
   // Reconciliation
@@ -293,9 +286,6 @@ model Transaction {
   voidedBy     String?   @map("voided_by")
   voidReason   String?   @map("void_reason") @db.Text
   changeReason String?   @map("change_reason") @db.Text
-
-  // Relations (only to non-bitemporal User; Organization/Account/Contact resolved at service layer)
-  donor User? @relation("DonorTransactions", fields: [donorUserId], references: [id])
 
   // Temporal indexes
   @@unique([id, validFrom])
