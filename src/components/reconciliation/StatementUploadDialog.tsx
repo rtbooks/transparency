@@ -24,6 +24,7 @@ export function StatementUploadDialog({ slug, bankAccountId, onClose, onUploaded
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [uploadResult, setUploadResult] = useState<{ linesImported: number; duplicatesSkipped: number; totalParsed: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,6 +72,16 @@ export function StatementUploadDialog({ slug, bankAccountId, onClose, onUploaded
 
       if (data.warnings?.length > 0) {
         setWarnings(data.warnings);
+      }
+
+      // Show dedup results if there were duplicates
+      if (data.duplicatesSkipped > 0) {
+        setUploadResult({
+          linesImported: data.linesImported ?? data.lineCount ?? 0,
+          duplicatesSkipped: data.duplicatesSkipped,
+          totalParsed: data.totalParsed ?? 0,
+        });
+        return; // Stay open to show the summary
       }
 
       onUploaded();
@@ -177,25 +188,40 @@ export function StatementUploadDialog({ slug, bankAccountId, onClose, onUploaded
               ))}
             </div>
           )}
+
+          {/* Dedup Results */}
+          {uploadResult && (
+            <div className="text-sm bg-blue-50 dark:bg-blue-950/20 text-blue-800 dark:text-blue-200 p-3 rounded-md space-y-1">
+              <p className="font-medium">Import Complete</p>
+              <p>{uploadResult.linesImported} new transactions imported</p>
+              <p>{uploadResult.duplicatesSkipped} duplicate{uploadResult.duplicatesSkipped !== 1 ? 's' : ''} skipped</p>
+            </div>
+          )}
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={uploading}>
-            Cancel
-          </Button>
-          <Button onClick={handleUpload} disabled={uploading || !file}>
-            {uploading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Importing...
-              </>
-            ) : (
-              <>
-                <Upload className="h-4 w-4 mr-2" />
-                Import & Parse
-              </>
-            )}
-          </Button>
+          {uploadResult ? (
+            <Button onClick={onUploaded}>Done</Button>
+          ) : (
+            <>
+              <Button variant="outline" onClick={onClose} disabled={uploading}>
+                Cancel
+              </Button>
+              <Button onClick={handleUpload} disabled={uploading || !file}>
+                {uploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Importing...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Import & Parse
+                  </>
+                )}
+              </Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Scale, Upload, FileText, CheckCircle, Clock, AlertCircle, Loader2, BarChart3, Building2 } from 'lucide-react';
+import { Scale, Upload, FileText, CheckCircle, Clock, AlertCircle, Loader2, BarChart3, Building2, ClipboardCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { StatementUploadDialog } from './StatementUploadDialog';
 import { ReconciliationWorkspace } from './ReconciliationWorkspace';
 import { ReconciliationReports } from './ReconciliationReports';
 import { BankAccountManager } from './BankAccountManager';
+import { AccountReconciliation } from './AccountReconciliation';
 
 interface BankAccountInfo {
   id: string;
@@ -46,7 +47,7 @@ const STATUS_BADGES: Record<string, { label: string; variant: 'default' | 'secon
   CANCELLED: { label: 'Cancelled', variant: 'destructive' },
 };
 
-type TabKey = 'statements' | 'bank-accounts' | 'reports';
+type TabKey = 'reconciliation' | 'statements' | 'bank-accounts' | 'reports';
 
 export function ReconciliationPageClient({ slug, bankAccounts: initialBankAccounts }: ReconciliationPageClientProps) {
   const [bankAccounts, setBankAccounts] = useState(initialBankAccounts);
@@ -58,7 +59,7 @@ export function ReconciliationPageClient({ slug, bankAccounts: initialBankAccoun
   const [showUpload, setShowUpload] = useState(false);
   const [activeStatementId, setActiveStatementId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabKey>(
-    initialBankAccounts.length === 0 ? 'bank-accounts' : 'statements'
+    initialBankAccounts.length === 0 ? 'bank-accounts' : 'reconciliation'
   );
 
   const fetchBankAccounts = useCallback(async () => {
@@ -120,7 +121,8 @@ export function ReconciliationPageClient({ slug, bankAccounts: initialBankAccoun
   }
 
   const tabs: { key: TabKey; label: string; icon: React.ElementType }[] = [
-    { key: 'statements', label: 'Statements', icon: FileText },
+    { key: 'reconciliation', label: 'Reconciliation', icon: ClipboardCheck },
+    { key: 'statements', label: 'Bank Import', icon: FileText },
     { key: 'bank-accounts', label: 'Bank Accounts', icon: Building2 },
     { key: 'reports', label: 'Reports', icon: BarChart3 },
   ];
@@ -134,7 +136,7 @@ export function ReconciliationPageClient({ slug, bankAccounts: initialBankAccoun
             Bank Reconciliation
           </h1>
           <p className="text-muted-foreground mt-1">
-            Import bank statements and match them against your ledger
+            Reconcile accounts and import bank statements
           </p>
         </div>
       </div>
@@ -156,6 +158,11 @@ export function ReconciliationPageClient({ slug, bankAccounts: initialBankAccoun
           </button>
         ))}
       </div>
+
+      {/* Reconciliation Tab */}
+      {activeTab === 'reconciliation' && (
+        <AccountReconciliation slug={slug} />
+      )}
 
       {/* Reports Tab */}
       {activeTab === 'reports' && (
