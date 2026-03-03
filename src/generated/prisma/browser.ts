@@ -78,6 +78,16 @@ export type BankStatementLine = Prisma.BankStatementLineModel
  */
 export type BankStatementLineMatch = Prisma.BankStatementLineMatchModel
 /**
+ * Model AccountReconciliation
+ * 
+ */
+export type AccountReconciliation = Prisma.AccountReconciliationModel
+/**
+ * Model ReconciliationItem
+ * 
+ */
+export type ReconciliationItem = Prisma.ReconciliationItemModel
+/**
  * Model AuditLog
  * 
  */

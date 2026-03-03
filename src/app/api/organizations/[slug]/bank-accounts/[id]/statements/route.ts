@@ -6,11 +6,11 @@ import { parseStatement } from '@/services/statement-parser.service';
 import { z } from 'zod';
 
 const uploadSchema = z.object({
-  statementDate: z.string(),
-  periodStart: z.string(),
-  periodEnd: z.string(),
-  openingBalance: z.number(),
-  closingBalance: z.number(),
+  statementDate: z.string().optional(),
+  periodStart: z.string().optional(),
+  periodEnd: z.string().optional(),
+  openingBalance: z.number().optional(),
+  closingBalance: z.number().optional(),
   fileName: z.string(),
   fileContent: z.string(),       // base64 or raw CSV/OFX content
   columnMapping: z.object({
@@ -124,33 +124,76 @@ export async function POST(
 
     const safeDateParse = (s: string) => new Date(s.length === 10 ? s + 'T12:00:00' : s);
 
-    // Create statement and lines in a transaction
+    // Derive period dates from parsed transaction dates if not provided
+    const txDates = parsed.lines.map((l) => l.transactionDate.getTime());
+    const minDate = new Date(Math.min(...txDates));
+    const maxDate = new Date(Math.max(...txDates));
+
+    const periodStart = validated.periodStart ? safeDateParse(validated.periodStart) : minDate;
+    const periodEnd = validated.periodEnd ? safeDateParse(validated.periodEnd) : maxDate;
+    const statementDate = validated.statementDate ? safeDateParse(validated.statementDate) : maxDate;
+
+    // Create statement and lines in a transaction (with deduplication)
+    let duplicatesSkipped = 0;
     const statement = await prisma.$transaction(async (tx) => {
       const stmt = await tx.bankStatement.create({
         data: {
           organizationId: organization.id,
           bankAccountId,
-          statementDate: safeDateParse(validated.statementDate),
-          periodStart: safeDateParse(validated.periodStart),
-          periodEnd: safeDateParse(validated.periodEnd),
-          openingBalance: validated.openingBalance,
-          closingBalance: validated.closingBalance,
+          statementDate,
+          periodStart,
+          periodEnd,
+          openingBalance: validated.openingBalance ?? 0,
+          closingBalance: validated.closingBalance ?? 0,
           fileName: validated.fileName,
           status: 'DRAFT',
         },
       });
 
-      // Create statement lines
-      await tx.bankStatementLine.createMany({
-        data: parsed.lines.map((line) => ({
-          bankStatementId: stmt.id,
-          transactionDate: line.transactionDate,
-          description: line.description,
-          referenceNumber: line.referenceNumber || null,
-          amount: line.amount,
-          category: line.category || null,
-        })),
+      // Deduplicate: check existing lines for this bank account
+      const existingLines = await tx.bankStatementLine.findMany({
+        where: {
+          bankStatement: { bankAccountId },
+        },
+        select: {
+          transactionDate: true,
+          amount: true,
+          description: true,
+        },
       });
+
+      // Build a set of existing line fingerprints for fast lookup
+      const existingFingerprints = new Set(
+        existingLines.map((l) =>
+          `${l.transactionDate.toISOString().slice(0, 10)}|${Number(l.amount).toFixed(2)}|${l.description.trim().toLowerCase()}`
+        )
+      );
+
+      // Filter out duplicates
+      const newLines = parsed.lines.filter((line) => {
+        const fingerprint = `${line.transactionDate.toISOString().slice(0, 10)}|${Number(line.amount).toFixed(2)}|${line.description.trim().toLowerCase()}`;
+        if (existingFingerprints.has(fingerprint)) {
+          duplicatesSkipped++;
+          return false;
+        }
+        // Add to set so we don't import duplicates within the same file
+        existingFingerprints.add(fingerprint);
+        return true;
+      });
+
+      // Create statement lines (only non-duplicates)
+      if (newLines.length > 0) {
+        await tx.bankStatementLine.createMany({
+          data: newLines.map((line) => ({
+            bankStatementId: stmt.id,
+            transactionDate: line.transactionDate,
+            description: line.description,
+            referenceNumber: line.referenceNumber || null,
+            amount: line.amount,
+            category: line.category || null,
+          })),
+        });
+      }
 
       // Save column mapping to bank account for future imports
       if (parsed.detectedMapping && !bankAccount.csvColumnMapping) {
@@ -171,7 +214,9 @@ export async function POST(
 
     return NextResponse.json({
       statement: result,
-      linesImported: parsed.lines.length,
+      linesImported: parsed.lines.length - duplicatesSkipped,
+      duplicatesSkipped,
+      totalParsed: parsed.lines.length,
       warnings: parsed.warnings,
     }, { status: 201 });
   } catch (error: any) {

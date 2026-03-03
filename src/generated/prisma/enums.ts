@@ -131,6 +131,14 @@ export const StatementLineStatus = {
 export type StatementLineStatus = (typeof StatementLineStatus)[keyof typeof StatementLineStatus]
 
 
+export const AccountReconciliationStatus = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type AccountReconciliationStatus = (typeof AccountReconciliationStatus)[keyof typeof AccountReconciliationStatus]
+
+
 export const InvitationStatus = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',

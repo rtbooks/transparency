@@ -38,6 +38,7 @@ jest.mock('@/lib/prisma', () => ({
       create: jest.fn(),
       updateMany: jest.fn().mockResolvedValue({ count: 1 }),
     },
+    $transaction: jest.fn(),
   },
 }));
 
@@ -47,6 +48,7 @@ import {
   unmatchLine,
   skipLine,
   removeMatch,
+  completeReconciliation,
 } from '@/services/reconciliation.service';
 
 // ── Test Data ───────────────────────────────────────────────────────────
@@ -81,6 +83,7 @@ function makeTxn(overrides: Record<string, unknown> = {}) {
     debitAccountId: 'acct-expense',
     creditAccountId: 'acct-checking',
     reconciled: false,
+    cleared: false,
     validTo: MAX_DATE,
     systemTo: MAX_DATE,
     isDeleted: false,
@@ -303,5 +306,199 @@ describe('skipLine', () => {
         notes: 'Bank fee — no matching RadBooks entry',
       },
     });
+  });
+});
+
+// ── Complete Reconciliation ───────────────────────────────────────────
+
+describe('completeReconciliation', () => {
+  const userId = 'user-1';
+
+  function makeStatement(lines: any[]) {
+    return {
+      id: 'stmt-1',
+      status: 'IN_PROGRESS',
+      lines,
+    };
+  }
+
+  function makeMatchedLine(lineId: string, matches: any[]) {
+    return {
+      id: lineId,
+      status: 'MATCHED',
+      matches,
+    };
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should use a database transaction for atomicity', async () => {
+    const txn1 = makeTxn({ id: 'txn-1', versionId: 'v1' });
+    const txn2 = makeTxn({ id: 'txn-2', versionId: 'v2' });
+
+    const statement = makeStatement([
+      makeMatchedLine('line-1', [
+        { transactionId: 'txn-1', amount: 100 },
+        { transactionId: 'txn-2', amount: 200 },
+      ]),
+    ]);
+
+    (prisma.bankStatement.findUnique as jest.Mock).mockResolvedValue(statement);
+
+    // The $transaction mock should receive a callback and execute it
+    (prisma.$transaction as jest.Mock).mockImplementation(async (cb: Function) => {
+      const txClient = {
+        transaction: {
+          findFirst: jest.fn()
+            .mockResolvedValueOnce(txn1)
+            .mockResolvedValueOnce(txn2),
+          create: jest.fn().mockResolvedValue({}),
+          updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+        },
+        bankStatementLine: {
+          update: jest.fn().mockResolvedValue({}),
+        },
+        bankStatement: {
+          update: jest.fn().mockResolvedValue({}),
+        },
+      };
+      return cb(txClient);
+    });
+
+    const result = await completeReconciliation('stmt-1', userId);
+
+    // Verify $transaction was called (atomicity)
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+    expect(result.reconciledCount).toBe(2);
+  });
+
+  it('should roll back all changes if versioning a transaction fails mid-loop', async () => {
+    const txn1 = makeTxn({ id: 'txn-1', versionId: 'v1' });
+    const txn2 = makeTxn({ id: 'txn-2', versionId: 'v2' });
+
+    const statement = makeStatement([
+      makeMatchedLine('line-1', [
+        { transactionId: 'txn-1', amount: 778 },
+        { transactionId: 'txn-2', amount: 500 },
+      ]),
+    ]);
+
+    (prisma.bankStatement.findUnique as jest.Mock).mockResolvedValue(statement);
+
+    (prisma.$transaction as jest.Mock).mockImplementation(async (cb: Function) => {
+      const txClient = {
+        transaction: {
+          findFirst: jest.fn()
+            .mockResolvedValueOnce(txn1)
+            .mockResolvedValueOnce(txn2),
+          // closeVersion succeeds for txn1 (updateMany returns count:1)
+          // but create fails for txn2, simulating a DB error
+          create: jest.fn()
+            .mockResolvedValueOnce({}) // txn1 new version succeeds
+            .mockRejectedValueOnce(new Error('DB constraint violation')), // txn2 fails
+          updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+        },
+        bankStatementLine: {
+          update: jest.fn().mockResolvedValue({}),
+        },
+        bankStatement: {
+          update: jest.fn().mockResolvedValue({}),
+        },
+      };
+      return cb(txClient);
+    });
+
+    // The entire operation should fail
+    await expect(completeReconciliation('stmt-1', userId))
+      .rejects.toThrow('DB constraint violation');
+
+    // $transaction was called, which means the DB will have rolled back
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('should skip already-cleared transactions', async () => {
+    const txnAlreadyCleared = makeTxn({ id: 'txn-1', versionId: 'v1', cleared: true });
+
+    const statement = makeStatement([
+      makeMatchedLine('line-1', [
+        { transactionId: 'txn-1', amount: 100 },
+      ]),
+    ]);
+
+    (prisma.bankStatement.findUnique as jest.Mock).mockResolvedValue(statement);
+
+    (prisma.$transaction as jest.Mock).mockImplementation(async (cb: Function) => {
+      const txClient = {
+        transaction: {
+          findFirst: jest.fn().mockResolvedValue(txnAlreadyCleared),
+          create: jest.fn(),
+          updateMany: jest.fn(),
+        },
+        bankStatementLine: {
+          update: jest.fn().mockResolvedValue({}),
+        },
+        bankStatement: {
+          update: jest.fn().mockResolvedValue({}),
+        },
+      };
+      const result = await cb(txClient);
+      // Verify no version changes were made
+      expect(txClient.transaction.updateMany).not.toHaveBeenCalled();
+      expect(txClient.transaction.create).not.toHaveBeenCalled();
+      return result;
+    });
+
+    const result = await completeReconciliation('stmt-1', userId);
+    expect(result.reconciledCount).toBe(0);
+  });
+
+  it('should not deduplicate transactions matched to multiple lines', async () => {
+    const txn1 = makeTxn({ id: 'txn-1', versionId: 'v1' });
+
+    const statement = makeStatement([
+      makeMatchedLine('line-1', [{ transactionId: 'txn-1', amount: 50 }]),
+      makeMatchedLine('line-2', [{ transactionId: 'txn-1', amount: 50 }]),
+    ]);
+
+    (prisma.bankStatement.findUnique as jest.Mock).mockResolvedValue(statement);
+
+    (prisma.$transaction as jest.Mock).mockImplementation(async (cb: Function) => {
+      const txClient = {
+        transaction: {
+          findFirst: jest.fn().mockResolvedValue(txn1),
+          create: jest.fn().mockResolvedValue({}),
+          updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+        },
+        bankStatementLine: {
+          update: jest.fn().mockResolvedValue({}),
+        },
+        bankStatement: {
+          update: jest.fn().mockResolvedValue({}),
+        },
+      };
+      return cb(txClient);
+    });
+
+    const result = await completeReconciliation('stmt-1', userId);
+    // Should only reconcile once even though matched in two lines
+    expect(result.reconciledCount).toBe(1);
+  });
+
+  it('should throw if statement not found', async () => {
+    (prisma.bankStatement.findUnique as jest.Mock).mockResolvedValue(null);
+    await expect(completeReconciliation('stmt-1', userId))
+      .rejects.toThrow('Statement not found');
+  });
+
+  it('should throw if statement already completed', async () => {
+    (prisma.bankStatement.findUnique as jest.Mock).mockResolvedValue({
+      id: 'stmt-1',
+      status: 'COMPLETED',
+      lines: [],
+    });
+    await expect(completeReconciliation('stmt-1', userId))
+      .rejects.toThrow('Statement already reconciled');
   });
 });

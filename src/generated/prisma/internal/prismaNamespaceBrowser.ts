@@ -63,6 +63,8 @@ export const ModelName = {
   BankStatement: 'BankStatement',
   BankStatementLine: 'BankStatementLine',
   BankStatementLineMatch: 'BankStatementLineMatch',
+  AccountReconciliation: 'AccountReconciliation',
+  ReconciliationItem: 'ReconciliationItem',
   AuditLog: 'AuditLog',
   Invitation: 'Invitation',
   AccessRequest: 'AccessRequest',
@@ -217,6 +219,8 @@ export const TransactionScalarFieldEnum = {
   contactId: 'contactId',
   notes: 'notes',
   bankTransactionId: 'bankTransactionId',
+  cleared: 'cleared',
+  clearedAt: 'clearedAt',
   reconciled: 'reconciled',
   reconciledAt: 'reconciledAt',
   createdAt: 'createdAt',
@@ -366,6 +370,38 @@ export const BankStatementLineMatchScalarFieldEnum = {
 } as const
 
 export type BankStatementLineMatchScalarFieldEnum = (typeof BankStatementLineMatchScalarFieldEnum)[keyof typeof BankStatementLineMatchScalarFieldEnum]
+
+
+export const AccountReconciliationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  accountId: 'accountId',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  beginningBalance: 'beginningBalance',
+  endingBalance: 'endingBalance',
+  status: 'status',
+  completedBy: 'completedBy',
+  completedAt: 'completedAt',
+  statementBlobUrl: 'statementBlobUrl',
+  statementFileName: 'statementFileName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AccountReconciliationScalarFieldEnum = (typeof AccountReconciliationScalarFieldEnum)[keyof typeof AccountReconciliationScalarFieldEnum]
+
+
+export const ReconciliationItemScalarFieldEnum = {
+  id: 'id',
+  reconciliationId: 'reconciliationId',
+  transactionId: 'transactionId',
+  cleared: 'cleared',
+  amount: 'amount',
+  createdAt: 'createdAt'
+} as const
+
+export type ReconciliationItemScalarFieldEnum = (typeof ReconciliationItemScalarFieldEnum)[keyof typeof ReconciliationItemScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {

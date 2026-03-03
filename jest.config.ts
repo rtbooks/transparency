@@ -28,6 +28,7 @@ const config: Config = {
     '!src/**/*.stories.tsx',
     '!src/app/**', // Exclude Next.js app directory (mostly routing)
     '!src/components/ui/**', // Exclude shadcn components
+    '!src/generated/**', // Exclude Prisma generated code
   ],
   coverageThreshold: {
     global: {
