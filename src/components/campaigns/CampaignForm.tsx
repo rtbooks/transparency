@@ -218,6 +218,24 @@ export function CampaignForm({
             maxUnits: campaignType === 'FIXED_UNIT' && maxUnits ? parseInt(maxUnits) : null,
             unitLabel: campaignType === 'FIXED_UNIT' ? unitLabel || null : null,
             allowMultiUnit: campaignType === 'FIXED_UNIT' ? allowMultiUnit : true,
+            tiers: campaignType === 'TIERED' ? tiers.map((t, i) => ({
+              id: t.id || undefined,
+              name: t.name,
+              amount: parseFloat(t.amount),
+              maxSlots: t.maxSlots ? parseInt(t.maxSlots) : null,
+              sortOrder: i,
+            })) : undefined,
+            items: campaignType === 'EVENT' ? eventItems.map((item, i) => ({
+              id: item.id || undefined,
+              name: item.name,
+              category: item.category || null,
+              price: parseFloat(item.price),
+              maxQuantity: item.maxQuantity ? parseInt(item.maxQuantity) : null,
+              minPerOrder: parseInt(item.minPerOrder) || 0,
+              maxPerOrder: item.maxPerOrder ? parseInt(item.maxPerOrder) : null,
+              isRequired: item.isRequired,
+              sortOrder: i,
+            })) : undefined,
           }
         : {
             accountId: resolvedAccountId,
@@ -323,6 +341,17 @@ export function CampaignForm({
           </select>
         </div>
       )}
+      {isEditing && (
+        <div>
+          <Label>Campaign Type</Label>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {campaignType === 'OPEN' && 'Open — Any donation amount'}
+            {campaignType === 'FIXED_UNIT' && 'Fixed Unit — Fixed price per unit'}
+            {campaignType === 'TIERED' && 'Tiered — Predefined donation levels'}
+            {campaignType === 'EVENT' && 'Event — Multiple purchasable items'}
+          </p>
+        </div>
+      )}
 
       {/* FIXED_UNIT fields */}
       {campaignType === "FIXED_UNIT" && (
@@ -385,7 +414,7 @@ export function CampaignForm({
       )}
 
       {/* TIERED fields */}
-      {campaignType === "TIERED" && !isEditing && (
+      {campaignType === "TIERED" && (
         <div className="space-y-3 rounded-lg border bg-purple-50 p-4">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-purple-800">Sponsorship Tiers</p>
@@ -461,7 +490,7 @@ export function CampaignForm({
       )}
 
       {/* EVENT fields */}
-      {campaignType === "EVENT" && !isEditing && (
+      {campaignType === "EVENT" && (
         <div className="space-y-3 rounded-lg border bg-amber-50 p-4">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-amber-800">Event Items</p>
