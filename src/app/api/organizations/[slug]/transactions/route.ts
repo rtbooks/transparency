@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { AccountService } from '@/services/account.service';
 import { MAX_DATE, buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
@@ -22,43 +22,7 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Find the user in our database
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found in database' },
-        { status: 404 }
-      );
-    }
-
-    // Find organization and check access
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-
-    if (!organization) {
-      return NextResponse.json(
-        { error: 'Organization not found' },
-        { status: 404 }
-      );
-    }
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    const orgUser = orgUsers[0];
-    if (!orgUser) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug);
 
     // Parse query parameters for filtering and pagination
     const searchParams = request.nextUrl.searchParams;
@@ -77,7 +41,7 @@ export async function GET(
 
     // Build where clause
     const where: any = {
-      organizationId: organization.id,
+      organizationId: ctx.orgId,
     };
 
     // Temporal filtering based on as-of date
@@ -141,7 +105,7 @@ export async function GET(
     if (type === 'EXPENSE' || type === 'INCOME') {
       const accountType = type === 'EXPENSE' ? 'EXPENSE' : 'REVENUE';
       const accts = await prisma.account.findMany({
-        where: buildCurrentVersionWhere({ organizationId: organization.id, type: accountType }),
+        where: buildCurrentVersionWhere({ organizationId: ctx.orgId, type: accountType }),
         select: { id: true },
       });
       const acctIds = accts.map(a => a.id);
@@ -194,8 +158,8 @@ export async function GET(
     // Fetch accounts - either current or as of date
     const accounts = accountIds.length > 0 
       ? (asOfDate
-          ? await AccountService.findManyAsOf(organization.id, accountIds, asOfDate)
-          : await AccountService.findManyCurrent(organization.id, accountIds))
+          ? await AccountService.findManyAsOf(ctx.orgId, accountIds, asOfDate)
+          : await AccountService.findManyCurrent(ctx.orgId, accountIds))
       : [];
 
     // Create account lookup map
@@ -250,6 +214,7 @@ export async function GET(
       } : null,
     });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error fetching transactions:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -264,50 +229,14 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Find the user in our database
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found in database' },
-        { status: 404 }
-      );
-    }
-
-    // Find organization and check access
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-
-    if (!organization) {
-      return NextResponse.json(
-        { error: 'Organization not found' },
-        { status: 404 }
-      );
-    }
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    const orgUser = orgUsers[0];
-    if (!orgUser || orgUser.role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     // Parse and validate request body
     const body = await request.json();
     const validatedData = createTransactionSchema.parse(body);
 
     const transaction = await createTransaction({
-      organizationId: organization.id,
+      organizationId: ctx.orgId,
       transactionDate: new Date(validatedData.date),
       amount: validatedData.amount,
       description: validatedData.description,
@@ -319,6 +248,7 @@ export async function POST(
 
     return NextResponse.json(transaction, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error creating transaction:', error);
 
     if (error instanceof z.ZodError) {

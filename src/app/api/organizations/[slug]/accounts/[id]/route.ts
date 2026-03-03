@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { z } from 'zod';
 import {
   findAccountById,
   updateAccount,
   isAccountCodeAvailable,
 } from '@/services/account.service';
-import { findOrganizationBySlug } from '@/services/organization.service';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 const updateAccountSchema = z.object({
   code: z.string().min(1).max(20).optional(),
@@ -24,50 +21,12 @@ export async function PATCH(
 ) {
   try {
     const { slug, id } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Find the user in our database
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found in database' },
-        { status: 404 }
-      );
-    }
-
-    // Find organization (current version)
-    const organization = await findOrganizationBySlug(slug);
-
-    if (!organization) {
-      return NextResponse.json(
-        { error: 'Organization not found' },
-        { status: 404 }
-      );
-    }
-
-    // Check user access and role (current version)
-    const orgUser = await prisma.organizationUser.findFirst({
-      where: buildCurrentVersionWhere({
-        userId: user.id,
-        organizationId: organization.id,
-      }),
-    });
-
-    if (!orgUser || orgUser.role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     // Check if account exists and belongs to organization (current version)
     const existingAccount = await findAccountById(id);
 
-    if (!existingAccount || existingAccount.organizationId !== organization.id) {
+    if (!existingAccount || existingAccount.organizationId !== ctx.orgId) {
       return NextResponse.json(
         { error: 'Account not found' },
         { status: 404 }
@@ -81,7 +40,7 @@ export async function PATCH(
     // If updating code, check for duplicates (excluding current account)
     if (validatedData.code && validatedData.code !== existingAccount.code) {
       const codeAvailable = await isAccountCodeAvailable(
-        organization.id,
+        ctx.orgId,
         validatedData.code,
         id
       );
@@ -141,10 +100,11 @@ export async function PATCH(
     }
 
     // Update the account (creates new version with audit trail)
-    const updatedAccount = await updateAccount(id, updates, user.id);
+    const updatedAccount = await updateAccount(id, updates, ctx.userId);
 
     return NextResponse.json(updatedAccount);
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error updating account:', error);
 
     if (error instanceof z.ZodError) {
