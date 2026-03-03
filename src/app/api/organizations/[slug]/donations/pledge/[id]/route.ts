@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere, closeVersion, buildNewVersionData, MAX_DATE } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
@@ -22,31 +22,11 @@ export async function PATCH(
 ) {
   try {
     const { slug, id } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-
-    if (!organization) {
-      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-    }
+    const ctx = await withOrgAuth(slug);
 
     // Find the bill/pledge
     const bill = await prisma.bill.findFirst({
-      where: { id, organizationId: organization.id, direction: 'RECEIVABLE' },
+      where: { id, organizationId: ctx.orgId, direction: 'RECEIVABLE' },
       include: { payments: true },
     });
 
@@ -56,14 +36,11 @@ export async function PATCH(
 
     // Verify ownership: the pledge's contact must belong to this user
     const contact = await prisma.contact.findFirst({
-      where: buildCurrentVersionWhere({ id: bill.contactId, userId: user.id }),
+      where: buildCurrentVersionWhere({ id: bill.contactId, userId: ctx.userId }),
     });
 
     // Allow admins to also modify pledges
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    const isAdmin = user.isPlatformAdmin || orgUsers[0]?.role === 'ORG_ADMIN';
+    const isAdmin = ctx.isPlatformAdmin || ctx.role === 'ORG_ADMIN';
 
     if (!contact && !isAdmin) {
       return NextResponse.json({ error: 'You can only modify your own pledges' }, { status: 403 });
@@ -105,7 +82,7 @@ export async function PATCH(
             const now = new Date();
             await tx.transaction.updateMany({
               where: { versionId: accrualTx.versionId, systemTo: MAX_DATE },
-              data: { validTo: now, systemTo: now, isDeleted: true, deletedAt: now, deletedBy: user.id },
+              data: { validTo: now, systemTo: now, isDeleted: true, deletedAt: now, deletedBy: ctx.userId },
             });
           }
         }
@@ -156,6 +133,7 @@ export async function PATCH(
 
     return NextResponse.json(result);
   } catch (error: any) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
     }

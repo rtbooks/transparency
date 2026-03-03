@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { createPledgeDonation } from '@/services/donation.service';
@@ -24,17 +24,9 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
+    const ctx = await withOrgAuth(slug);
 
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
+    // Fetch org details for account configuration
     const organization = await prisma.organization.findFirst({
       where: buildCurrentVersionWhere({ slug }),
     });
@@ -42,21 +34,20 @@ export async function POST(
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    if (!orgUsers[0]) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    // Fetch user details for contact creation
+    const user = await prisma.user.findUnique({ where: { id: ctx.userId } });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const body = await request.json();
     const validated = pledgeSchema.parse(body);
 
-    const contact = await findOrCreateForUser(organization.id, user.id, user.name, user.email);
+    const contact = await findOrCreateForUser(ctx.orgId, ctx.userId, user.name, user.email);
 
     const arAccount = await prisma.account.findFirst({
       where: buildCurrentVersionWhere({
-        organizationId: organization.id,
+        organizationId: ctx.orgId,
         type: 'ASSET',
         name: { contains: 'Receivable' },
       }),
@@ -70,22 +61,22 @@ export async function POST(
 
     if (validated.campaignId) {
       const campaign = await prisma.campaign.findUnique({ where: { id: validated.campaignId } });
-      if (!campaign || campaign.organizationId !== organization.id || campaign.status !== 'ACTIVE') {
+      if (!campaign || campaign.organizationId !== ctx.orgId || campaign.status !== 'ACTIVE') {
         return NextResponse.json({ error: 'Campaign not found or inactive' }, { status: 400 });
       }
       campaignId = campaign.id;
       revenueAccount = await prisma.account.findFirst({
-        where: buildCurrentVersionWhere({ id: campaign.accountId, organizationId: organization.id }),
+        where: buildCurrentVersionWhere({ id: campaign.accountId, organizationId: ctx.orgId }),
       });
     } else if (organization.donationsAccountId) {
       revenueAccount = await prisma.account.findFirst({
-        where: buildCurrentVersionWhere({ id: organization.donationsAccountId, organizationId: organization.id }),
+        where: buildCurrentVersionWhere({ id: organization.donationsAccountId, organizationId: ctx.orgId }),
       });
     }
 
     if (!revenueAccount) {
       revenueAccount = await prisma.account.findFirst({
-        where: buildCurrentVersionWhere({ organizationId: organization.id, type: 'REVENUE' }),
+        where: buildCurrentVersionWhere({ organizationId: ctx.orgId, type: 'REVENUE' }),
       });
     }
 
@@ -94,7 +85,7 @@ export async function POST(
     }
 
     const donation = await createPledgeDonation({
-      organizationId: organization.id,
+      organizationId: ctx.orgId,
       contactId: contact.id,
       type: 'PLEDGE',
       amount: validated.amount,
@@ -104,11 +95,12 @@ export async function POST(
       campaignId,
       arAccountId: arAccount.id,
       revenueAccountId: revenueAccount.id,
-      createdBy: user.id,
+      createdBy: ctx.userId,
     });
 
     return NextResponse.json(donation, { status: 201 });
   } catch (error: any) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
     }

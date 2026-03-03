@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import {
   uploadAttachment,
   listAttachments,
@@ -17,32 +15,7 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) {
-      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-    }
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    if (!orgUsers[0]) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug);
 
     const searchParams = request.nextUrl.searchParams;
     const entityType = searchParams.get('entityType') as AttachmentEntityType | null;
@@ -62,9 +35,10 @@ export async function GET(
       );
     }
 
-    const attachments = await listAttachments(organization.id, entityType, entityId);
+    const attachments = await listAttachments(ctx.orgId, entityType, entityId);
     return NextResponse.json({ attachments });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error listing attachments:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -76,37 +50,7 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) {
-      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-    }
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    if (!orgUsers[0]) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
-
-    // SUPPORTER role cannot upload
-    if (orgUsers[0].role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
@@ -128,15 +72,16 @@ export async function POST(
     }
 
     const attachment = await uploadAttachment(
-      organization.id,
+      ctx.orgId,
       entityType as AttachmentEntityType,
       entityId,
       file,
-      user.id
+      ctx.userId
     );
 
     return NextResponse.json(attachment, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     if (error instanceof AttachmentValidationError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
