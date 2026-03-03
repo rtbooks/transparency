@@ -96,9 +96,11 @@ export function NewPledgeFormClient({
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
   const [unitCount, setUnitCount] = useState(1);
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
+  const [eventQuantities, setEventQuantities] = useState<Record<string, number>>({});
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([]);
   const [createdDonationAmount, setCreatedDonationAmount] = useState(0);
   const [createdDonationId, setCreatedDonationId] = useState<string | null>(null);
+  const [createdLineItems, setCreatedLineItems] = useState<{ campaignItemId: string; quantity: number }[] | undefined>();
   const [stripeLoading, setStripeLoading] = useState(false);
 
   useEffect(() => {
@@ -151,6 +153,25 @@ export function NewPledgeFormClient({
   const selectedCampaign = campaigns.find(c => c.id === selectedCampaignId);
   const isFixedUnit = selectedCampaign?.campaignType === 'FIXED_UNIT';
   const isTiered = selectedCampaign?.campaignType === 'TIERED';
+  const isEvent = selectedCampaign?.campaignType === 'EVENT';
+
+  // Compute event total from selected quantities
+  const eventTotal = isEvent
+    ? (selectedCampaign?.items || []).reduce((sum: number, item: any) => {
+        const qty = eventQuantities[item.id] || 0;
+        return sum + qty * Number(item.price);
+      }, 0)
+    : 0;
+
+  // Group event items by category
+  const eventItemsByCategory = isEvent
+    ? (selectedCampaign?.items || []).reduce((groups: Record<string, any[]>, item: any) => {
+        const cat = item.category || 'Items';
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push(item);
+        return groups;
+      }, {} as Record<string, any[]>)
+    : {};
 
   const onSubmit = async (data: DonationFormData) => {
     try {
@@ -158,11 +179,22 @@ export function NewPledgeFormClient({
 
       // Compute final amount based on campaign type
       let finalAmount = data.amount || 0;
+      let lineItems: { campaignItemId: string; quantity: number }[] | undefined;
       if (isFixedUnit && selectedCampaign?.unitPrice) {
         finalAmount = selectedCampaign.unitPrice * unitCount;
       } else if (isTiered && selectedTierId) {
         const tier = selectedCampaign?.tiers?.find((t: any) => t.id === selectedTierId);
         if (tier) finalAmount = tier.amount;
+      } else if (isEvent) {
+        finalAmount = eventTotal;
+        lineItems = Object.entries(eventQuantities)
+          .filter(([, qty]) => qty > 0)
+          .map(([campaignItemId, quantity]) => ({ campaignItemId, quantity }));
+        if (lineItems.length === 0) {
+          toast({ title: 'Error', description: 'Please select at least one item', variant: 'destructive' });
+          setIsSubmitting(false);
+          return;
+        }
       }
 
       if (finalAmount <= 0) {
@@ -178,6 +210,12 @@ export function NewPledgeFormClient({
       } else if (isTiered && selectedTierId) {
         const tier = selectedCampaign?.tiers?.find((t: any) => t.id === selectedTierId);
         description = `${tier?.name || 'Tier'} — ${selectedCampaign?.name}`;
+      } else if (isEvent && lineItems) {
+        const itemNames = lineItems.map(li => {
+          const item = selectedCampaign?.items?.find((i: any) => i.id === li.campaignItemId);
+          return `${li.quantity}× ${item?.name || 'Item'}`;
+        }).join(', ');
+        description = `${itemNames} — ${selectedCampaign?.name}`;
       }
 
       const response = await fetch(
@@ -194,6 +232,7 @@ export function NewPledgeFormClient({
             campaignId: selectedCampaignId || null,
             unitCount: isFixedUnit ? unitCount : null,
             tierId: isTiered ? selectedTierId : null,
+            lineItems: isEvent ? lineItems : undefined,
           }),
         }
       );
@@ -207,6 +246,7 @@ export function NewPledgeFormClient({
       setDonationCreated(true);
       setCreatedDonationAmount(finalAmount);
       setCreatedDonationId(donation.id || null);
+      setCreatedLineItems(lineItems);
       trackEvent('donation_created', {
         type: 'PLEDGE',
         amount: finalAmount,
@@ -316,6 +356,7 @@ export function NewPledgeFormClient({
                                       amount: createdDonationAmount,
                                       campaignId: selectedCampaignId || undefined,
                                       donationId: createdDonationId || undefined,
+                                      lineItems: createdLineItems || undefined,
                                     }),
                                   }
                                 );
@@ -414,6 +455,7 @@ export function NewPledgeFormClient({
                         setSelectedCampaignId(campaign.id);
                         setUnitCount(1);
                         setSelectedTierId(null);
+                        setEventQuantities({});
                       }}
                       className={`rounded-lg border p-4 text-left transition-colors ${
                         selectedCampaignId === campaign.id
@@ -434,6 +476,11 @@ export function NewPledgeFormClient({
                       {campaign.campaignType === 'TIERED' && campaign.tiers?.length > 0 && (
                         <p className="mt-1 text-xs text-purple-600">
                           {campaign.tiers.length} tier{campaign.tiers.length !== 1 ? 's' : ''} available
+                        </p>
+                      )}
+                      {campaign.campaignType === 'EVENT' && campaign.items?.length > 0 && (
+                        <p className="mt-1 text-xs text-amber-600">
+                          {campaign.items.length} item{campaign.items.length !== 1 ? 's' : ''} available
                         </p>
                       )}
                       {campaign.description && (
@@ -523,8 +570,84 @@ export function NewPledgeFormClient({
               </div>
             )}
 
+            {/* EVENT: Item selector with quantities */}
+            {isEvent && selectedCampaign?.items?.length > 0 && (
+              <div className="space-y-4">
+                <label className="text-sm font-medium">Select Items</label>
+                {Object.entries(eventItemsByCategory).map(([category, items]) => (
+                  <div key={category} className="space-y-2">
+                    <p className="text-sm font-medium text-amber-800">{category}</p>
+                    {(items as any[]).map((item: any) => {
+                      const qty = eventQuantities[item.id] || 0;
+                      const maxQty = item.maxPerOrder || item.maxQuantity || 99;
+                      return (
+                        <div
+                          key={item.id}
+                          className={`flex items-center justify-between rounded-lg border p-3 transition-colors ${
+                            qty > 0
+                              ? 'border-amber-400 bg-amber-50'
+                              : 'border-gray-200'
+                          }`}
+                        >
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-900">
+                              {item.name}
+                              {item.isRequired && (
+                                <span className="ml-1 text-xs text-red-500">*</span>
+                              )}
+                            </p>
+                            {item.description && (
+                              <p className="text-xs text-gray-500">{item.description}</p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm font-semibold text-gray-700">
+                              {formatCurrency(Number(item.price))}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                                disabled={qty <= 0}
+                                onClick={() =>
+                                  setEventQuantities(prev => ({ ...prev, [item.id]: Math.max(0, qty - 1) }))
+                                }
+                              >
+                                −
+                              </Button>
+                              <span className="w-8 text-center text-sm font-medium">{qty}</span>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                                disabled={qty >= maxQty}
+                                onClick={() =>
+                                  setEventQuantities(prev => ({ ...prev, [item.id]: Math.min(maxQty, qty + 1) }))
+                                }
+                              >
+                                +
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+                {eventTotal > 0 && (
+                  <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-right">
+                    <span className="text-sm text-amber-800">Total: </span>
+                    <span className="text-lg font-bold text-amber-900">{formatCurrency(eventTotal)}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Amount field — hidden for constrained campaigns */}
-            {!isFixedUnit && !isTiered && (
+            {!isFixedUnit && !isTiered && !isEvent && (
               <FormField
               control={form.control}
               name="amount"

@@ -15,6 +15,18 @@ interface CampaignTier {
   slotsFilled: number;
 }
 
+interface CampaignItem {
+  id: string;
+  name: string;
+  description: string | null;
+  category: string | null;
+  price: number;
+  maxQuantity: number | null;
+  minPerOrder: number;
+  maxPerOrder: number | null;
+  isRequired: boolean;
+}
+
 interface CampaignData {
   id: string;
   name: string;
@@ -33,6 +45,7 @@ interface CampaignData {
   startDate: string | null;
   endDate: string | null;
   tiers: CampaignTier[];
+  items?: CampaignItem[];
 }
 
 interface PublicCampaignPageProps {
@@ -92,6 +105,9 @@ export function PublicCampaignPage({
               <TieredProgress campaign={campaign} />
             )}
             {campaign.campaignType === 'OPEN' && (
+              <OpenProgress campaign={campaign} accentColor={accentColor} />
+            )}
+            {campaign.campaignType === 'EVENT' && (
               <OpenProgress campaign={campaign} accentColor={accentColor} />
             )}
           </div>
@@ -161,6 +177,47 @@ export function PublicCampaignPage({
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* Event Items */}
+          {campaign.campaignType === 'EVENT' && campaign.items && campaign.items.length > 0 && (
+            <div className="mb-6 space-y-3">
+              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1">
+                <Users className="h-4 w-4" /> Available Items
+              </h3>
+              {(() => {
+                const grouped = campaign.items!.reduce((g: Record<string, CampaignItem[]>, item) => {
+                  const cat = item.category || 'Items';
+                  if (!g[cat]) g[cat] = [];
+                  g[cat].push(item);
+                  return g;
+                }, {} as Record<string, CampaignItem[]>);
+                return Object.entries(grouped).map(([category, items]) => (
+                  <div key={category}>
+                    <p className="text-xs font-medium uppercase tracking-wide text-amber-700 mb-1">{category}</p>
+                    {items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between rounded-lg border bg-white p-3 mb-1"
+                      >
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {item.name}
+                            {item.isRequired && <span className="ml-1 text-xs text-red-500">Required</span>}
+                          </p>
+                          {item.description && (
+                            <p className="text-xs text-gray-500">{item.description}</p>
+                          )}
+                        </div>
+                        <p className="text-lg font-bold text-amber-700">
+                          {formatCurrency(item.price)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ));
+              })()}
             </div>
           )}
 
