@@ -10,6 +10,10 @@ const checkoutSchema = z.object({
   campaignId: z.string().nullable().optional(),
   tierId: z.string().nullable().optional(),
   unitCount: z.number().int().positive().nullable().optional(),
+  lineItems: z.array(z.object({
+    campaignItemId: z.string().uuid(),
+    quantity: z.number().int().positive(),
+  })).optional(),
   donorName: z.string().min(1).optional(),
   donorEmail: z.string().email().optional(),
   donorMessage: z.string().optional(),
@@ -90,26 +94,68 @@ export async function POST(
       stripeMethod.stripeFeeFixed
     );
 
+    // Build Stripe line items
+    let stripeLineItems;
+    if (validated.lineItems && validated.lineItems.length > 0 && validated.campaignId) {
+      // EVENT campaign: one Stripe line item per campaign item
+      const campaign = await prisma.campaign.findUnique({
+        where: { id: validated.campaignId },
+        include: { items: { where: { isActive: true } } },
+      });
+      const itemMap = new Map(
+        (campaign?.items || []).map(i => [i.id, i])
+      );
+      stripeLineItems = validated.lineItems.map(li => {
+        const item = itemMap.get(li.campaignItemId);
+        const unitPrice = item ? Number(item.price) : 0;
+        // Apply fees proportionally to each item
+        const itemTotal = unitPrice * li.quantity;
+        const feeShare = itemTotal / validated.amount;
+        const itemWithFees = calculateTotalWithFees(
+          itemTotal,
+          stripeMethod.stripeFeePercent * feeShare,
+          stripeMethod.stripeFeeFixed * feeShare
+        );
+        return {
+          price_data: {
+            currency: 'usd' as const,
+            product_data: {
+              name: item?.name || 'Event Item',
+              ...(item?.category ? { description: item.category } : {}),
+            },
+            unit_amount: Math.round((itemWithFees / li.quantity) * 100),
+          },
+          quantity: li.quantity,
+        };
+      });
+      description = campaign?.name
+        ? `${organization.name} — ${campaign.name}`
+        : description;
+    } else {
+      // Standard single line item
+      stripeLineItems = [
+        {
+          price_data: {
+            currency: 'usd' as const,
+            product_data: {
+              name: description,
+              ...(validated.donorMessage
+                ? { description: validated.donorMessage }
+                : {}),
+            },
+            unit_amount: Math.round(chargeAmount * 100),
+          },
+          quantity: 1,
+        },
+      ];
+    }
+
     // Create Checkout Session on the connected account
     const session = await getStripe().checkout.sessions.create(
       {
         mode: "payment",
         payment_method_types: ["card"],
-        line_items: [
-          {
-            price_data: {
-              currency: "usd",
-              product_data: {
-                name: description,
-                ...(validated.donorMessage
-                  ? { description: validated.donorMessage }
-                  : {}),
-              },
-              unit_amount: Math.round(chargeAmount * 100), // cents
-            },
-            quantity: 1,
-          },
-        ],
+        line_items: stripeLineItems,
         ...(validated.donorEmail ? { customer_email: validated.donorEmail } : {}),
         metadata: {
           organizationId: organization.id,
@@ -122,6 +168,7 @@ export async function POST(
           isAnonymous: String(validated.isAnonymous || false),
           donationAmount: String(validated.amount),
           donationId: validated.donationId || "",
+          lineItems: validated.lineItems ? JSON.stringify(validated.lineItems) : "",
         },
         success_url: `${baseUrl}/org/${slug}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: validated.campaignId

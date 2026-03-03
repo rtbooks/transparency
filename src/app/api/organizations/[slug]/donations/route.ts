@@ -16,6 +16,10 @@ const createDonationSchema = z.object({
   campaignId: z.string().uuid().nullable().optional(),
   unitCount: z.number().int().positive().nullable().optional(),
   tierId: z.string().uuid().nullable().optional(),
+  lineItems: z.array(z.object({
+    campaignItemId: z.string().uuid(),
+    quantity: z.number().int().positive(),
+  })).optional(),
 });
 
 /**
@@ -230,6 +234,7 @@ export async function POST(
       campaignId,
       unitCount: validated.unitCount ?? undefined,
       tierId: validated.tierId ?? undefined,
+      lineItems: validated.lineItems ?? undefined,
       arAccountId: arAccount.id,
       revenueAccountId: revenueAccount.id,
       cashAccountId,

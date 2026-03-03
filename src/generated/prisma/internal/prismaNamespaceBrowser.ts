@@ -70,7 +70,9 @@ export const ModelName = {
   AccessRequest: 'AccessRequest',
   Campaign: 'Campaign',
   CampaignTier: 'CampaignTier',
+  CampaignItem: 'CampaignItem',
   Donation: 'Donation',
+  DonationLineItem: 'DonationLineItem',
   Contact: 'Contact',
   Bill: 'Bill',
   BillPayment: 'BillPayment',
@@ -493,6 +495,24 @@ export const CampaignTierScalarFieldEnum = {
 export type CampaignTierScalarFieldEnum = (typeof CampaignTierScalarFieldEnum)[keyof typeof CampaignTierScalarFieldEnum]
 
 
+export const CampaignItemScalarFieldEnum = {
+  id: 'id',
+  campaignId: 'campaignId',
+  name: 'name',
+  description: 'description',
+  category: 'category',
+  price: 'price',
+  maxQuantity: 'maxQuantity',
+  minPerOrder: 'minPerOrder',
+  maxPerOrder: 'maxPerOrder',
+  isRequired: 'isRequired',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive'
+} as const
+
+export type CampaignItemScalarFieldEnum = (typeof CampaignItemScalarFieldEnum)[keyof typeof CampaignItemScalarFieldEnum]
+
+
 export const DonationScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
@@ -520,6 +540,18 @@ export const DonationScalarFieldEnum = {
 } as const
 
 export type DonationScalarFieldEnum = (typeof DonationScalarFieldEnum)[keyof typeof DonationScalarFieldEnum]
+
+
+export const DonationLineItemScalarFieldEnum = {
+  id: 'id',
+  donationId: 'donationId',
+  campaignItemId: 'campaignItemId',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  subtotal: 'subtotal'
+} as const
+
+export type DonationLineItemScalarFieldEnum = (typeof DonationLineItemScalarFieldEnum)[keyof typeof DonationLineItemScalarFieldEnum]
 
 
 export const ContactScalarFieldEnum = {

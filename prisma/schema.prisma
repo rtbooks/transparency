@@ -755,6 +755,7 @@ model Campaign {
   // Relations
   donations Donation[]
   tiers     CampaignTier[]
+  items     CampaignItem[]
 
   @@index([organizationId, status], name: "idx_campaign_org_status")
   @@map("campaigns")
@@ -771,6 +772,7 @@ enum CampaignType {
   OPEN // Default: any amount, no capacity limit
   FIXED_UNIT // Fixed price per unit, optional max units
   TIERED // Predefined donation levels with optional per-tier caps
+  EVENT // Multiple purchasable items with categories, prices, and capacity
 }
 
 model CampaignTier {
@@ -786,6 +788,27 @@ model CampaignTier {
 
   @@index([campaignId], name: "idx_tier_campaign")
   @@map("campaign_tiers")
+}
+
+model CampaignItem {
+  id          String  @id @default(uuid())
+  campaignId  String  @map("campaign_id")
+  name        String // "Adult Plate", "Child Plate", "Gift"
+  description String? @db.Text
+  category    String? // Grouping label: "Plates", "Extras"
+  price       Decimal @db.Decimal(12, 2)
+  maxQuantity Int?    @map("max_quantity") // Total capacity (null = unlimited)
+  minPerOrder Int     @default(0) @map("min_per_order") // 0 = optional
+  maxPerOrder Int?    @map("max_per_order") // null = unlimited
+  isRequired  Boolean @default(false) @map("is_required") // Must select ≥1
+  sortOrder   Int     @default(0) @map("sort_order")
+  isActive    Boolean @default(true) @map("is_active")
+
+  campaign          Campaign           @relation(fields: [campaignId], references: [id])
+  donationLineItems DonationLineItem[]
+
+  @@index([campaignId], name: "idx_campaign_item_campaign")
+  @@map("campaign_items")
 }
 
 // ============================================
@@ -832,14 +855,31 @@ model Donation {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  campaign Campaign?     @relation(fields: [campaignId], references: [id])
-  tier     CampaignTier? @relation(fields: [tierId], references: [id])
+  campaign  Campaign?          @relation(fields: [campaignId], references: [id])
+  tier      CampaignTier?      @relation(fields: [tierId], references: [id])
+  lineItems DonationLineItem[]
 
   @@index([organizationId, status], name: "idx_donation_org_status")
   @@index([organizationId, campaignId], name: "idx_donation_org_campaign")
   @@index([contactId], name: "idx_donation_contact")
   @@index([billId], name: "idx_donation_bill")
   @@map("donations")
+}
+
+model DonationLineItem {
+  id             String  @id @default(uuid())
+  donationId     String  @map("donation_id")
+  campaignItemId String  @map("campaign_item_id")
+  quantity       Int
+  unitPrice      Decimal @db.Decimal(12, 2) // Snapshot of price at donation time
+  subtotal       Decimal @db.Decimal(12, 2) // quantity × unitPrice
+
+  donation     Donation     @relation(fields: [donationId], references: [id])
+  campaignItem CampaignItem @relation(fields: [campaignItemId], references: [id])
+
+  @@index([donationId], name: "idx_line_item_donation")
+  @@index([campaignItemId], name: "idx_line_item_campaign_item")
+  @@map("donation_line_items")
 }
 
 enum DonationType {
