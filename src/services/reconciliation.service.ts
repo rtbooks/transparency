@@ -347,6 +347,8 @@ export async function skipLine(lineId: string, notes?: string): Promise<BankStat
 
 /**
  * Complete reconciliation: mark all matched transactions as reconciled.
+ * Uses a database transaction to ensure atomicity — if any version update
+ * fails, all changes are rolled back to prevent orphaned transactions.
  */
 export async function completeReconciliation(
   statementId: string,
@@ -371,43 +373,45 @@ export async function completeReconciliation(
   const now = new Date();
   const reconciledTxnIds = new Set<string>();
 
-  // Mark all matched transactions as reconciled (temporal: close + create new version)
-  for (const line of matchedLines) {
-    for (const match of line.matches) {
-      if (reconciledTxnIds.has(match.transactionId)) continue;
+  await prisma.$transaction(async (tx) => {
+    // Mark all matched transactions as reconciled (temporal: close + create new version)
+    for (const line of matchedLines) {
+      for (const match of line.matches) {
+        if (reconciledTxnIds.has(match.transactionId)) continue;
 
-      const txn = await prisma.transaction.findFirst({
-        where: buildCurrentVersionWhere({ id: match.transactionId }),
-      });
-
-      if (txn && !txn.reconciled) {
-        await closeVersion(prisma.transaction, txn.versionId, now, 'transaction');
-        await prisma.transaction.create({
-          data: buildNewVersionData(txn, {
-            reconciled: true,
-            reconciledAt: now,
-            bankTransactionId: line.id,
-          } as any, now, userId) as any,
+        const txn = await tx.transaction.findFirst({
+          where: buildCurrentVersionWhere({ id: match.transactionId }),
         });
-        reconciledTxnIds.add(match.transactionId);
+
+        if (txn && !txn.reconciled) {
+          await closeVersion(tx.transaction, txn.versionId, now, 'transaction');
+          await tx.transaction.create({
+            data: buildNewVersionData(txn, {
+              reconciled: true,
+              reconciledAt: now,
+              bankTransactionId: line.id,
+            } as any, now, userId) as any,
+          });
+          reconciledTxnIds.add(match.transactionId);
+        }
       }
+
+      // Confirm the line
+      await tx.bankStatementLine.update({
+        where: { id: line.id },
+        data: { status: 'CONFIRMED' },
+      });
     }
 
-    // Confirm the line
-    await prisma.bankStatementLine.update({
-      where: { id: line.id },
-      data: { status: 'CONFIRMED' },
+    // Mark statement as completed
+    await tx.bankStatement.update({
+      where: { id: statementId },
+      data: {
+        status: 'COMPLETED',
+        reconciledBy: userId,
+        reconciledAt: now,
+      },
     });
-  }
-
-  // Mark statement as completed
-  await prisma.bankStatement.update({
-    where: { id: statementId },
-    data: {
-      status: 'COMPLETED',
-      reconciledBy: userId,
-      reconciledAt: now,
-    },
   });
 
   return { reconciledCount: reconciledTxnIds.size };
