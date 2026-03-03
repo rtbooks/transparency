@@ -6,11 +6,11 @@ import { parseStatement } from '@/services/statement-parser.service';
 import { z } from 'zod';
 
 const uploadSchema = z.object({
-  statementDate: z.string(),
-  periodStart: z.string(),
-  periodEnd: z.string(),
-  openingBalance: z.number(),
-  closingBalance: z.number(),
+  statementDate: z.string().optional(),
+  periodStart: z.string().optional(),
+  periodEnd: z.string().optional(),
+  openingBalance: z.number().optional(),
+  closingBalance: z.number().optional(),
   fileName: z.string(),
   fileContent: z.string(),       // base64 or raw CSV/OFX content
   columnMapping: z.object({
@@ -124,6 +124,15 @@ export async function POST(
 
     const safeDateParse = (s: string) => new Date(s.length === 10 ? s + 'T12:00:00' : s);
 
+    // Derive period dates from parsed transaction dates if not provided
+    const txDates = parsed.lines.map((l) => l.transactionDate.getTime());
+    const minDate = new Date(Math.min(...txDates));
+    const maxDate = new Date(Math.max(...txDates));
+
+    const periodStart = validated.periodStart ? safeDateParse(validated.periodStart) : minDate;
+    const periodEnd = validated.periodEnd ? safeDateParse(validated.periodEnd) : maxDate;
+    const statementDate = validated.statementDate ? safeDateParse(validated.statementDate) : maxDate;
+
     // Create statement and lines in a transaction (with deduplication)
     let duplicatesSkipped = 0;
     const statement = await prisma.$transaction(async (tx) => {
@@ -131,11 +140,11 @@ export async function POST(
         data: {
           organizationId: organization.id,
           bankAccountId,
-          statementDate: safeDateParse(validated.statementDate),
-          periodStart: safeDateParse(validated.periodStart),
-          periodEnd: safeDateParse(validated.periodEnd),
-          openingBalance: validated.openingBalance,
-          closingBalance: validated.closingBalance,
+          statementDate,
+          periodStart,
+          periodEnd,
+          openingBalance: validated.openingBalance ?? 0,
+          closingBalance: validated.closingBalance ?? 0,
           fileName: validated.fileName,
           status: 'DRAFT',
         },

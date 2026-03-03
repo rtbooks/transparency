@@ -224,11 +224,11 @@ export function ReconciliationPageClient({ slug, bankAccounts: initialBankAccoun
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold">
-                      Statements — {selectedAccount?.bankName}
+                      Imported Transactions — {selectedAccount?.bankName}
                     </h2>
                     <Button onClick={() => setShowUpload(true)}>
                       <Upload className="h-4 w-4 mr-2" />
-                      Import Statement
+                      Import Transactions
                     </Button>
                   </div>
 
@@ -240,7 +240,7 @@ export function ReconciliationPageClient({ slug, bankAccounts: initialBankAccoun
                     <Card>
                       <CardContent className="py-8 text-center text-muted-foreground">
                         <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                        <p>No statements imported yet.</p>
+                        <p>No transactions imported yet.</p>
                         <p className="text-sm mt-1">
                           Download a CSV or OFX file from your bank and import it here.
                         </p>

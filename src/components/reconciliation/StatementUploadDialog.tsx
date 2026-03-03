@@ -17,10 +17,6 @@ interface StatementUploadDialogProps {
 export function StatementUploadDialog({ slug, bankAccountId, onClose, onUploaded }: StatementUploadDialogProps) {
   const [file, setFile] = useState<File | null>(null);
   const [fileContent, setFileContent] = useState<string>('');
-  const [periodStart, setPeriodStart] = useState('');
-  const [periodEnd, setPeriodEnd] = useState('');
-  const [openingBalance, setOpeningBalance] = useState('');
-  const [closingBalance, setClosingBalance] = useState('');
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
@@ -38,8 +34,8 @@ export function StatementUploadDialog({ slug, bankAccountId, onClose, onUploaded
   };
 
   const handleUpload = async () => {
-    if (!file || !fileContent || !periodStart || !periodEnd) {
-      setError('Please fill in all required fields and select a file.');
+    if (!file || !fileContent) {
+      setError('Please select a file.');
       return;
     }
 
@@ -52,11 +48,6 @@ export function StatementUploadDialog({ slug, bankAccountId, onClose, onUploaded
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          statementDate: periodEnd,
-          periodStart,
-          periodEnd,
-          openingBalance: parseFloat(openingBalance) || 0,
-          closingBalance: parseFloat(closingBalance) || 0,
           fileName: file.name,
           fileContent,
         }),
@@ -98,17 +89,17 @@ export function StatementUploadDialog({ slug, bankAccountId, onClose, onUploaded
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Upload className="h-5 w-5" />
-            Import Bank Statement
+            Import Bank Transactions
           </DialogTitle>
           <DialogDescription>
-            Upload a CSV or OFX/QFX file exported from your bank.
+            Upload a CSV or OFX/QFX file exported from your bank. Duplicate transactions will be automatically skipped.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* File picker */}
           <div>
-            <Label>Statement File (CSV, OFX, QFX)</Label>
+            <Label>Transaction File (CSV, OFX, QFX)</Label>
             <div className="mt-1">
               <Input
                 ref={fileInputRef}
@@ -122,50 +113,6 @@ export function StatementUploadDialog({ slug, bankAccountId, onClose, onUploaded
                 {file.name} ({(file.size / 1024).toFixed(1)} KB)
               </p>
             )}
-          </div>
-
-          {/* Period */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Period Start</Label>
-              <Input
-                type="date"
-                value={periodStart}
-                onChange={(e) => setPeriodStart(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label>Period End</Label>
-              <Input
-                type="date"
-                value={periodEnd}
-                onChange={(e) => setPeriodEnd(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Balances */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Opening Balance</Label>
-              <Input
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={openingBalance}
-                onChange={(e) => setOpeningBalance(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label>Closing Balance</Label>
-              <Input
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={closingBalance}
-                onChange={(e) => setClosingBalance(e.target.value)}
-              />
-            </div>
           </div>
 
           {/* Error */}
