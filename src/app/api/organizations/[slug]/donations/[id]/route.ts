@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { updateDonation, cancelDonation } from '@/services/donation.service';
@@ -23,31 +23,11 @@ export async function PATCH(
 ) {
   try {
     const { slug, id } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-
-    if (!organization) {
-      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-    }
+    const ctx = await withOrgAuth(slug);
 
     // Find the donation
     const donation = await prisma.donation.findFirst({
-      where: { id, organizationId: organization.id },
+      where: { id, organizationId: ctx.orgId },
     });
 
     if (!donation) {
@@ -56,14 +36,11 @@ export async function PATCH(
 
     // Verify ownership: the donation's contact must belong to this user
     const contact = await prisma.contact.findFirst({
-      where: buildCurrentVersionWhere({ id: donation.contactId, userId: user.id }),
+      where: buildCurrentVersionWhere({ id: donation.contactId, userId: ctx.userId }),
     });
 
     // Allow admins to also modify donations
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    const isAdmin = user.isPlatformAdmin || orgUsers[0]?.role === 'ORG_ADMIN';
+    const isAdmin = ctx.isPlatformAdmin || ctx.role === 'ORG_ADMIN';
 
     if (!contact && !isAdmin) {
       return NextResponse.json({ error: 'You can only modify your own donations' }, { status: 403 });
@@ -73,7 +50,7 @@ export async function PATCH(
     const validated = updateDonationSchema.parse(body);
 
     if (validated.cancel) {
-      const cancelled = await cancelDonation(id, organization.id, user.id, isAdmin);
+      const cancelled = await cancelDonation(id, ctx.orgId, ctx.userId, isAdmin);
       return NextResponse.json(cancelled);
     }
 
@@ -83,9 +60,10 @@ export async function PATCH(
     if (validated.donorMessage !== undefined) updates.donorMessage = validated.donorMessage;
     if (validated.dueDate !== undefined) updates.dueDate = validated.dueDate ? new Date(validated.dueDate.length === 10 ? validated.dueDate + 'T12:00:00' : validated.dueDate) : null;
 
-    const updated = await updateDonation(id, organization.id, updates);
+    const updated = await updateDonation(id, ctx.orgId, updates);
     return NextResponse.json(updated);
   } catch (error: any) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
     }

@@ -30,7 +30,7 @@ export function TransactionsPageClient({ organizationSlug, canEdit = true, initi
         )}
       </div>
 
-      <TransactionList organizationSlug={organizationSlug} refreshKey={refreshKey} initialAccountId={initialAccountId} />
+      <TransactionList organizationSlug={organizationSlug} refreshKey={refreshKey} initialAccountId={initialAccountId} canEdit={canEdit} />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 
@@ -9,50 +9,14 @@ export async function POST(
 ) {
   try {
     const { slug, id } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Find the user in our database
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found in database' },
-        { status: 404 }
-      );
-    }
-
-    // Find organization and check access
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-
-    if (!organization) {
-      return NextResponse.json(
-        { error: 'Organization not found' },
-        { status: 404 }
-      );
-    }
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    const orgUser = orgUsers[0];
-    if (!orgUser || orgUser.role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     // Check if account exists and belongs to organization
     const existingAccount = await prisma.account.findFirst({
       where: buildCurrentVersionWhere({ id }),
     });
 
-    if (!existingAccount || existingAccount.organizationId !== organization.id) {
+    if (!existingAccount || existingAccount.organizationId !== ctx.orgId) {
       return NextResponse.json(
         { error: 'Account not found' },
         { status: 404 }
@@ -99,6 +63,7 @@ export async function POST(
 
     return NextResponse.json(updatedAccount);
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error toggling account status:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

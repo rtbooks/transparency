@@ -4,23 +4,28 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { AccountService } from '@/services/account.service';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { slug, id: accountId } = await params;
+    const ctx = await withOrgAuth(slug);
 
-    const { id: accountId } = await params;
     const history = await AccountService.findHistory(accountId);
 
     if (!history || history.length === 0) {
+      return NextResponse.json(
+        { error: 'Account not found' },
+        { status: 404 }
+      );
+    }
+
+    // Verify the account belongs to this organization
+    if (history[0].organizationId !== ctx.orgId) {
       return NextResponse.json(
         { error: 'Account not found' },
         { status: 404 }
@@ -76,6 +81,7 @@ export async function GET(
       history: historyWithMeta,
     });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error fetching account history:', error);
     return NextResponse.json(
       { error: 'Failed to fetch account history' },

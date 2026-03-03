@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { completeReconciliation } from '@/services/account-reconciliation.service';
 
 /**
@@ -14,20 +12,12 @@ export async function POST(
 ) {
   try {
     const { slug, id } = await params;
-    const { userId: clerkUserId } = await auth();
-    if (!clerkUserId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-
-    const result = await completeReconciliation(id, organization.id, user.id);
+    const result = await completeReconciliation(id, ctx.orgId, ctx.userId);
     return NextResponse.json(result);
   } catch (error: any) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     if (error?.message?.includes('Cannot complete') || error?.message?.includes('already completed')) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

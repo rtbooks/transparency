@@ -11,28 +11,23 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { GET, POST } from '@/app/api/organizations/[slug]/accounts/route';
-import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { auth } from '@clerk/nextjs/server';
 
-// Mock dependencies
-jest.mock('@/lib/prisma', () => ({
-  prisma: {
-    user: {
-      findUnique: jest.fn(),
-    },
-    organizationUser: {
-      findFirst: jest.fn(),
-    },
-    account: {
-      findMany: jest.fn(),
-      create: jest.fn(),
-    },
+// Mock withOrgAuth
+const mockWithOrgAuth = jest.fn();
+jest.mock('@/lib/auth/with-org-auth', () => ({
+  withOrgAuth: (...args: unknown[]) => mockWithOrgAuth(...args),
+  AuthError: class AuthError extends Error {
+    statusCode: number;
+    constructor(message: string, statusCode: number) {
+      super(message);
+      this.name = 'AuthError';
+      this.statusCode = statusCode;
+    }
   },
-}));
-
-jest.mock('@clerk/nextjs/server', () => ({
-  auth: jest.fn(),
+  authErrorResponse: (error: { message: string; statusCode: number }) => {
+    return NextResponse.json({ error: error.message }, { status: error.statusCode });
+  },
 }));
 
 jest.mock('@/services/account.service', () => ({
@@ -43,15 +38,12 @@ jest.mock('@/services/account.service', () => ({
   findAccountById: jest.fn(),
 }));
 
-jest.mock('@/services/organization.service', () => ({
-  findOrganizationBySlug: jest.fn(),
-}));
-
 import {
   findAccountsByOrganization,
   findActiveAccounts,
 } from '@/services/account.service';
-import { findOrganizationBySlug } from '@/services/organization.service';
+
+import { AuthError } from '@/lib/auth/with-org-auth';
 
 // Define the expected Account response schema
 const AccountResponseSchema = z.object({
@@ -78,33 +70,25 @@ const AccountResponseSchema = z.object({
 type AccountResponse = z.infer<typeof AccountResponseSchema>;
 
 describe('Accounts API Contract Tests', () => {
+  const defaultCtx = {
+    userId: 'user-123',
+    clerkUserId: 'clerk-user-123',
+    orgId: 'org-123',
+    slug: 'test-org',
+    role: 'ORG_ADMIN' as const,
+    isPlatformAdmin: false,
+    permissions: {
+      viewOrganization: true, editOrganization: true, deleteOrganization: true,
+      viewAccounts: true, createAccounts: true, editAccounts: true, deleteAccounts: true,
+      viewTransactions: true, createTransactions: true, editTransactions: true, deleteTransactions: true,
+      viewUsers: true, inviteUsers: true, editUserRoles: true, removeUsers: true,
+      viewBalances: true, exportData: true, viewPublicDashboard: true,
+    },
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
-    
-    // Default auth mock
-    (auth as unknown as jest.Mock).mockResolvedValue({ userId: 'clerk-user-123' });
-    
-    // Default user mock
-    (prisma.user.findUnique as jest.Mock).mockResolvedValue({
-      id: 'user-123',
-      authId: 'clerk-user-123',
-      email: 'test@example.com',
-    });
-    
-    // Default organization mock
-    (findOrganizationBySlug as jest.Mock).mockResolvedValue({
-      id: 'org-123',
-      slug: 'test-org',
-      name: 'Test Organization',
-    });
-    
-    // Default user access mock
-    (prisma.organizationUser.findFirst as jest.Mock).mockResolvedValue({
-      id: 'org-user-123',
-      userId: 'user-123',
-      organizationId: 'org-123',
-      role: 'ORG_ADMIN',
-    });
+    mockWithOrgAuth.mockResolvedValue(defaultCtx);
   });
 
   describe('GET /api/organizations/[slug]/accounts', () => {
@@ -473,7 +457,7 @@ describe('Accounts API Contract Tests', () => {
     });
 
     it('should return 401 if user not authenticated', async () => {
-      (auth as unknown as jest.Mock).mockResolvedValue({ userId: null });
+      mockWithOrgAuth.mockRejectedValue(new AuthError('Unauthorized', 401));
 
       const request = new NextRequest('http://localhost:3000/api/organizations/test-org/accounts');
       const params = Promise.resolve({ slug: 'test-org' });
@@ -485,7 +469,7 @@ describe('Accounts API Contract Tests', () => {
     });
 
     it('should return 403 if user has no access to organization', async () => {
-      (prisma.organizationUser.findFirst as jest.Mock).mockResolvedValue(null);
+      mockWithOrgAuth.mockRejectedValue(new AuthError('Access denied', 403));
 
       const request = new NextRequest('http://localhost:3000/api/organizations/test-org/accounts');
       const params = Promise.resolve({ slug: 'test-org' });
@@ -497,7 +481,7 @@ describe('Accounts API Contract Tests', () => {
     });
 
     it('should return 404 if organization not found', async () => {
-      (findOrganizationBySlug as jest.Mock).mockResolvedValue(null);
+      mockWithOrgAuth.mockRejectedValue(new AuthError('Organization not found', 404));
 
       const request = new NextRequest('http://localhost:3000/api/organizations/test-org/accounts');
       const params = Promise.resolve({ slug: 'test-org' });

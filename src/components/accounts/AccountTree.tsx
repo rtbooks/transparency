@@ -192,6 +192,7 @@ export function AccountTree({ organizationSlug, canEdit = true }: AccountTreePro
                   parentAccountId: a.parentAccountId
                 }))}
                 onAccountUpdated={fetchAccounts}
+                canEdit={canEdit}
               />
             ))}
           </div>

@@ -39,7 +39,7 @@ export function ContactsPageClient({ organizationSlug, canEdit = true }: Contact
         )}
       </div>
 
-      <ContactList organizationSlug={organizationSlug} refreshKey={refreshKey} />
+      <ContactList organizationSlug={organizationSlug} refreshKey={refreshKey} canEdit={canEdit} />
 
       {canEdit && (
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>

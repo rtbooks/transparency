@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { recordPayment, linkPayment } from '@/services/bill-payment.service';
 import { recalculateBillStatus } from '@/services/bill.service';
@@ -32,35 +32,7 @@ export async function POST(
 ) {
   try {
     const { slug, id: billId } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-
-    if (!organization) {
-      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-    }
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    const orgUser = orgUsers[0];
-    if (!orgUser || orgUser.role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const body = await request.json();
 
@@ -73,7 +45,7 @@ export async function POST(
           transactionId: validated.transactionId,
           notes: validated.notes ?? null,
         },
-        organization.id
+        ctx.orgId
       );
       return NextResponse.json(billPayment, { status: 201 });
     }
@@ -82,7 +54,7 @@ export async function POST(
 
     // Verify cash account belongs to this organization
     const cashAccount = await prisma.account.findFirst({
-      where: buildCurrentVersionWhere({ id: validated.cashAccountId, organizationId: organization.id }),
+      where: buildCurrentVersionWhere({ id: validated.cashAccountId, organizationId: ctx.orgId }),
     });
 
     if (!cashAccount) {
@@ -92,14 +64,14 @@ export async function POST(
     const billPayment = await prisma.$transaction(async (tx) => {
       const payment = await recordPayment({
         billId,
-        organizationId: organization.id,
+        organizationId: ctx.orgId,
         amount: validated.amount,
         transactionDate: new Date(validated.transactionDate.length === 10 ? validated.transactionDate + 'T12:00:00' : validated.transactionDate),
         cashAccountId: validated.cashAccountId,
         description: validated.description,
         referenceNumber: validated.referenceNumber ?? null,
         notes: validated.notes ?? null,
-        createdBy: user.id,
+        createdBy: ctx.userId,
       }, tx);
 
       // Recalculate bill status within the same transaction
@@ -113,6 +85,7 @@ export async function POST(
 
     return NextResponse.json(billPayment, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error recording payment:', error);
 
     if (error instanceof z.ZodError) {

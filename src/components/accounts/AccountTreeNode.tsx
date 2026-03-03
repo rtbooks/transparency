@@ -40,6 +40,7 @@ interface AccountTreeNodeProps {
     parentAccountId?: string | null;
   }>;
   onAccountUpdated?: () => void;
+  canEdit?: boolean;
 }
 
 export function AccountTreeNodeComponent({
@@ -48,6 +49,7 @@ export function AccountTreeNodeComponent({
   organizationSlug,
   allAccounts,
   onAccountUpdated,
+  canEdit = true,
 }: AccountTreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(level < 2);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -191,6 +193,7 @@ export function AccountTreeNodeComponent({
         </div>
 
         {/* Action Buttons */}
+        {canEdit && (
         <div className="flex shrink-0 items-center gap-1">
           <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
             <DialogTrigger asChild>
@@ -266,6 +269,7 @@ export function AccountTreeNodeComponent({
             </AlertDialogContent>
           </AlertDialog>
         </div>
+        )}
       </div>
 
       {/* Children */}
@@ -279,6 +283,7 @@ export function AccountTreeNodeComponent({
               organizationSlug={organizationSlug}
               allAccounts={allAccounts}
               onAccountUpdated={onAccountUpdated}
+              canEdit={canEdit}
             />
           ))}
         </div>

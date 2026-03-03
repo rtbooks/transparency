@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 import { getTemplate } from '@/lib/templates/account-templates';
@@ -10,41 +10,7 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found in database' },
-        { status: 404 }
-      );
-    }
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-
-    if (!organization) {
-      return NextResponse.json(
-        { error: 'Organization not found' },
-        { status: 404 }
-      );
-    }
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    const orgUser = orgUsers[0];
-    if (!orgUser || orgUser.role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const body = await request.json();
     const { templateId } = body;
@@ -66,7 +32,7 @@ export async function POST(
     }
 
     const existingAccountCount = await prisma.account.count({
-      where: buildCurrentVersionWhere({ organizationId: organization.id }),
+      where: buildCurrentVersionWhere({ organizationId: ctx.orgId }),
     });
 
     if (existingAccountCount > 0) {
@@ -85,7 +51,7 @@ export async function POST(
           name: accountTemplate.name,
           type: accountTemplate.type,
           description: accountTemplate.description || null,
-          organizationId: organization.id,
+          organizationId: ctx.orgId,
           currentBalance: 0,
           isActive: true,
           parentAccountId: null,
@@ -119,7 +85,7 @@ export async function POST(
     const fundBalanceAccountId = accountMap.get('3000');
     if (fundBalanceAccountId) {
       const currentOrg = await prisma.organization.findFirst({
-        where: buildCurrentVersionWhere({ id: organization.id }),
+        where: buildCurrentVersionWhere({ id: ctx.orgId }),
       });
       if (currentOrg && !currentOrg.fundBalanceAccountId) {
         const now = new Date();
@@ -136,6 +102,7 @@ export async function POST(
       message: `Successfully created ${template.length} accounts from template`,
     });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error applying account template:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

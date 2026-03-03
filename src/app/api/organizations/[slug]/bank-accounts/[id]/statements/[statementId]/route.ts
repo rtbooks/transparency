@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
@@ -13,19 +13,7 @@ export async function GET(
 ) {
   try {
     const { slug, statementId } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    const ctx = await withOrgAuth(slug);
 
     const statement = await prisma.bankStatement.findUnique({
       where: { id: statementId },
@@ -38,7 +26,7 @@ export async function GET(
       },
     });
 
-    if (!statement || statement.organizationId !== organization.id) {
+    if (!statement || statement.organizationId !== ctx.orgId) {
       return NextResponse.json({ error: 'Statement not found' }, { status: 404 });
     }
 
@@ -51,7 +39,7 @@ export async function GET(
 
     const unreconciledTransactions = await prisma.transaction.findMany({
       where: {
-        ...buildCurrentVersionWhere({ organizationId: organization.id }),
+        ...buildCurrentVersionWhere({ organizationId: ctx.orgId }),
         reconciled: false,
         transactionDate: { gte: periodStart, lte: periodEnd },
         OR: [
@@ -67,6 +55,7 @@ export async function GET(
       unreconciledTransactions,
     });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error fetching statement:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -82,22 +71,10 @@ export async function DELETE(
 ) {
   try {
     const { slug, statementId } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const statement = await prisma.bankStatement.findUnique({ where: { id: statementId } });
-    if (!statement || statement.organizationId !== organization.id) {
+    if (!statement || statement.organizationId !== ctx.orgId) {
       return NextResponse.json({ error: 'Statement not found' }, { status: 404 });
     }
 
@@ -110,6 +87,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Statement deleted' });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error deleting statement:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

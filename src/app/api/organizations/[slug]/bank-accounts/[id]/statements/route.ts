@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { parseStatement } from '@/services/statement-parser.service';
 import { z } from 'zod';
 
@@ -36,22 +35,10 @@ export async function GET(
 ) {
   try {
     const { slug, id: bankAccountId } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    const ctx = await withOrgAuth(slug);
 
     const statements = await prisma.bankStatement.findMany({
-      where: { organizationId: organization.id, bankAccountId },
+      where: { organizationId: ctx.orgId, bankAccountId },
       include: {
         _count: { select: { lines: true } },
       },
@@ -74,6 +61,7 @@ export async function GET(
 
     return NextResponse.json(statementsWithCounts);
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error listing statements:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -89,23 +77,11 @@ export async function POST(
 ) {
   try {
     const { slug, id: bankAccountId } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     // Verify bank account belongs to this org
     const bankAccount = await prisma.bankAccount.findUnique({ where: { id: bankAccountId } });
-    if (!bankAccount || bankAccount.organizationId !== organization.id) {
+    if (!bankAccount || bankAccount.organizationId !== ctx.orgId) {
       return NextResponse.json({ error: 'Bank account not found' }, { status: 404 });
     }
 
@@ -138,7 +114,7 @@ export async function POST(
     const statement = await prisma.$transaction(async (tx) => {
       const stmt = await tx.bankStatement.create({
         data: {
-          organizationId: organization.id,
+          organizationId: ctx.orgId,
           bankAccountId,
           statementDate,
           periodStart,
@@ -220,6 +196,7 @@ export async function POST(
       warnings: parsed.warnings,
     }, { status: 201 });
   } catch (error: any) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
     }
