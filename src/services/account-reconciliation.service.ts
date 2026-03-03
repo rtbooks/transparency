@@ -173,15 +173,20 @@ export async function getReconciliationDetail(
     select: { name: true, code: true },
   });
 
-  // Get all unreconciled transactions for this account in the period
+  // Get all transactions for this account in the period
+  // Normalize dates to full day range to catch all transactions regardless of time component
+  const periodStartDay = new Date(reconciliation.periodStart);
+  periodStartDay.setUTCHours(0, 0, 0, 0);
+  const periodEndDay = new Date(reconciliation.periodEnd);
+  periodEndDay.setUTCHours(23, 59, 59, 999);
+
   const transactions = await prisma.transaction.findMany({
     where: {
       ...buildCurrentVersionWhere({ organizationId }),
       isVoided: false,
-      isDeleted: false,
       transactionDate: {
-        gte: reconciliation.periodStart,
-        lte: reconciliation.periodEnd,
+        gte: periodStartDay,
+        lte: periodEndDay,
       },
       OR: [
         { debitAccountId: reconciliation.accountId },

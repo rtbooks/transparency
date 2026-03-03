@@ -70,11 +70,17 @@ export async function POST(
 
     const safeDateParse = (s: string) => new Date(s.length === 10 ? s + 'T12:00:00' : s);
 
+    // Use start-of-day for period start, end-of-day for period end
+    const periodStartDate = safeDateParse(validated.periodStart);
+    periodStartDate.setUTCHours(0, 0, 0, 0);
+    const periodEndDate = safeDateParse(validated.periodEnd);
+    periodEndDate.setUTCHours(23, 59, 59, 999);
+
     const reconciliation = await startReconciliation({
       organizationId: organization.id,
       accountId: validated.accountId,
-      periodStart: safeDateParse(validated.periodStart),
-      periodEnd: safeDateParse(validated.periodEnd),
+      periodStart: periodStartDate,
+      periodEnd: periodEndDate,
       beginningBalance: validated.beginningBalance,
       endingBalance: validated.endingBalance,
       createdBy: user.id,
