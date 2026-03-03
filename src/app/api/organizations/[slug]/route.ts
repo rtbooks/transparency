@@ -142,6 +142,12 @@ export async function PATCH(
     const updates: any = {};
     if (validatedData.name) updates.name = validatedData.name;
     if (validatedData.ein !== undefined) updates.ein = validatedData.ein;
+    if (validatedData.addressLine1 !== undefined) updates.addressLine1 = validatedData.addressLine1;
+    if (validatedData.addressLine2 !== undefined) updates.addressLine2 = validatedData.addressLine2;
+    if (validatedData.city !== undefined) updates.city = validatedData.city;
+    if (validatedData.state !== undefined) updates.state = validatedData.state;
+    if (validatedData.postalCode !== undefined) updates.postalCode = validatedData.postalCode;
+    if (validatedData.country !== undefined) updates.country = validatedData.country;
     if (validatedData.mission !== undefined) updates.mission = validatedData.mission;
     if (validatedData.fiscalYearStart) {
       updates.fiscalYearStart = new Date(validatedData.fiscalYearStart);

@@ -560,68 +560,70 @@ export function DonationsPageClient({
                     <p className="text-sm text-gray-600">
                       Received: {formatCurrency(donation.amountReceived)} / {formatCurrency(donation.amount)}
                     </p>
-                      {/* Pay Now button — visible to all users for unpaid pledges */}
-                      {(donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && paymentMethods.length > 0 && (
-                        <div className="mt-2 flex justify-end">
-                          <Button
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700"
-                            onClick={() => setPayNowDonation(donation)}
-                          >
-                            <Wallet className="mr-1 h-3 w-3" />
-                            Pay Now
-                          </Button>
-                        </div>
-                      )}
-                      {(donation.status === 'RECEIVED' || donation.status === 'PARTIAL') && (
-                        <div className="mt-2 flex justify-end">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              window.open(
-                                `/api/organizations/${organizationSlug}/donations/${donation.id}/receipt`,
-                                '_blank'
-                              );
-                            }}
-                          >
-                            <Download className="mr-1 h-3 w-3" />
-                            Tax Receipt
-                          </Button>
-                        </div>
-                      )}
-                      {canModifyDonation(donation) && (
-                        <div className="mt-2 flex justify-end gap-2">
-                          {isAdmin && (donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && (
+                      {/* Action buttons — single row */}
+                      {((donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && paymentMethods.length > 0) ||
+                       (donation.status === 'RECEIVED' || donation.status === 'PARTIAL') ||
+                       canModifyDonation(donation) ? (
+                        <div className="mt-2 flex flex-wrap justify-end gap-2">
+                          {(donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && paymentMethods.length > 0 && (
+                            <Button
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700"
+                              onClick={() => setPayNowDonation(donation)}
+                            >
+                              <Wallet className="mr-1 h-3 w-3" />
+                              Pay Now
+                            </Button>
+                          )}
+                          {(donation.status === 'RECEIVED' || donation.status === 'PARTIAL') && (
                             <Button
                               variant="outline"
                               size="sm"
-                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                              onClick={() => openPaymentDialog(donation)}
+                              onClick={() => {
+                                window.open(
+                                  `/api/organizations/${organizationSlug}/donations/${donation.id}/receipt`,
+                                  '_blank'
+                                );
+                              }}
                             >
-                              <CreditCard className="mr-1 h-3 w-3" />
-                              Record Payment
+                              <Download className="mr-1 h-3 w-3" />
+                              Tax Receipt
                             </Button>
                           )}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openEditDialog(donation)}
-                          >
-                            <Pencil className="mr-1 h-3 w-3" />
-                            Edit
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => setCancellingDonationId(donation.id)}
-                          >
-                            <X className="mr-1 h-3 w-3" />
-                            Cancel
-                          </Button>
+                          {canModifyDonation(donation) && (
+                            <>
+                              {isAdmin && (donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  onClick={() => openPaymentDialog(donation)}
+                                >
+                                  <CreditCard className="mr-1 h-3 w-3" />
+                                  Record Payment
+                                </Button>
+                              )}
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => openEditDialog(donation)}
+                              >
+                                <Pencil className="mr-1 h-3 w-3" />
+                                Edit
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => setCancellingDonationId(donation.id)}
+                              >
+                                <X className="mr-1 h-3 w-3" />
+                                Cancel
+                              </Button>
+                            </>
+                          )}
                         </div>
-                      )}
+                      ) : null}
                     </div>
                 </div>
 
