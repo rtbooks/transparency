@@ -374,7 +374,7 @@ export async function completeReconciliation(
   const reconciledTxnIds = new Set<string>();
 
   await prisma.$transaction(async (tx) => {
-    // Mark all matched transactions as reconciled (temporal: close + create new version)
+    // Mark all matched transactions as cleared (temporal: close + create new version)
     for (const line of matchedLines) {
       for (const match of line.matches) {
         if (reconciledTxnIds.has(match.transactionId)) continue;
@@ -383,12 +383,12 @@ export async function completeReconciliation(
           where: buildCurrentVersionWhere({ id: match.transactionId }),
         });
 
-        if (txn && !txn.reconciled) {
+        if (txn && !txn.cleared) {
           await closeVersion(tx.transaction, txn.versionId, now, 'transaction');
           await tx.transaction.create({
             data: buildNewVersionData(txn, {
-              reconciled: true,
-              reconciledAt: now,
+              cleared: true,
+              clearedAt: now,
               bankTransactionId: match.id,
             } as any, now, userId) as any,
           });

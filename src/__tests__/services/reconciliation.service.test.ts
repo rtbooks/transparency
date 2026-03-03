@@ -83,6 +83,7 @@ function makeTxn(overrides: Record<string, unknown> = {}) {
     debitAccountId: 'acct-expense',
     creditAccountId: 'acct-checking',
     reconciled: false,
+    cleared: false,
     validTo: MAX_DATE,
     systemTo: MAX_DATE,
     isDeleted: false,
@@ -417,8 +418,8 @@ describe('completeReconciliation', () => {
     expect(prisma.$transaction).toHaveBeenCalledTimes(1);
   });
 
-  it('should skip already-reconciled transactions', async () => {
-    const txnAlreadyReconciled = makeTxn({ id: 'txn-1', versionId: 'v1', reconciled: true });
+  it('should skip already-cleared transactions', async () => {
+    const txnAlreadyCleared = makeTxn({ id: 'txn-1', versionId: 'v1', cleared: true });
 
     const statement = makeStatement([
       makeMatchedLine('line-1', [
@@ -431,7 +432,7 @@ describe('completeReconciliation', () => {
     (prisma.$transaction as jest.Mock).mockImplementation(async (cb: Function) => {
       const txClient = {
         transaction: {
-          findFirst: jest.fn().mockResolvedValue(txnAlreadyReconciled),
+          findFirst: jest.fn().mockResolvedValue(txnAlreadyCleared),
           create: jest.fn(),
           updateMany: jest.fn(),
         },

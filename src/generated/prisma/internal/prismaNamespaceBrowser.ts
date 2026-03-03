@@ -219,6 +219,8 @@ export const TransactionScalarFieldEnum = {
   contactId: 'contactId',
   notes: 'notes',
   bankTransactionId: 'bankTransactionId',
+  cleared: 'cleared',
+  clearedAt: 'clearedAt',
   reconciled: 'reconciled',
   reconciledAt: 'reconciledAt',
   createdAt: 'createdAt',

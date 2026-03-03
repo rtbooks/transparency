@@ -50,6 +50,8 @@ export type TransactionMinAggregateOutputType = {
   contactId: string | null
   notes: string | null
   bankTransactionId: string | null
+  cleared: boolean | null
+  clearedAt: Date | null
   reconciled: boolean | null
   reconciledAt: Date | null
   createdAt: Date | null
@@ -87,6 +89,8 @@ export type TransactionMaxAggregateOutputType = {
   contactId: string | null
   notes: string | null
   bankTransactionId: string | null
+  cleared: boolean | null
+  clearedAt: Date | null
   reconciled: boolean | null
   reconciledAt: Date | null
   createdAt: Date | null
@@ -124,6 +128,8 @@ export type TransactionCountAggregateOutputType = {
   contactId: number
   notes: number
   bankTransactionId: number
+  cleared: number
+  clearedAt: number
   reconciled: number
   reconciledAt: number
   createdAt: number
@@ -171,6 +177,8 @@ export type TransactionMinAggregateInputType = {
   contactId?: true
   notes?: true
   bankTransactionId?: true
+  cleared?: true
+  clearedAt?: true
   reconciled?: true
   reconciledAt?: true
   createdAt?: true
@@ -208,6 +216,8 @@ export type TransactionMaxAggregateInputType = {
   contactId?: true
   notes?: true
   bankTransactionId?: true
+  cleared?: true
+  clearedAt?: true
   reconciled?: true
   reconciledAt?: true
   createdAt?: true
@@ -245,6 +255,8 @@ export type TransactionCountAggregateInputType = {
   contactId?: true
   notes?: true
   bankTransactionId?: true
+  cleared?: true
+  clearedAt?: true
   reconciled?: true
   reconciledAt?: true
   createdAt?: true
@@ -369,6 +381,8 @@ export type TransactionGroupByOutputType = {
   contactId: string | null
   notes: string | null
   bankTransactionId: string | null
+  cleared: boolean
+  clearedAt: Date | null
   reconciled: boolean
   reconciledAt: Date | null
   createdAt: Date
@@ -429,6 +443,8 @@ export type TransactionWhereInput = {
   contactId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
   bankTransactionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  cleared?: Prisma.BoolFilter<"Transaction"> | boolean
+  clearedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
   reconciled?: Prisma.BoolFilter<"Transaction"> | boolean
   reconciledAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
@@ -466,6 +482,8 @@ export type TransactionOrderByWithRelationInput = {
   contactId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   bankTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  cleared?: Prisma.SortOrder
+  clearedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   reconciled?: Prisma.SortOrder
   reconciledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -507,6 +525,8 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   contactId?: Prisma.StringNullableFilter<"Transaction"> | string | null
   notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
   bankTransactionId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  cleared?: Prisma.BoolFilter<"Transaction"> | boolean
+  clearedAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
   reconciled?: Prisma.BoolFilter<"Transaction"> | boolean
   reconciledAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
@@ -544,6 +564,8 @@ export type TransactionOrderByWithAggregationInput = {
   contactId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   bankTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  cleared?: Prisma.SortOrder
+  clearedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   reconciled?: Prisma.SortOrder
   reconciledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -589,6 +611,8 @@ export type TransactionScalarWhereWithAggregatesInput = {
   contactId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   bankTransactionId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
+  cleared?: Prisma.BoolWithAggregatesFilter<"Transaction"> | boolean
+  clearedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Transaction"> | Date | string | null
   reconciled?: Prisma.BoolWithAggregatesFilter<"Transaction"> | boolean
   reconciledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Transaction"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
@@ -626,6 +650,8 @@ export type TransactionCreateInput = {
   contactId?: string | null
   notes?: string | null
   bankTransactionId?: string | null
+  cleared?: boolean
+  clearedAt?: Date | string | null
   reconciled?: boolean
   reconciledAt?: Date | string | null
   createdAt?: Date | string
@@ -663,6 +689,8 @@ export type TransactionUncheckedCreateInput = {
   contactId?: string | null
   notes?: string | null
   bankTransactionId?: string | null
+  cleared?: boolean
+  clearedAt?: Date | string | null
   reconciled?: boolean
   reconciledAt?: Date | string | null
   createdAt?: Date | string
@@ -700,6 +728,8 @@ export type TransactionUpdateInput = {
   contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cleared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clearedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -737,6 +767,8 @@ export type TransactionUncheckedUpdateInput = {
   contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cleared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clearedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -774,6 +806,8 @@ export type TransactionCreateManyInput = {
   contactId?: string | null
   notes?: string | null
   bankTransactionId?: string | null
+  cleared?: boolean
+  clearedAt?: Date | string | null
   reconciled?: boolean
   reconciledAt?: Date | string | null
   createdAt?: Date | string
@@ -811,6 +845,8 @@ export type TransactionUpdateManyMutationInput = {
   contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cleared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clearedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -848,6 +884,8 @@ export type TransactionUncheckedUpdateManyInput = {
   contactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cleared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clearedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reconciled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reconciledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -890,6 +928,8 @@ export type TransactionCountOrderByAggregateInput = {
   contactId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   bankTransactionId?: Prisma.SortOrder
+  cleared?: Prisma.SortOrder
+  clearedAt?: Prisma.SortOrder
   reconciled?: Prisma.SortOrder
   reconciledAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -931,6 +971,8 @@ export type TransactionMaxOrderByAggregateInput = {
   contactId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   bankTransactionId?: Prisma.SortOrder
+  cleared?: Prisma.SortOrder
+  clearedAt?: Prisma.SortOrder
   reconciled?: Prisma.SortOrder
   reconciledAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -968,6 +1010,8 @@ export type TransactionMinOrderByAggregateInput = {
   contactId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   bankTransactionId?: Prisma.SortOrder
+  cleared?: Prisma.SortOrder
+  clearedAt?: Prisma.SortOrder
   reconciled?: Prisma.SortOrder
   reconciledAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -1019,6 +1063,8 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   contactId?: boolean
   notes?: boolean
   bankTransactionId?: boolean
+  cleared?: boolean
+  clearedAt?: boolean
   reconciled?: boolean
   reconciledAt?: boolean
   createdAt?: boolean
@@ -1056,6 +1102,8 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   contactId?: boolean
   notes?: boolean
   bankTransactionId?: boolean
+  cleared?: boolean
+  clearedAt?: boolean
   reconciled?: boolean
   reconciledAt?: boolean
   createdAt?: boolean
@@ -1093,6 +1141,8 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   contactId?: boolean
   notes?: boolean
   bankTransactionId?: boolean
+  cleared?: boolean
+  clearedAt?: boolean
   reconciled?: boolean
   reconciledAt?: boolean
   createdAt?: boolean
@@ -1130,6 +1180,8 @@ export type TransactionSelectScalar = {
   contactId?: boolean
   notes?: boolean
   bankTransactionId?: boolean
+  cleared?: boolean
+  clearedAt?: boolean
   reconciled?: boolean
   reconciledAt?: boolean
   createdAt?: boolean
@@ -1151,7 +1203,7 @@ export type TransactionSelectScalar = {
   changeReason?: boolean
 }
 
-export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "organizationId" | "transactionDate" | "amount" | "type" | "debitAccountId" | "creditAccountId" | "description" | "category" | "paymentMethod" | "referenceNumber" | "contactId" | "notes" | "bankTransactionId" | "reconciled" | "reconciledAt" | "createdAt" | "createdBy" | "updatedAt" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "isVoided" | "voidedAt" | "voidedBy" | "voidReason" | "changeReason", ExtArgs["result"]["transaction"]>
+export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "organizationId" | "transactionDate" | "amount" | "type" | "debitAccountId" | "creditAccountId" | "description" | "category" | "paymentMethod" | "referenceNumber" | "contactId" | "notes" | "bankTransactionId" | "cleared" | "clearedAt" | "reconciled" | "reconciledAt" | "createdAt" | "createdBy" | "updatedAt" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "isVoided" | "voidedAt" | "voidedBy" | "voidReason" | "changeReason", ExtArgs["result"]["transaction"]>
 
 export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Transaction"
@@ -1172,6 +1224,8 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     contactId: string | null
     notes: string | null
     bankTransactionId: string | null
+    cleared: boolean
+    clearedAt: Date | null
     reconciled: boolean
     reconciledAt: Date | null
     createdAt: Date
@@ -1629,6 +1683,8 @@ export interface TransactionFieldRefs {
   readonly contactId: Prisma.FieldRef<"Transaction", 'String'>
   readonly notes: Prisma.FieldRef<"Transaction", 'String'>
   readonly bankTransactionId: Prisma.FieldRef<"Transaction", 'String'>
+  readonly cleared: Prisma.FieldRef<"Transaction", 'Boolean'>
+  readonly clearedAt: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly reconciled: Prisma.FieldRef<"Transaction", 'Boolean'>
   readonly reconciledAt: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Transaction", 'DateTime'>

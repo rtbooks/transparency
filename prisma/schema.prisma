@@ -255,8 +255,12 @@ model Transaction {
   // Attachments
   notes      String? @db.Text
 
-  // Reconciliation
+  // Bank clearing (set when matched during bank import)
   bankTransactionId String?   @map("bank_transaction_id")
+  cleared           Boolean   @default(false)
+  clearedAt         DateTime? @map("cleared_at")
+
+  // Reconciliation (set during formal account reconciliation)
   reconciled        Boolean   @default(false)
   reconciledAt      DateTime? @map("reconciled_at")
 
