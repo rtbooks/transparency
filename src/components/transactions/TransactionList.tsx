@@ -55,6 +55,7 @@ interface TransactionListProps {
   organizationSlug: string;
   refreshKey?: number;
   initialAccountId?: string;
+  canEdit?: boolean;
 }
 
 type PeriodKey = "30d" | "60d" | "90d" | "6m" | "12m" | "ytd" | "all" | "custom";
@@ -93,7 +94,7 @@ function computePeriodDates(period: PeriodKey): { start: string; end: string } {
   }
 }
 
-export function TransactionList({ organizationSlug, refreshKey, initialAccountId }: TransactionListProps) {
+export function TransactionList({ organizationSlug, refreshKey, initialAccountId, canEdit = true }: TransactionListProps) {
   const [transactions, setTransactions] = useState<TransactionWithAccounts[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -821,7 +822,7 @@ export function TransactionList({ organizationSlug, refreshKey, initialAccountId
                   This is a year-end closing entry. To modify or reverse it, reopen the fiscal period from the Maintenance page.
                 </div>
               )}
-              {!selectedTransaction.isVoided && !selectedTransaction.reconciled && selectedTransaction.type !== 'CLOSING' && (
+              {canEdit && !selectedTransaction.isVoided && !selectedTransaction.reconciled && selectedTransaction.type !== 'CLOSING' && (
                 <div className="flex gap-2 border-t pt-4">
                   <Button
                     variant="outline"

@@ -80,6 +80,7 @@ interface BillDetailProps {
     updatedAt: string;
   };
   accounts?: Account[];
+  canEdit?: boolean;
   onClose: () => void;
   onRefresh: () => void;
 }
@@ -101,7 +102,7 @@ function getStatusBadge(status: BillDetailData["status"]) {
   );
 }
 
-export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefresh }: BillDetailProps) {
+export function BillDetail({ organizationSlug, bill, accounts, canEdit = true, onClose, onRefresh }: BillDetailProps) {
   const [detail, setDetail] = useState<BillDetailData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -433,6 +434,7 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
         />
 
         {/* Actions */}
+        {canEdit && (
         <div className="flex gap-2 border-t pt-4">
           {detail.status !== "CANCELLED" && detail.status !== "PAID" && (
             <>
@@ -457,6 +459,7 @@ export function BillDetail({ organizationSlug, bill, accounts, onClose, onRefres
             </>
           )}
         </div>
+        )}
       </div>
 
       {/* Edit Dialog */}

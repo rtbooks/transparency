@@ -76,6 +76,7 @@ export function BillsPageClient({ organizationSlug, accounts, canEdit = true }: 
         accounts={accounts}
         openBillId={openBillId}
         onBillOpened={() => setOpenBillId(null)}
+        canEdit={canEdit}
       />
 
       {canEdit && (

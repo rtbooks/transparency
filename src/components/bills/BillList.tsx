@@ -64,6 +64,7 @@ interface BillListProps {
   accounts?: Account[];
   openBillId?: string | null;
   onBillOpened?: () => void;
+  canEdit?: boolean;
 }
 
 const DIRECTION_OPTIONS = [
@@ -112,7 +113,7 @@ function getDirectionBadge(direction: Bill["direction"]) {
   );
 }
 
-export function BillList({ organizationSlug, directionFilter, onDirectionChange, directionValue, refreshKey, accounts, openBillId, onBillOpened }: BillListProps) {
+export function BillList({ organizationSlug, directionFilter, onDirectionChange, directionValue, refreshKey, accounts, openBillId, onBillOpened, canEdit = true }: BillListProps) {
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -393,6 +394,7 @@ export function BillList({ organizationSlug, directionFilter, onDirectionChange,
               organizationSlug={organizationSlug}
               bill={selectedBill}
               accounts={accounts}
+              canEdit={canEdit}
               onClose={() => setSelectedBill(null)}
               onRefresh={() => {
                 setSelectedBill(null);

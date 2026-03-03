@@ -48,9 +48,10 @@ interface Contact {
 interface ContactListProps {
   organizationSlug: string;
   refreshKey?: number;
+  canEdit?: boolean;
 }
 
-export function ContactList({ organizationSlug, refreshKey }: ContactListProps) {
+export function ContactList({ organizationSlug, refreshKey, canEdit = true }: ContactListProps) {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -381,6 +382,7 @@ export function ContactList({ organizationSlug, refreshKey }: ContactListProps) 
                 />
               </div>
 
+              {canEdit && (
               <div className="flex gap-2 border-t pt-4">
                 <Button
                   variant="outline"
@@ -391,6 +393,7 @@ export function ContactList({ organizationSlug, refreshKey }: ContactListProps) 
                   Edit Contact
                 </Button>
               </div>
+              )}
             </div>
           )}
         </DialogContent>
