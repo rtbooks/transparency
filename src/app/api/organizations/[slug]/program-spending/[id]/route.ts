@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import {
@@ -20,39 +20,16 @@ const updateSchema = z.object({
   status: z.enum(['PLANNED', 'PURCHASED', 'CANCELLED']).optional(),
 });
 
-async function getAuthContext(slug: string) {
-  const { userId: clerkUserId } = await auth();
-  if (!clerkUserId) return { error: 'Unauthorized', status: 401 };
-
-  const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-  if (!user) return { error: 'User not found', status: 404 };
-
-  const organization = await prisma.organization.findFirst({
-    where: buildCurrentVersionWhere({ slug }),
-  });
-  if (!organization) return { error: 'Organization not found', status: 404 };
-
-  const orgUsers = await prisma.organizationUser.findMany({
-    where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-  });
-  if (!orgUsers[0]) return { error: 'Access denied', status: 403 };
-
-  return { user, organization, orgUser: orgUsers[0] };
-}
-
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {
     const { slug, id } = await params;
-    const ctx = await getAuthContext(slug);
-    if ('error' in ctx) {
-      return NextResponse.json({ error: ctx.error }, { status: ctx.status });
-    }
+    const ctx = await withOrgAuth(slug);
 
     const item = await findProgramSpendingById(id);
-    if (!item || item.organizationId !== ctx.organization.id) {
+    if (!item || item.organizationId !== ctx.orgId) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
@@ -91,6 +68,7 @@ export async function GET(
       linkedTransactions: transactionDetails,
     });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error getting program spending:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -102,17 +80,10 @@ export async function PATCH(
 ) {
   try {
     const { slug, id } = await params;
-    const ctx = await getAuthContext(slug);
-    if ('error' in ctx) {
-      return NextResponse.json({ error: ctx.error }, { status: ctx.status });
-    }
-
-    if (ctx.orgUser.role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const item = await findProgramSpendingById(id);
-    if (!item || item.organizationId !== ctx.organization.id) {
+    if (!item || item.organizationId !== ctx.orgId) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
@@ -121,7 +92,7 @@ export async function PATCH(
 
     // Handle status change separately (may set completedAt)
     if (validated.status && validated.status !== item.status) {
-      const updated = await updateSpendingStatus(id, validated.status, ctx.user.id);
+      const updated = await updateSpendingStatus(id, validated.status, ctx.userId);
       return NextResponse.json({
         ...updated,
         estimatedAmount: Number(updated.estimatedAmount),
@@ -142,12 +113,13 @@ export async function PATCH(
       });
     }
 
-    const updated = await updateProgramSpending(id, updateData, ctx.user.id);
+    const updated = await updateProgramSpending(id, updateData, ctx.userId);
     return NextResponse.json({
       ...updated,
       estimatedAmount: Number(updated.estimatedAmount),
     });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error updating program spending:', error);
 
     if (error instanceof z.ZodError) {
@@ -167,23 +139,17 @@ export async function DELETE(
 ) {
   try {
     const { slug, id } = await params;
-    const ctx = await getAuthContext(slug);
-    if ('error' in ctx) {
-      return NextResponse.json({ error: ctx.error }, { status: ctx.status });
-    }
-
-    if (ctx.orgUser.role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const item = await findProgramSpendingById(id);
-    if (!item || item.organizationId !== ctx.organization.id) {
+    if (!item || item.organizationId !== ctx.orgId) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    await deleteProgramSpending(id, ctx.user.id);
+    await deleteProgramSpending(id, ctx.userId);
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error deleting program spending:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

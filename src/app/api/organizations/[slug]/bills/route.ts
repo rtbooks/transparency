@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { createBill, listBills } from '@/services/bill.service';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
@@ -30,34 +30,7 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-
-    if (!organization) {
-      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-    }
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    if (!orgUsers[0]) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug);
 
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
@@ -68,7 +41,7 @@ export async function GET(
     const contactId = searchParams.get('contactId') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    const result = await listBills(organization.id, {
+    const result = await listBills(ctx.orgId, {
       direction,
       status,
       statusNotIn: statusNotIn?.split(','),
@@ -88,6 +61,7 @@ export async function GET(
       },
     });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error listing bills:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -99,42 +73,14 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-
-    if (!organization) {
-      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-    }
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    const orgUser = orgUsers[0];
-    if (!orgUser || orgUser.role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const body = await request.json();
     const validated = createBillSchema.parse(body);
 
     // Verify contact belongs to this organization
     const contact = await prisma.contact.findFirst({
-      where: buildCurrentVersionWhere({ id: validated.contactId, organizationId: organization.id }),
+      where: buildCurrentVersionWhere({ id: validated.contactId, organizationId: ctx.orgId }),
     });
 
     if (!contact) {
@@ -142,7 +88,7 @@ export async function POST(
     }
 
     const bill = await createBill({
-      organizationId: organization.id,
+      organizationId: ctx.orgId,
       contactId: validated.contactId,
       direction: validated.direction,
       amount: validated.amount,
@@ -150,7 +96,7 @@ export async function POST(
       issueDate: new Date(validated.issueDate),
       dueDate: validated.dueDate ? new Date(validated.dueDate) : null,
       notes: validated.notes ?? null,
-      createdBy: user.id,
+      createdBy: ctx.userId,
       liabilityOrAssetAccountId: validated.liabilityOrAssetAccountId,
       expenseOrRevenueAccountId: validated.expenseOrRevenueAccountId,
       isReimbursement: validated.isReimbursement,
@@ -166,6 +112,7 @@ export async function POST(
 
     return NextResponse.json(bill, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error creating bill:', error);
 
     if (error instanceof z.ZodError) {

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { z } from 'zod';
 import {
   findAccountsByOrganization,
@@ -10,8 +9,6 @@ import {
   isAccountCodeAvailable,
   findAccountById,
 } from '@/services/account.service';
-import { findOrganizationBySlug } from '@/services/organization.service';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 const accountSchema = z.object({
   code: z.string().min(1).max(20),
@@ -27,45 +24,7 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Find the user in our database
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found in database' },
-        { status: 404 }
-      );
-    }
-
-    // Find organization (current version)
-    const organization = await findOrganizationBySlug(slug);
-
-    if (!organization) {
-      return NextResponse.json(
-        { error: 'Organization not found' },
-        { status: 404 }
-      );
-    }
-
-    // Check user access (current version)
-    const userAccess = await prisma.organizationUser.findFirst({
-      where: buildCurrentVersionWhere({
-        userId: user.id,
-        organizationId: organization.id,
-      }),
-    });
-
-    if (!userAccess) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug);
 
     // Check query parameters
     const { searchParams } = new URL(request.url);
@@ -75,15 +34,16 @@ export async function GET(
     // Fetch accounts (current versions only)
     let accounts;
     if (typeFilter) {
-      accounts = await getAccountsByType(organization.id, typeFilter);
+      accounts = await getAccountsByType(ctx.orgId, typeFilter);
     } else if (includeInactive) {
-      accounts = await findAccountsByOrganization(organization.id);
+      accounts = await findAccountsByOrganization(ctx.orgId);
     } else {
-      accounts = await findActiveAccounts(organization.id);
+      accounts = await findActiveAccounts(ctx.orgId);
     }
 
     return NextResponse.json(accounts);
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error fetching accounts:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -98,45 +58,7 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Find the user in our database
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found in database' },
-        { status: 404 }
-      );
-    }
-
-    // Find organization (current version)
-    const organization = await findOrganizationBySlug(slug);
-
-    if (!organization) {
-      return NextResponse.json(
-        { error: 'Organization not found' },
-        { status: 404 }
-      );
-    }
-
-    // Check user access and role (current version)
-    const orgUser = await prisma.organizationUser.findFirst({
-      where: buildCurrentVersionWhere({
-        userId: user.id,
-        organizationId: organization.id,
-      }),
-    });
-
-    if (!orgUser || orgUser.role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     // Parse and validate request body
     const body = await request.json();
@@ -144,7 +66,7 @@ export async function POST(
 
     // Check if account code already exists (current versions)
     const codeAvailable = await isAccountCodeAvailable(
-      organization.id,
+      ctx.orgId,
       validatedData.code
     );
 
@@ -176,17 +98,18 @@ export async function POST(
 
     // Create the account (initial version with audit trail)
     const account = await createAccount({
-      organizationId: organization.id,
+      organizationId: ctx.orgId,
       code: validatedData.code,
       name: validatedData.name,
       type: validatedData.type,
       parentAccountId: validatedData.parentAccountId || null,
       description: validatedData.description || null,
-      createdByUserId: user.id,
+      createdByUserId: ctx.userId,
     });
 
     return NextResponse.json(account, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error creating account:', error);
 
     if (error instanceof z.ZodError) {

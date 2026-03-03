@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { getBill, updateBill, cancelBill } from '@/services/bill.service';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { z } from 'zod';
 
 const updateBillSchema = z.object({
@@ -20,36 +18,9 @@ export async function GET(
 ) {
   try {
     const { slug, id } = await params;
-    const { userId: clerkUserId } = await auth();
+    const ctx = await withOrgAuth(slug);
 
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-
-    if (!organization) {
-      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-    }
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    if (!orgUsers[0]) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
-
-    const bill = await getBill(id, organization.id);
+    const bill = await getBill(id, ctx.orgId);
 
     if (!bill) {
       return NextResponse.json({ error: 'Bill not found' }, { status: 404 });
@@ -57,6 +28,7 @@ export async function GET(
 
     return NextResponse.json(bill);
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error getting bill:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -68,42 +40,14 @@ export async function PATCH(
 ) {
   try {
     const { slug, id } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { authId: clerkUserId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-
-    if (!organization) {
-      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-    }
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    const orgUser = orgUsers[0];
-    if (!orgUser || orgUser.role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const body = await request.json();
     const validated = updateBillSchema.parse(body);
 
     // Handle cancel as a special case
     if (validated.status === 'CANCELLED') {
-      const cancelled = await cancelBill(id, organization.id, user.id);
+      const cancelled = await cancelBill(id, ctx.orgId, ctx.userId);
       return NextResponse.json(cancelled);
     }
 
@@ -115,10 +59,11 @@ export async function PATCH(
       updates.dueDate = validated.dueDate ? new Date(validated.dueDate) : null;
     }
 
-    const updated = await updateBill(id, organization.id, updates);
+    const updated = await updateBill(id, ctx.orgId, updates);
 
     return NextResponse.json(updated);
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error updating bill:', error);
 
     if (error instanceof z.ZodError) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { findProgramSpendingById, linkTransaction } from '@/services/program-spending.service';
@@ -17,27 +17,10 @@ export async function GET(
 ) {
   try {
     const { slug, id } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    if (!orgUsers[0]) return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    const ctx = await withOrgAuth(slug);
 
     const item = await findProgramSpendingById(id);
-    if (!item || item.organizationId !== organization.id) {
+    if (!item || item.organizationId !== ctx.orgId) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
@@ -74,6 +57,7 @@ export async function GET(
 
     return NextResponse.json({ transactions });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error listing linked transactions:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -85,30 +69,10 @@ export async function POST(
 ) {
   try {
     const { slug, id } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-
-    const orgUsers = await prisma.organizationUser.findMany({
-      where: buildCurrentVersionWhere({ organizationId: organization.id, userId: user.id }),
-    });
-    const orgUser = orgUsers[0];
-    if (!orgUser || orgUser.role === 'SUPPORTER') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const item = await findProgramSpendingById(id);
-    if (!item || item.organizationId !== organization.id) {
+    if (!item || item.organizationId !== ctx.orgId) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
@@ -117,7 +81,7 @@ export async function POST(
 
     // Verify transaction belongs to this org
     const tx = await prisma.transaction.findFirst({
-      where: buildCurrentVersionWhere({ id: validated.transactionId, organizationId: organization.id }),
+      where: buildCurrentVersionWhere({ id: validated.transactionId, organizationId: ctx.orgId }),
     });
     if (!tx) {
       return NextResponse.json({ error: 'Transaction not found' }, { status: 400 });
@@ -160,7 +124,7 @@ export async function POST(
       id,
       validated.transactionId,
       signedAmount as unknown as Prisma.Decimal,
-      user.id
+      ctx.userId
     );
 
     return NextResponse.json({
@@ -168,6 +132,7 @@ export async function POST(
       amount: Number(link.amount),
     }, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error linking transaction:', error);
 
     if (error instanceof z.ZodError) {
