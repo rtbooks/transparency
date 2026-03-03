@@ -297,10 +297,10 @@ export function OrganizationSettingsForm({
 
             {/* Organization Address */}
             <div className="space-y-4">
-              <FormLabel className="text-base font-medium">Organization Address (Optional)</FormLabel>
-              <FormDescription className="-mt-2">
+              <p className="text-base font-medium">Organization Address (Optional)</p>
+              <p className="-mt-2 text-sm text-muted-foreground">
                 Used on donation tax receipts
-              </FormDescription>
+              </p>
               <FormField
                 control={form.control}
                 name="addressLine1"
