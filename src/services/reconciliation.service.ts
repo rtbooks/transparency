@@ -389,7 +389,7 @@ export async function completeReconciliation(
             data: buildNewVersionData(txn, {
               reconciled: true,
               reconciledAt: now,
-              bankTransactionId: line.id,
+              bankTransactionId: match.id,
             } as any, now, userId) as any,
           });
           reconciledTxnIds.add(match.transactionId);
