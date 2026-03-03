@@ -2,12 +2,12 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X, CreditCard, Smartphone, Mail, Link2, Building2, Wallet, ChevronDown, ChevronRight } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X, CreditCard, Smartphone, Mail, Link2, Building2, Wallet, ChevronDown, ChevronRight, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils/account-tree';
+import { RecordPaymentDialog, PaymentMethodType, PAYMENT_METHOD_LABELS } from '@/components/donations/RecordPaymentDialog';
 import { trackEvent } from '@/lib/analytics';
 import { VenmoQRCode } from '@/components/donations/VenmoQRCode';
 
@@ -20,17 +20,6 @@ interface Payment {
   paymentMethod?: string | null;
   referenceNumber?: string | null;
 }
-
-type PaymentMethodType =
-  | 'STRIPE'
-  | 'VENMO'
-  | 'PAYPAL'
-  | 'CHECK'
-  | 'CASH'
-  | 'CASH_APP'
-  | 'ZELLE'
-  | 'BANK_TRANSFER'
-  | 'OTHER';
 
 interface PaymentMethodInfo {
   id: string;
@@ -54,17 +43,7 @@ const METHOD_ICONS: Record<PaymentMethodType, React.ElementType> = {
   OTHER: Plus,
 };
 
-const METHOD_LABELS: Record<PaymentMethodType, string> = {
-  STRIPE: 'Credit / Debit Card',
-  VENMO: 'Venmo',
-  PAYPAL: 'PayPal',
-  CHECK: 'Check',
-  CASH: 'Cash',
-  CASH_APP: 'Cash App',
-  ZELLE: 'Zelle',
-  BANK_TRANSFER: 'Bank Transfer',
-  OTHER: 'Other',
-};
+const METHOD_LABELS = PAYMENT_METHOD_LABELS;
 
 interface DonationItem {
   id: string;
@@ -128,16 +107,10 @@ export function DonationsPageClient({
   const [cancellingDonationId, setCancellingDonationId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [payingDonation, setPayingDonation] = useState<DonationItem | null>(null);
-  const [paymentAmount, setPaymentAmount] = useState('');
-  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
-  const [paymentCashAccountId, setPaymentCashAccountId] = useState('');
-  const [paymentDescription, setPaymentDescription] = useState('');
-  const [paymentNotes, setPaymentNotes] = useState('');
   const [cashAccounts, setCashAccounts] = useState<Array<{ id: string; name: string; code: string }>>([]);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([]);
   const [payNowDonation, setPayNowDonation] = useState<DonationItem | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
-  const [paymentMethodType, setPaymentMethodType] = useState('OTHER');
   const [expandedPayments, setExpandedPayments] = useState<Set<string>>(new Set());
 
   const fetchDonations = useCallback(async () => {
@@ -241,21 +214,43 @@ export function DonationsPageClient({
             (a: any) => a.type === 'ASSET' && a.isActive
           );
           setCashAccounts(accounts.map((a: any) => ({ id: a.id, name: a.name, code: a.code })));
-          if (accounts.length > 0) setPaymentCashAccountId(accounts[0].id);
         }
       } catch { /* ignore */ }
     }
     fetchCashAccounts();
   }, [organizationSlug, isAdmin]);
 
-  const openPaymentDialog = (donation: DonationItem) => {
-    const remaining = donation.amount - donation.amountReceived;
-    setPayingDonation(donation);
-    setPaymentAmount(remaining.toFixed(2));
-    setPaymentDate(new Date().toISOString().split('T')[0]);
-    setPaymentDescription('');
-    setPaymentNotes('');
-    setPaymentMethodType('OTHER');
+  const handlePaymentSubmit = async (paymentData: {
+    amount: number;
+    transactionDate: string;
+    cashAccountId: string;
+    description?: string;
+    notes?: string;
+    paymentMethod: string;
+  }) => {
+    if (!payingDonation) return;
+    setActionLoading(true);
+    try {
+      const res = await fetch(
+        `/api/organizations/${organizationSlug}/donations/${payingDonation.id}/payment`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(paymentData),
+        }
+      );
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.error || 'Failed to record payment');
+      }
+      setPayingDonation(null);
+      setLoading(true);
+      await fetchDonations();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleStripeCheckout = async (donation: DonationItem) => {
@@ -285,39 +280,6 @@ export function DonationsPageClient({
     } catch (err: any) {
       setError(err.message);
       setStripeLoading(false);
-    }
-  };
-
-  const handlePaymentSubmit = async () => {
-    if (!payingDonation || !paymentCashAccountId) return;
-    setActionLoading(true);
-    try {
-      const res = await fetch(
-        `/api/organizations/${organizationSlug}/donations/${payingDonation.id}/payment`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: parseFloat(paymentAmount),
-            transactionDate: paymentDate,
-            cashAccountId: paymentCashAccountId,
-            description: paymentDescription || undefined,
-            notes: paymentNotes || undefined,
-            paymentMethod: paymentMethodType,
-          }),
-        }
-      );
-      if (!res.ok) {
-        const body = await res.json();
-        throw new Error(body.error || 'Failed to record payment');
-      }
-      setPayingDonation(null);
-      setLoading(true);
-      await fetchDonations();
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setActionLoading(false);
     }
   };
 
@@ -560,51 +522,70 @@ export function DonationsPageClient({
                     <p className="text-sm text-gray-600">
                       Received: {formatCurrency(donation.amountReceived)} / {formatCurrency(donation.amount)}
                     </p>
-                      {/* Pay Now button — visible to all users for unpaid pledges */}
-                      {(donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && paymentMethods.length > 0 && (
-                        <div className="mt-2 flex justify-end">
-                          <Button
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700"
-                            onClick={() => setPayNowDonation(donation)}
-                          >
-                            <Wallet className="mr-1 h-3 w-3" />
-                            Pay Now
-                          </Button>
-                        </div>
-                      )}
-                      {canModifyDonation(donation) && (
-                        <div className="mt-2 flex justify-end gap-2">
-                          {isAdmin && (donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && (
+                      {/* Action buttons — single row */}
+                      {((donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && paymentMethods.length > 0) ||
+                       (donation.status === 'RECEIVED' || donation.status === 'PARTIAL') ||
+                       canModifyDonation(donation) ? (
+                        <div className="mt-2 flex flex-wrap justify-end gap-2">
+                          {(donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && paymentMethods.length > 0 && (
+                            <Button
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700"
+                              onClick={() => setPayNowDonation(donation)}
+                            >
+                              <Wallet className="mr-1 h-3 w-3" />
+                              Pay Now
+                            </Button>
+                          )}
+                          {(donation.status === 'RECEIVED' || donation.status === 'PARTIAL') && (
                             <Button
                               variant="outline"
                               size="sm"
-                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                              onClick={() => openPaymentDialog(donation)}
+                              onClick={() => {
+                                window.open(
+                                  `/api/organizations/${organizationSlug}/donations/${donation.id}/receipt`,
+                                  '_blank'
+                                );
+                              }}
                             >
-                              <CreditCard className="mr-1 h-3 w-3" />
-                              Record Payment
+                              <Download className="mr-1 h-3 w-3" />
+                              Tax Receipt
                             </Button>
                           )}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openEditDialog(donation)}
-                          >
-                            <Pencil className="mr-1 h-3 w-3" />
-                            Edit
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => setCancellingDonationId(donation.id)}
-                          >
-                            <X className="mr-1 h-3 w-3" />
-                            Cancel
-                          </Button>
+                          {canModifyDonation(donation) && (
+                            <>
+                              {isAdmin && (donation.status === 'PLEDGED' || donation.status === 'PARTIAL') && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  onClick={() => setPayingDonation(donation)}
+                                >
+                                  <CreditCard className="mr-1 h-3 w-3" />
+                                  Record Payment
+                                </Button>
+                              )}
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => openEditDialog(donation)}
+                              >
+                                <Pencil className="mr-1 h-3 w-3" />
+                                Edit
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => setCancellingDonationId(donation.id)}
+                              >
+                                <X className="mr-1 h-3 w-3" />
+                                Cancel
+                              </Button>
+                            </>
+                          )}
                         </div>
-                      )}
+                      ) : null}
                     </div>
                 </div>
 
@@ -736,94 +717,15 @@ export function DonationsPageClient({
 
       {/* Record Payment Dialog */}
       {payingDonation && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-            <h3 className="mb-1 text-lg font-semibold text-gray-900">Record Payment</h3>
-            <p className="mb-4 text-sm text-gray-600">
-              {formatCurrency(payingDonation.amountReceived)} of {formatCurrency(payingDonation.amount)} received
-            </p>
-            <div className="space-y-4">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Amount ($)</label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  max={payingDonation.amount - payingDonation.amountReceived}
-                  value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(e.target.value)}
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  Remaining: {formatCurrency(payingDonation.amount - payingDonation.amountReceived)}
-                </p>
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Transaction Date</label>
-                <Input
-                  type="date"
-                  value={paymentDate}
-                  onChange={(e) => setPaymentDate(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Cash / Bank Account</label>
-                <select
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  value={paymentCashAccountId}
-                  onChange={(e) => setPaymentCashAccountId(e.target.value)}
-                >
-                  {cashAccounts.length === 0 && <option value="">No accounts available</option>}
-                  {cashAccounts.map((acct) => (
-                    <option key={acct.id} value={acct.id}>
-                      {acct.code} - {acct.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Payment Method</label>
-                <select
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  value={paymentMethodType}
-                  onChange={(e) => setPaymentMethodType(e.target.value)}
-                >
-                  {(Object.keys(METHOD_LABELS) as PaymentMethodType[]).map((key) => (
-                    <option key={key} value={key}>{METHOD_LABELS[key]}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Description (Optional)</label>
-                <Input
-                  value={paymentDescription}
-                  onChange={(e) => setPaymentDescription(e.target.value)}
-                  placeholder="e.g., Check #1234"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Notes (Optional)</label>
-                <Textarea
-                  value={paymentNotes}
-                  onChange={(e) => setPaymentNotes(e.target.value)}
-                  rows={2}
-                  placeholder="Internal notes about this payment"
-                />
-              </div>
-            </div>
-            <div className="mt-6 flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setPayingDonation(null)} disabled={actionLoading}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handlePaymentSubmit}
-                disabled={actionLoading || !paymentCashAccountId || !paymentAmount}
-              >
-                {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Record Payment
-              </Button>
-            </div>
-          </div>
-        </div>
+        <RecordPaymentDialog
+          donorLabel={payingDonation.contactName || payingDonation.campaignName || 'Donation'}
+          amount={payingDonation.amount}
+          amountReceived={payingDonation.amountReceived}
+          cashAccounts={cashAccounts}
+          loading={actionLoading}
+          onSubmit={handlePaymentSubmit}
+          onCancel={() => setPayingDonation(null)}
+        />
       )}
 
       {/* Pay Now Dialog — shows payment methods for donors */}

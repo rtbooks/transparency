@@ -34,6 +34,12 @@ const HEX_COLOR_REGEX = /^#[0-9a-fA-F]{6}$/;
 const organizationSettingsSchema = z.object({
   name: z.string().min(3, 'Organization name must be at least 3 characters'),
   ein: z.string().optional(),
+  addressLine1: z.string().optional(),
+  addressLine2: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  postalCode: z.string().optional(),
+  country: z.string().optional(),
   mission: z.string().optional(),
   fiscalYearStart: z.date(),
   primaryColor: z.string().regex(HEX_COLOR_REGEX, 'Must be a valid hex color').optional().or(z.literal('')),
@@ -69,6 +75,12 @@ export function OrganizationSettingsForm({
     defaultValues: {
       name: organization.name,
       ein: organization.ein || '',
+      addressLine1: organization.addressLine1 || '',
+      addressLine2: organization.addressLine2 || '',
+      city: organization.city || '',
+      state: organization.state || '',
+      postalCode: organization.postalCode || '',
+      country: organization.country || 'US',
       mission: organization.mission || '',
       fiscalYearStart: new Date(organization.fiscalYearStart),
       primaryColor: organization.primaryColor || '',
@@ -125,6 +137,12 @@ export function OrganizationSettingsForm({
         body: JSON.stringify({
           name: data.name,
           ein: data.ein || null,
+          addressLine1: data.addressLine1 || null,
+          addressLine2: data.addressLine2 || null,
+          city: data.city || null,
+          state: data.state || null,
+          postalCode: data.postalCode || null,
+          country: data.country || null,
           mission: data.mission || null,
           fiscalYearStart: data.fiscalYearStart.toISOString(),
           primaryColor: data.primaryColor || null,
@@ -276,6 +294,82 @@ export function OrganizationSettingsForm({
                 </FormItem>
               )}
             />
+
+            {/* Organization Address */}
+            <div className="space-y-4">
+              <p className="text-base font-medium">Organization Address (Optional)</p>
+              <p className="-mt-2 text-sm text-muted-foreground">
+                Used on donation tax receipts
+              </p>
+              <FormField
+                control={form.control}
+                name="addressLine1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Street address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="addressLine2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Apt, suite, unit, etc. (optional)" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-6 gap-4">
+                <div className="col-span-3">
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="City" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="col-span-1">
+                  <FormField
+                    control={form.control}
+                    name="state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="State" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <FormField
+                    control={form.control}
+                    name="postalCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="ZIP code" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
 
             <FormField
               control={form.control}
