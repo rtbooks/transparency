@@ -22,6 +22,17 @@ interface TierInput {
   maxSlots: string;
 }
 
+interface EventItemInput {
+  id?: string;
+  name: string;
+  category: string;
+  price: string;
+  maxQuantity: string;
+  minPerOrder: string;
+  maxPerOrder: string;
+  isRequired: boolean;
+}
+
 interface CampaignFormProps {
   organizationSlug: string;
   donationsAccountId?: string | null;
@@ -40,6 +51,7 @@ interface CampaignFormProps {
     unitLabel?: string | null;
     allowMultiUnit?: boolean;
     tiers?: { id: string; name: string; amount: number; maxSlots: number | null; sortOrder?: number }[];
+    items?: { id: string; name: string; category: string | null; price: number; maxQuantity: number | null; minPerOrder: number; maxPerOrder: number | null; isRequired: boolean; sortOrder?: number }[];
   } | null;
   onSuccess: () => void;
   onCancel: () => void;
@@ -88,6 +100,18 @@ export function CampaignForm({
       name: t.name,
       amount: String(t.amount),
       maxSlots: t.maxSlots ? String(t.maxSlots) : "",
+    })) || []
+  );
+  const [eventItems, setEventItems] = useState<EventItemInput[]>(
+    campaign?.items?.map(i => ({
+      id: i.id,
+      name: i.name,
+      category: i.category || "",
+      price: String(i.price),
+      maxQuantity: i.maxQuantity ? String(i.maxQuantity) : "",
+      minPerOrder: String(i.minPerOrder),
+      maxPerOrder: i.maxPerOrder ? String(i.maxPerOrder) : "",
+      isRequired: i.isRequired,
     })) || []
   );
 
@@ -194,6 +218,24 @@ export function CampaignForm({
             maxUnits: campaignType === 'FIXED_UNIT' && maxUnits ? parseInt(maxUnits) : null,
             unitLabel: campaignType === 'FIXED_UNIT' ? unitLabel || null : null,
             allowMultiUnit: campaignType === 'FIXED_UNIT' ? allowMultiUnit : true,
+            tiers: campaignType === 'TIERED' ? tiers.map((t, i) => ({
+              id: t.id || undefined,
+              name: t.name,
+              amount: parseFloat(t.amount),
+              maxSlots: t.maxSlots ? parseInt(t.maxSlots) : null,
+              sortOrder: i,
+            })) : undefined,
+            items: campaignType === 'EVENT' ? eventItems.map((item, i) => ({
+              id: item.id || undefined,
+              name: item.name,
+              category: item.category || null,
+              price: parseFloat(item.price),
+              maxQuantity: item.maxQuantity ? parseInt(item.maxQuantity) : null,
+              minPerOrder: parseInt(item.minPerOrder) || 0,
+              maxPerOrder: item.maxPerOrder ? parseInt(item.maxPerOrder) : null,
+              isRequired: item.isRequired,
+              sortOrder: i,
+            })) : undefined,
           }
         : {
             accountId: resolvedAccountId,
@@ -211,6 +253,16 @@ export function CampaignForm({
               name: t.name,
               amount: parseFloat(t.amount),
               maxSlots: t.maxSlots ? parseInt(t.maxSlots) : null,
+              sortOrder: i,
+            })) : undefined,
+            items: campaignType === 'EVENT' ? eventItems.map((item, i) => ({
+              name: item.name,
+              category: item.category || null,
+              price: parseFloat(item.price),
+              maxQuantity: item.maxQuantity ? parseInt(item.maxQuantity) : null,
+              minPerOrder: parseInt(item.minPerOrder) || 0,
+              maxPerOrder: item.maxPerOrder ? parseInt(item.maxPerOrder) : null,
+              isRequired: item.isRequired,
               sortOrder: i,
             })) : undefined,
           };
@@ -285,7 +337,19 @@ export function CampaignForm({
             <option value="OPEN">Open — Any donation amount</option>
             <option value="FIXED_UNIT">Fixed Unit — Fixed price per unit (tickets, squares, bricks)</option>
             <option value="TIERED">Tiered — Predefined donation levels (sponsorships)</option>
+            <option value="EVENT">Event — Multiple purchasable items (dinner, raffle, etc.)</option>
           </select>
+        </div>
+      )}
+      {isEditing && (
+        <div>
+          <Label>Campaign Type</Label>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {campaignType === 'OPEN' && 'Open — Any donation amount'}
+            {campaignType === 'FIXED_UNIT' && 'Fixed Unit — Fixed price per unit'}
+            {campaignType === 'TIERED' && 'Tiered — Predefined donation levels'}
+            {campaignType === 'EVENT' && 'Event — Multiple purchasable items'}
+          </p>
         </div>
       )}
 
@@ -350,7 +414,7 @@ export function CampaignForm({
       )}
 
       {/* TIERED fields */}
-      {campaignType === "TIERED" && !isEditing && (
+      {campaignType === "TIERED" && (
         <div className="space-y-3 rounded-lg border bg-purple-50 p-4">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-purple-800">Sponsorship Tiers</p>
@@ -422,6 +486,137 @@ export function CampaignForm({
               </Button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* EVENT fields */}
+      {campaignType === "EVENT" && (
+        <div className="space-y-3 rounded-lg border bg-amber-50 p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-amber-800">Event Items</p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setEventItems([...eventItems, {
+                name: "", category: "", price: "", maxQuantity: "",
+                minPerOrder: "0", maxPerOrder: "", isRequired: false,
+              }])}
+            >
+              <Plus className="mr-1 h-3 w-3" /> Add Item
+            </Button>
+          </div>
+          {eventItems.length === 0 && (
+            <p className="text-sm text-amber-600">Add items for donors to select (e.g., Adult Plate, Child Plate, Gift).</p>
+          )}
+          {eventItems.map((item, i) => (
+            <div key={i} className="space-y-2 rounded border bg-white p-3">
+              <div className="flex items-start gap-2">
+                <div className="flex-1">
+                  <Label className="text-xs">Item Name</Label>
+                  <Input
+                    value={item.name}
+                    onChange={(e) => {
+                      const updated = [...eventItems];
+                      updated[i] = { ...item, name: e.target.value };
+                      setEventItems(updated);
+                    }}
+                    placeholder="e.g., Adult Dinner Plate"
+                    required
+                  />
+                </div>
+                <div className="w-28">
+                  <Label className="text-xs">Price ($)</Label>
+                  <Input
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    value={item.price}
+                    onChange={(e) => {
+                      const updated = [...eventItems];
+                      updated[i] = { ...item, price: e.target.value };
+                      setEventItems(updated);
+                    }}
+                    placeholder="35.00"
+                    required
+                  />
+                </div>
+                <div className="w-28">
+                  <Label className="text-xs">Category</Label>
+                  <Input
+                    value={item.category}
+                    onChange={(e) => {
+                      const updated = [...eventItems];
+                      updated[i] = { ...item, category: e.target.value };
+                      setEventItems(updated);
+                    }}
+                    placeholder="e.g., Plates"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="mt-5"
+                  onClick={() => setEventItems(eventItems.filter((_, j) => j !== i))}
+                >
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                </Button>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-24">
+                  <Label className="text-xs">Capacity</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={item.maxQuantity}
+                    onChange={(e) => {
+                      const updated = [...eventItems];
+                      updated[i] = { ...item, maxQuantity: e.target.value };
+                      setEventItems(updated);
+                    }}
+                    placeholder="∞"
+                  />
+                </div>
+                <div className="w-24">
+                  <Label className="text-xs">Max/Order</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={item.maxPerOrder}
+                    onChange={(e) => {
+                      const updated = [...eventItems];
+                      updated[i] = { ...item, maxPerOrder: e.target.value };
+                      setEventItems(updated);
+                    }}
+                    placeholder="∞"
+                  />
+                </div>
+                <div className="flex items-end gap-2 pb-1">
+                  <input
+                    type="checkbox"
+                    checked={item.isRequired}
+                    onChange={(e) => {
+                      const updated = [...eventItems];
+                      updated[i] = { ...item, isRequired: e.target.checked };
+                      setEventItems(updated);
+                    }}
+                    className="h-4 w-4"
+                  />
+                  <Label className="text-xs">Required</Label>
+                </div>
+              </div>
+            </div>
+          ))}
+          {eventItems.length > 0 && eventItems.some(i => i.price) && (
+            <p className="text-sm text-amber-700">
+              {eventItems.filter(i => i.price && i.maxQuantity).length === eventItems.length && eventItems.length > 0
+                ? `Max revenue: $${eventItems.reduce((sum, i) => sum + (parseFloat(i.price) || 0) * (parseInt(i.maxQuantity) || 0), 0).toFixed(2)}`
+                : `${eventItems.length} item(s) configured`}
+            </p>
+          )}
         </div>
       )}
 

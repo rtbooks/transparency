@@ -6,7 +6,7 @@
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { getCampaignDonationSummary } from '@/services/donation.service';
-import type { Campaign } from '@/generated/prisma/client';
+import type { Campaign, CampaignItem } from '@/generated/prisma/client';
 
 export interface CreateCampaignInput {
   organizationId: string;
@@ -18,11 +18,24 @@ export interface CreateCampaignInput {
   endDate?: Date | null;
   createdBy?: string;
   // Campaign constraint fields
-  campaignType?: 'OPEN' | 'FIXED_UNIT' | 'TIERED';
+  campaignType?: 'OPEN' | 'FIXED_UNIT' | 'TIERED' | 'EVENT';
   unitPrice?: number | null;
   maxUnits?: number | null;
   unitLabel?: string | null;
   allowMultiUnit?: boolean;
+  items?: CreateCampaignItemInput[];
+}
+
+export interface CreateCampaignItemInput {
+  name: string;
+  description?: string | null;
+  category?: string | null;
+  price: number;
+  maxQuantity?: number | null;
+  minPerOrder?: number;
+  maxPerOrder?: number | null;
+  isRequired?: boolean;
+  sortOrder?: number;
 }
 
 export interface UpdateCampaignInput {
@@ -88,11 +101,30 @@ export async function createCampaign(input: CreateCampaignInput): Promise<Campai
       throw new Error('FIXED_UNIT campaigns require a positive unit price');
     }
   }
+  if (campaignType === 'EVENT') {
+    if (!input.items || input.items.length === 0) {
+      throw new Error('EVENT campaigns require at least one item');
+    }
+    for (const item of input.items) {
+      if (!item.name || item.price <= 0) {
+        throw new Error('Each campaign item must have a name and positive price');
+      }
+    }
+  }
 
   // For FIXED_UNIT with maxUnits, auto-calculate targetAmount
-  const targetAmount = campaignType === 'FIXED_UNIT' && input.unitPrice && input.maxUnits
-    ? input.unitPrice * input.maxUnits
-    : input.targetAmount ?? null;
+  // For EVENT, auto-calculate from items if all have maxQuantity
+  let targetAmount = input.targetAmount ?? null;
+  if (campaignType === 'FIXED_UNIT' && input.unitPrice && input.maxUnits) {
+    targetAmount = input.unitPrice * input.maxUnits;
+  } else if (campaignType === 'EVENT' && input.items) {
+    const allHaveMax = input.items.every(i => i.maxQuantity != null);
+    if (allHaveMax) {
+      targetAmount = input.items.reduce(
+        (sum, i) => sum + i.price * (i.maxQuantity ?? 0), 0
+      );
+    }
+  }
 
   return await prisma.campaign.create({
     data: {
@@ -109,7 +141,23 @@ export async function createCampaign(input: CreateCampaignInput): Promise<Campai
       maxUnits: input.maxUnits ?? null,
       unitLabel: input.unitLabel ?? null,
       allowMultiUnit: input.allowMultiUnit ?? true,
+      ...(campaignType === 'EVENT' && input.items && {
+        items: {
+          create: input.items.map((item, idx) => ({
+            name: item.name,
+            description: item.description ?? null,
+            category: item.category ?? null,
+            price: item.price,
+            maxQuantity: item.maxQuantity ?? null,
+            minPerOrder: item.minPerOrder ?? 0,
+            maxPerOrder: item.maxPerOrder ?? null,
+            isRequired: item.isRequired ?? false,
+            sortOrder: item.sortOrder ?? idx,
+          })),
+        },
+      }),
     },
+    include: campaignType === 'EVENT' ? { items: { orderBy: { sortOrder: 'asc' } } } : undefined,
   });
 }
 
@@ -159,7 +207,10 @@ export async function listCampaigns(
 
   const campaigns = await prisma.campaign.findMany({
     where,
-    include: { tiers: { orderBy: { sortOrder: 'asc' } } },
+    include: {
+      tiers: { orderBy: { sortOrder: 'asc' } },
+      items: { orderBy: { sortOrder: 'asc' } },
+    },
     orderBy: { createdAt: 'desc' },
   });
 
@@ -180,7 +231,10 @@ export async function getCampaignById(
 ): Promise<CampaignWithProgress | null> {
   const campaign = await prisma.campaign.findUnique({
     where: { id: campaignId },
-    include: { tiers: { orderBy: { sortOrder: 'asc' } } },
+    include: {
+      tiers: { orderBy: { sortOrder: 'asc' } },
+      items: { where: { isActive: true }, orderBy: { sortOrder: 'asc' } },
+    },
   });
 
   if (!campaign) return null;
@@ -271,6 +325,11 @@ export async function getTierSlotsFilled(tierId: string): Promise<number> {
   });
 }
 
+export interface EventLineItemInput {
+  campaignItemId: string;
+  quantity: number;
+}
+
 /**
  * Validate a donation against campaign constraints.
  * Throws if the donation violates any campaign rules.
@@ -279,11 +338,12 @@ export async function validateDonationAgainstCampaign(
   campaignId: string,
   amount: number,
   unitCount?: number | null,
-  tierId?: string | null
+  tierId?: string | null,
+  lineItems?: EventLineItemInput[]
 ): Promise<void> {
   const campaign = await prisma.campaign.findUnique({
     where: { id: campaignId },
-    include: { tiers: true },
+    include: { tiers: true, items: { where: { isActive: true } } },
   });
   if (!campaign) throw new Error('Campaign not found');
 
@@ -335,6 +395,13 @@ export async function validateDonationAgainstCampaign(
       }
       break;
     }
+    case 'EVENT': {
+      if (!lineItems || lineItems.length === 0) {
+        throw new Error('EVENT campaigns require selecting at least one item');
+      }
+      await validateEventLineItems(campaign, lineItems, amount);
+      break;
+    }
     // OPEN: no constraints
   }
 }
@@ -357,11 +424,23 @@ export async function checkAndAutoCompleteCampaign(campaignId: string): Promise<
   } else if (campaign.campaignType === 'TIERED') {
     const tiersWithCaps = campaign.tiers.filter(t => t.maxSlots != null);
     if (tiersWithCaps.length > 0 && tiersWithCaps.length === campaign.tiers.length) {
-      // All tiers have caps — check if all are full
       const checks = await Promise.all(
         tiersWithCaps.map(async (t) => {
           const filled = await getTierSlotsFilled(t.id);
           return filled >= t.maxSlots!;
+        })
+      );
+      shouldComplete = checks.every(Boolean);
+    }
+  } else if (campaign.campaignType === 'EVENT') {
+    const items = await prisma.campaignItem.findMany({
+      where: { campaignId, isActive: true, maxQuantity: { not: null } },
+    });
+    if (items.length > 0) {
+      const checks = await Promise.all(
+        items.map(async (item) => {
+          const sold = await getItemQuantitySold(item.id);
+          return sold >= item.maxQuantity!;
         })
       );
       shouldComplete = checks.every(Boolean);
@@ -374,4 +453,156 @@ export async function checkAndAutoCompleteCampaign(campaignId: string): Promise<
       data: { status: 'COMPLETED' },
     });
   }
+}
+
+/**
+ * Get total quantity sold for a specific campaign item.
+ */
+export async function getItemQuantitySold(campaignItemId: string): Promise<number> {
+  const result = await prisma.donationLineItem.aggregate({
+    where: {
+      campaignItemId,
+      donation: { status: { notIn: ['CANCELLED'] } },
+    },
+    _sum: { quantity: true },
+  });
+  return result._sum.quantity ?? 0;
+}
+
+/**
+ * Validate EVENT line items against campaign item constraints.
+ */
+async function validateEventLineItems(
+  campaign: Campaign & { items: CampaignItem[] },
+  lineItems: EventLineItemInput[],
+  amount: number
+): Promise<void> {
+  const itemMap = new Map(campaign.items.map(i => [i.id, i]));
+
+  // Check all line items reference valid active items in this campaign
+  let expectedTotal = 0;
+  for (const li of lineItems) {
+    const item = itemMap.get(li.campaignItemId);
+    if (!item) {
+      throw new Error(`Campaign item not found or inactive: ${li.campaignItemId}`);
+    }
+    if (li.quantity < 1) {
+      throw new Error(`Quantity must be at least 1 for "${item.name}"`);
+    }
+    if (item.maxPerOrder != null && li.quantity > item.maxPerOrder) {
+      throw new Error(`Maximum ${item.maxPerOrder} of "${item.name}" per order`);
+    }
+    if (item.minPerOrder > 0 && li.quantity < item.minPerOrder) {
+      throw new Error(`Minimum ${item.minPerOrder} of "${item.name}" per order`);
+    }
+    // Check total capacity
+    if (item.maxQuantity != null) {
+      const sold = await getItemQuantitySold(item.id);
+      if (sold + li.quantity > item.maxQuantity) {
+        const remaining = item.maxQuantity - sold;
+        throw new Error(`Only ${remaining} of "${item.name}" remaining (requested ${li.quantity})`);
+      }
+    }
+    expectedTotal += Number(item.price) * li.quantity;
+  }
+
+  // Check required items are present
+  for (const item of campaign.items) {
+    if (item.isRequired) {
+      const selected = lineItems.find(li => li.campaignItemId === item.id);
+      if (!selected || selected.quantity < 1) {
+        throw new Error(`"${item.name}" is required`);
+      }
+    }
+  }
+
+  // Verify total amount matches
+  if (Math.abs(amount - expectedTotal) > 0.01) {
+    throw new Error(
+      `Donation amount ($${amount.toFixed(2)}) does not match item total ($${expectedTotal.toFixed(2)})`
+    );
+  }
+}
+
+// ============================================
+// CAMPAIGN ITEM CRUD
+// ============================================
+
+/**
+ * Add an item to an EVENT campaign.
+ */
+export async function addCampaignItem(
+  campaignId: string,
+  input: CreateCampaignItemInput
+): Promise<CampaignItem> {
+  const campaign = await prisma.campaign.findUnique({ where: { id: campaignId } });
+  if (!campaign) throw new Error('Campaign not found');
+  if (campaign.campaignType !== 'EVENT') {
+    throw new Error('Items can only be added to EVENT campaigns');
+  }
+
+  return await prisma.campaignItem.create({
+    data: {
+      campaignId,
+      name: input.name,
+      description: input.description ?? null,
+      category: input.category ?? null,
+      price: input.price,
+      maxQuantity: input.maxQuantity ?? null,
+      minPerOrder: input.minPerOrder ?? 0,
+      maxPerOrder: input.maxPerOrder ?? null,
+      isRequired: input.isRequired ?? false,
+      sortOrder: input.sortOrder ?? 0,
+    },
+  });
+}
+
+/**
+ * Update a campaign item.
+ */
+export async function updateCampaignItem(
+  itemId: string,
+  updates: Partial<CreateCampaignItemInput> & { isActive?: boolean }
+): Promise<CampaignItem> {
+  return await prisma.campaignItem.update({
+    where: { id: itemId },
+    data: {
+      ...(updates.name !== undefined && { name: updates.name }),
+      ...(updates.description !== undefined && { description: updates.description }),
+      ...(updates.category !== undefined && { category: updates.category }),
+      ...(updates.price !== undefined && { price: updates.price }),
+      ...(updates.maxQuantity !== undefined && { maxQuantity: updates.maxQuantity }),
+      ...(updates.minPerOrder !== undefined && { minPerOrder: updates.minPerOrder }),
+      ...(updates.maxPerOrder !== undefined && { maxPerOrder: updates.maxPerOrder }),
+      ...(updates.isRequired !== undefined && { isRequired: updates.isRequired }),
+      ...(updates.sortOrder !== undefined && { sortOrder: updates.sortOrder }),
+      ...(updates.isActive !== undefined && { isActive: updates.isActive }),
+    },
+  });
+}
+
+/**
+ * Delete (deactivate) a campaign item. Soft-delete to preserve line item references.
+ */
+export async function deleteCampaignItem(itemId: string): Promise<CampaignItem> {
+  return await prisma.campaignItem.update({
+    where: { id: itemId },
+    data: { isActive: false },
+  });
+}
+
+/**
+ * List items for a campaign.
+ */
+export async function listCampaignItems(
+  campaignId: string,
+  includeInactive = false
+): Promise<CampaignItem[]> {
+  return await prisma.campaignItem.findMany({
+    where: {
+      campaignId,
+      ...(includeInactive ? {} : { isActive: true }),
+    },
+    orderBy: { sortOrder: 'asc' },
+  });
 }

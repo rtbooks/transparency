@@ -27,6 +27,7 @@ export interface CreateDonationInput {
   campaignId?: string | null;
   unitCount?: number | null;   // Number of units (FIXED_UNIT campaigns)
   tierId?: string | null;      // Tier selection (TIERED campaigns)
+  lineItems?: Array<{ campaignItemId: string; quantity: number }>; // EVENT campaigns
   // Account IDs for the accounting entry
   arAccountId: string;       // Accounts Receivable (for pledges)
   revenueAccountId: string;  // Revenue / campaign account
@@ -67,7 +68,7 @@ export async function createPledgeDonation(input: CreateDonationInput): Promise<
   // Validate against campaign constraints before starting transaction
   if (input.campaignId) {
     const { validateDonationAgainstCampaign } = await import('@/services/campaign.service');
-    await validateDonationAgainstCampaign(input.campaignId, input.amount, input.unitCount, input.tierId);
+    await validateDonationAgainstCampaign(input.campaignId, input.amount, input.unitCount, input.tierId, input.lineItems);
   }
 
   const donation = await prisma.$transaction(async (tx) => {
@@ -104,7 +105,7 @@ export async function createPledgeDonation(input: CreateDonationInput): Promise<
     });
 
     // Create the donation record
-    return await tx.donation.create({
+    const donation = await tx.donation.create({
       data: {
         organizationId: input.organizationId,
         contactId: input.contactId,
@@ -126,6 +127,13 @@ export async function createPledgeDonation(input: CreateDonationInput): Promise<
         createdBy: input.createdBy ?? null,
       },
     });
+
+    // Create line items for EVENT campaigns
+    if (input.lineItems && input.lineItems.length > 0) {
+      await createDonationLineItems(tx, donation.id, input.lineItems);
+    }
+
+    return donation;
   });
 
   // After successful creation, check if campaign should auto-complete
@@ -149,7 +157,7 @@ export async function createOneTimeDonation(input: CreateDonationInput): Promise
   // Validate against campaign constraints
   if (input.campaignId) {
     const { validateDonationAgainstCampaign } = await import('@/services/campaign.service');
-    await validateDonationAgainstCampaign(input.campaignId, input.amount, input.unitCount, input.tierId);
+    await validateDonationAgainstCampaign(input.campaignId, input.amount, input.unitCount, input.tierId, input.lineItems);
   }
 
   const donation = await prisma.$transaction(async (tx) => {
@@ -169,7 +177,7 @@ export async function createOneTimeDonation(input: CreateDonationInput): Promise
     });
 
     // Create the donation record (immediately received)
-    return await tx.donation.create({
+    const donation = await tx.donation.create({
       data: {
         organizationId: input.organizationId,
         contactId: input.contactId,
@@ -192,6 +200,13 @@ export async function createOneTimeDonation(input: CreateDonationInput): Promise
         createdBy: input.createdBy ?? null,
       },
     });
+
+    // Create line items for EVENT campaigns
+    if (input.lineItems && input.lineItems.length > 0) {
+      await createDonationLineItems(tx, donation.id, input.lineItems);
+    }
+
+    return donation;
   });
 
   // After successful creation, check if campaign should auto-complete
@@ -557,6 +572,39 @@ export async function syncDonationFromBill(billId: string, txClient?: any): Prom
         amountReceived: amountPaid as unknown as Prisma.Decimal,
         status: newStatus as any,
         receivedDate: isFullyPaid ? (donation.receivedDate ?? new Date()) : null,
+      },
+    });
+  }
+}
+
+// ── Line Items (EVENT campaigns) ────────────────────────────────────────
+
+/**
+ * Create DonationLineItem records for an EVENT campaign donation.
+ * Looks up item prices to snapshot unitPrice and calculate subtotal.
+ */
+async function createDonationLineItems(
+  tx: Prisma.TransactionClient,
+  donationId: string,
+  lineItems: Array<{ campaignItemId: string; quantity: number }>
+): Promise<void> {
+  const itemIds = lineItems.map(li => li.campaignItemId);
+  const items = await tx.campaignItem.findMany({
+    where: { id: { in: itemIds } },
+  });
+  const itemMap = new Map(items.map(i => [i.id, i]));
+
+  for (const li of lineItems) {
+    const item = itemMap.get(li.campaignItemId);
+    if (!item) continue;
+    const unitPrice = Number(item.price);
+    await tx.donationLineItem.create({
+      data: {
+        donationId,
+        campaignItemId: li.campaignItemId,
+        quantity: li.quantity,
+        unitPrice,
+        subtotal: unitPrice * li.quantity,
       },
     });
   }

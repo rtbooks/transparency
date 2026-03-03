@@ -293,6 +293,33 @@ async function handleNewDonation(
       },
     });
 
+    // Create line items for EVENT campaign donations
+    if (metadata.lineItems) {
+      try {
+        const lineItems = JSON.parse(metadata.lineItems) as Array<{ campaignItemId: string; quantity: number }>;
+        if (lineItems.length > 0) {
+          const items = await tx.campaignItem.findMany({
+            where: { id: { in: lineItems.map(li => li.campaignItemId) } },
+          });
+          const itemMap = new Map(items.map(i => [i.id, i]));
+          for (const li of lineItems) {
+            const item = itemMap.get(li.campaignItemId);
+            if (!item) continue;
+            const unitPrice = Number(item.price);
+            await tx.donationLineItem.create({
+              data: {
+                donationId: donation.id,
+                campaignItemId: li.campaignItemId,
+                quantity: li.quantity,
+                unitPrice,
+                subtotal: unitPrice * li.quantity,
+              },
+            });
+          }
+        }
+      } catch { /* ignore malformed lineItems */ }
+    }
+
     donationRecord = donation;
 
     // Create StripePayment record for idempotency and audit trail

@@ -16,6 +16,25 @@ const updateCampaignSchema = z.object({
   maxUnits: z.number().int().positive().nullable().optional(),
   unitLabel: z.string().nullable().optional(),
   allowMultiUnit: z.boolean().optional(),
+  tiers: z.array(z.object({
+    id: z.string().optional(),
+    name: z.string().min(1),
+    amount: z.number().positive(),
+    maxSlots: z.number().int().positive().nullable().optional(),
+    sortOrder: z.number().int().optional(),
+  })).optional(),
+  items: z.array(z.object({
+    id: z.string().optional(),
+    name: z.string().min(1),
+    description: z.string().nullable().optional(),
+    category: z.string().nullable().optional(),
+    price: z.number().positive(),
+    maxQuantity: z.number().int().positive().nullable().optional(),
+    minPerOrder: z.number().int().min(0).optional(),
+    maxPerOrder: z.number().int().positive().nullable().optional(),
+    isRequired: z.boolean().optional(),
+    sortOrder: z.number().int().optional(),
+  })).optional(),
 });
 
 /**
@@ -43,6 +62,7 @@ export async function GET(
     }
 
     const campaignTiers = (campaign as any).tiers || [];
+    const campaignItems = (campaign as any).items || [];
     const enrichedTiers = await Promise.all(
       campaignTiers.map(async (t: any) => ({
         ...t,
@@ -56,6 +76,7 @@ export async function GET(
       targetAmount: campaign.targetAmount ? Number(campaign.targetAmount) : null,
       unitPrice: campaign.unitPrice ? Number(campaign.unitPrice) : null,
       tiers: enrichedTiers,
+      items: campaignItems.map((i: any) => ({ ...i, price: Number(i.price) })),
     });
   } catch (error) {
     console.error('Error getting campaign:', error);
@@ -112,20 +133,101 @@ export async function PATCH(
     const body = await request.json();
     const validated = updateCampaignSchema.parse(body);
 
+    const { tiers, items, ...campaignFields } = validated;
+
     const updated = await updateCampaign(id, {
-      ...validated,
-      startDate: validated.startDate !== undefined
-        ? (validated.startDate ? new Date(validated.startDate) : null)
+      ...campaignFields,
+      startDate: campaignFields.startDate !== undefined
+        ? (campaignFields.startDate ? new Date(campaignFields.startDate) : null)
         : undefined,
-      endDate: validated.endDate !== undefined
-        ? (validated.endDate ? new Date(validated.endDate) : null)
+      endDate: campaignFields.endDate !== undefined
+        ? (campaignFields.endDate ? new Date(campaignFields.endDate) : null)
         : undefined,
     });
 
+    // Sync TIERED tiers: upsert provided, deactivate removed
+    if (tiers !== undefined && existing.campaignType === 'TIERED') {
+      const existingTiers = await prisma.campaignTier.findMany({ where: { campaignId: id } });
+      const existingIds = new Set(existingTiers.map(t => t.id));
+      const incomingIds = new Set(tiers.filter(t => t.id).map(t => t.id!));
+
+      for (const [i, tier] of tiers.entries()) {
+        if (tier.id && existingIds.has(tier.id)) {
+          await prisma.campaignTier.update({
+            where: { id: tier.id },
+            data: { name: tier.name, amount: tier.amount, maxSlots: tier.maxSlots ?? null, sortOrder: tier.sortOrder ?? i },
+          });
+        } else {
+          await prisma.campaignTier.create({
+            data: { campaignId: id, name: tier.name, amount: tier.amount, maxSlots: tier.maxSlots ?? null, sortOrder: tier.sortOrder ?? i },
+          });
+        }
+      }
+      // Delete tiers that were removed (only if no donations reference them)
+      for (const existing of existingTiers) {
+        if (!incomingIds.has(existing.id)) {
+          const donationCount = await prisma.donation.count({ where: { tierId: existing.id } });
+          if (donationCount === 0) {
+            await prisma.campaignTier.delete({ where: { id: existing.id } });
+          }
+        }
+      }
+    }
+
+    // Sync EVENT items: upsert provided, soft-delete removed
+    if (items !== undefined && existing.campaignType === 'EVENT') {
+      const existingItems = await prisma.campaignItem.findMany({ where: { campaignId: id } });
+      const existingIds = new Set(existingItems.map(i => i.id));
+      const incomingIds = new Set(items.filter(i => i.id).map(i => i.id!));
+
+      for (const [i, item] of items.entries()) {
+        if (item.id && existingIds.has(item.id)) {
+          await prisma.campaignItem.update({
+            where: { id: item.id },
+            data: {
+              name: item.name, description: item.description ?? null, category: item.category ?? null,
+              price: item.price, maxQuantity: item.maxQuantity ?? null,
+              minPerOrder: item.minPerOrder ?? 0, maxPerOrder: item.maxPerOrder ?? null,
+              isRequired: item.isRequired ?? false, sortOrder: item.sortOrder ?? i,
+            },
+          });
+        } else {
+          await prisma.campaignItem.create({
+            data: {
+              campaignId: id, name: item.name, description: item.description ?? null,
+              category: item.category ?? null, price: item.price, maxQuantity: item.maxQuantity ?? null,
+              minPerOrder: item.minPerOrder ?? 0, maxPerOrder: item.maxPerOrder ?? null,
+              isRequired: item.isRequired ?? false, sortOrder: item.sortOrder ?? i,
+            },
+          });
+        }
+      }
+      // Soft-delete items that were removed (preserve FK references)
+      for (const existing of existingItems) {
+        if (!incomingIds.has(existing.id)) {
+          await prisma.campaignItem.update({
+            where: { id: existing.id },
+            data: { isActive: false },
+          });
+        }
+      }
+    }
+
+    // Re-fetch with tiers + items for response
+    const result = await prisma.campaign.findUnique({
+      where: { id },
+      include: {
+        tiers: { orderBy: { sortOrder: 'asc' } },
+        items: { where: { isActive: true }, orderBy: { sortOrder: 'asc' } },
+      },
+    });
+
     return NextResponse.json({
-      ...updated,
-      targetAmount: updated.targetAmount ? Number(updated.targetAmount) : null,
-      unitPrice: updated.unitPrice ? Number(updated.unitPrice) : null,
+      ...result,
+      targetAmount: result?.targetAmount ? Number(result.targetAmount) : null,
+      unitPrice: result?.unitPrice ? Number(result.unitPrice) : null,
+      tiers: (result as any)?.tiers?.map((t: any) => ({ ...t, amount: Number(t.amount) })) || [],
+      items: (result as any)?.items?.map((i: any) => ({ ...i, price: Number(i.price) })) || [],
     });
   } catch (error: any) {
     if (error instanceof z.ZodError) {

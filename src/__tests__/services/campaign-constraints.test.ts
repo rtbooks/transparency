@@ -21,6 +21,12 @@ jest.mock('@/lib/prisma', () => ({
       aggregate: jest.fn(),
       count: jest.fn(),
     },
+    donationLineItem: {
+      aggregate: jest.fn(),
+    },
+    campaignItem: {
+      findMany: jest.fn(),
+    },
   },
 }));
 
@@ -34,6 +40,7 @@ import {
   checkAndAutoCompleteCampaign,
   getUnitsSold,
   getTierSlotsFilled,
+  getItemQuantitySold,
 } from '@/services/campaign.service';
 
 describe('Campaign Constraints', () => {
@@ -208,6 +215,117 @@ describe('Campaign Constraints', () => {
         ).resolves.toBeUndefined();
       });
     });
+
+    describe('EVENT campaigns', () => {
+      const eventCampaign = {
+        id: 'camp-dinner',
+        campaignType: 'EVENT',
+        status: 'ACTIVE',
+        tiers: [],
+        items: [
+          { id: 'item-adult', name: 'Adult Plate', price: 35, maxQuantity: 100, minPerOrder: 0, maxPerOrder: 10, isRequired: false, isActive: true },
+          { id: 'item-child', name: 'Child Plate', price: 20, maxQuantity: 50, minPerOrder: 0, maxPerOrder: 5, isRequired: false, isActive: true },
+          { id: 'item-gift', name: 'Gift', price: 30, maxQuantity: null, minPerOrder: 0, maxPerOrder: null, isRequired: true, isActive: true },
+        ],
+      };
+
+      it('should accept valid EVENT donation with line items', async () => {
+        (prisma.campaign.findUnique as jest.Mock).mockResolvedValue(eventCampaign);
+        (prisma.donationLineItem.aggregate as jest.Mock).mockResolvedValue({ _sum: { quantity: 0 } });
+
+        await expect(
+          validateDonationAgainstCampaign('camp-dinner', 100, null, null, [
+            { campaignItemId: 'item-adult', quantity: 2 }, // 2×35 = 70
+            { campaignItemId: 'item-gift', quantity: 1 },  // 1×30 = 30
+          ])
+        ).resolves.toBeUndefined();
+      });
+
+      it('should reject EVENT donation without line items', async () => {
+        (prisma.campaign.findUnique as jest.Mock).mockResolvedValue(eventCampaign);
+
+        await expect(
+          validateDonationAgainstCampaign('camp-dinner', 100)
+        ).rejects.toThrow('require selecting at least one item');
+      });
+
+      it('should reject EVENT donation with empty line items', async () => {
+        (prisma.campaign.findUnique as jest.Mock).mockResolvedValue(eventCampaign);
+
+        await expect(
+          validateDonationAgainstCampaign('camp-dinner', 100, null, null, [])
+        ).rejects.toThrow('require selecting at least one item');
+      });
+
+      it('should reject when required item is missing', async () => {
+        (prisma.campaign.findUnique as jest.Mock).mockResolvedValue(eventCampaign);
+        (prisma.donationLineItem.aggregate as jest.Mock).mockResolvedValue({ _sum: { quantity: 0 } });
+
+        await expect(
+          validateDonationAgainstCampaign('camp-dinner', 35, null, null, [
+            { campaignItemId: 'item-adult', quantity: 1 },
+          ])
+        ).rejects.toThrow('"Gift" is required');
+      });
+
+      it('should reject when amount does not match item total', async () => {
+        (prisma.campaign.findUnique as jest.Mock).mockResolvedValue(eventCampaign);
+        (prisma.donationLineItem.aggregate as jest.Mock).mockResolvedValue({ _sum: { quantity: 0 } });
+
+        await expect(
+          validateDonationAgainstCampaign('camp-dinner', 50, null, null, [
+            { campaignItemId: 'item-adult', quantity: 1 },
+            { campaignItemId: 'item-gift', quantity: 1 },
+          ])
+        ).rejects.toThrow('does not match item total ($65.00)');
+      });
+
+      it('should reject when exceeding maxPerOrder', async () => {
+        (prisma.campaign.findUnique as jest.Mock).mockResolvedValue(eventCampaign);
+        (prisma.donationLineItem.aggregate as jest.Mock).mockResolvedValue({ _sum: { quantity: 0 } });
+
+        await expect(
+          validateDonationAgainstCampaign('camp-dinner', 385, null, null, [
+            { campaignItemId: 'item-adult', quantity: 11 }, // max is 10
+            { campaignItemId: 'item-gift', quantity: 1 },
+          ])
+        ).rejects.toThrow('Maximum 10 of "Adult Plate" per order');
+      });
+
+      it('should reject when capacity exceeded', async () => {
+        (prisma.campaign.findUnique as jest.Mock).mockResolvedValue(eventCampaign);
+        // Adult plate: 98 sold, trying to buy 5 more
+        (prisma.donationLineItem.aggregate as jest.Mock)
+          .mockResolvedValueOnce({ _sum: { quantity: 98 } });
+
+        await expect(
+          validateDonationAgainstCampaign('camp-dinner', 205, null, null, [
+            { campaignItemId: 'item-adult', quantity: 5 },
+            { campaignItemId: 'item-gift', quantity: 1 },
+          ])
+        ).rejects.toThrow('Only 2 of "Adult Plate" remaining (requested 5)');
+      });
+
+      it('should reject invalid campaign item ID', async () => {
+        (prisma.campaign.findUnique as jest.Mock).mockResolvedValue(eventCampaign);
+
+        await expect(
+          validateDonationAgainstCampaign('camp-dinner', 30, null, null, [
+            { campaignItemId: 'item-nonexistent', quantity: 1 },
+          ])
+        ).rejects.toThrow('Campaign item not found or inactive');
+      });
+
+      it('should reject quantity less than 1', async () => {
+        (prisma.campaign.findUnique as jest.Mock).mockResolvedValue(eventCampaign);
+
+        await expect(
+          validateDonationAgainstCampaign('camp-dinner', 0, null, null, [
+            { campaignItemId: 'item-adult', quantity: 0 },
+          ])
+        ).rejects.toThrow('Quantity must be at least 1');
+      });
+    });
   });
 
   // ── getUnitsSold ────────────────────────────────────────────────────
@@ -255,6 +373,35 @@ describe('Campaign Constraints', () => {
           status: { notIn: ['CANCELLED'] },
         },
       });
+    });
+  });
+
+  // ── getItemQuantitySold ───────────────────────────────────────────────
+
+  describe('getItemQuantitySold', () => {
+    it('should sum quantity for non-cancelled donations', async () => {
+      (prisma.donationLineItem.aggregate as jest.Mock).mockResolvedValue({
+        _sum: { quantity: 15 },
+      });
+
+      const result = await getItemQuantitySold('item-adult');
+
+      expect(result).toBe(15);
+      expect(prisma.donationLineItem.aggregate).toHaveBeenCalledWith({
+        where: {
+          campaignItemId: 'item-adult',
+          donation: { status: { notIn: ['CANCELLED'] } },
+        },
+        _sum: { quantity: true },
+      });
+    });
+
+    it('should return 0 when no line items', async () => {
+      (prisma.donationLineItem.aggregate as jest.Mock).mockResolvedValue({
+        _sum: { quantity: null },
+      });
+
+      expect(await getItemQuantitySold('item-empty')).toBe(0);
     });
   });
 
@@ -351,6 +498,64 @@ describe('Campaign Constraints', () => {
 
       expect(prisma.campaign.update).not.toHaveBeenCalled();
     });
+
+    it('should auto-complete EVENT campaign when all capped items are sold out', async () => {
+      (prisma.campaign.findUnique as jest.Mock).mockResolvedValue({
+        id: 'camp-dinner',
+        campaignType: 'EVENT',
+        status: 'ACTIVE',
+        tiers: [],
+      });
+      (prisma.campaignItem.findMany as jest.Mock).mockResolvedValue([
+        { id: 'item-adult', maxQuantity: 100 },
+        { id: 'item-child', maxQuantity: 50 },
+      ]);
+      // Both at capacity
+      (prisma.donationLineItem.aggregate as jest.Mock)
+        .mockResolvedValueOnce({ _sum: { quantity: 100 } })
+        .mockResolvedValueOnce({ _sum: { quantity: 50 } });
+
+      await checkAndAutoCompleteCampaign('camp-dinner');
+
+      expect(prisma.campaign.update).toHaveBeenCalledWith({
+        where: { id: 'camp-dinner' },
+        data: { status: 'COMPLETED' },
+      });
+    });
+
+    it('should NOT auto-complete EVENT when some items still have capacity', async () => {
+      (prisma.campaign.findUnique as jest.Mock).mockResolvedValue({
+        id: 'camp-dinner',
+        campaignType: 'EVENT',
+        status: 'ACTIVE',
+        tiers: [],
+      });
+      (prisma.campaignItem.findMany as jest.Mock).mockResolvedValue([
+        { id: 'item-adult', maxQuantity: 100 },
+        { id: 'item-child', maxQuantity: 50 },
+      ]);
+      (prisma.donationLineItem.aggregate as jest.Mock)
+        .mockResolvedValueOnce({ _sum: { quantity: 100 } })
+        .mockResolvedValueOnce({ _sum: { quantity: 30 } }); // still 20 remaining
+
+      await checkAndAutoCompleteCampaign('camp-dinner');
+
+      expect(prisma.campaign.update).not.toHaveBeenCalled();
+    });
+
+    it('should NOT auto-complete EVENT when no items have capacity limits', async () => {
+      (prisma.campaign.findUnique as jest.Mock).mockResolvedValue({
+        id: 'camp-dinner',
+        campaignType: 'EVENT',
+        status: 'ACTIVE',
+        tiers: [],
+      });
+      (prisma.campaignItem.findMany as jest.Mock).mockResolvedValue([]);
+
+      await checkAndAutoCompleteCampaign('camp-dinner');
+
+      expect(prisma.campaign.update).not.toHaveBeenCalled();
+    });
   });
 });
 
@@ -378,6 +583,14 @@ describe('Campaign API Contract', () => {
       name: z.string(),
       amount: z.number(),
       maxSlots: z.number().nullable(),
+    })).optional(),
+    items: z.array(z.object({
+      id: z.string(),
+      name: z.string(),
+      price: z.number(),
+      category: z.string().nullable().optional(),
+      maxQuantity: z.number().nullable().optional(),
+      isRequired: z.boolean().optional(),
     })).optional(),
   });
 
@@ -440,7 +653,29 @@ describe('Campaign API Contract', () => {
     expect(CampaignResponseSchema.safeParse(response).success).toBe(true);
   });
 
-  it('should validate donation creation schema accepts unitCount and tierId', () => {
+  it('should validate EVENT campaign response', () => {
+    const response = {
+      id: 'camp-4',
+      name: 'Dinner Event',
+      description: 'Annual fundraising dinner',
+      targetAmount: 5000,
+      campaignType: 'EVENT',
+      unitPrice: null,
+      maxUnits: null,
+      unitLabel: null,
+      allowMultiUnit: true,
+      status: 'ACTIVE',
+      amountRaised: 1200,
+      tiers: [],
+      items: [
+        { id: 'item-1', name: 'Adult Plate', price: 35, category: 'Plates', maxQuantity: 100, isRequired: false },
+        { id: 'item-2', name: 'Gift', price: 30, category: 'Extras', maxQuantity: null, isRequired: true },
+      ],
+    };
+    expect(CampaignResponseSchema.safeParse(response).success).toBe(true);
+  });
+
+  it('should validate donation creation schema accepts lineItems', () => {
     const CreateDonationSchema = z.object({
       type: z.enum(['ONE_TIME', 'PLEDGE']),
       amount: z.number().positive(),
@@ -448,6 +683,10 @@ describe('Campaign API Contract', () => {
       campaignId: z.string().uuid().nullable().optional(),
       unitCount: z.number().int().positive().nullable().optional(),
       tierId: z.string().uuid().nullable().optional(),
+      lineItems: z.array(z.object({
+        campaignItemId: z.string(),
+        quantity: z.number().int().positive(),
+      })).optional(),
     });
 
     expect(CreateDonationSchema.safeParse({
@@ -469,6 +708,17 @@ describe('Campaign API Contract', () => {
     expect(CreateDonationSchema.safeParse({
       type: 'PLEDGE',
       amount: 100,
+    }).success).toBe(true);
+
+    // EVENT with lineItems
+    expect(CreateDonationSchema.safeParse({
+      type: 'PLEDGE',
+      amount: 100,
+      campaignId: '550e8400-e29b-41d4-a716-446655440000',
+      lineItems: [
+        { campaignItemId: 'item-1', quantity: 2 },
+        { campaignItemId: 'item-2', quantity: 1 },
+      ],
     }).success).toBe(true);
   });
 });

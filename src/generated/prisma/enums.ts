@@ -179,7 +179,8 @@ export type CampaignStatus = (typeof CampaignStatus)[keyof typeof CampaignStatus
 export const CampaignType = {
   OPEN: 'OPEN',
   FIXED_UNIT: 'FIXED_UNIT',
-  TIERED: 'TIERED'
+  TIERED: 'TIERED',
+  EVENT: 'EVENT'
 } as const
 
 export type CampaignType = (typeof CampaignType)[keyof typeof CampaignType]

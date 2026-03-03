@@ -41,6 +41,7 @@ interface Campaign {
   unitsSold?: number;
   unitsRemaining?: number;
   tiers?: { id: string; name: string; amount: number; maxSlots: number | null; sortOrder?: number; slotsFilled?: number }[];
+  items?: { id: string; name: string; description?: string | null; category: string | null; price: number; maxQuantity: number | null; minPerOrder: number; maxPerOrder: number | null; isRequired: boolean; sortOrder?: number }[];
 }
 
 interface CampaignListProps {

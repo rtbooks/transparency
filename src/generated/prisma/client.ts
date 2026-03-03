@@ -137,10 +137,20 @@ export type Campaign = Prisma.CampaignModel
  */
 export type CampaignTier = Prisma.CampaignTierModel
 /**
+ * Model CampaignItem
+ * 
+ */
+export type CampaignItem = Prisma.CampaignItemModel
+/**
  * Model Donation
  * 
  */
 export type Donation = Prisma.DonationModel
+/**
+ * Model DonationLineItem
+ * 
+ */
+export type DonationLineItem = Prisma.DonationLineItemModel
 /**
  * Model Contact
  * 

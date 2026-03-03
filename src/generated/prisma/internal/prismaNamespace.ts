@@ -403,7 +403,9 @@ export const ModelName = {
   AccessRequest: 'AccessRequest',
   Campaign: 'Campaign',
   CampaignTier: 'CampaignTier',
+  CampaignItem: 'CampaignItem',
   Donation: 'Donation',
+  DonationLineItem: 'DonationLineItem',
   Contact: 'Contact',
   Bill: 'Bill',
   BillPayment: 'BillPayment',
@@ -425,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "stripePayment" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "accountReconciliation" | "reconciliationItem" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "campaignTier" | "donation" | "contact" | "bill" | "billPayment" | "attachment" | "fiscalPeriod" | "organizationPaymentMethod"
+    modelProps: "organization" | "user" | "organizationUser" | "account" | "transaction" | "stripePayment" | "programSpending" | "programSpendingTransaction" | "bankAccount" | "bankStatement" | "bankStatementLine" | "bankStatementLineMatch" | "accountReconciliation" | "reconciliationItem" | "auditLog" | "invitation" | "accessRequest" | "campaign" | "campaignTier" | "campaignItem" | "donation" | "donationLineItem" | "contact" | "bill" | "billPayment" | "attachment" | "fiscalPeriod" | "organizationPaymentMethod"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1835,6 +1837,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CampaignItem: {
+      payload: Prisma.$CampaignItemPayload<ExtArgs>
+      fields: Prisma.CampaignItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CampaignItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CampaignItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignItemPayload>
+        }
+        findFirst: {
+          args: Prisma.CampaignItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CampaignItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignItemPayload>
+        }
+        findMany: {
+          args: Prisma.CampaignItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignItemPayload>[]
+        }
+        create: {
+          args: Prisma.CampaignItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignItemPayload>
+        }
+        createMany: {
+          args: Prisma.CampaignItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CampaignItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignItemPayload>[]
+        }
+        delete: {
+          args: Prisma.CampaignItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignItemPayload>
+        }
+        update: {
+          args: Prisma.CampaignItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.CampaignItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CampaignItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CampaignItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.CampaignItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CampaignItemPayload>
+        }
+        aggregate: {
+          args: Prisma.CampaignItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCampaignItem>
+        }
+        groupBy: {
+          args: Prisma.CampaignItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CampaignItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CampaignItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CampaignItemCountAggregateOutputType> | number
+        }
+      }
+    }
     Donation: {
       payload: Prisma.$DonationPayload<ExtArgs>
       fields: Prisma.DonationFieldRefs
@@ -1906,6 +1982,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DonationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DonationCountAggregateOutputType> | number
+        }
+      }
+    }
+    DonationLineItem: {
+      payload: Prisma.$DonationLineItemPayload<ExtArgs>
+      fields: Prisma.DonationLineItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DonationLineItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DonationLineItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DonationLineItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DonationLineItemPayload>
+        }
+        findFirst: {
+          args: Prisma.DonationLineItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DonationLineItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DonationLineItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DonationLineItemPayload>
+        }
+        findMany: {
+          args: Prisma.DonationLineItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DonationLineItemPayload>[]
+        }
+        create: {
+          args: Prisma.DonationLineItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DonationLineItemPayload>
+        }
+        createMany: {
+          args: Prisma.DonationLineItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DonationLineItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DonationLineItemPayload>[]
+        }
+        delete: {
+          args: Prisma.DonationLineItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DonationLineItemPayload>
+        }
+        update: {
+          args: Prisma.DonationLineItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DonationLineItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.DonationLineItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DonationLineItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DonationLineItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DonationLineItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.DonationLineItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DonationLineItemPayload>
+        }
+        aggregate: {
+          args: Prisma.DonationLineItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDonationLineItem>
+        }
+        groupBy: {
+          args: Prisma.DonationLineItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DonationLineItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DonationLineItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DonationLineItemCountAggregateOutputType> | number
         }
       }
     }
@@ -2790,6 +2940,24 @@ export const CampaignTierScalarFieldEnum = {
 export type CampaignTierScalarFieldEnum = (typeof CampaignTierScalarFieldEnum)[keyof typeof CampaignTierScalarFieldEnum]
 
 
+export const CampaignItemScalarFieldEnum = {
+  id: 'id',
+  campaignId: 'campaignId',
+  name: 'name',
+  description: 'description',
+  category: 'category',
+  price: 'price',
+  maxQuantity: 'maxQuantity',
+  minPerOrder: 'minPerOrder',
+  maxPerOrder: 'maxPerOrder',
+  isRequired: 'isRequired',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive'
+} as const
+
+export type CampaignItemScalarFieldEnum = (typeof CampaignItemScalarFieldEnum)[keyof typeof CampaignItemScalarFieldEnum]
+
+
 export const DonationScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
@@ -2817,6 +2985,18 @@ export const DonationScalarFieldEnum = {
 } as const
 
 export type DonationScalarFieldEnum = (typeof DonationScalarFieldEnum)[keyof typeof DonationScalarFieldEnum]
+
+
+export const DonationLineItemScalarFieldEnum = {
+  id: 'id',
+  donationId: 'donationId',
+  campaignItemId: 'campaignItemId',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  subtotal: 'subtotal'
+} as const
+
+export type DonationLineItemScalarFieldEnum = (typeof DonationLineItemScalarFieldEnum)[keyof typeof DonationLineItemScalarFieldEnum]
 
 
 export const ContactScalarFieldEnum = {
@@ -3544,7 +3724,9 @@ export type GlobalOmitConfig = {
   accessRequest?: Prisma.AccessRequestOmit
   campaign?: Prisma.CampaignOmit
   campaignTier?: Prisma.CampaignTierOmit
+  campaignItem?: Prisma.CampaignItemOmit
   donation?: Prisma.DonationOmit
+  donationLineItem?: Prisma.DonationLineItemOmit
   contact?: Prisma.ContactOmit
   bill?: Prisma.BillOmit
   billPayment?: Prisma.BillPaymentOmit

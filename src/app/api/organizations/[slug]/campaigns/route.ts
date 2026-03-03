@@ -13,7 +13,7 @@ const createCampaignSchema = z.object({
   startDate: z.string().nullable().optional(),
   endDate: z.string().nullable().optional(),
   // Campaign constraint fields
-  campaignType: z.enum(['OPEN', 'FIXED_UNIT', 'TIERED']).optional(),
+  campaignType: z.enum(['OPEN', 'FIXED_UNIT', 'TIERED', 'EVENT']).optional(),
   unitPrice: z.number().positive().nullable().optional(),
   maxUnits: z.number().int().positive().nullable().optional(),
   unitLabel: z.string().nullable().optional(),
@@ -23,6 +23,18 @@ const createCampaignSchema = z.object({
     name: z.string().min(1),
     amount: z.number().positive(),
     maxSlots: z.number().int().positive().nullable().optional(),
+    sortOrder: z.number().int().optional(),
+  })).optional(),
+  // Items for EVENT campaigns
+  items: z.array(z.object({
+    name: z.string().min(1),
+    description: z.string().nullable().optional(),
+    category: z.string().nullable().optional(),
+    price: z.number().positive(),
+    maxQuantity: z.number().int().positive().nullable().optional(),
+    minPerOrder: z.number().int().min(0).optional(),
+    maxPerOrder: z.number().int().positive().nullable().optional(),
+    isRequired: z.boolean().optional(),
     sortOrder: z.number().int().optional(),
   })).optional(),
 });
@@ -66,9 +78,10 @@ export async function GET(
     const statusFilter = isAdmin ? undefined : 'ACTIVE';
     const campaigns = await listCampaigns(organization.id, { statusFilter });
 
-    // Serialize Decimal fields and enrich tiers
+    // Serialize Decimal fields and enrich tiers/items
     const serialized = await Promise.all(campaigns.map(async (c) => {
       const campaignTiers = (c as any).tiers || [];
+      const campaignItems = (c as any).items || [];
       const enrichedTiers = await Promise.all(
         campaignTiers.map(async (t: any) => ({
           ...t,
@@ -81,6 +94,7 @@ export async function GET(
         targetAmount: c.targetAmount ? Number(c.targetAmount) : null,
         unitPrice: c.unitPrice ? Number(c.unitPrice) : null,
         tiers: enrichedTiers,
+        items: campaignItems.map((i: any) => ({ ...i, price: Number(i.price) })),
       };
     }));
 
@@ -151,6 +165,7 @@ export async function POST(
       maxUnits: validated.maxUnits,
       unitLabel: validated.unitLabel,
       allowMultiUnit: validated.allowMultiUnit,
+      items: validated.items,
     });
 
     // Create tiers for TIERED campaigns
@@ -168,10 +183,13 @@ export async function POST(
       }
     }
 
-    // Re-fetch with tiers
+    // Re-fetch with tiers and items
     const result = await prisma.campaign.findUnique({
       where: { id: campaign.id },
-      include: { tiers: { orderBy: { sortOrder: 'asc' } } },
+      include: {
+        tiers: { orderBy: { sortOrder: 'asc' } },
+        items: { orderBy: { sortOrder: 'asc' } },
+      },
     });
 
     return NextResponse.json(result, { status: 201 });

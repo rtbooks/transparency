@@ -53,6 +53,17 @@ export default async function DonateCampaignPage({ params }: Props) {
       maxSlots: t.maxSlots,
       slotsFilled: t.slotsFilled ?? 0,
     })),
+    items: ((campaign as any).items || []).map((i: any) => ({
+      id: i.id,
+      name: i.name,
+      description: i.description,
+      category: i.category,
+      price: Number(i.price),
+      maxQuantity: i.maxQuantity,
+      minPerOrder: i.minPerOrder,
+      maxPerOrder: i.maxPerOrder,
+      isRequired: i.isRequired,
+    })),
   };
 
   return (
