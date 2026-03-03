@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { getReconciliationDetail, deleteReconciliation } from '@/services/account-reconciliation.service';
 
 /**
@@ -14,20 +12,12 @@ export async function GET(
 ) {
   try {
     const { slug, id } = await params;
-    const { userId: clerkUserId } = await auth();
-    if (!clerkUserId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const ctx = await withOrgAuth(slug);
 
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-
-    const detail = await getReconciliationDetail(id, organization.id);
+    const detail = await getReconciliationDetail(id, ctx.orgId);
     return NextResponse.json(detail);
   } catch (error: any) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     if (error?.message === 'Reconciliation not found') {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
@@ -46,20 +36,12 @@ export async function DELETE(
 ) {
   try {
     const { slug, id } = await params;
-    const { userId: clerkUserId } = await auth();
-    if (!clerkUserId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-
-    await deleteReconciliation(id, organization.id);
+    await deleteReconciliation(id, ctx.orgId);
     return NextResponse.json({ success: true });
   } catch (error: any) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     if (error?.message?.includes('completed')) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

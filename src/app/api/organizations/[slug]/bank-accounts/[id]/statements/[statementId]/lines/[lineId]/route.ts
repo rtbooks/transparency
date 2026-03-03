@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { manualMatch, unmatchLine, skipLine, removeMatch } from '@/services/reconciliation.service';
 import { z } from 'zod';
 
@@ -41,26 +40,14 @@ export async function PATCH(
 ) {
   try {
     const { slug, lineId } = await params;
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const line = await prisma.bankStatementLine.findUnique({
       where: { id: lineId },
       include: { bankStatement: true },
     });
 
-    if (!line || line.bankStatement.organizationId !== organization.id) {
+    if (!line || line.bankStatement.organizationId !== ctx.orgId) {
       return NextResponse.json({ error: 'Statement line not found' }, { status: 404 });
     }
 
@@ -98,6 +85,7 @@ export async function PATCH(
 
     return NextResponse.json(result);
   } catch (error: any) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
     }

@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { startReconciliation, listReconciliations, getLastEndingBalance } from '@/services/account-reconciliation.service';
 import { z } from 'zod';
 
@@ -23,22 +21,14 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-    if (!clerkUserId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    const ctx = await withOrgAuth(slug);
 
     const accountId = request.nextUrl.searchParams.get('accountId') || undefined;
-    const reconciliations = await listReconciliations(organization.id, accountId);
+    const reconciliations = await listReconciliations(ctx.orgId, accountId);
 
     return NextResponse.json(reconciliations);
   } catch (error) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error listing reconciliations:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -54,16 +44,7 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const { userId: clerkUserId } = await auth();
-    if (!clerkUserId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const organization = await prisma.organization.findFirst({
-      where: buildCurrentVersionWhere({ slug }),
-    });
-    if (!organization) return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const body = await request.json();
     const validated = createSchema.parse(body);
@@ -77,17 +58,18 @@ export async function POST(
     periodEndDate.setUTCHours(23, 59, 59, 999);
 
     const reconciliation = await startReconciliation({
-      organizationId: organization.id,
+      organizationId: ctx.orgId,
       accountId: validated.accountId,
       periodStart: periodStartDate,
       periodEnd: periodEndDate,
       beginningBalance: validated.beginningBalance,
       endingBalance: validated.endingBalance,
-      createdBy: user.id,
+      createdBy: ctx.userId,
     });
 
     return NextResponse.json(reconciliation, { status: 201 });
   } catch (error: any) {
+    if (error instanceof AuthError) return authErrorResponse(error);
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
     }
