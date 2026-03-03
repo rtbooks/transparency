@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { buildCurrentVersionWhere } from "@/lib/temporal/temporal-utils";
 import { createTransactionRecord } from "@/services/transaction.service";
 import { findStripePaymentBySessionId, createStripePayment } from "@/services/stripe-payment.service";
-import { sendDonationReceiptEmail } from "@/lib/email/send-donation-receipt";
+import { processDonationPayment, sendReceiptEmailForDonation } from "@/services/donation.service";
 
 /**
  * POST /api/webhooks/stripe
@@ -127,6 +127,7 @@ async function handleCheckoutCompleted(
 
   // Branch: paying an existing pledge vs. new donation
   if (metadata.donationId) {
+    // processDonationPayment handles receipt email internally
     await handlePledgePayment(
       session, metadata, organizationId, clearingAccountId, amount, chargedAmount
     );
@@ -142,37 +143,6 @@ async function handleCheckoutCompleted(
     await handleNewDonation(
       session, metadata, organizationId, clearingAccountId, revenueAccountId, amount, chargedAmount
     );
-  }
-
-  // Fire-and-forget: send donation receipt email
-  const donorEmail = session.customer_email || session.customer_details?.email;
-  if (donorEmail) {
-    sendDonationReceiptEmail({
-      donorEmail,
-      donor: {
-        name: metadata.donorName || 'Anonymous Donor',
-        isAnonymous: metadata.isAnonymous === 'true',
-      },
-      donation: {
-        id: metadata.donationId || session.id,
-        amount,
-        donationDate: new Date(),
-        paymentMethod: 'STRIPE',
-        isTaxDeductible: true,
-        description: metadata.donorMessage || null,
-        campaignName: metadata.campaignName || null,
-      },
-      organization: {
-        name: organization.name,
-        ein: organization.ein,
-        addressLine1: organization.addressLine1,
-        addressLine2: organization.addressLine2,
-        city: organization.city,
-        state: organization.state,
-        postalCode: organization.postalCode,
-        country: organization.country,
-      },
-    }).catch((err) => console.error('[Webhook] Receipt email failed:', err));
   }
 
   // Check campaign auto-complete
@@ -211,15 +181,10 @@ async function handlePledgePayment(
     return;
   }
 
-  const { recordPayment } = await import("@/services/bill-payment.service");
-  const { recalculateBillStatus } = await import("@/services/bill.service");
-  const { recordDonationPayment } = await import("@/services/donation.service");
-
-  // Run all operations atomically in a single transaction
-  const billPayment = await prisma.$transaction(async (tx) => {
-    // recordPayment creates the transaction (DR Stripe Clearing, CR AR) and BillPayment
-    const payment = await recordPayment({
-      billId: donation.billId!,
+  // Use processDonationPayment inside a wrapping transaction that also creates the StripePayment record
+  await prisma.$transaction(async (tx) => {
+    await processDonationPayment({
+      donationId: donation.id,
       organizationId,
       amount,
       transactionDate: new Date(),
@@ -227,25 +192,28 @@ async function handlePledgePayment(
       description: `Stripe payment for pledge — ${metadata.donorName || 'Donor'}`,
       referenceNumber: session.payment_intent as string || null,
       paymentMethod: "STRIPE",
-    }, tx);
+      txClient: tx,
+    });
 
     // Create StripePayment record for idempotency and audit trail
+    // (We need the transactionId from the bill payment, but processDonationPayment
+    //  returns the BillPayment which has it)
+    // For now, find the latest bill payment to get the transactionId
+    const latestPayment = await tx.billPayment.findFirst({
+      where: { billId: donation.billId! },
+      orderBy: { createdAt: 'desc' },
+    });
+
     await createStripePayment(tx, {
       organizationId,
       stripeSessionId: session.id,
       stripePaymentId: session.payment_intent as string || null,
       amount: chargedAmount,
-      transactionId: payment.transactionId,
+      transactionId: latestPayment?.transactionId || '',
       donationId: donation.id,
-      billPaymentId: payment.id,
+      billPaymentId: latestPayment?.id || null,
       metadata: session.metadata as Record<string, unknown> || null,
     });
-
-    // Update bill and donation status atomically
-    await recalculateBillStatus(donation.billId!, tx);
-    await recordDonationPayment(donation.id, organizationId, amount, tx);
-
-    return payment;
   });
 
   console.log(
@@ -295,6 +263,8 @@ async function handleNewDonation(
 
   const now = new Date();
 
+  let donationRecord: any = null;
+
   await prisma.$transaction(async (tx) => {
     const transaction = await createTransactionRecord(tx, {
       organizationId,
@@ -332,6 +302,8 @@ async function handleNewDonation(
       },
     });
 
+    donationRecord = donation;
+
     // Create StripePayment record for idempotency and audit trail
     await createStripePayment(tx, {
       organizationId,
@@ -343,6 +315,15 @@ async function handleNewDonation(
       metadata: session.metadata as Record<string, unknown> || null,
     });
   });
+
+  // Fire-and-forget receipt email using shared helper
+  if (donationRecord) {
+    sendReceiptEmailForDonation(donationRecord, organizationId, {
+      amount,
+      date: now,
+      paymentMethod: 'STRIPE',
+    }).catch((err) => console.error('[Webhook] Receipt email failed:', err));
+  }
 
   console.log(
     `Webhook: recorded $${amount} donation for org ${organizationId} (session: ${session.id})`

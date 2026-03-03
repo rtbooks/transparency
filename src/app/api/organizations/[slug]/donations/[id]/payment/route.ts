@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
-import { recordDonationPayment } from '@/services/donation.service';
-import { recordPayment } from '@/services/bill-payment.service';
-import { recalculateBillStatus } from '@/services/bill.service';
-import { sendDonationReceiptEmail } from '@/lib/email/send-donation-receipt';
+import { processDonationPayment } from '@/services/donation.service';
 import { z } from 'zod';
 
 const paymentSchema = z.object({
@@ -60,88 +57,29 @@ export async function POST(
       return NextResponse.json({ error: 'Only admins can record donation payments' }, { status: 403 });
     }
 
-    const donation = await prisma.donation.findFirst({
-      where: { id, organizationId: organization.id },
-    });
-
-    if (!donation) {
-      return NextResponse.json({ error: 'Donation not found' }, { status: 404 });
-    }
-
-    if (donation.type !== 'PLEDGE') {
-      return NextResponse.json({ error: 'Only pledge donations accept payments' }, { status: 400 });
-    }
-
-    if (!donation.billId) {
-      return NextResponse.json({ error: 'Donation has no linked bill for payment tracking' }, { status: 400 });
-    }
-
     const body = await request.json();
     const validated = paymentSchema.parse(body);
 
-    // Record payment, recalculate bill, and update donation atomically
-    const billPayment = await prisma.$transaction(async (tx) => {
-      const payment = await recordPayment({
-        billId: donation.billId!,
-        organizationId: organization.id,
-        amount: validated.amount,
-        transactionDate: new Date(validated.transactionDate.length === 10 ? validated.transactionDate + 'T12:00:00' : validated.transactionDate),
-        cashAccountId: validated.cashAccountId,
-        description: validated.description,
-        referenceNumber: validated.referenceNumber,
-        notes: validated.notes,
-        createdBy: user.id,
-        paymentMethod: validated.paymentMethod,
-      }, tx);
-
-      // Recalculate bill status within the same transaction
-      await recalculateBillStatus(donation.billId!, tx);
-
-      // Update the donation's received amount and status
-      await recordDonationPayment(id, organization.id, validated.amount, tx);
-
-      return payment;
+    const billPayment = await processDonationPayment({
+      donationId: id,
+      organizationId: organization.id,
+      amount: validated.amount,
+      transactionDate: new Date(validated.transactionDate.length === 10 ? validated.transactionDate + 'T12:00:00' : validated.transactionDate),
+      cashAccountId: validated.cashAccountId,
+      description: validated.description,
+      referenceNumber: validated.referenceNumber,
+      notes: validated.notes,
+      paymentMethod: validated.paymentMethod,
+      createdBy: user.id,
     });
-
-    // Fire-and-forget: send receipt email to donor
-    const contact = await prisma.contact.findFirst({
-      where: buildCurrentVersionWhere({ id: donation.contactId }),
-    });
-    if (contact?.email) {
-      sendDonationReceiptEmail({
-        donorEmail: contact.email,
-        donor: {
-          name: contact.name,
-          isAnonymous: donation.isAnonymous,
-        },
-        donation: {
-          id: donation.id,
-          amount: validated.amount,
-          donationDate: validated.transactionDate,
-          paymentMethod: validated.paymentMethod || null,
-          isTaxDeductible: donation.isTaxDeductible,
-          description: donation.description,
-          campaignName: null,
-        },
-        organization: {
-          name: organization.name,
-          ein: organization.ein,
-          addressLine1: organization.addressLine1,
-          addressLine2: organization.addressLine2,
-          city: organization.city,
-          state: organization.state,
-          postalCode: organization.postalCode,
-          country: organization.country,
-        },
-      }).catch((err) => console.error('[Payment] Receipt email failed:', err));
-    }
 
     return NextResponse.json(billPayment, { status: 201 });
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
     }
-    if (error?.message?.includes('exceeds') || error?.message?.includes('Cannot record')) {
+    if (error?.message?.includes('exceeds') || error?.message?.includes('Cannot record') ||
+        error?.message?.includes('not found') || error?.message?.includes('Only pledge')) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error('Error recording donation payment:', error);

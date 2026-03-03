@@ -353,6 +353,128 @@ export async function cancelDonation(
 
 // ── Payment ─────────────────────────────────────────────────────────────
 
+export interface ProcessDonationPaymentInput {
+  donationId: string;
+  organizationId: string;
+  amount: number;
+  transactionDate: Date;
+  cashAccountId: string;
+  description?: string;
+  referenceNumber?: string | null;
+  notes?: string | null;
+  paymentMethod?: string;
+  createdBy?: string;
+  /** Optional: runs inside the caller's transaction (e.g. webhook adds StripePayment) */
+  txClient?: any;
+}
+
+/**
+ * Process a payment against a pledge donation: records bill payment,
+ * recalculates bill status, updates donation, and sends receipt email.
+ * This is the single code path for both manual and Stripe pledge payments.
+ */
+export async function processDonationPayment(input: ProcessDonationPaymentInput) {
+  const { recordPayment } = await import('@/services/bill-payment.service');
+  const { recalculateBillStatus } = await import('@/services/bill.service');
+
+  const db = input.txClient || prisma;
+
+  const donation = await db.donation.findFirst({
+    where: { id: input.donationId, organizationId: input.organizationId },
+  });
+
+  if (!donation) throw new Error('Donation not found');
+  if (donation.type !== 'PLEDGE') throw new Error('Only pledge donations accept payments');
+  if (!donation.billId) throw new Error('Donation has no linked bill for payment tracking');
+
+  const runPayment = async (tx: any) => {
+    const payment = await recordPayment({
+      billId: donation.billId!,
+      organizationId: input.organizationId,
+      amount: input.amount,
+      transactionDate: input.transactionDate,
+      cashAccountId: input.cashAccountId,
+      description: input.description,
+      referenceNumber: input.referenceNumber,
+      notes: input.notes,
+      createdBy: input.createdBy,
+      paymentMethod: input.paymentMethod,
+    }, tx);
+
+    await recalculateBillStatus(donation.billId!, tx);
+    await recordDonationPayment(input.donationId, input.organizationId, input.amount, tx);
+
+    return payment;
+  };
+
+  // If caller provided a transaction client, run within it; otherwise create one
+  const billPayment = input.txClient
+    ? await runPayment(input.txClient)
+    : await prisma.$transaction(async (tx: any) => runPayment(tx));
+
+  // Fire-and-forget receipt email (runs after the DB transaction commits)
+  sendReceiptEmailForDonation(donation, input.organizationId, {
+    amount: input.amount,
+    date: input.transactionDate,
+    paymentMethod: input.paymentMethod || null,
+  }).catch((err) => console.error('[DonationService] Receipt email failed:', err));
+
+  return billPayment;
+}
+
+/**
+ * Fire-and-forget: look up contact + org, then send receipt email with PDF.
+ * Exported so the webhook new-donation path can also use it.
+ */
+export async function sendReceiptEmailForDonation(
+  donation: { id: string; contactId: string; isAnonymous: boolean; isTaxDeductible: boolean; description: string | null; campaignId: string | null },
+  organizationId: string,
+  payment: { amount: number; date: Date | string; paymentMethod: string | null },
+): Promise<void> {
+  const { sendDonationReceiptEmail } = await import('@/lib/email/send-donation-receipt');
+
+  const contact = await prisma.contact.findFirst({
+    where: buildCurrentVersionWhere({ id: donation.contactId }),
+  });
+  if (!contact?.email) return;
+
+  const organization = await prisma.organization.findFirst({
+    where: buildCurrentVersionWhere({ id: organizationId }),
+  });
+  if (!organization) return;
+
+  // Resolve campaign name if applicable
+  let campaignName: string | null = null;
+  if (donation.campaignId) {
+    const campaign = await prisma.campaign.findUnique({ where: { id: donation.campaignId } });
+    campaignName = campaign?.name ?? null;
+  }
+
+  await sendDonationReceiptEmail({
+    donorEmail: contact.email,
+    donor: { name: contact.name, isAnonymous: donation.isAnonymous },
+    donation: {
+      id: donation.id,
+      amount: payment.amount,
+      donationDate: payment.date,
+      paymentMethod: payment.paymentMethod,
+      isTaxDeductible: donation.isTaxDeductible,
+      description: donation.description,
+      campaignName,
+    },
+    organization: {
+      name: organization.name,
+      ein: organization.ein,
+      addressLine1: organization.addressLine1,
+      addressLine2: organization.addressLine2,
+      city: organization.city,
+      state: organization.state,
+      postalCode: organization.postalCode,
+      country: organization.country,
+    },
+  });
+}
+
 /**
  * Record a payment received against a pledge donation.
  * Updates amountReceived and status on the Donation; delegates bill payment to bill-payment service.
