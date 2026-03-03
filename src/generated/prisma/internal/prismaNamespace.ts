@@ -2678,6 +2678,8 @@ export const AccountReconciliationScalarFieldEnum = {
   status: 'status',
   completedBy: 'completedBy',
   completedAt: 'completedAt',
+  statementBlobUrl: 'statementBlobUrl',
+  statementFileName: 'statementFileName',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

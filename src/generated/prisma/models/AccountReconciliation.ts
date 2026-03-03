@@ -47,6 +47,8 @@ export type AccountReconciliationMinAggregateOutputType = {
   status: $Enums.AccountReconciliationStatus | null
   completedBy: string | null
   completedAt: Date | null
+  statementBlobUrl: string | null
+  statementFileName: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +64,8 @@ export type AccountReconciliationMaxAggregateOutputType = {
   status: $Enums.AccountReconciliationStatus | null
   completedBy: string | null
   completedAt: Date | null
+  statementBlobUrl: string | null
+  statementFileName: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -77,6 +81,8 @@ export type AccountReconciliationCountAggregateOutputType = {
   status: number
   completedBy: number
   completedAt: number
+  statementBlobUrl: number
+  statementFileName: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -104,6 +110,8 @@ export type AccountReconciliationMinAggregateInputType = {
   status?: true
   completedBy?: true
   completedAt?: true
+  statementBlobUrl?: true
+  statementFileName?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -119,6 +127,8 @@ export type AccountReconciliationMaxAggregateInputType = {
   status?: true
   completedBy?: true
   completedAt?: true
+  statementBlobUrl?: true
+  statementFileName?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -134,6 +144,8 @@ export type AccountReconciliationCountAggregateInputType = {
   status?: true
   completedBy?: true
   completedAt?: true
+  statementBlobUrl?: true
+  statementFileName?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -236,6 +248,8 @@ export type AccountReconciliationGroupByOutputType = {
   status: $Enums.AccountReconciliationStatus
   completedBy: string | null
   completedAt: Date | null
+  statementBlobUrl: string | null
+  statementFileName: string | null
   createdAt: Date
   updatedAt: Date
   _count: AccountReconciliationCountAggregateOutputType | null
@@ -274,6 +288,8 @@ export type AccountReconciliationWhereInput = {
   status?: Prisma.EnumAccountReconciliationStatusFilter<"AccountReconciliation"> | $Enums.AccountReconciliationStatus
   completedBy?: Prisma.StringNullableFilter<"AccountReconciliation"> | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"AccountReconciliation"> | Date | string | null
+  statementBlobUrl?: Prisma.StringNullableFilter<"AccountReconciliation"> | string | null
+  statementFileName?: Prisma.StringNullableFilter<"AccountReconciliation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AccountReconciliation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AccountReconciliation"> | Date | string
   items?: Prisma.ReconciliationItemListRelationFilter
@@ -290,6 +306,8 @@ export type AccountReconciliationOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   completedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  statementBlobUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  statementFileName?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   items?: Prisma.ReconciliationItemOrderByRelationAggregateInput
@@ -309,6 +327,8 @@ export type AccountReconciliationWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumAccountReconciliationStatusFilter<"AccountReconciliation"> | $Enums.AccountReconciliationStatus
   completedBy?: Prisma.StringNullableFilter<"AccountReconciliation"> | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"AccountReconciliation"> | Date | string | null
+  statementBlobUrl?: Prisma.StringNullableFilter<"AccountReconciliation"> | string | null
+  statementFileName?: Prisma.StringNullableFilter<"AccountReconciliation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AccountReconciliation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AccountReconciliation"> | Date | string
   items?: Prisma.ReconciliationItemListRelationFilter
@@ -325,6 +345,8 @@ export type AccountReconciliationOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   completedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  statementBlobUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  statementFileName?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AccountReconciliationCountOrderByAggregateInput
@@ -348,6 +370,8 @@ export type AccountReconciliationScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumAccountReconciliationStatusWithAggregatesFilter<"AccountReconciliation"> | $Enums.AccountReconciliationStatus
   completedBy?: Prisma.StringNullableWithAggregatesFilter<"AccountReconciliation"> | string | null
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AccountReconciliation"> | Date | string | null
+  statementBlobUrl?: Prisma.StringNullableWithAggregatesFilter<"AccountReconciliation"> | string | null
+  statementFileName?: Prisma.StringNullableWithAggregatesFilter<"AccountReconciliation"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AccountReconciliation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"AccountReconciliation"> | Date | string
 }
@@ -363,6 +387,8 @@ export type AccountReconciliationCreateInput = {
   status?: $Enums.AccountReconciliationStatus
   completedBy?: string | null
   completedAt?: Date | string | null
+  statementBlobUrl?: string | null
+  statementFileName?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ReconciliationItemCreateNestedManyWithoutReconciliationInput
@@ -379,6 +405,8 @@ export type AccountReconciliationUncheckedCreateInput = {
   status?: $Enums.AccountReconciliationStatus
   completedBy?: string | null
   completedAt?: Date | string | null
+  statementBlobUrl?: string | null
+  statementFileName?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ReconciliationItemUncheckedCreateNestedManyWithoutReconciliationInput
@@ -395,6 +423,8 @@ export type AccountReconciliationUpdateInput = {
   status?: Prisma.EnumAccountReconciliationStatusFieldUpdateOperationsInput | $Enums.AccountReconciliationStatus
   completedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  statementBlobUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statementFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ReconciliationItemUpdateManyWithoutReconciliationNestedInput
@@ -411,6 +441,8 @@ export type AccountReconciliationUncheckedUpdateInput = {
   status?: Prisma.EnumAccountReconciliationStatusFieldUpdateOperationsInput | $Enums.AccountReconciliationStatus
   completedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  statementBlobUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statementFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ReconciliationItemUncheckedUpdateManyWithoutReconciliationNestedInput
@@ -427,6 +459,8 @@ export type AccountReconciliationCreateManyInput = {
   status?: $Enums.AccountReconciliationStatus
   completedBy?: string | null
   completedAt?: Date | string | null
+  statementBlobUrl?: string | null
+  statementFileName?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -442,6 +476,8 @@ export type AccountReconciliationUpdateManyMutationInput = {
   status?: Prisma.EnumAccountReconciliationStatusFieldUpdateOperationsInput | $Enums.AccountReconciliationStatus
   completedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  statementBlobUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statementFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -457,6 +493,8 @@ export type AccountReconciliationUncheckedUpdateManyInput = {
   status?: Prisma.EnumAccountReconciliationStatusFieldUpdateOperationsInput | $Enums.AccountReconciliationStatus
   completedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  statementBlobUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statementFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -472,6 +510,8 @@ export type AccountReconciliationCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   completedBy?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  statementBlobUrl?: Prisma.SortOrder
+  statementFileName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -492,6 +532,8 @@ export type AccountReconciliationMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   completedBy?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  statementBlobUrl?: Prisma.SortOrder
+  statementFileName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -507,6 +549,8 @@ export type AccountReconciliationMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   completedBy?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  statementBlobUrl?: Prisma.SortOrder
+  statementFileName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -550,6 +594,8 @@ export type AccountReconciliationCreateWithoutItemsInput = {
   status?: $Enums.AccountReconciliationStatus
   completedBy?: string | null
   completedAt?: Date | string | null
+  statementBlobUrl?: string | null
+  statementFileName?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -565,6 +611,8 @@ export type AccountReconciliationUncheckedCreateWithoutItemsInput = {
   status?: $Enums.AccountReconciliationStatus
   completedBy?: string | null
   completedAt?: Date | string | null
+  statementBlobUrl?: string | null
+  statementFileName?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -596,6 +644,8 @@ export type AccountReconciliationUpdateWithoutItemsInput = {
   status?: Prisma.EnumAccountReconciliationStatusFieldUpdateOperationsInput | $Enums.AccountReconciliationStatus
   completedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  statementBlobUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statementFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -611,6 +661,8 @@ export type AccountReconciliationUncheckedUpdateWithoutItemsInput = {
   status?: Prisma.EnumAccountReconciliationStatusFieldUpdateOperationsInput | $Enums.AccountReconciliationStatus
   completedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  statementBlobUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statementFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -657,6 +709,8 @@ export type AccountReconciliationSelect<ExtArgs extends runtime.Types.Extensions
   status?: boolean
   completedBy?: boolean
   completedAt?: boolean
+  statementBlobUrl?: boolean
+  statementFileName?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   items?: boolean | Prisma.AccountReconciliation$itemsArgs<ExtArgs>
@@ -674,6 +728,8 @@ export type AccountReconciliationSelectCreateManyAndReturn<ExtArgs extends runti
   status?: boolean
   completedBy?: boolean
   completedAt?: boolean
+  statementBlobUrl?: boolean
+  statementFileName?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["accountReconciliation"]>
@@ -689,6 +745,8 @@ export type AccountReconciliationSelectUpdateManyAndReturn<ExtArgs extends runti
   status?: boolean
   completedBy?: boolean
   completedAt?: boolean
+  statementBlobUrl?: boolean
+  statementFileName?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["accountReconciliation"]>
@@ -704,11 +762,13 @@ export type AccountReconciliationSelectScalar = {
   status?: boolean
   completedBy?: boolean
   completedAt?: boolean
+  statementBlobUrl?: boolean
+  statementFileName?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AccountReconciliationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "accountId" | "periodStart" | "periodEnd" | "beginningBalance" | "endingBalance" | "status" | "completedBy" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["accountReconciliation"]>
+export type AccountReconciliationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "accountId" | "periodStart" | "periodEnd" | "beginningBalance" | "endingBalance" | "status" | "completedBy" | "completedAt" | "statementBlobUrl" | "statementFileName" | "createdAt" | "updatedAt", ExtArgs["result"]["accountReconciliation"]>
 export type AccountReconciliationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | Prisma.AccountReconciliation$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.AccountReconciliationCountOutputTypeDefaultArgs<ExtArgs>
@@ -732,6 +792,8 @@ export type $AccountReconciliationPayload<ExtArgs extends runtime.Types.Extensio
     status: $Enums.AccountReconciliationStatus
     completedBy: string | null
     completedAt: Date | null
+    statementBlobUrl: string | null
+    statementFileName: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["accountReconciliation"]>
@@ -1168,6 +1230,8 @@ export interface AccountReconciliationFieldRefs {
   readonly status: Prisma.FieldRef<"AccountReconciliation", 'AccountReconciliationStatus'>
   readonly completedBy: Prisma.FieldRef<"AccountReconciliation", 'String'>
   readonly completedAt: Prisma.FieldRef<"AccountReconciliation", 'DateTime'>
+  readonly statementBlobUrl: Prisma.FieldRef<"AccountReconciliation", 'String'>
+  readonly statementFileName: Prisma.FieldRef<"AccountReconciliation", 'String'>
   readonly createdAt: Prisma.FieldRef<"AccountReconciliation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"AccountReconciliation", 'DateTime'>
 }

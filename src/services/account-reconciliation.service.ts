@@ -36,6 +36,7 @@ export interface ReconciliationDetail {
   status: string;
   completedBy: string | null;
   completedAt: Date | null;
+  statementFileName: string | null;
   clearedItems: ClearedItem[];
   availableTransactions: AvailableTransaction[];
   difference: number;
@@ -132,10 +133,10 @@ export async function startReconciliation(input: StartReconciliationInput) {
 /**
  * Get the last completed reconciliation's ending balance for auto-populating.
  */
-export async function getLastEndingBalance(
+export async function getLastReconciliation(
   organizationId: string,
   accountId: string
-): Promise<number | null> {
+): Promise<{ endingBalance: number; periodEnd: Date } | null> {
   const last = await prisma.accountReconciliation.findFirst({
     where: {
       organizationId,
@@ -143,10 +144,21 @@ export async function getLastEndingBalance(
       status: 'COMPLETED',
     },
     orderBy: { periodEnd: 'desc' },
-    select: { endingBalance: true },
+    select: { endingBalance: true, periodEnd: true },
   });
 
-  return last ? Number(last.endingBalance) : null;
+  return last ? { endingBalance: Number(last.endingBalance), periodEnd: last.periodEnd } : null;
+}
+
+/**
+ * @deprecated Use getLastReconciliation instead
+ */
+export async function getLastEndingBalance(
+  organizationId: string,
+  accountId: string
+): Promise<number | null> {
+  const result = await getLastReconciliation(organizationId, accountId);
+  return result ? result.endingBalance : null;
 }
 
 /**
@@ -252,6 +264,7 @@ export async function getReconciliationDetail(
     status: reconciliation.status,
     completedBy: reconciliation.completedBy,
     completedAt: reconciliation.completedAt,
+    statementFileName: reconciliation.statementFileName,
     clearedItems,
     availableTransactions,
     difference,

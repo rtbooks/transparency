@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
-import { getLastEndingBalance } from '@/services/account-reconciliation.service';
+import { getLastReconciliation } from '@/services/account-reconciliation.service';
 
 /**
  * GET /api/organizations/[slug]/reconciliations/last-balance?accountId=...
@@ -28,8 +28,11 @@ export async function GET(
     const accountId = request.nextUrl.searchParams.get('accountId');
     if (!accountId) return NextResponse.json({ error: 'accountId required' }, { status: 400 });
 
-    const lastBalance = await getLastEndingBalance(organization.id, accountId);
-    return NextResponse.json({ lastEndingBalance: lastBalance });
+    const last = await getLastReconciliation(organization.id, accountId);
+    return NextResponse.json({
+      lastEndingBalance: last?.endingBalance ?? null,
+      lastPeriodEnd: last?.periodEnd ?? null,
+    });
   } catch (error) {
     console.error('Error getting last balance:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
