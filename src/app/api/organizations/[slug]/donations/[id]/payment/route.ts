@@ -5,6 +5,7 @@ import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { recordDonationPayment } from '@/services/donation.service';
 import { recordPayment } from '@/services/bill-payment.service';
 import { recalculateBillStatus } from '@/services/bill.service';
+import { sendDonationReceiptEmail } from '@/lib/email/send-donation-receipt';
 import { z } from 'zod';
 
 const paymentSchema = z.object({
@@ -101,6 +102,39 @@ export async function POST(
 
       return payment;
     });
+
+    // Fire-and-forget: send receipt email to donor
+    const contact = await prisma.contact.findFirst({
+      where: buildCurrentVersionWhere({ id: donation.contactId }),
+    });
+    if (contact?.email) {
+      sendDonationReceiptEmail({
+        donorEmail: contact.email,
+        donor: {
+          name: contact.name,
+          isAnonymous: donation.isAnonymous,
+        },
+        donation: {
+          id: donation.id,
+          amount: validated.amount,
+          donationDate: validated.transactionDate,
+          paymentMethod: validated.paymentMethod || null,
+          isTaxDeductible: donation.isTaxDeductible,
+          description: donation.description,
+          campaignName: null,
+        },
+        organization: {
+          name: organization.name,
+          ein: organization.ein,
+          addressLine1: organization.addressLine1,
+          addressLine2: organization.addressLine2,
+          city: organization.city,
+          state: organization.state,
+          postalCode: organization.postalCode,
+          country: organization.country,
+        },
+      }).catch((err) => console.error('[Payment] Receipt email failed:', err));
+    }
 
     return NextResponse.json(billPayment, { status: 201 });
   } catch (error: any) {

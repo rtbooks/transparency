@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X, CreditCard, Smartphone, Mail, Link2, Building2, Wallet, ChevronDown, ChevronRight } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle, AlertCircle, Plus, Target, UserCheck, Loader2, Pencil, X, CreditCard, Smartphone, Mail, Link2, Building2, Wallet, ChevronDown, ChevronRight, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -570,6 +570,23 @@ export function DonationsPageClient({
                           >
                             <Wallet className="mr-1 h-3 w-3" />
                             Pay Now
+                          </Button>
+                        </div>
+                      )}
+                      {(donation.status === 'RECEIVED' || donation.status === 'PARTIAL') && (
+                        <div className="mt-2 flex justify-end">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              window.open(
+                                `/api/organizations/${organizationSlug}/donations/${donation.id}/receipt`,
+                                '_blank'
+                              );
+                            }}
+                          >
+                            <Download className="mr-1 h-3 w-3" />
+                            Tax Receipt
                           </Button>
                         </div>
                       )}

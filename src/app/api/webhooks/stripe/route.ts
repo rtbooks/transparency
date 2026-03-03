@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { buildCurrentVersionWhere } from "@/lib/temporal/temporal-utils";
 import { createTransactionRecord } from "@/services/transaction.service";
 import { findStripePaymentBySessionId, createStripePayment } from "@/services/stripe-payment.service";
+import { sendDonationReceiptEmail } from "@/lib/email/send-donation-receipt";
 
 /**
  * POST /api/webhooks/stripe
@@ -141,6 +142,37 @@ async function handleCheckoutCompleted(
     await handleNewDonation(
       session, metadata, organizationId, clearingAccountId, revenueAccountId, amount, chargedAmount
     );
+  }
+
+  // Fire-and-forget: send donation receipt email
+  const donorEmail = session.customer_email || session.customer_details?.email;
+  if (donorEmail) {
+    sendDonationReceiptEmail({
+      donorEmail,
+      donor: {
+        name: metadata.donorName || 'Anonymous Donor',
+        isAnonymous: metadata.isAnonymous === 'true',
+      },
+      donation: {
+        id: metadata.donationId || session.id,
+        amount,
+        donationDate: new Date(),
+        paymentMethod: 'STRIPE',
+        isTaxDeductible: true,
+        description: metadata.donorMessage || null,
+        campaignName: metadata.campaignName || null,
+      },
+      organization: {
+        name: organization.name,
+        ein: organization.ein,
+        addressLine1: organization.addressLine1,
+        addressLine2: organization.addressLine2,
+        city: organization.city,
+        state: organization.state,
+        postalCode: organization.postalCode,
+        country: organization.country,
+      },
+    }).catch((err) => console.error('[Webhook] Receipt email failed:', err));
   }
 
   // Check campaign auto-complete

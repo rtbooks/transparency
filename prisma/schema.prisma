@@ -20,6 +20,12 @@ model Organization {
   name            String
   slug            String // URL-friendly identifier (e.g., "grit-hoops") — uniqueness enforced at app level for current versions
   ein             String? // Tax ID / EIN
+  addressLine1    String? @map("address_line1")
+  addressLine2    String? @map("address_line2")
+  city            String?
+  state           String?
+  postalCode      String? @map("postal_code")
+  country         String? @default("US")
   mission         String?  @db.Text
   logoUrl         String?  @map("logo_url")
   primaryColor    String?  @map("primary_color") // Hex color for nav accent (e.g. "#3b82f6")

@@ -13,10 +13,17 @@ function getResendClient(): Resend | null {
 
 const DEFAULT_FROM = 'RadBooks <noreply@radbooks.org>';
 
+export interface EmailAttachment {
+  filename: string;
+  content: Buffer;
+  contentType?: string;
+}
+
 interface SendEmailOptions {
   to: string | string[];
   subject: string;
   react: React.ReactElement;
+  attachments?: EmailAttachment[];
 }
 
 /**
@@ -33,6 +40,9 @@ export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
     console.log(`  To: ${Array.isArray(options.to) ? options.to.join(', ') : options.to}`);
     console.log(`  From: ${from}`);
     console.log(`  Subject: ${options.subject}`);
+    if (options.attachments?.length) {
+      console.log(`  Attachments: ${options.attachments.map(a => a.filename).join(', ')}`);
+    }
     return true;
   }
 
@@ -42,6 +52,11 @@ export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
       to: Array.isArray(options.to) ? options.to : [options.to],
       subject: options.subject,
       react: options.react,
+      attachments: options.attachments?.map(a => ({
+        filename: a.filename,
+        content: a.content,
+        contentType: a.contentType,
+      })),
     });
 
     if (error) {

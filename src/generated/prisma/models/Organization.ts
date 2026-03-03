@@ -30,6 +30,12 @@ export type OrganizationMinAggregateOutputType = {
   name: string | null
   slug: string | null
   ein: string | null
+  addressLine1: string | null
+  addressLine2: string | null
+  city: string | null
+  state: string | null
+  postalCode: string | null
+  country: string | null
   mission: string | null
   logoUrl: string | null
   primaryColor: string | null
@@ -68,6 +74,12 @@ export type OrganizationMaxAggregateOutputType = {
   name: string | null
   slug: string | null
   ein: string | null
+  addressLine1: string | null
+  addressLine2: string | null
+  city: string | null
+  state: string | null
+  postalCode: string | null
+  country: string | null
   mission: string | null
   logoUrl: string | null
   primaryColor: string | null
@@ -106,6 +118,12 @@ export type OrganizationCountAggregateOutputType = {
   name: number
   slug: number
   ein: number
+  addressLine1: number
+  addressLine2: number
+  city: number
+  state: number
+  postalCode: number
+  country: number
   mission: number
   logoUrl: number
   primaryColor: number
@@ -146,6 +164,12 @@ export type OrganizationMinAggregateInputType = {
   name?: true
   slug?: true
   ein?: true
+  addressLine1?: true
+  addressLine2?: true
+  city?: true
+  state?: true
+  postalCode?: true
+  country?: true
   mission?: true
   logoUrl?: true
   primaryColor?: true
@@ -184,6 +208,12 @@ export type OrganizationMaxAggregateInputType = {
   name?: true
   slug?: true
   ein?: true
+  addressLine1?: true
+  addressLine2?: true
+  city?: true
+  state?: true
+  postalCode?: true
+  country?: true
   mission?: true
   logoUrl?: true
   primaryColor?: true
@@ -222,6 +252,12 @@ export type OrganizationCountAggregateInputType = {
   name?: true
   slug?: true
   ein?: true
+  addressLine1?: true
+  addressLine2?: true
+  city?: true
+  state?: true
+  postalCode?: true
+  country?: true
   mission?: true
   logoUrl?: true
   primaryColor?: true
@@ -333,6 +369,12 @@ export type OrganizationGroupByOutputType = {
   name: string
   slug: string
   ein: string | null
+  addressLine1: string | null
+  addressLine2: string | null
+  city: string | null
+  state: string | null
+  postalCode: string | null
+  country: string | null
   mission: string | null
   logoUrl: string | null
   primaryColor: string | null
@@ -392,6 +434,12 @@ export type OrganizationWhereInput = {
   name?: Prisma.StringFilter<"Organization"> | string
   slug?: Prisma.StringFilter<"Organization"> | string
   ein?: Prisma.StringNullableFilter<"Organization"> | string | null
+  addressLine1?: Prisma.StringNullableFilter<"Organization"> | string | null
+  addressLine2?: Prisma.StringNullableFilter<"Organization"> | string | null
+  city?: Prisma.StringNullableFilter<"Organization"> | string | null
+  state?: Prisma.StringNullableFilter<"Organization"> | string | null
+  postalCode?: Prisma.StringNullableFilter<"Organization"> | string | null
+  country?: Prisma.StringNullableFilter<"Organization"> | string | null
   mission?: Prisma.StringNullableFilter<"Organization"> | string | null
   logoUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   primaryColor?: Prisma.StringNullableFilter<"Organization"> | string | null
@@ -430,6 +478,12 @@ export type OrganizationOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   ein?: Prisma.SortOrderInput | Prisma.SortOrder
+  addressLine1?: Prisma.SortOrderInput | Prisma.SortOrder
+  addressLine2?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  state?: Prisma.SortOrderInput | Prisma.SortOrder
+  postalCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
   mission?: Prisma.SortOrderInput | Prisma.SortOrder
   logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   primaryColor?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -472,6 +526,12 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Organization"> | string
   slug?: Prisma.StringFilter<"Organization"> | string
   ein?: Prisma.StringNullableFilter<"Organization"> | string | null
+  addressLine1?: Prisma.StringNullableFilter<"Organization"> | string | null
+  addressLine2?: Prisma.StringNullableFilter<"Organization"> | string | null
+  city?: Prisma.StringNullableFilter<"Organization"> | string | null
+  state?: Prisma.StringNullableFilter<"Organization"> | string | null
+  postalCode?: Prisma.StringNullableFilter<"Organization"> | string | null
+  country?: Prisma.StringNullableFilter<"Organization"> | string | null
   mission?: Prisma.StringNullableFilter<"Organization"> | string | null
   logoUrl?: Prisma.StringNullableFilter<"Organization"> | string | null
   primaryColor?: Prisma.StringNullableFilter<"Organization"> | string | null
@@ -510,6 +570,12 @@ export type OrganizationOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   ein?: Prisma.SortOrderInput | Prisma.SortOrder
+  addressLine1?: Prisma.SortOrderInput | Prisma.SortOrder
+  addressLine2?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  state?: Prisma.SortOrderInput | Prisma.SortOrder
+  postalCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
   mission?: Prisma.SortOrderInput | Prisma.SortOrder
   logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   primaryColor?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -554,6 +620,12 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   ein?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  addressLine1?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  addressLine2?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  city?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  state?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  postalCode?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  country?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   mission?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   logoUrl?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   primaryColor?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
@@ -592,6 +664,12 @@ export type OrganizationCreateInput = {
   name: string
   slug: string
   ein?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  postalCode?: string | null
+  country?: string | null
   mission?: string | null
   logoUrl?: string | null
   primaryColor?: string | null
@@ -630,6 +708,12 @@ export type OrganizationUncheckedCreateInput = {
   name: string
   slug: string
   ein?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  postalCode?: string | null
+  country?: string | null
   mission?: string | null
   logoUrl?: string | null
   primaryColor?: string | null
@@ -668,6 +752,12 @@ export type OrganizationUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   primaryColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -706,6 +796,12 @@ export type OrganizationUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   primaryColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -744,6 +840,12 @@ export type OrganizationCreateManyInput = {
   name: string
   slug: string
   ein?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  postalCode?: string | null
+  country?: string | null
   mission?: string | null
   logoUrl?: string | null
   primaryColor?: string | null
@@ -782,6 +884,12 @@ export type OrganizationUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   primaryColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -820,6 +928,12 @@ export type OrganizationUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   ein?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mission?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   primaryColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -863,6 +977,12 @@ export type OrganizationCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   ein?: Prisma.SortOrder
+  addressLine1?: Prisma.SortOrder
+  addressLine2?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  postalCode?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   mission?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
   primaryColor?: Prisma.SortOrder
@@ -901,6 +1021,12 @@ export type OrganizationMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   ein?: Prisma.SortOrder
+  addressLine1?: Prisma.SortOrder
+  addressLine2?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  postalCode?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   mission?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
   primaryColor?: Prisma.SortOrder
@@ -939,6 +1065,12 @@ export type OrganizationMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   ein?: Prisma.SortOrder
+  addressLine1?: Prisma.SortOrder
+  addressLine2?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  postalCode?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   mission?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
   primaryColor?: Prisma.SortOrder
@@ -1015,6 +1147,12 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   name?: boolean
   slug?: boolean
   ein?: boolean
+  addressLine1?: boolean
+  addressLine2?: boolean
+  city?: boolean
+  state?: boolean
+  postalCode?: boolean
+  country?: boolean
   mission?: boolean
   logoUrl?: boolean
   primaryColor?: boolean
@@ -1053,6 +1191,12 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   name?: boolean
   slug?: boolean
   ein?: boolean
+  addressLine1?: boolean
+  addressLine2?: boolean
+  city?: boolean
+  state?: boolean
+  postalCode?: boolean
+  country?: boolean
   mission?: boolean
   logoUrl?: boolean
   primaryColor?: boolean
@@ -1091,6 +1235,12 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   name?: boolean
   slug?: boolean
   ein?: boolean
+  addressLine1?: boolean
+  addressLine2?: boolean
+  city?: boolean
+  state?: boolean
+  postalCode?: boolean
+  country?: boolean
   mission?: boolean
   logoUrl?: boolean
   primaryColor?: boolean
@@ -1129,6 +1279,12 @@ export type OrganizationSelectScalar = {
   name?: boolean
   slug?: boolean
   ein?: boolean
+  addressLine1?: boolean
+  addressLine2?: boolean
+  city?: boolean
+  state?: boolean
+  postalCode?: boolean
+  country?: boolean
   mission?: boolean
   logoUrl?: boolean
   primaryColor?: boolean
@@ -1161,7 +1317,7 @@ export type OrganizationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "name" | "slug" | "ein" | "mission" | "logoUrl" | "primaryColor" | "accentColor" | "fiscalYearStart" | "donorAccessMode" | "donationsAccountId" | "donationsArAccountId" | "fundBalanceAccountId" | "publicTransparency" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"versionId" | "id" | "name" | "slug" | "ein" | "addressLine1" | "addressLine2" | "city" | "state" | "postalCode" | "country" | "mission" | "logoUrl" | "primaryColor" | "accentColor" | "fiscalYearStart" | "donorAccessMode" | "donationsAccountId" | "donationsArAccountId" | "fundBalanceAccountId" | "publicTransparency" | "status" | "subscriptionTier" | "verificationStatus" | "einVerifiedAt" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "officialWebsite" | "determinationLetterUrl" | "previousVersionId" | "validFrom" | "validTo" | "systemFrom" | "systemTo" | "isDeleted" | "deletedAt" | "deletedBy" | "changedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 
 export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Organization"
@@ -1172,6 +1328,12 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     name: string
     slug: string
     ein: string | null
+    addressLine1: string | null
+    addressLine2: string | null
+    city: string | null
+    state: string | null
+    postalCode: string | null
+    country: string | null
     mission: string | null
     logoUrl: string | null
     primaryColor: string | null
@@ -1630,6 +1792,12 @@ export interface OrganizationFieldRefs {
   readonly name: Prisma.FieldRef<"Organization", 'String'>
   readonly slug: Prisma.FieldRef<"Organization", 'String'>
   readonly ein: Prisma.FieldRef<"Organization", 'String'>
+  readonly addressLine1: Prisma.FieldRef<"Organization", 'String'>
+  readonly addressLine2: Prisma.FieldRef<"Organization", 'String'>
+  readonly city: Prisma.FieldRef<"Organization", 'String'>
+  readonly state: Prisma.FieldRef<"Organization", 'String'>
+  readonly postalCode: Prisma.FieldRef<"Organization", 'String'>
+  readonly country: Prisma.FieldRef<"Organization", 'String'>
   readonly mission: Prisma.FieldRef<"Organization", 'String'>
   readonly logoUrl: Prisma.FieldRef<"Organization", 'String'>
   readonly primaryColor: Prisma.FieldRef<"Organization", 'String'>
