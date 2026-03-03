@@ -183,7 +183,7 @@ async function handlePledgePayment(
 
   // Use processDonationPayment inside a wrapping transaction that also creates the StripePayment record
   await prisma.$transaction(async (tx) => {
-    await processDonationPayment({
+    const billPayment = await processDonationPayment({
       donationId: donation.id,
       organizationId,
       amount,
@@ -195,23 +195,14 @@ async function handlePledgePayment(
       txClient: tx,
     });
 
-    // Create StripePayment record for idempotency and audit trail
-    // (We need the transactionId from the bill payment, but processDonationPayment
-    //  returns the BillPayment which has it)
-    // For now, find the latest bill payment to get the transactionId
-    const latestPayment = await tx.billPayment.findFirst({
-      where: { billId: donation.billId! },
-      orderBy: { createdAt: 'desc' },
-    });
-
     await createStripePayment(tx, {
       organizationId,
       stripeSessionId: session.id,
       stripePaymentId: session.payment_intent as string || null,
       amount: chargedAmount,
-      transactionId: latestPayment?.transactionId || '',
+      transactionId: billPayment.transactionId,
       donationId: donation.id,
-      billPaymentId: latestPayment?.id || null,
+      billPaymentId: billPayment.id,
       metadata: session.metadata as Record<string, unknown> || null,
     });
   });
