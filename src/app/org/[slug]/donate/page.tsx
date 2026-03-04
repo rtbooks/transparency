@@ -23,15 +23,44 @@ export default async function DonatePage({ params, searchParams }: Props) {
     notFound();
   }
 
-  // If a campaign is specified, look it up for context
-  let campaignName: string | null = null;
+  // If a campaign is specified, fetch full campaign data for type-specific UI
+  let campaignData: any = null;
   if (campaignId) {
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
-      select: { name: true, organizationId: true, status: true },
+      include: {
+        tiers: { orderBy: { sortOrder: 'asc' } },
+        items: { where: { isActive: true }, orderBy: { sortOrder: 'asc' } },
+      },
     });
     if (campaign && campaign.organizationId === organization.id && campaign.status === 'ACTIVE') {
-      campaignName = campaign.name;
+      campaignData = {
+        id: campaign.id,
+        name: campaign.name,
+        description: campaign.description,
+        campaignType: campaign.campaignType,
+        unitPrice: campaign.unitPrice ? Number(campaign.unitPrice) : null,
+        unitLabel: campaign.unitLabel,
+        maxUnits: campaign.maxUnits,
+        allowMultiUnit: campaign.allowMultiUnit,
+        tiers: campaign.tiers.map((t) => ({
+          id: t.id,
+          name: t.name,
+          amount: Number(t.amount),
+          maxSlots: t.maxSlots,
+        })),
+        items: campaign.items.map((i) => ({
+          id: i.id,
+          name: i.name,
+          description: i.description,
+          category: i.category,
+          price: Number(i.price),
+          maxQuantity: i.maxQuantity,
+          minPerOrder: i.minPerOrder,
+          maxPerOrder: i.maxPerOrder,
+          isRequired: i.isRequired,
+        })),
+      };
     }
   }
 
@@ -42,7 +71,8 @@ export default async function DonatePage({ params, searchParams }: Props) {
         organizationName={organization.name}
         primaryColor={organization.primaryColor}
         campaignId={campaignId || null}
-        campaignName={campaignName}
+        campaignName={campaignData?.name || null}
+        campaign={campaignData}
       />
     </div>
   );
