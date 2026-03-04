@@ -74,6 +74,7 @@ interface DonationsData {
 interface DonationsPageClientProps {
   organizationSlug: string;
   organizationName: string;
+  stripeSuccess?: boolean;
 }
 
 interface ClaimableContact {
@@ -94,6 +95,7 @@ const statusConfig: Record<string, { label: string; variant: 'default' | 'second
 export function DonationsPageClient({
   organizationSlug,
   organizationName,
+  stripeSuccess,
 }: DonationsPageClientProps) {
   const [data, setData] = useState<DonationsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -112,6 +114,7 @@ export function DonationsPageClient({
   const [payNowDonation, setPayNowDonation] = useState<DonationItem | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
   const [expandedPayments, setExpandedPayments] = useState<Set<string>>(new Set());
+  const [showStripeSuccess, setShowStripeSuccess] = useState(stripeSuccess ?? false);
 
   const fetchDonations = useCallback(async () => {
     try {
@@ -383,6 +386,29 @@ export function DonationsPageClient({
           </Button>
         </Link>
       </div>
+
+      {/* Stripe Payment Success Banner */}
+      {showStripeSuccess && (
+        <div className="mb-8 rounded-lg border border-green-200 bg-green-50 p-6">
+          <div className="flex items-start gap-3">
+            <CheckCircle className="mt-0.5 h-5 w-5 text-green-600" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-green-900">
+                Thank You for Your Donation!
+              </h3>
+              <p className="mt-1 text-sm text-green-800">
+                Your payment has been processed successfully.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowStripeSuccess(false)}
+              className="text-green-600 hover:text-green-800"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Claimable Contact Banner */}
       {hasLinkedContact === false && claimable.length > 0 && (
