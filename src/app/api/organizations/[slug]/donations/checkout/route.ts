@@ -170,10 +170,10 @@ export async function POST(
           donationId: validated.donationId || "",
           lineItems: validated.lineItems ? JSON.stringify(validated.lineItems) : "",
         },
-        success_url: `${baseUrl}/org/${slug}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${baseUrl}/org/${slug}/my-donations?stripe=success&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: validated.campaignId
-          ? `${baseUrl}/org/${slug}/donate/cancel?campaignId=${validated.campaignId}`
-          : `${baseUrl}/org/${slug}/donate/cancel`,
+          ? `${baseUrl}/org/${slug}/my-donations/new?campaignId=${validated.campaignId}`
+          : `${baseUrl}/org/${slug}/my-donations/new`,
       },
       {
         stripeAccount: stripeMethod.stripeAccountId,

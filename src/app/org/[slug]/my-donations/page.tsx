@@ -9,12 +9,14 @@ import { DonationsPageClient } from '@/components/org/DonationsPageClient';
 
 interface DonationsPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ stripe?: string }>;
 }
 
 export const metadata: Metadata = { title: "My Donations" };
 
-export default async function DonationsPage({ params }: DonationsPageProps) {
+export default async function DonationsPage({ params, searchParams }: DonationsPageProps) {
   const { slug } = await params;
+  const { stripe } = await searchParams;
   const { userId: clerkUserId } = await auth();
 
   if (!clerkUserId) {
@@ -53,6 +55,7 @@ export default async function DonationsPage({ params }: DonationsPageProps) {
       <DonationsPageClient
         organizationSlug={slug}
         organizationName={organization.name}
+        stripeSuccess={stripe === 'success'}
       />
     </OrganizationLayoutWrapper>
   );
