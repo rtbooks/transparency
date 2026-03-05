@@ -18,6 +18,7 @@ import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { UserRole } from '@/generated/prisma/client';
 import { hasRole, getRolePermissions, type RolePermissions } from './permissions';
+import { ensureUserExists } from './ensure-user';
 
 // ── Types ────────────────────────────────────────────────────────────────
 
@@ -70,11 +71,13 @@ export async function withOrgAuth(
     throw new AuthError('Unauthorized', 401);
   }
 
-  // 2. Resolve internal user
-  const user = await prisma.user.findUnique({
-    where: { authId: clerkUserId },
-    select: { id: true, isPlatformAdmin: true },
-  });
+  // 2. Resolve internal user (auto-creates DB record for new Clerk users)
+  let user: { id: string; isPlatformAdmin: boolean };
+  try {
+    user = await ensureUserExists(clerkUserId, { id: true, isPlatformAdmin: true }) as { id: string; isPlatformAdmin: boolean };
+  } catch {
+    throw new AuthError('User not found', 404);
+  }
   if (!user) {
     throw new AuthError('User not found', 404);
   }

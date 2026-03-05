@@ -8,8 +8,10 @@ import type { OrgAuthContext } from '@/lib/auth/with-org-auth';
 
 // Clerk auth mock
 const mockAuth = jest.fn();
+const mockCurrentUser = jest.fn();
 jest.mock('@clerk/nextjs/server', () => ({
   auth: () => mockAuth(),
+  currentUser: () => mockCurrentUser(),
 }));
 
 // Prisma mock
@@ -37,6 +39,10 @@ function setupAuth(clerkUserId: string | null) {
 
 function setupUser(user: { id: string; isPlatformAdmin: boolean } | null) {
   mockUserFindUnique.mockResolvedValue(user);
+  // When user is null, currentUser() should also return null to simulate no Clerk session match
+  if (!user) {
+    mockCurrentUser.mockResolvedValue(null);
+  }
 }
 
 function setupOrg(org: { id: string } | null) {
