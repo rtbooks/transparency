@@ -183,16 +183,31 @@ test.describe('Public Organizations Listing', () => {
 
 test.describe('Public Donation Page', () => {
   let orgSlug: string | null = null;
+  let campaignId: string | null = null;
 
   test.beforeAll(async ({ browser }) => {
     const page = await browser.newPage();
     orgSlug = await discoverOrgSlug(page);
+
+    // Discover a campaign ID from the org page donate links
+    if (orgSlug) {
+      await page.goto(`/org/${orgSlug}`);
+      await page.waitForLoadState('load');
+      const donateLink = page.locator(`a[href*="/org/${orgSlug}/donate/"]`).first();
+      const href = await donateLink.getAttribute('href').catch(() => null);
+      if (href) {
+        // Extract campaignId from /org/{slug}/donate/{campaignId}
+        const match = href.match(/\/donate\/([^/]+)$/);
+        campaignId = match ? match[1] : null;
+      }
+    }
+
     await page.close();
   });
 
-  test('Donation page loads for valid org', async ({ page }) => {
-    test.skip(!orgSlug, 'No working org found in dev database');
-    const response = await page.goto(`/org/${orgSlug}/donate`);
+  test('Donation page loads for valid org campaign', async ({ page }) => {
+    test.skip(!orgSlug || !campaignId, 'No working org or campaign found in dev database');
+    const response = await page.goto(`/org/${orgSlug}/donate/${campaignId}`);
     await page.waitForLoadState('load');
 
     const status = response?.status() ?? 200;
@@ -200,8 +215,8 @@ test.describe('Public Donation Page', () => {
   });
 
   test('Donation page shows donation content', async ({ page }) => {
-    test.skip(!orgSlug, 'No working org found in dev database');
-    await page.goto(`/org/${orgSlug}/donate`);
+    test.skip(!orgSlug || !campaignId, 'No working org or campaign found in dev database');
+    await page.goto(`/org/${orgSlug}/donate/${campaignId}`);
     await page.waitForLoadState('load');
 
     // Wait for client-side content to render
@@ -217,14 +232,14 @@ test.describe('Public Donation Page', () => {
   });
 
   test('Donation page for non-existent org returns 404', async ({ page }) => {
-    const response = await page.goto('/org/fake-org-xyz-999/donate');
+    const response = await page.goto('/org/fake-org-xyz-999/donate/fake-campaign-id');
     const status = response?.status() ?? 200;
     expect(status).toBe(404);
   });
 
   test('Donation page passes accessibility audit', async ({ page }) => {
-    test.skip(!orgSlug, 'No working org found in dev database');
-    await page.goto(`/org/${orgSlug}/donate`);
+    test.skip(!orgSlug || !campaignId, 'No working org or campaign found in dev database');
+    await page.goto(`/org/${orgSlug}/donate/${campaignId}`);
     await page.waitForLoadState('load');
 
     const violations = await checkAccessibility(page, {
