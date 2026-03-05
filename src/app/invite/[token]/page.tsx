@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import { redirect, notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 import { InviteSuccess } from './InviteSuccess';
 import { ROLE_LABELS } from '@/lib/auth/permissions';
+import { ensureUserExists } from '@/lib/auth/ensure-user';
 
 interface InvitePageProps {
   params: Promise<{ token: string }>;
@@ -23,44 +24,10 @@ export default async function InvitePage({ params }: InvitePageProps) {
   }
 
   // Find or create the user in our database
-  let user = await prisma.user.findUnique({
-    where: { authId: clerkUserId },
-  });
+  const user = await ensureUserExists(clerkUserId);
 
   if (!user) {
-    // New user — create DB record inline so they don't detour through /profile
-    const clerkUser = await currentUser();
-    if (!clerkUser) {
-      redirect(`/login?redirect_url=${encodeURIComponent(`/invite/${token}`)}`);
-    }
-
-    const userEmail = clerkUser.emailAddresses[0]?.emailAddress || '';
-    const adminEmails = process.env.PLATFORM_ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
-    const isPlatformAdmin = adminEmails.includes(userEmail.toLowerCase());
-
-    // Check for existing user by email (Clerk instance migration)
-    const existingByEmail = await prisma.user.findUnique({
-      where: { email: userEmail },
-    });
-
-    if (existingByEmail) {
-      user = await prisma.user.update({
-        where: { email: userEmail },
-        data: { authId: clerkUser.id, avatarUrl: clerkUser.imageUrl, isPlatformAdmin },
-      });
-    } else {
-      user = await prisma.user.create({
-        data: {
-          authId: clerkUser.id,
-          email: userEmail,
-          name: clerkUser.firstName && clerkUser.lastName
-            ? `${clerkUser.firstName} ${clerkUser.lastName}`
-            : clerkUser.username || 'User',
-          avatarUrl: clerkUser.imageUrl,
-          isPlatformAdmin,
-        },
-      });
-    }
+    redirect(`/login?redirect_url=${encodeURIComponent(`/invite/${token}`)}`);
   }
 
   // Find the invitation by token

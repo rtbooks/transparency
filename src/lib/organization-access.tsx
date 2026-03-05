@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { ensureUserExists } from '@/lib/auth/ensure-user';
 
 export type OrganizationAccessCheck = {
   organization: any;
@@ -17,9 +18,7 @@ export async function checkOrganizationAccess(
   userId: string,
   requireVerified: boolean = true
 ): Promise<OrganizationAccessCheck> {
-  const user = await prisma.user.findUnique({
-    where: { authId: userId },
-  });
+  const user = await ensureUserExists(userId);
 
   if (!user) {
     throw new Error('User not found');

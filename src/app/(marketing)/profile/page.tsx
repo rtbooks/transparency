@@ -3,6 +3,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { ensureUserExists } from '@/lib/auth/ensure-user';
 import { ProfilePageClient } from './ProfilePageClient';
 
 export const metadata: Metadata = { title: 'My Profile' };
@@ -14,105 +15,62 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
-  const userEmail = clerkUser.emailAddresses[0]?.emailAddress || '';
-  const adminEmails = process.env.PLATFORM_ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
-  const isPlatformAdmin = adminEmails.includes(userEmail.toLowerCase());
-
   // Find or create user in database
-  let dbUser = await prisma.user.findUnique({
-    where: { authId: clerkUser.id },
-  });
-
-  // Clerk instance migration: authId changed but email already exists
-  if (!dbUser) {
-    const existingByEmail = await prisma.user.findUnique({
-      where: { email: userEmail },
-    });
-
-    if (existingByEmail) {
-      dbUser = await prisma.user.update({
-        where: { email: userEmail },
-        data: {
-          authId: clerkUser.id,
-          avatarUrl: clerkUser.imageUrl,
-          isPlatformAdmin,
-        },
-      });
-    }
-  }
-
-  // Create user if doesn't exist
-  if (!dbUser) {
-    dbUser = await prisma.user.create({
-      data: {
-        authId: clerkUser.id,
-        email: userEmail,
-        name: clerkUser.firstName && clerkUser.lastName
-          ? `${clerkUser.firstName} ${clerkUser.lastName}`
-          : clerkUser.username || 'User',
-        avatarUrl: clerkUser.imageUrl,
-        isPlatformAdmin,
-      },
-    });
-
-    if (isPlatformAdmin) {
-      console.log(`✅ Platform admin created: ${dbUser.email}`);
-    }
-
-    // Auto-accept pending invitations
-    const pendingInvitations = await prisma.invitation.findMany({
-      where: {
-        email: dbUser.email.toLowerCase(),
-        status: 'PENDING',
-      },
-    });
-
-    const invOrgIds = [...new Set(pendingInvitations.map(inv => inv.organizationId))];
-    const invOrgs = invOrgIds.length > 0
-      ? await prisma.organization.findMany({
-          where: buildCurrentVersionWhere({ id: { in: invOrgIds } }),
-        })
-      : [];
-    const invOrgMap = new Map(invOrgs.map(o => [o.id, o]));
-
-    for (const invitation of pendingInvitations) {
-      const isExpired = invitation.expiresAt < new Date();
-
-      if (!isExpired) {
-        try {
-          await prisma.$transaction([
-            prisma.organizationUser.create({
-              data: {
-                userId: dbUser.id,
-                organizationId: invitation.organizationId,
-                role: invitation.role,
-              },
-            }),
-            prisma.invitation.update({
-              where: { id: invitation.id },
-              data: {
-                status: 'ACCEPTED',
-                acceptedAt: new Date(),
-                updatedAt: new Date(),
-              },
-            }),
-          ]);
-
-          if (pendingInvitations.length === 1) {
-            const invOrg = invOrgMap.get(invitation.organizationId);
-            if (invOrg) {
-              redirect(`/org/${invOrg.slug}/dashboard`);
-            }
-          }
-        } catch (error) {
-          console.error('Error auto-accepting invitation:', error);
-        }
-      }
-    }
-  }
+  const dbUser = await ensureUserExists(clerkUser.id);
 
   if (!dbUser) {
     redirect('/login');
+  }
+
+  // Auto-accept pending invitations
+  const pendingInvitations = await prisma.invitation.findMany({
+    where: {
+      email: dbUser.email.toLowerCase(),
+      status: 'PENDING',
+    },
+  });
+
+  const invOrgIds = [...new Set(pendingInvitations.map(inv => inv.organizationId))];
+  const invOrgs = invOrgIds.length > 0
+    ? await prisma.organization.findMany({
+        where: buildCurrentVersionWhere({ id: { in: invOrgIds } }),
+      })
+    : [];
+  const invOrgMap = new Map(invOrgs.map(o => [o.id, o]));
+
+  for (const invitation of pendingInvitations) {
+    const isExpired = invitation.expiresAt < new Date();
+
+    if (!isExpired) {
+      try {
+        await prisma.$transaction([
+          prisma.organizationUser.create({
+            data: {
+              userId: dbUser.id,
+              organizationId: invitation.organizationId,
+              role: invitation.role,
+            },
+          }),
+          prisma.invitation.update({
+            where: { id: invitation.id },
+            data: {
+              status: 'ACCEPTED',
+              acceptedAt: new Date(),
+              updatedAt: new Date(),
+            },
+          }),
+        ]);
+
+        if (pendingInvitations.length === 1) {
+          const invOrg = invOrgMap.get(invitation.organizationId);
+          if (invOrg) {
+            redirect(`/org/${invOrg.slug}/dashboard`);
+          }
+        }
+      } catch (error) {
+        console.error('Error auto-accepting invitation:', error);
+      }
+    }
   }
 
   // Fetch user's organizations with org details
