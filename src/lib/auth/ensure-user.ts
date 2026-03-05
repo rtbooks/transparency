@@ -7,6 +7,7 @@
 
 import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import type { User } from '@/generated/prisma/client';
 
 /**
  * Find or create a database user for the given Clerk auth ID.
@@ -14,16 +15,12 @@ import { prisma } from '@/lib/prisma';
  * the DB record doesn't exist yet.
  *
  * @param clerkAuthId - The Clerk user ID (from auth())
- * @param select - Optional Prisma select clause (defaults to full record)
  * @returns The database User record
  * @throws Error if Clerk session is invalid or user creation fails
  */
-export async function ensureUserExists(clerkAuthId: string, select?: Record<string, boolean>) {
+export async function ensureUserExists(clerkAuthId: string): Promise<User> {
   // Fast path: user already exists
-  const existing = select
-    ? await prisma.user.findUnique({ where: { authId: clerkAuthId }, select })
-    : await prisma.user.findUnique({ where: { authId: clerkAuthId } });
-
+  const existing = await prisma.user.findUnique({ where: { authId: clerkAuthId } });
   if (existing) return existing;
 
   // Fetch Clerk user details to create the DB record
@@ -42,7 +39,7 @@ export async function ensureUserExists(clerkAuthId: string, select?: Record<stri
   });
 
   if (existingByEmail) {
-    const updated = await prisma.user.update({
+    return prisma.user.update({
       where: { email: userEmail },
       data: {
         authId: clerkUser.id,
@@ -50,9 +47,6 @@ export async function ensureUserExists(clerkAuthId: string, select?: Record<stri
         isPlatformAdmin,
       },
     });
-    return select
-      ? await prisma.user.findUnique({ where: { id: updated.id }, select })
-      : updated;
   }
 
   // Create brand-new user
@@ -72,7 +66,5 @@ export async function ensureUserExists(clerkAuthId: string, select?: Record<stri
     console.log(`✅ Platform admin created: ${created.email}`);
   }
 
-  return select
-    ? await prisma.user.findUnique({ where: { id: created.id }, select })
-    : created;
+  return created;
 }

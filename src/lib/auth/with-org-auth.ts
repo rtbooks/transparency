@@ -74,11 +74,9 @@ export async function withOrgAuth(
   // 2. Resolve internal user (auto-creates DB record for new Clerk users)
   let user: { id: string; isPlatformAdmin: boolean };
   try {
-    user = await ensureUserExists(clerkUserId, { id: true, isPlatformAdmin: true }) as { id: string; isPlatformAdmin: boolean };
+    const dbUser = await ensureUserExists(clerkUserId);
+    user = { id: dbUser.id, isPlatformAdmin: dbUser.isPlatformAdmin };
   } catch {
-    throw new AuthError('User not found', 404);
-  }
-  if (!user) {
     throw new AuthError('User not found', 404);
   }
 
