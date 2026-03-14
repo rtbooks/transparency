@@ -16,7 +16,6 @@
 
 import { PrismaClient, type AccountType } from '@/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import pg from 'pg';
 import { randomUUID } from 'crypto';
 import { config } from 'dotenv';
 
@@ -40,8 +39,7 @@ async function seed() {
     process.exit(1);
   }
 
-  const pool = new pg.Pool({ connectionString: dbUrl });
-  const adapter = new PrismaPg(pool);
+  const adapter = new PrismaPg({ connectionString: dbUrl });
   const prisma = new PrismaClient({ adapter });
 
   try {
@@ -338,7 +336,6 @@ async function seed() {
     console.log(`   Use E2E_ORG_SLUG=${E2E_ORG_SLUG} in your E2E tests`);
   } finally {
     await prisma.$disconnect();
-    await pool.end();
   }
 }
 

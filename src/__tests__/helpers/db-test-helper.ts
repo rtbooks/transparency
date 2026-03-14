@@ -12,7 +12,6 @@
 
 import { PrismaClient, AccountType } from '@/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import pg from 'pg';
 
 const MAX_DATE = new Date('9999-12-31T23:59:59.999Z');
 
@@ -34,11 +33,9 @@ export class DbTestHelper {
   userId!: string;
   contactId!: string;
   accounts!: TestAccounts;
-  private pool!: pg.Pool;
 
   async setup() {
-    this.pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-    const adapter = new PrismaPg(this.pool);
+    const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
     this.prisma = new PrismaClient({ adapter });
 
     const suffix = crypto.randomUUID().slice(0, 8);
@@ -140,7 +137,6 @@ export class DbTestHelper {
     }
 
     await this.prisma.$disconnect();
-    await this.pool.end();
 
     // Also disconnect the singleton prisma used by services
     const { prisma: servicePrisma } = await import('@/lib/prisma');
