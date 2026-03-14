@@ -60,6 +60,15 @@ Before implementing new features, check:
 
 ---
 
+## Development Environment
+
+This project runs in a **devcontainer** with the following services always available:
+
+- **PostgreSQL** is available at `localhost:5432`. The `DATABASE_URL` environment variable is pre-set (e.g., `postgresql://transparency:devpassword@localhost:5432/transparency_dev`). Do not attempt to install or start PostgreSQL — it is already running.
+- **Playwright Chromium** must be installed before running E2E tests: `npx playwright install chromium`
+
+---
+
 ## When in Doubt
 
 1. Search the codebase for similar patterns
