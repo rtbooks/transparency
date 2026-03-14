@@ -279,7 +279,7 @@ export function PublicOrgContent({
                 Want to support this organization?
               </h2>
               <p className="mt-2 text-gray-600">
-                Sign in to request access and make a donation pledge.
+                Sign in to donate to this organization.
               </p>
               <Link href="/login">
                 <Button className="mt-4" size="lg">
@@ -323,50 +323,61 @@ export function PublicOrgContent({
                 Want to support this organization?
               </h2>
               <p className="mt-2 text-gray-600">
-                Request access to make donation pledges and track your contributions.
+                You can donate directly, or request membership to access the organization dashboard.
               </p>
 
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="mt-4" size="lg">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Request Access
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Request Access to {organization.name}</DialogTitle>
-                    <DialogDescription>
-                      {organization.donorAccessMode === 'AUTO_APPROVE'
-                        ? 'Your request will be automatically approved.'
-                        : 'An administrator will review your request.'}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="py-4">
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                      Message (optional)
-                    </label>
-                    <Textarea
-                      placeholder="Tell the organization why you'd like to join..."
-                      value={requestMessage}
-                      onChange={(e) => setRequestMessage(e.target.value)}
-                      rows={3}
-                    />
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      variant="outline"
-                      onClick={() => setDialogOpen(false)}
-                      disabled={isSubmitting}
-                    >
-                      Cancel
+              <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                {campaigns.length > 0 && (
+                  <Link href={`/org/${organization.slug}/donate/${campaigns[0].id}`}>
+                    <Button size="lg">
+                      <Heart className="mr-2 h-4 w-4" />
+                      Donate Now
                     </Button>
-                    <Button onClick={handleAccessRequest} disabled={isSubmitting}>
-                      {isSubmitting ? 'Submitting...' : 'Submit Request'}
+                  </Link>
+                )}
+
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="lg">
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Request Membership
                     </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Request Membership in {organization.name}</DialogTitle>
+                      <DialogDescription>
+                        {organization.donorAccessMode === 'AUTO_APPROVE'
+                          ? 'Your request will be automatically approved.'
+                          : 'An administrator will review your request.'}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Message (optional)
+                      </label>
+                      <Textarea
+                        placeholder="Tell the organization why you'd like to join..."
+                        value={requestMessage}
+                        onChange={(e) => setRequestMessage(e.target.value)}
+                        rows={3}
+                      />
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        variant="outline"
+                        onClick={() => setDialogOpen(false)}
+                        disabled={isSubmitting}
+                      >
+                        Cancel
+                      </Button>
+                      <Button onClick={handleAccessRequest} disabled={isSubmitting}>
+                        {isSubmitting ? 'Submitting...' : 'Submit Request'}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           )}
         </div>

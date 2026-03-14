@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
+import { withPlatformAuth } from '@/lib/auth/with-platform-auth';
+import { AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { updateDonation, cancelDonation } from '@/services/donation.service';
@@ -23,7 +24,7 @@ export async function PATCH(
 ) {
   try {
     const { slug, id } = await params;
-    const ctx = await withOrgAuth(slug);
+    const ctx = await withPlatformAuth(slug);
 
     // Find the donation
     const donation = await prisma.donation.findFirst({
@@ -40,7 +41,7 @@ export async function PATCH(
     });
 
     // Allow admins to also modify donations
-    const isAdmin = ctx.isPlatformAdmin || ctx.role === 'ORG_ADMIN';
+    const isAdmin = ctx.isPlatformAdmin || ctx.orgRole === 'ORG_ADMIN';
 
     if (!contact && !isAdmin) {
       return NextResponse.json({ error: 'You can only modify your own donations' }, { status: 403 });

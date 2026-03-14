@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
+import { withPlatformAuth, type PlatformAuthContext } from '@/lib/auth/with-platform-auth';
+import { AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { listDonations, getMyDonations, createPledgeDonation, createOneTimeDonation } from '@/services/donation.service';
@@ -32,9 +33,10 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const ctx = await withOrgAuth(slug);
+    const ctx = await withPlatformAuth(slug);
 
-    const isAdmin = ctx.isPlatformAdmin || ctx.role === 'ORG_ADMIN';
+    const isAdmin = ctx.isPlatformAdmin || ctx.orgRole === 'ORG_ADMIN';
+    const isMember = ctx.orgRole !== null;
 
     // Find the user's contact record(s) in this organization
     const userContacts = await prisma.contact.findMany({
@@ -49,8 +51,8 @@ export async function GET(
     const viewAll = searchParams.get('view') === 'all';
 
     let donations;
-    if (viewAll) {
-      // Org-wide view: all donations
+    if (viewAll && isMember) {
+      // Org-wide view: all donations (members and admins only)
       donations = await listDonations(ctx.orgId);
     } else {
       // Personal view: only current user's donations
@@ -89,9 +91,7 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const ctx = await withOrgAuth(slug);
-
-    // Fetch org details for account configuration
+    const ctx = await withPlatformAuth(slug);
     const organization = await prisma.organization.findFirst({
       where: buildCurrentVersionWhere({ slug }),
     });

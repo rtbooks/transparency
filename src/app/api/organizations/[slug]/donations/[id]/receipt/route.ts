@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
-import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
+import { withPlatformAuth } from '@/lib/auth/with-platform-auth';
+import { AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { generateReceiptPdf } from '@/services/donation-receipt.service';
 
 /**
@@ -15,7 +16,7 @@ export async function GET(
 ) {
   try {
     const { slug, id } = await params;
-    const ctx = await withOrgAuth(slug);
+    const ctx = await withPlatformAuth(slug);
 
     const donation = await prisma.donation.findFirst({
       where: { id, organizationId: ctx.orgId },
@@ -26,7 +27,7 @@ export async function GET(
     }
 
     // Non-admin users can only download their own receipts
-    if (ctx.role !== 'ORG_ADMIN' && !ctx.isPlatformAdmin) {
+    if (ctx.orgRole !== 'ORG_ADMIN' && !ctx.isPlatformAdmin) {
       const contact = await prisma.contact.findFirst({
         where: buildCurrentVersionWhere({ id: donation.contactId, userId: ctx.userId }),
       });
