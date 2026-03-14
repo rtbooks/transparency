@@ -32,10 +32,10 @@ export default defineConfig({
       name: 'global-setup',
       testMatch: /global\.setup\.ts/,
     },
-    // Auth setup — creates storageState files
+    // Auth setup — creates admin storageState
     {
       name: 'auth-setup',
-      testMatch: /auth\.setup\.ts/,
+      testMatch: /(?:^|\/)auth\.setup\.ts$/,
       dependencies: ['global-setup'],
     },
     // Desktop Chrome (authenticated)
@@ -46,7 +46,7 @@ export default defineConfig({
         storageState: 'e2e/.auth/admin.json',
       },
       dependencies: ['auth-setup'],
-      testIgnore: /.*\.public\.spec\.ts/,
+      testIgnore: /.*\.(public|donor)\.spec\.ts/,
     },
     // Mobile Chrome (responsive testing, authenticated)
     {
@@ -64,6 +64,15 @@ export default defineConfig({
       testMatch: /.*\.public\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['global-setup'],
+    },
+    // Non-member donor tests (signs in fresh per test via clerk.signIn)
+    {
+      name: 'donor',
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+      dependencies: ['global-setup'],
+      testMatch: /.*\.donor\.spec\.ts/,
     },
   ],
 
