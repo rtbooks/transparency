@@ -68,7 +68,9 @@ export function PublicCampaignPage({
     ? `${window.location.origin}/org/${organizationSlug}/donate/${campaign.id}`
     : `/org/${organizationSlug}/donate/${campaign.id}`;
 
-  const accentColor = primaryColor || '#16a34a';
+  // Default green-700 (#15803d) passes WCAG AA contrast (4.79:1) with white text;
+  // green-600 (#16a34a) only achieves 3.14:1 which fails the 4.5:1 threshold.
+  const accentColor = primaryColor || '#15803d';
 
   return (
     <div className="min-h-screen bg-gray-50">

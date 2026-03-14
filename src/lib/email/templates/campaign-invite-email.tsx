@@ -146,7 +146,7 @@ const campaignCard = {
   borderRadius: '8px',
   padding: '16px 20px',
   margin: '0 0 16px',
-  borderLeft: '4px solid #16a34a',
+  borderLeft: '4px solid #15803d',
 };
 
 const campaignTitle = {
@@ -191,7 +191,7 @@ const buttonContainer = {
 };
 
 const button = {
-  backgroundColor: '#16a34a',
+  backgroundColor: '#15803d',
   borderRadius: '6px',
   color: '#ffffff',
   fontSize: '15px',
