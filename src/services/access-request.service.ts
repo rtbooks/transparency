@@ -41,19 +41,21 @@ export async function createAccessRequest(
     throw new Error('You already have access to this organization');
   }
 
-  // Check for existing pending request (partial unique index also enforces this)
+  // Check for existing pending or denied request
   const existingRequest = await prisma.accessRequest.findFirst({
-    where: { organizationId, userId, status: 'PENDING' },
+    where: { organizationId, userId, status: { in: ['PENDING', 'DENIED'] } },
   });
 
   if (existingRequest) {
+    if (existingRequest.status === 'DENIED') {
+      throw new Error('Your previous request was denied. Please contact an organization admin.');
+    }
     throw new Error('You already have a pending access request for this organization');
   }
 
-  // Clean up any previously resolved requests so re-requests work cleanly.
-  // This handles users who were approved, later removed, and want to re-request.
+  // Clean up old APPROVED requests so re-requests work after an admin removes a user.
   await prisma.accessRequest.deleteMany({
-    where: { organizationId, userId, status: { in: ['APPROVED', 'DENIED'] } },
+    where: { organizationId, userId, status: 'APPROVED' },
   });
 
   if (organization.donorAccessMode === 'AUTO_APPROVE') {

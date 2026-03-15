@@ -211,13 +211,31 @@ describe('Access Request Service', () => {
       );
     });
 
-    it('should allow new request when prior APPROVED/DENIED request exists', async () => {
+    it('should throw if denied request exists', async () => {
       (prisma.organization.findFirst as jest.Mock).mockResolvedValue({
         id: 'org-1',
         donorAccessMode: 'REQUIRE_APPROVAL',
       });
       (prisma.organizationUser.findFirst as jest.Mock).mockResolvedValue(null);
-      // No pending request found (the findFirst filters by status: 'PENDING')
+      (prisma.accessRequest.findFirst as jest.Mock).mockResolvedValue({
+        id: 'req-denied',
+        organizationId: 'org-1',
+        userId: 'user-1',
+        status: 'DENIED',
+      });
+
+      await expect(createAccessRequest(input)).rejects.toThrow(
+        'Your previous request was denied. Please contact an organization admin.'
+      );
+    });
+
+    it('should allow new request when prior APPROVED request exists', async () => {
+      (prisma.organization.findFirst as jest.Mock).mockResolvedValue({
+        id: 'org-1',
+        donorAccessMode: 'REQUIRE_APPROVAL',
+      });
+      (prisma.organizationUser.findFirst as jest.Mock).mockResolvedValue(null);
+      // No pending or denied request found
       (prisma.accessRequest.findFirst as jest.Mock).mockResolvedValue(null);
 
       const createdRequest = {

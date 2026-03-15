@@ -21,6 +21,9 @@ jest.mock('@/lib/prisma', () => ({
       create: jest.fn(),
       updateMany: jest.fn(),
     },
+    accessRequest: {
+      deleteMany: jest.fn(),
+    },
   },
 }));
 

@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { clerk } from '@clerk/testing/playwright';
+import { cleanupDonorMembership } from '../helpers/db';
 
 // Run tests serially — the membership request test at the end modifies state
 test.describe.configure({ mode: 'serial' });
@@ -203,12 +204,9 @@ test.describe('Non-Member Donor: Membership Request', () => {
     expect(dialogStillOpen).toBe(false);
   });
 
-  test('Non-member can re-request membership after being removed', async ({ page, request }) => {
-    // Clean up: remove donor's membership and access requests via API
-    // (simulates admin removing the user from the org)
-    const cleanupRes = await request.post(`/api/e2e/cleanup-donor`, {
-      headers: { 'x-e2e-secret': 'e2e-cleanup' },
-    });
+  test('Non-member can re-request membership after being removed', async ({ page }) => {
+    // Clean up directly via DB — no test-only API routes in production code
+    await cleanupDonorMembership(ORG_SLUG, process.env.E2E_DONOR_USERNAME || 'e2e-donor@radbooks.org');
 
     await signInAsDonor(page);
     await page.goto(`/org/${ORG_SLUG}`);

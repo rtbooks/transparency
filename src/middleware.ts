@@ -21,7 +21,6 @@ const isPublicRoute = createRouteMatcher([
   "/api/organizations/:slug/logo", // Org logo (public branding, used in emails)
   "/api/organizations/:slug/attachments/:id/public-image", // Public spending images
   "/invite/:token", // Invitation acceptance page (handles auth internally)
-  "/api/e2e/(.*)", // E2E test helpers (guarded by NODE_ENV check in handlers)
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
