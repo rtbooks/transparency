@@ -109,8 +109,9 @@ export function PublicOrgContent({
       setDialogOpen(false);
       trackEvent('access_requested', { orgSlug: organization.slug });
     } catch (error: any) {
+      const isDenied = error.message?.includes('denied');
       toast({
-        title: 'Error',
+        title: isDenied ? 'Request Previously Denied' : 'Error',
         description: error.message,
         variant: 'destructive',
       });

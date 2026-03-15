@@ -11,6 +11,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
+import { ServiceError } from '@/lib/errors/service-error';
 
 // Mock prisma
 jest.mock('@/lib/prisma', () => ({
@@ -188,9 +189,8 @@ describe('Access Request Service', () => {
         role: 'SUPPORTER',
       });
 
-      await expect(createAccessRequest(input)).rejects.toThrow(
-        'You already have access to this organization'
-      );
+      await expect(createAccessRequest(input)).rejects.toThrow(ServiceError);
+      await expect(createAccessRequest(input)).rejects.toMatchObject({ statusCode: 409 });
     });
 
     it('should throw if pending request already exists', async () => {
@@ -206,9 +206,8 @@ describe('Access Request Service', () => {
         status: 'PENDING',
       });
 
-      await expect(createAccessRequest(input)).rejects.toThrow(
-        'You already have a pending access request for this organization'
-      );
+      await expect(createAccessRequest(input)).rejects.toThrow(ServiceError);
+      await expect(createAccessRequest(input)).rejects.toMatchObject({ statusCode: 409 });
     });
 
     it('should throw if denied request exists', async () => {
@@ -224,9 +223,11 @@ describe('Access Request Service', () => {
         status: 'DENIED',
       });
 
-      await expect(createAccessRequest(input)).rejects.toThrow(
-        'Your previous request was denied. Please contact an organization admin.'
-      );
+      await expect(createAccessRequest(input)).rejects.toThrow(ServiceError);
+      await expect(createAccessRequest(input)).rejects.toMatchObject({
+        statusCode: 403,
+        message: 'Your previous request was denied. Please contact an organization admin.',
+      });
     });
 
     it('should allow new request when prior APPROVED request exists', async () => {

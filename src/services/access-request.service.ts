@@ -6,6 +6,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
+import { ServiceError } from '@/lib/errors/service-error';
 import type { AccessRequest, PrismaClient } from '@/generated/prisma/client';
 
 export interface CreateAccessRequestInput {
@@ -29,7 +30,7 @@ export async function createAccessRequest(
   });
 
   if (!organization) {
-    throw new Error('Organization not found');
+    throw new ServiceError('Organization not found', 404);
   }
 
   // Check if user already has access
@@ -38,7 +39,7 @@ export async function createAccessRequest(
   });
 
   if (existingMembership) {
-    throw new Error('You already have access to this organization');
+    throw new ServiceError('You already have access to this organization', 409);
   }
 
   // Check for existing pending or denied request
@@ -48,9 +49,9 @@ export async function createAccessRequest(
 
   if (existingRequest) {
     if (existingRequest.status === 'DENIED') {
-      throw new Error('Your previous request was denied. Please contact an organization admin.');
+      throw new ServiceError('Your previous request was denied. Please contact an organization admin.', 403);
     }
-    throw new Error('You already have a pending access request for this organization');
+    throw new ServiceError('You already have a pending access request for this organization', 409);
   }
 
   // Clean up old APPROVED requests so re-requests work after an admin removes a user.

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { withPlatformAuth } from '@/lib/auth/with-platform-auth';
 import { createAccessRequest, getPendingRequests } from '@/services/access-request.service';
+import { ServiceError } from '@/lib/errors/service-error';
 import { z } from 'zod';
 
 const createRequestSchema = z.object({
@@ -55,11 +56,11 @@ export async function POST(
     return NextResponse.json(result, { status: statusCode });
   } catch (error: any) {
     if (error instanceof AuthError) return authErrorResponse(error);
+    if (error instanceof ServiceError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode });
+    }
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
-    }
-    if (error?.message?.includes('already have')) {
-      return NextResponse.json({ error: error.message }, { status: 409 });
     }
     console.error('Error creating access request:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
