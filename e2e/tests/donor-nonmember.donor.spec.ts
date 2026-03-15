@@ -1,6 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { clerk } from '@clerk/testing/playwright';
 
+// Run tests serially — the membership request test at the end modifies state
+test.describe.configure({ mode: 'serial' });
+
 const ORG_SLUG = process.env.E2E_ORG_SLUG || 'e2e-test-org';
 
 /**
@@ -164,5 +167,39 @@ test.describe('Non-Member Donor: No Auto-Join Side Effects', () => {
 
     await expect(page.getByRole('link', { name: /go to dashboard/i })).not.toBeVisible();
     await expect(page.getByRole('button', { name: /request membership/i })).toBeVisible();
+  });
+});
+
+test.describe('Non-Member Donor: Membership Request', () => {
+  // This test modifies state (creates membership via AUTO_APPROVE),
+  // so it must run AFTER the "no auto-join" tests above.
+  test('Non-member can submit a membership request successfully', async ({ page }) => {
+    await signInAsDonor(page);
+    await page.goto(`/org/${ORG_SLUG}`);
+    await page.waitForLoadState('load');
+
+    // Click "Request Membership" to open the dialog
+    const requestButton = page.getByRole('button', { name: /request membership/i });
+    await expect(requestButton).toBeVisible();
+    await requestButton.click();
+
+    // Dialog should appear with the org name
+    await expect(page.getByText(/request membership in/i)).toBeVisible();
+
+    // Submit the request
+    const submitButton = page.getByRole('button', { name: /submit request/i });
+    await expect(submitButton).toBeVisible();
+    await submitButton.click();
+
+    // Should NOT show an error — the request should succeed
+    // With AUTO_APPROVE, the user becomes a member
+    await page.waitForTimeout(2000);
+    const bodyText = await page.locator('body').innerText();
+    expect(bodyText).not.toContain('Access Denied');
+    expect(bodyText).not.toContain('Error');
+
+    // The dialog should close without error
+    const dialogStillOpen = await page.getByText(/request membership in/i).isVisible().catch(() => false);
+    expect(dialogStillOpen).toBe(false);
   });
 });

@@ -388,6 +388,7 @@ async function seed() {
 
 async function cleanupOrg(prisma: PrismaClient, orgId: string) {
   try {
+    await prisma.accessRequest.deleteMany({ where: { organizationId: orgId } });
     await prisma.programSpending.deleteMany({ where: { organizationId: orgId } });
     await prisma.campaign.deleteMany({ where: { organizationId: orgId } });
     await prisma.donation.deleteMany({ where: { organizationId: orgId } });

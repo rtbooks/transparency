@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
+import { withPlatformAuth } from '@/lib/auth/with-platform-auth';
 import { createAccessRequest, getPendingRequests } from '@/services/access-request.service';
 import { z } from 'zod';
 
@@ -39,7 +40,7 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const ctx = await withOrgAuth(slug);
+    const ctx = await withPlatformAuth(slug);
 
     const body = await request.json();
     const validated = createRequestSchema.parse(body);
