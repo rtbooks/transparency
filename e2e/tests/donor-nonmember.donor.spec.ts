@@ -171,8 +171,8 @@ test.describe('Non-Member Donor: No Auto-Join Side Effects', () => {
 });
 
 test.describe('Non-Member Donor: Membership Request', () => {
-  // This test modifies state (creates membership via AUTO_APPROVE),
-  // so it must run AFTER the "no auto-join" tests above.
+  // These tests modify state (create membership via AUTO_APPROVE),
+  // so they must run AFTER the "no auto-join" tests above.
   test('Non-member can submit a membership request successfully', async ({ page }) => {
     await signInAsDonor(page);
     await page.goto(`/org/${ORG_SLUG}`);
@@ -199,6 +199,38 @@ test.describe('Non-Member Donor: Membership Request', () => {
     expect(bodyText).not.toContain('Error');
 
     // The dialog should close without error
+    const dialogStillOpen = await page.getByText(/request membership in/i).isVisible().catch(() => false);
+    expect(dialogStillOpen).toBe(false);
+  });
+
+  test('Non-member can re-request membership after being removed', async ({ page, request }) => {
+    // Clean up: remove donor's membership and access requests via API
+    // (simulates admin removing the user from the org)
+    const cleanupRes = await request.post(`/api/e2e/cleanup-donor`, {
+      headers: { 'x-e2e-secret': 'e2e-cleanup' },
+    });
+
+    await signInAsDonor(page);
+    await page.goto(`/org/${ORG_SLUG}`);
+    await page.waitForLoadState('load');
+
+    // Should see Request Membership again (no longer a member)
+    const requestButton = page.getByRole('button', { name: /request membership/i });
+    await expect(requestButton).toBeVisible();
+    await requestButton.click();
+
+    await expect(page.getByText(/request membership in/i)).toBeVisible();
+
+    const submitButton = page.getByRole('button', { name: /submit request/i });
+    await submitButton.click();
+
+    // Should succeed — old resolved request should not block
+    await page.waitForTimeout(2000);
+    const bodyText = await page.locator('body').innerText();
+    expect(bodyText).not.toContain('Access Denied');
+    expect(bodyText).not.toContain('Error');
+    expect(bodyText).not.toContain('constraint');
+
     const dialogStillOpen = await page.getByText(/request membership in/i).isVisible().catch(() => false);
     expect(dialogStillOpen).toBe(false);
   });

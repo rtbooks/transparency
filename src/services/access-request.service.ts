@@ -50,6 +50,12 @@ export async function createAccessRequest(
     throw new Error('You already have a pending access request for this organization');
   }
 
+  // Clean up any previously resolved requests so re-requests work cleanly.
+  // This handles users who were approved, later removed, and want to re-request.
+  await prisma.accessRequest.deleteMany({
+    where: { organizationId, userId, status: { in: ['APPROVED', 'DENIED'] } },
+  });
+
   if (organization.donorAccessMode === 'AUTO_APPROVE') {
     // Auto-approve: create request as APPROVED and create membership in one transaction
     return await prisma.$transaction(async (tx) => {
