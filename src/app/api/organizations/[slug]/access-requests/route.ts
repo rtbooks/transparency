@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { withPlatformAuth } from '@/lib/auth/with-platform-auth';
-import { createAccessRequest, getPendingRequests } from '@/services/access-request.service';
+import { createAccessRequest, getPendingRequests, getDeniedRequests } from '@/services/access-request.service';
 import { ServiceError } from '@/lib/errors/service-error';
 import { z } from 'zod';
 
@@ -22,8 +22,9 @@ export async function GET(
     const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const requests = await getPendingRequests(ctx.orgId);
+    const denied = await getDeniedRequests(ctx.orgId);
 
-    return NextResponse.json({ requests });
+    return NextResponse.json({ requests, denied });
   } catch (error) {
     if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error listing access requests:', error);

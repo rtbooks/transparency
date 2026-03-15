@@ -93,7 +93,7 @@ export async function createAccessRequest(
 }
 
 /**
- * Approve a pending access request and create OrganizationUser with DONOR role.
+ * Approve a pending or denied access request and create OrganizationUser with DONOR role.
  */
 export async function approveAccessRequest(
   requestId: string,
@@ -108,7 +108,7 @@ export async function approveAccessRequest(
       throw new Error('Access request not found');
     }
 
-    if (request.status !== 'PENDING') {
+    if (request.status !== 'PENDING' && request.status !== 'DENIED') {
       throw new Error(`Cannot approve a request with status ${request.status}`);
     }
 
@@ -164,6 +164,21 @@ export async function getPendingRequests(
 ): Promise<(AccessRequest & { user: { id: string; name: string; email: string } })[]> {
   return await prisma.accessRequest.findMany({
     where: { organizationId, status: 'PENDING' },
+    include: {
+      user: { select: { id: true, name: true, email: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
+/**
+ * Get denied access requests for an organization.
+ */
+export async function getDeniedRequests(
+  organizationId: string
+): Promise<(AccessRequest & { user: { id: string; name: string; email: string } })[]> {
+  return await prisma.accessRequest.findMany({
+    where: { organizationId, status: 'DENIED' },
     include: {
       user: { select: { id: true, name: true, email: true } },
     },

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CheckCircle, XCircle, Clock, Loader2 } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Loader2, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -21,8 +21,10 @@ interface AccessRequestManagerProps {
 export function AccessRequestManager({ organizationSlug }: AccessRequestManagerProps) {
   const { toast } = useToast();
   const [requests, setRequests] = useState<AccessRequestItem[]>([]);
+  const [deniedRequests, setDeniedRequests] = useState<AccessRequestItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [showDenied, setShowDenied] = useState(false);
 
   const fetchRequests = async () => {
     try {
@@ -30,6 +32,7 @@ export function AccessRequestManager({ organizationSlug }: AccessRequestManagerP
       if (!res.ok) return;
       const data = await res.json();
       setRequests(data.requests || []);
+      setDeniedRequests(data.denied || []);
     } catch {
       // Silently fail - section is optional
     } finally {
@@ -65,8 +68,9 @@ export function AccessRequestManager({ organizationSlug }: AccessRequestManagerP
           : 'The access request has been denied.',
       });
 
-      // Remove from list
+      // Remove from the appropriate list
       setRequests((prev) => prev.filter((r) => r.id !== requestId));
+      setDeniedRequests((prev) => prev.filter((r) => r.id !== requestId));
     } catch (error: any) {
       toast({
         title: 'Error',
@@ -119,7 +123,7 @@ export function AccessRequestManager({ organizationSlug }: AccessRequestManagerP
                 <p className="text-sm text-gray-600">{request.user.email}</p>
                 {request.message && (
                   <p className="mt-2 text-sm text-gray-700 italic">
-                    "{request.message}"
+                    &quot;{request.message}&quot;
                   </p>
                 )}
                 <p className="mt-1 text-xs text-gray-500">
@@ -153,6 +157,67 @@ export function AccessRequestManager({ organizationSlug }: AccessRequestManagerP
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Denied requests — collapsible, low-profile section */}
+      {deniedRequests.length > 0 && (
+        <div className="mt-6 border-t pt-4">
+          <button
+            onClick={() => setShowDenied(!showDenied)}
+            className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+          >
+            {showDenied ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
+            {deniedRequests.length} previously denied
+          </button>
+
+          {showDenied && (
+            <div className="mt-3 space-y-3">
+              {deniedRequests.map((request) => (
+                <div
+                  key={request.id}
+                  className="flex items-start justify-between rounded-lg border border-dashed border-gray-200 bg-gray-50 p-3"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-gray-700">{request.user.name}</p>
+                      <Badge variant="secondary" className="text-xs">
+                        <XCircle className="mr-1 h-3 w-3" />
+                        Denied
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-gray-500">{request.user.email}</p>
+                    {request.message && (
+                      <p className="mt-1 text-xs text-gray-500 italic">
+                        &quot;{request.message}&quot;
+                      </p>
+                    )}
+                    <p className="mt-1 text-xs text-gray-400">
+                      Requested {new Date(request.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleReview(request.id, 'approve')}
+                    disabled={processingId === request.id}
+                  >
+                    {processingId === request.id ? (
+                      <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                    ) : (
+                      <CheckCircle className="mr-1 h-4 w-4" />
+                    )}
+                    Approve
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

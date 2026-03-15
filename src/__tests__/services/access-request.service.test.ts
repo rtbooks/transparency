@@ -367,6 +367,36 @@ describe('Access Request Service', () => {
       );
     });
 
+    it('should approve a previously denied request', async () => {
+      const deniedRequest = {
+        id: 'req-1',
+        organizationId: 'org-1',
+        userId: 'user-1',
+        status: 'DENIED',
+      };
+      const approvedRequest = {
+        ...deniedRequest,
+        status: 'APPROVED',
+        reviewedBy: 'admin-1',
+        reviewedAt: expect.any(Date),
+      };
+
+      mockTx.accessRequest.findUnique.mockResolvedValue(deniedRequest);
+      mockTx.accessRequest.update.mockResolvedValue(approvedRequest);
+      mockTx.organizationUser.create.mockResolvedValue({});
+
+      const result = await approveAccessRequest('req-1', 'admin-1');
+
+      expect(result.status).toBe('APPROVED');
+      expect(mockTx.organizationUser.create).toHaveBeenCalledWith({
+        data: {
+          userId: 'user-1',
+          organizationId: 'org-1',
+          role: 'SUPPORTER',
+        },
+      });
+    });
+
     it('should throw if request not found', async () => {
       mockTx.accessRequest.findUnique.mockResolvedValue(null);
 
