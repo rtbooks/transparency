@@ -190,7 +190,10 @@ describe('Access Request Service', () => {
       });
 
       await expect(createAccessRequest(input)).rejects.toThrow(ServiceError);
-      await expect(createAccessRequest(input)).rejects.toMatchObject({ statusCode: 409 });
+      await expect(createAccessRequest(input)).rejects.toMatchObject({
+        title: 'Already a Member',
+        statusCode: 409,
+      });
     });
 
     it('should throw if pending request already exists', async () => {
@@ -207,7 +210,10 @@ describe('Access Request Service', () => {
       });
 
       await expect(createAccessRequest(input)).rejects.toThrow(ServiceError);
-      await expect(createAccessRequest(input)).rejects.toMatchObject({ statusCode: 409 });
+      await expect(createAccessRequest(input)).rejects.toMatchObject({
+        title: 'Request Already Pending',
+        statusCode: 409,
+      });
     });
 
     it('should throw if denied request exists', async () => {
@@ -225,8 +231,9 @@ describe('Access Request Service', () => {
 
       await expect(createAccessRequest(input)).rejects.toThrow(ServiceError);
       await expect(createAccessRequest(input)).rejects.toMatchObject({
+        title: 'Request Previously Denied',
+        description: 'Your previous request was denied. Please contact an organization admin.',
         statusCode: 403,
-        message: 'Your previous request was denied. Please contact an organization admin.',
       });
     });
 

@@ -57,7 +57,10 @@ export async function POST(
   } catch (error: any) {
     if (error instanceof AuthError) return authErrorResponse(error);
     if (error instanceof ServiceError) {
-      return NextResponse.json({ error: error.message }, { status: error.statusCode });
+      return NextResponse.json(
+        { error: error.title, description: error.description },
+        { status: error.statusCode }
+      );
     }
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });

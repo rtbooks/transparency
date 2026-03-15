@@ -84,7 +84,12 @@ export function PublicOrgContent({
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Failed to submit request');
+        toast({
+          title: data.error || 'Error',
+          description: data.description || 'Failed to submit request',
+          variant: 'destructive',
+        });
+        return;
       }
 
       const result = await res.json();
@@ -109,10 +114,9 @@ export function PublicOrgContent({
       setDialogOpen(false);
       trackEvent('access_requested', { orgSlug: organization.slug });
     } catch (error: any) {
-      const isDenied = error.message?.includes('denied');
       toast({
-        title: isDenied ? 'Request Previously Denied' : 'Error',
-        description: error.message,
+        title: 'Error',
+        description: error.message || 'Something went wrong',
         variant: 'destructive',
       });
     } finally {

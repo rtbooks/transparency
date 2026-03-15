@@ -30,7 +30,7 @@ export async function createAccessRequest(
   });
 
   if (!organization) {
-    throw new ServiceError('Organization not found', 404);
+    throw new ServiceError('Not Found', 'Organization not found', 404);
   }
 
   // Check if user already has access
@@ -39,7 +39,7 @@ export async function createAccessRequest(
   });
 
   if (existingMembership) {
-    throw new ServiceError('You already have access to this organization', 409);
+    throw new ServiceError('Already a Member', 'You already have access to this organization.', 409);
   }
 
   // Check for existing pending or denied request
@@ -49,9 +49,13 @@ export async function createAccessRequest(
 
   if (existingRequest) {
     if (existingRequest.status === 'DENIED') {
-      throw new ServiceError('Your previous request was denied. Please contact an organization admin.', 403);
+      throw new ServiceError(
+        'Request Previously Denied',
+        'Your previous request was denied. Please contact an organization admin.',
+        403
+      );
     }
-    throw new ServiceError('You already have a pending access request for this organization', 409);
+    throw new ServiceError('Request Already Pending', 'You already have a pending access request for this organization.', 409);
   }
 
   // Clean up old APPROVED requests so re-requests work after an admin removes a user.
