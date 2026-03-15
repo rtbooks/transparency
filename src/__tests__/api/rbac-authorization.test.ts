@@ -15,6 +15,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // ── withOrgAuth mock ────────────────────────────────────────────────────
 
 const mockWithOrgAuth = jest.fn();
+const mockWithPlatformAuth = jest.fn();
 
 jest.mock('@/lib/auth/with-org-auth', () => {
   class AuthErrorImpl extends Error {
@@ -32,6 +33,10 @@ jest.mock('@/lib/auth/with-org-auth', () => {
       NextResponse.json({ error: error.message }, { status: error.statusCode }),
   };
 });
+
+jest.mock('@/lib/auth/with-platform-auth', () => ({
+  withPlatformAuth: (...args: unknown[]) => mockWithPlatformAuth(...args),
+}));
 
 // Import the mocked AuthError for use in tests
 const { AuthError: MockAuthError } = jest.requireMock('@/lib/auth/with-org-auth');
@@ -128,6 +133,24 @@ function makeSupporterCtx() {
       viewTransactions: true, createTransactions: false, editTransactions: false, deleteTransactions: false,
       viewUsers: false, inviteUsers: false, editUserRoles: false, removeUsers: false,
       viewBalances: true, exportData: false, viewPublicDashboard: true,
+    },
+  };
+}
+
+function makePlatformAuthCtx(overrides?: Partial<{ orgRole: string | null }>) {
+  return {
+    userId: 'user-1',
+    clerkUserId: 'clerk_1',
+    orgId: 'org-1',
+    slug: 'test-org',
+    isPlatformAdmin: false,
+    orgRole: overrides?.orgRole ?? null,
+    permissions: {
+      viewOrganization: true, editOrganization: false, deleteOrganization: false,
+      viewAccounts: false, createAccounts: false, editAccounts: false, deleteAccounts: false,
+      viewTransactions: false, createTransactions: false, editTransactions: false, deleteTransactions: false,
+      viewUsers: false, inviteUsers: false, editUserRoles: false, removeUsers: false,
+      viewBalances: false, exportData: false, viewPublicDashboard: true,
     },
   };
 }
@@ -243,8 +266,8 @@ describe('RBAC enforcement on previously zero-auth endpoint', () => {
 });
 
 describe('RBAC on member-accessible endpoints', () => {
-  it('donations POST allows SUPPORTER (any member can donate)', async () => {
-    mockWithOrgAuth.mockResolvedValue(makeSupporterCtx());
+  it('donations POST allows any authenticated user (no org membership required)', async () => {
+    mockWithPlatformAuth.mockResolvedValue(makePlatformAuthCtx());
     const { createOneTimeDonation } = require('@/services/donation.service');
     createOneTimeDonation.mockResolvedValue({ id: 'donation-1' });
 
@@ -255,13 +278,14 @@ describe('RBAC on member-accessible endpoints', () => {
     });
     const res = await donationsPost(req, { params: Promise.resolve({ slug: 'test-org' }) });
 
-    // Should NOT require ORG_ADMIN — withOrgAuth called without requiredRole
-    expect(mockWithOrgAuth).toHaveBeenCalledWith('test-org');
+    // Should use withPlatformAuth (not withOrgAuth) — no membership required
+    expect(mockWithPlatformAuth).toHaveBeenCalledWith('test-org');
+    expect(mockWithOrgAuth).not.toHaveBeenCalled();
     expect(res.status).not.toBe(403);
   });
 
   it('donations POST returns 401 for unauthenticated user', async () => {
-    mockWithOrgAuth.mockRejectedValue(new MockAuthError('Unauthorized', 401));
+    mockWithPlatformAuth.mockRejectedValue(new MockAuthError('Unauthorized', 401));
 
     const req = makeReq('http://localhost/api/organizations/test-org/donations', {
       type: 'ONE_TIME',
@@ -293,8 +317,8 @@ describe('withOrgAuth call patterns', () => {
     expect(mockWithOrgAuth).toHaveBeenCalledWith('my-org', { requiredRole: 'ORG_ADMIN' });
   });
 
-  it('member endpoints pass slug only (no requiredRole)', async () => {
-    mockWithOrgAuth.mockResolvedValue(makeSupporterCtx());
+  it('donation endpoints use withPlatformAuth (no org membership required)', async () => {
+    mockWithPlatformAuth.mockResolvedValue(makePlatformAuthCtx());
     const { createOneTimeDonation } = require('@/services/donation.service');
     createOneTimeDonation.mockResolvedValue({ id: 'd1' });
 
@@ -305,8 +329,8 @@ describe('withOrgAuth call patterns', () => {
     });
     await donationsPost(req, { params: Promise.resolve({ slug: 'my-org' }) });
 
-    // Verify called WITHOUT requiredRole
-    expect(mockWithOrgAuth).toHaveBeenCalledWith('my-org');
-    expect(mockWithOrgAuth).not.toHaveBeenCalledWith('my-org', expect.objectContaining({ requiredRole: expect.anything() }));
+    // Verify withPlatformAuth is called (not withOrgAuth)
+    expect(mockWithPlatformAuth).toHaveBeenCalledWith('my-org');
+    expect(mockWithOrgAuth).not.toHaveBeenCalled();
   });
 });

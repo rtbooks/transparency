@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
-import { createAccessRequest, getPendingRequests } from '@/services/access-request.service';
+import { withPlatformAuth } from '@/lib/auth/with-platform-auth';
+import { createAccessRequest, getPendingRequests, getDeniedRequests } from '@/services/access-request.service';
+import { ServiceError } from '@/lib/errors/service-error';
 import { z } from 'zod';
 
 const createRequestSchema = z.object({
@@ -20,8 +22,9 @@ export async function GET(
     const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 
     const requests = await getPendingRequests(ctx.orgId);
+    const denied = await getDeniedRequests(ctx.orgId);
 
-    return NextResponse.json({ requests });
+    return NextResponse.json({ requests, denied });
   } catch (error) {
     if (error instanceof AuthError) return authErrorResponse(error);
     console.error('Error listing access requests:', error);
@@ -39,7 +42,7 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const ctx = await withOrgAuth(slug);
+    const ctx = await withPlatformAuth(slug);
 
     const body = await request.json();
     const validated = createRequestSchema.parse(body);
@@ -54,11 +57,14 @@ export async function POST(
     return NextResponse.json(result, { status: statusCode });
   } catch (error: any) {
     if (error instanceof AuthError) return authErrorResponse(error);
+    if (error instanceof ServiceError) {
+      return NextResponse.json(
+        { error: error.title, description: error.description },
+        { status: error.statusCode }
+      );
+    }
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
-    }
-    if (error?.message?.includes('already have')) {
-      return NextResponse.json({ error: error.message }, { status: 409 });
     }
     console.error('Error creating access request:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

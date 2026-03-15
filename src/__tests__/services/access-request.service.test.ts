@@ -11,6 +11,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
+import { ServiceError } from '@/lib/errors/service-error';
 
 // Mock prisma
 jest.mock('@/lib/prisma', () => ({
@@ -29,6 +30,7 @@ jest.mock('@/lib/prisma', () => ({
       create: jest.fn(),
       update: jest.fn(),
       count: jest.fn(),
+      deleteMany: jest.fn(),
     },
     user: {
       findUnique: jest.fn(),
@@ -187,9 +189,11 @@ describe('Access Request Service', () => {
         role: 'SUPPORTER',
       });
 
-      await expect(createAccessRequest(input)).rejects.toThrow(
-        'You already have access to this organization'
-      );
+      await expect(createAccessRequest(input)).rejects.toThrow(ServiceError);
+      await expect(createAccessRequest(input)).rejects.toMatchObject({
+        title: 'Already a Member',
+        statusCode: 409,
+      });
     });
 
     it('should throw if pending request already exists', async () => {
@@ -205,18 +209,41 @@ describe('Access Request Service', () => {
         status: 'PENDING',
       });
 
-      await expect(createAccessRequest(input)).rejects.toThrow(
-        'You already have a pending access request for this organization'
-      );
+      await expect(createAccessRequest(input)).rejects.toThrow(ServiceError);
+      await expect(createAccessRequest(input)).rejects.toMatchObject({
+        title: 'Request Already Pending',
+        statusCode: 409,
+      });
     });
 
-    it('should allow new request when prior APPROVED/DENIED request exists', async () => {
+    it('should throw if denied request exists', async () => {
       (prisma.organization.findFirst as jest.Mock).mockResolvedValue({
         id: 'org-1',
         donorAccessMode: 'REQUIRE_APPROVAL',
       });
       (prisma.organizationUser.findFirst as jest.Mock).mockResolvedValue(null);
-      // No pending request found (the findFirst filters by status: 'PENDING')
+      (prisma.accessRequest.findFirst as jest.Mock).mockResolvedValue({
+        id: 'req-denied',
+        organizationId: 'org-1',
+        userId: 'user-1',
+        status: 'DENIED',
+      });
+
+      await expect(createAccessRequest(input)).rejects.toThrow(ServiceError);
+      await expect(createAccessRequest(input)).rejects.toMatchObject({
+        title: 'Request Previously Denied',
+        description: 'Your previous request was denied. Please contact an organization admin.',
+        statusCode: 403,
+      });
+    });
+
+    it('should allow new request when prior APPROVED request exists', async () => {
+      (prisma.organization.findFirst as jest.Mock).mockResolvedValue({
+        id: 'org-1',
+        donorAccessMode: 'REQUIRE_APPROVAL',
+      });
+      (prisma.organizationUser.findFirst as jest.Mock).mockResolvedValue(null);
+      // No pending or denied request found
       (prisma.accessRequest.findFirst as jest.Mock).mockResolvedValue(null);
 
       const createdRequest = {
@@ -338,6 +365,36 @@ describe('Access Request Service', () => {
       await expect(approveAccessRequest('req-1', 'admin-1')).rejects.toThrow(
         'Cannot approve a request with status APPROVED'
       );
+    });
+
+    it('should approve a previously denied request', async () => {
+      const deniedRequest = {
+        id: 'req-1',
+        organizationId: 'org-1',
+        userId: 'user-1',
+        status: 'DENIED',
+      };
+      const approvedRequest = {
+        ...deniedRequest,
+        status: 'APPROVED',
+        reviewedBy: 'admin-1',
+        reviewedAt: expect.any(Date),
+      };
+
+      mockTx.accessRequest.findUnique.mockResolvedValue(deniedRequest);
+      mockTx.accessRequest.update.mockResolvedValue(approvedRequest);
+      mockTx.organizationUser.create.mockResolvedValue({});
+
+      const result = await approveAccessRequest('req-1', 'admin-1');
+
+      expect(result.status).toBe('APPROVED');
+      expect(mockTx.organizationUser.create).toHaveBeenCalledWith({
+        data: {
+          userId: 'user-1',
+          organizationId: 'org-1',
+          role: 'SUPPORTER',
+        },
+      });
     });
 
     it('should throw if request not found', async () => {

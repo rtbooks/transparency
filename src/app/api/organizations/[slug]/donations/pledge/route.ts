@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
+import { withPlatformAuth } from '@/lib/auth/with-platform-auth';
+import { AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { createPledgeDonation } from '@/services/donation.service';
@@ -24,7 +25,7 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const ctx = await withOrgAuth(slug);
+    const ctx = await withPlatformAuth(slug);
 
     // Fetch org details for account configuration
     const organization = await prisma.organization.findFirst({

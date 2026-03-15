@@ -137,6 +137,11 @@ export async function removeUserFromOrganization(
     throw new Error('Organization user not found');
   }
 
+  // Clean up any access requests so the user can re-request if desired
+  await prisma.accessRequest.deleteMany({
+    where: { organizationId, userId },
+  });
+
   return await orgUserRepo.softDelete(orgUser.id, removedByUserId);
 }
 

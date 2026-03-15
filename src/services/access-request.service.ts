@@ -6,6 +6,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
+import { ServiceError } from '@/lib/errors/service-error';
 import type { AccessRequest, PrismaClient } from '@/generated/prisma/client';
 
 export interface CreateAccessRequestInput {
@@ -29,7 +30,7 @@ export async function createAccessRequest(
   });
 
   if (!organization) {
-    throw new Error('Organization not found');
+    throw new ServiceError('Not Found', 'Organization not found', 404);
   }
 
   // Check if user already has access
@@ -38,17 +39,29 @@ export async function createAccessRequest(
   });
 
   if (existingMembership) {
-    throw new Error('You already have access to this organization');
+    throw new ServiceError('Already a Member', 'You already have access to this organization.', 409);
   }
 
-  // Check for existing pending request (partial unique index also enforces this)
+  // Check for existing pending or denied request
   const existingRequest = await prisma.accessRequest.findFirst({
-    where: { organizationId, userId, status: 'PENDING' },
+    where: { organizationId, userId, status: { in: ['PENDING', 'DENIED'] } },
   });
 
   if (existingRequest) {
-    throw new Error('You already have a pending access request for this organization');
+    if (existingRequest.status === 'DENIED') {
+      throw new ServiceError(
+        'Request Previously Denied',
+        'Your previous request was denied. Please contact an organization admin.',
+        403
+      );
+    }
+    throw new ServiceError('Request Already Pending', 'You already have a pending access request for this organization.', 409);
   }
+
+  // Clean up old APPROVED requests so re-requests work after an admin removes a user.
+  await prisma.accessRequest.deleteMany({
+    where: { organizationId, userId, status: 'APPROVED' },
+  });
 
   if (organization.donorAccessMode === 'AUTO_APPROVE') {
     // Auto-approve: create request as APPROVED and create membership in one transaction
@@ -80,7 +93,7 @@ export async function createAccessRequest(
 }
 
 /**
- * Approve a pending access request and create OrganizationUser with DONOR role.
+ * Approve a pending or denied access request and create OrganizationUser with DONOR role.
  */
 export async function approveAccessRequest(
   requestId: string,
@@ -95,7 +108,7 @@ export async function approveAccessRequest(
       throw new Error('Access request not found');
     }
 
-    if (request.status !== 'PENDING') {
+    if (request.status !== 'PENDING' && request.status !== 'DENIED') {
       throw new Error(`Cannot approve a request with status ${request.status}`);
     }
 
@@ -151,6 +164,21 @@ export async function getPendingRequests(
 ): Promise<(AccessRequest & { user: { id: string; name: string; email: string } })[]> {
   return await prisma.accessRequest.findMany({
     where: { organizationId, status: 'PENDING' },
+    include: {
+      user: { select: { id: true, name: true, email: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
+/**
+ * Get denied access requests for an organization.
+ */
+export async function getDeniedRequests(
+  organizationId: string
+): Promise<(AccessRequest & { user: { id: string; name: string; email: string } })[]> {
+  return await prisma.accessRequest.findMany({
+    where: { organizationId, status: 'DENIED' },
     include: {
       user: { select: { id: true, name: true, email: true } },
     },

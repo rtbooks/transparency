@@ -8,7 +8,8 @@
  *   E2E_CLERK_USER_ID  - The Clerk user ID of the test account
  *
  * Optional env vars:
- *   DATABASE_URL       - Database connection string (uses .env.local default)
+ *   E2E_DONOR_CLERK_USER_ID - The Clerk user ID of the donor test account (non-member)
+ *   DATABASE_URL             - Database connection string (uses .env.local default)
  *
  * Usage:
  *   npx tsx e2e/seed.ts
@@ -330,6 +331,52 @@ async function seed() {
     });
     console.log('  Created 1 fiscal period');
 
+    // Create donor user (authenticated but NOT a member of the org)
+    const donorClerkUserId = process.env.E2E_DONOR_CLERK_USER_ID;
+    if (donorClerkUserId) {
+      const existingDonor = await prisma.user.findUnique({
+        where: { authId: donorClerkUserId },
+      });
+      const existingDonorByEmail = existingDonor ? null : await prisma.user.findUnique({
+        where: { email: 'e2e-donor@radbooks.org' },
+      });
+
+      if (existingDonor) {
+        console.log(`  Using existing donor user: ${existingDonor.email} (${existingDonor.id})`);
+      } else if (existingDonorByEmail) {
+        await prisma.user.update({
+          where: { id: existingDonorByEmail.id },
+          data: { authId: donorClerkUserId },
+        });
+        console.log(`  Updated donor user authId: ${existingDonorByEmail.email} (${existingDonorByEmail.id})`);
+      } else {
+        const donorUser = await prisma.user.create({
+          data: {
+            email: 'e2e-donor@radbooks.org',
+            name: 'E2E Donor User',
+            authId: donorClerkUserId,
+          },
+        });
+        console.log(`  Created donor user: ${donorUser.email} (${donorUser.id})`);
+      }
+
+      // Verify donor is NOT a member of the test org
+      const donorUser = await prisma.user.findUnique({ where: { authId: donorClerkUserId } });
+      if (donorUser) {
+        const donorMembership = await prisma.organizationUser.findFirst({
+          where: { userId: donorUser.id, organizationId: orgId },
+        });
+        if (donorMembership) {
+          await prisma.organizationUser.deleteMany({
+            where: { userId: donorUser.id, organizationId: orgId },
+          });
+          console.log('  Removed donor from org membership (ensuring non-member state)');
+        }
+      }
+    } else {
+      console.log('  Skipping donor user (E2E_DONOR_CLERK_USER_ID not set)');
+    }
+
     console.log('✅ E2E seed data created successfully!');
     console.log(`   Org slug: ${E2E_ORG_SLUG}`);
     console.log(`   Accounts: ${Object.keys(accounts).length}`);
@@ -341,6 +388,7 @@ async function seed() {
 
 async function cleanupOrg(prisma: PrismaClient, orgId: string) {
   try {
+    await prisma.accessRequest.deleteMany({ where: { organizationId: orgId } });
     await prisma.programSpending.deleteMany({ where: { organizationId: orgId } });
     await prisma.campaign.deleteMany({ where: { organizationId: orgId } });
     await prisma.donation.deleteMany({ where: { organizationId: orgId } });
