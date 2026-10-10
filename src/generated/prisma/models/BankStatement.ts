@@ -266,7 +266,7 @@ export type BankStatementGroupByOutputType = {
   _max: BankStatementMaxAggregateOutputType | null
 }
 
-type GetBankStatementGroupByPayload<T extends BankStatementGroupByArgs> = Prisma.PrismaPromise<
+export type GetBankStatementGroupByPayload<T extends BankStatementGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BankStatementGroupByOutputType, T['by']> &
       {
@@ -1679,6 +1679,11 @@ export type BankStatementFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` BankStatements.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of BankStatements.
+   */
   distinct?: Prisma.BankStatementScalarFieldEnum | Prisma.BankStatementScalarFieldEnum[]
 }
 

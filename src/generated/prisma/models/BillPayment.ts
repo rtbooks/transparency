@@ -165,7 +165,7 @@ export type BillPaymentGroupByOutputType = {
   _max: BillPaymentMaxAggregateOutputType | null
 }
 
-type GetBillPaymentGroupByPayload<T extends BillPaymentGroupByArgs> = Prisma.PrismaPromise<
+export type GetBillPaymentGroupByPayload<T extends BillPaymentGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BillPaymentGroupByOutputType, T['by']> &
       {
@@ -1157,6 +1157,11 @@ export type BillPaymentFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Skip the first `n` BillPayments.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of BillPayments.
+   */
   distinct?: Prisma.BillPaymentScalarFieldEnum | Prisma.BillPaymentScalarFieldEnum[]
 }
 
