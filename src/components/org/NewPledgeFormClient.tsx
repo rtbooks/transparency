@@ -702,14 +702,6 @@ export function NewPledgeFormClient({
             />
 
             <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push(`/org/${organizationSlug}/my-donations`)}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
