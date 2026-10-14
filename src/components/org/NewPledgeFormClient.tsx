@@ -144,7 +144,7 @@ export function NewPledgeFormClient({
   const form = useForm<DonationFormData>({
     resolver: zodResolver(donationSchema),
     defaultValues: {
-      amount: 0,
+      amount: undefined,
       donorMessage: '',
       dueDate: '',
     },
