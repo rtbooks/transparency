@@ -13,11 +13,11 @@ interface PlatformUserButtonProps {
 export function PlatformUserButton({ isPlatformAdmin }: PlatformUserButtonProps) {
   if (!isPlatformAdmin) {
     // No custom menu items for regular users
-    return <UserButton afterSignOutUrl="/" />;
+    return <UserButton />;
   }
 
   return (
-    <UserButton afterSignOutUrl="/">
+    <UserButton>
       <UserButton.MenuItems>
         <UserButton.Link
           label="Profile"
