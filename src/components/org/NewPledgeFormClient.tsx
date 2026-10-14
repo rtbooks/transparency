@@ -26,7 +26,6 @@ import { VenmoQRCode } from '@/components/donations/VenmoQRCode';
 const donationSchema = z.object({
   amount: z.number().optional(),
   donorMessage: z.string().optional(),
-  dueDate: z.string().optional(),
 });
 
 type DonationFormData = z.infer<typeof donationSchema>;
@@ -147,7 +146,6 @@ export function NewPledgeFormClient({
     defaultValues: {
       amount: undefined,
       donorMessage: '',
-      dueDate: '',
     },
   });
 
@@ -229,7 +227,6 @@ export function NewPledgeFormClient({
             amount: finalAmount,
             description,
             donorMessage: data.donorMessage || undefined,
-            dueDate: data.dueDate || null,
             campaignId: selectedCampaignId || null,
             unitCount: isFixedUnit ? unitCount : null,
             tierId: isTiered ? selectedTierId : null,
@@ -277,16 +274,16 @@ export function NewPledgeFormClient({
         <div className="rounded-lg border bg-white p-8 text-center">
           <CheckCircle className="mx-auto h-16 w-16 text-green-600" />
           <h2 className="mt-4 text-2xl font-bold text-gray-900">
-            Pledge Created Successfully!
+            Choose How to Complete Your Donation
           </h2>
           <p className="mt-2 text-gray-600">
-            Thank you for your pledge to {organizationName}.
+            Your pledge to {organizationName} has been saved. You can pay now using one of the options below, or return and pay later from My Donations.
           </p>
 
           {paymentMethods.length > 0 ? (
             <div className="mt-6 space-y-3 text-left">
               <h3 className="font-semibold text-gray-900">
-                How to Submit Your Payment
+                Pay Now
               </h3>
               {paymentMethods.map((method) => {
                 const Icon = METHOD_ICONS[method.type] || Plus;
@@ -404,7 +401,7 @@ export function NewPledgeFormClient({
               variant="outline"
               onClick={() => router.push(`/org/${organizationSlug}/my-donations`)}
             >
-              View My Donations
+              I&apos;ll Pay Later
             </Button>
             <Button onClick={() => setDonationCreated(false)}>
               Create Another
@@ -418,9 +415,9 @@ export function NewPledgeFormClient({
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">New Donation Pledge</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Make a Donation</h1>
         <p className="mt-2 text-gray-600">
-          Pledge a donation to {organizationName}
+          Enter your donation details, then choose whether to pay now or later.
         </p>
       </div>
 
@@ -704,37 +701,12 @@ export function NewPledgeFormClient({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="dueDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Target Date (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    When you plan to fulfill this pledge
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push(`/org/${organizationSlug}/my-donations`)}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Create Pledge
+                Next
               </Button>
             </div>
           </form>
