@@ -656,9 +656,9 @@ export function NewPledgeFormClient({
                   <FormLabel>Amount ($)</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      step="0.01"
-                      min="0.01"
+                      type="text"
+                      inputMode="decimal"
+                      autoComplete="off"
                       placeholder="0.00"
                       {...field}
                       value={field.value ?? ''}
