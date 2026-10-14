@@ -26,7 +26,6 @@ import { VenmoQRCode } from '@/components/donations/VenmoQRCode';
 const donationSchema = z.object({
   amount: z.number().optional(),
   donorMessage: z.string().optional(),
-  dueDate: z.string().optional(),
 });
 
 type DonationFormData = z.infer<typeof donationSchema>;
@@ -80,12 +79,16 @@ interface NewPledgeFormClientProps {
   organizationSlug: string;
   organizationName: string;
   initialCampaignId?: string;
+  donorName: string;
+  donorEmail: string;
 }
 
 export function NewPledgeFormClient({
   organizationSlug,
   organizationName,
   initialCampaignId,
+  donorName,
+  donorEmail,
 }: NewPledgeFormClientProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -147,11 +150,11 @@ export function NewPledgeFormClient({
     defaultValues: {
       amount: undefined,
       donorMessage: '',
-      dueDate: '',
     },
   });
 
   const selectedCampaign = campaigns.find(c => c.id === selectedCampaignId);
+  const hasStripePaymentMethod = paymentMethods.some((method) => method.type === 'STRIPE');
   const isFixedUnit = selectedCampaign?.campaignType === 'FIXED_UNIT';
   const isTiered = selectedCampaign?.campaignType === 'TIERED';
   const isEvent = selectedCampaign?.campaignType === 'EVENT';
@@ -174,7 +177,7 @@ export function NewPledgeFormClient({
       }, {} as Record<string, any[]>)
     : {};
 
-  const onSubmit = async (data: DonationFormData) => {
+  const onSubmit = async (data: DonationFormData, paymentChoice: 'PLEDGE' | 'IMMEDIATE' = 'PLEDGE') => {
     try {
       setIsSubmitting(true);
 
@@ -204,6 +207,34 @@ export function NewPledgeFormClient({
         return;
       }
 
+      if (paymentChoice === 'IMMEDIATE') {
+        const response = await fetch(
+          `/api/organizations/${organizationSlug}/donations/checkout`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amount: finalAmount,
+              campaignId: selectedCampaignId || undefined,
+              tierId: isTiered ? selectedTierId : undefined,
+              unitCount: isFixedUnit ? unitCount : undefined,
+              lineItems,
+              donorName,
+              donorEmail,
+              donorMessage: data.donorMessage || undefined,
+            }),
+          }
+        );
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to start card payment');
+        }
+        const { url } = await response.json();
+        if (!url) throw new Error('Checkout did not return a payment link');
+        window.location.href = url;
+        return;
+      }
+
       // Auto-generate description from campaign context
       let description = selectedCampaign?.name || 'Donation';
       if (isFixedUnit) {
@@ -229,7 +260,6 @@ export function NewPledgeFormClient({
             amount: finalAmount,
             description,
             donorMessage: data.donorMessage || undefined,
-            dueDate: data.dueDate || null,
             campaignId: selectedCampaignId || null,
             unitCount: isFixedUnit ? unitCount : null,
             tierId: isTiered ? selectedTierId : null,
@@ -418,15 +448,15 @@ export function NewPledgeFormClient({
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">New Donation Pledge</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Make a Donation</h1>
         <p className="mt-2 text-gray-600">
-          Pledge a donation to {organizationName}
+          Donate now or choose to pay later to {organizationName}
         </p>
       </div>
 
       <div className="rounded-lg border bg-white p-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit((data) => onSubmit(data, 'PLEDGE'))} className="space-y-6">
             {/* Campaign Picker — hidden when campaign is pre-selected */}
             {!loadingCampaigns && campaigns.length > 0 && !initialCampaignId && (
               <div className="space-y-3">
@@ -704,23 +734,6 @@ export function NewPledgeFormClient({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="dueDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Target Date (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    When you plan to fulfill this pledge
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <div className="flex gap-3 pt-4">
               <Button
                 type="button"
@@ -730,11 +743,25 @@ export function NewPledgeFormClient({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              {hasStripePaymentMethod && (
+                <Button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={() => form.handleSubmit((data) => onSubmit(data, 'IMMEDIATE'))()}
+                >
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Donate Now
+                </Button>
+              )}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                variant={hasStripePaymentMethod ? 'outline' : 'default'}
+              >
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Create Pledge
+                Pay Later / Mail a Check
               </Button>
             </div>
           </form>

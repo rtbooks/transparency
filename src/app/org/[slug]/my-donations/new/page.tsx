@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { checkOrganizationAccess, VerificationStatusMessage } from '@/lib/organization-access';
 import { OrganizationLayoutWrapper } from '@/components/navigation/OrganizationLayoutWrapper';
 import { NewPledgeFormClient } from '@/components/org/NewPledgeFormClient';
+import { prisma } from '@/lib/prisma';
 
 interface NewPledgePageProps {
   params: Promise<{ slug: string }>;
@@ -25,6 +26,7 @@ export default async function NewPledgePage({ params, searchParams }: NewPledgeP
   }
 
   const { organization } = await checkOrganizationAccess(slug, clerkUserId, false);
+  const user = await prisma.user.findUnique({ where: { authId: clerkUserId } });
 
   const verificationMessage = VerificationStatusMessage({
     status: organization.verificationStatus,
@@ -42,6 +44,8 @@ export default async function NewPledgePage({ params, searchParams }: NewPledgeP
         organizationSlug={slug}
         organizationName={organization.name}
         initialCampaignId={campaignId}
+        donorName={user?.name ?? ''}
+        donorEmail={user?.email ?? ''}
       />
     </OrganizationLayoutWrapper>
   );
