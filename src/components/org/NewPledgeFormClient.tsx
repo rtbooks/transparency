@@ -95,6 +95,7 @@ export function NewPledgeFormClient({
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
   const [unitCount, setUnitCount] = useState(1);
+  const [amountInput, setAmountInput] = useState('');
   const [selectedTierId, setSelectedTierId] = useState<string | null>(null);
   const [eventQuantities, setEventQuantities] = useState<Record<string, number>>({});
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([]);
@@ -178,7 +179,7 @@ export function NewPledgeFormClient({
       setIsSubmitting(true);
 
       // Compute final amount based on campaign type
-      let finalAmount = data.amount || 0;
+      let finalAmount = amountInput === '' ? 0 : Number(amountInput);
       let lineItems: { campaignItemId: string; quantity: number }[] | undefined;
       if (isFixedUnit && selectedCampaign?.unitPrice) {
         finalAmount = selectedCampaign.unitPrice * unitCount;
@@ -197,7 +198,7 @@ export function NewPledgeFormClient({
         }
       }
 
-      if (finalAmount <= 0) {
+      if (!Number.isFinite(finalAmount) || finalAmount <= 0) {
         toast({ title: 'Error', description: 'Please enter a valid amount', variant: 'destructive' });
         setIsSubmitting(false);
         return;
@@ -655,17 +656,26 @@ export function NewPledgeFormClient({
                 <FormItem>
                   <FormLabel>Amount ($)</FormLabel>
                   <FormControl>
-                    <Input
-                      type="text"
-                      inputMode="decimal"
-                      autoComplete="off"
-                      placeholder="0.00"
-                      {...field}
-                      value={field.value ?? ''}
-                      onChange={(e) =>
-                        field.onChange(e.target.value === '' ? undefined : parseFloat(e.target.value))
-                      }
-                    />
+                    <div className="relative">
+                      <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-500">
+                        $
+                      </span>
+                      <Input
+                        type="text"
+                        inputMode="decimal"
+                        autoComplete="off"
+                        placeholder="0.00"
+                        {...field}
+                        value={amountInput}
+                        className="pl-7"
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (!/^\d*\.?\d*$/.test(value)) return;
+                          setAmountInput(value);
+                          field.onChange(value === '' || value.endsWith('.') ? undefined : Number(value));
+                        }}
+                      />
+                    </div>
                   </FormControl>
                   <FormDescription>
                     The amount you intend to donate
