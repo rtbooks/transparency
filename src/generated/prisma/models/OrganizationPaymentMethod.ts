@@ -291,7 +291,7 @@ export type OrganizationPaymentMethodGroupByOutputType = {
   _max: OrganizationPaymentMethodMaxAggregateOutputType | null
 }
 
-type GetOrganizationPaymentMethodGroupByPayload<T extends OrganizationPaymentMethodGroupByArgs> = Prisma.PrismaPromise<
+export type GetOrganizationPaymentMethodGroupByPayload<T extends OrganizationPaymentMethodGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<OrganizationPaymentMethodGroupByOutputType, T['by']> &
       {
@@ -1392,6 +1392,11 @@ export type OrganizationPaymentMethodFindManyArgs<ExtArgs extends runtime.Types.
    * Skip the first `n` OrganizationPaymentMethods.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of OrganizationPaymentMethods.
+   */
   distinct?: Prisma.OrganizationPaymentMethodScalarFieldEnum | Prisma.OrganizationPaymentMethodScalarFieldEnum[]
 }
 

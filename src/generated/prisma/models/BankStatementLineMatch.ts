@@ -199,7 +199,7 @@ export type BankStatementLineMatchGroupByOutputType = {
   _max: BankStatementLineMatchMaxAggregateOutputType | null
 }
 
-type GetBankStatementLineMatchGroupByPayload<T extends BankStatementLineMatchGroupByArgs> = Prisma.PrismaPromise<
+export type GetBankStatementLineMatchGroupByPayload<T extends BankStatementLineMatchGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BankStatementLineMatchGroupByOutputType, T['by']> &
       {
@@ -1201,6 +1201,11 @@ export type BankStatementLineMatchFindManyArgs<ExtArgs extends runtime.Types.Ext
    * Skip the first `n` BankStatementLineMatches.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of BankStatementLineMatches.
+   */
   distinct?: Prisma.BankStatementLineMatchScalarFieldEnum | Prisma.BankStatementLineMatchScalarFieldEnum[]
 }
 

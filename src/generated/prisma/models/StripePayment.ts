@@ -241,7 +241,7 @@ export type StripePaymentGroupByOutputType = {
   _max: StripePaymentMaxAggregateOutputType | null
 }
 
-type GetStripePaymentGroupByPayload<T extends StripePaymentGroupByArgs> = Prisma.PrismaPromise<
+export type GetStripePaymentGroupByPayload<T extends StripePaymentGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<StripePaymentGroupByOutputType, T['by']> &
       {
@@ -1206,6 +1206,11 @@ export type StripePaymentFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` StripePayments.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of StripePayments.
+   */
   distinct?: Prisma.StripePaymentScalarFieldEnum | Prisma.StripePaymentScalarFieldEnum[]
 }
 

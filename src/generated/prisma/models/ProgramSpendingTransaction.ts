@@ -199,7 +199,7 @@ export type ProgramSpendingTransactionGroupByOutputType = {
   _max: ProgramSpendingTransactionMaxAggregateOutputType | null
 }
 
-type GetProgramSpendingTransactionGroupByPayload<T extends ProgramSpendingTransactionGroupByArgs> = Prisma.PrismaPromise<
+export type GetProgramSpendingTransactionGroupByPayload<T extends ProgramSpendingTransactionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ProgramSpendingTransactionGroupByOutputType, T['by']> &
       {
@@ -1032,6 +1032,11 @@ export type ProgramSpendingTransactionFindManyArgs<ExtArgs extends runtime.Types
    * Skip the first `n` ProgramSpendingTransactions.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ProgramSpendingTransactions.
+   */
   distinct?: Prisma.ProgramSpendingTransactionScalarFieldEnum | Prisma.ProgramSpendingTransactionScalarFieldEnum[]
 }
 

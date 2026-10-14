@@ -210,7 +210,7 @@ export type FiscalPeriodGroupByOutputType = {
   _max: FiscalPeriodMaxAggregateOutputType | null
 }
 
-type GetFiscalPeriodGroupByPayload<T extends FiscalPeriodGroupByArgs> = Prisma.PrismaPromise<
+export type GetFiscalPeriodGroupByPayload<T extends FiscalPeriodGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<FiscalPeriodGroupByOutputType, T['by']> &
       {
@@ -1199,6 +1199,11 @@ export type FiscalPeriodFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Skip the first `n` FiscalPeriods.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of FiscalPeriods.
+   */
   distinct?: Prisma.FiscalPeriodScalarFieldEnum | Prisma.FiscalPeriodScalarFieldEnum[]
 }
 

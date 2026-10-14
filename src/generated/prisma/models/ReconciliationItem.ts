@@ -199,7 +199,7 @@ export type ReconciliationItemGroupByOutputType = {
   _max: ReconciliationItemMaxAggregateOutputType | null
 }
 
-type GetReconciliationItemGroupByPayload<T extends ReconciliationItemGroupByArgs> = Prisma.PrismaPromise<
+export type GetReconciliationItemGroupByPayload<T extends ReconciliationItemGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ReconciliationItemGroupByOutputType, T['by']> &
       {
@@ -1207,6 +1207,11 @@ export type ReconciliationItemFindManyArgs<ExtArgs extends runtime.Types.Extensi
    * Skip the first `n` ReconciliationItems.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ReconciliationItems.
+   */
   distinct?: Prisma.ReconciliationItemScalarFieldEnum | Prisma.ReconciliationItemScalarFieldEnum[]
 }
 

@@ -100,5 +100,12 @@
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
+  "allowScripts": {
+    "@clerk/shared@3.47.2": true,
+    "@prisma/engines@7.8.0": true,
+    "esbuild@0.28.0": true,
+    "prisma@7.8.0": true,
+    "unrs-resolver@1.11.1": true
   }
 }

@@ -259,7 +259,7 @@ export type AccountReconciliationGroupByOutputType = {
   _max: AccountReconciliationMaxAggregateOutputType | null
 }
 
-type GetAccountReconciliationGroupByPayload<T extends AccountReconciliationGroupByArgs> = Prisma.PrismaPromise<
+export type GetAccountReconciliationGroupByPayload<T extends AccountReconciliationGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AccountReconciliationGroupByOutputType, T['by']> &
       {
@@ -1430,6 +1430,11 @@ export type AccountReconciliationFindManyArgs<ExtArgs extends runtime.Types.Exte
    * Skip the first `n` AccountReconciliations.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of AccountReconciliations.
+   */
   distinct?: Prisma.AccountReconciliationScalarFieldEnum | Prisma.AccountReconciliationScalarFieldEnum[]
 }
 
