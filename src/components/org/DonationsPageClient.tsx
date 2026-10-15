@@ -10,6 +10,7 @@ import { formatCurrency } from '@/lib/utils/account-tree';
 import { RecordPaymentDialog, PaymentMethodType, PAYMENT_METHOD_LABELS } from '@/components/donations/RecordPaymentDialog';
 import { trackEvent } from '@/lib/analytics';
 import { VenmoQRCode } from '@/components/donations/VenmoQRCode';
+import { meetsStripeMinimum, STRIPE_MINIMUM_USD } from '@/lib/stripe-minimum';
 
 interface Payment {
   id: string;
@@ -815,8 +816,14 @@ export function DonationsPageClient({
                       const rate = pct / 100;
                       const total = Math.ceil(((remaining + fixed) / (1 - rate)) * 100) / 100;
                       const fee = total - remaining;
+                      const canPayByCard = meetsStripeMinimum(remaining);
                       return (
                         <div className="mt-3 space-y-2">
+                          {!canPayByCard && (
+                            <p className="text-sm text-amber-700" role="status">
+                              Card payments require at least {formatCurrency(STRIPE_MINIMUM_USD)} remaining. Choose another payment method or contact the organization.
+                            </p>
+                          )}
                           <p className="text-xs text-gray-500">
                             A processing fee of {formatCurrency(fee)} will be added — you&apos;ll pay {formatCurrency(total)} so the org receives the full {formatCurrency(remaining)}.
                           </p>
@@ -824,7 +831,7 @@ export function DonationsPageClient({
                             size="sm"
                             className="w-full"
                             onClick={() => handleStripeCheckout(payNowDonation)}
-                            disabled={stripeLoading}
+                            disabled={stripeLoading || !canPayByCard}
                           >
                             {stripeLoading ? (
                               <Loader2 className="mr-1 h-3 w-3 animate-spin" />
