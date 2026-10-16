@@ -16,13 +16,6 @@ test.describe('Responsive Layout', () => {
     const bodyText = await page.locator('body').innerText();
     expect(bodyText.length).toBeGreaterThan(10);
 
-    // Desktop sidebar should be hidden on mobile
-    const desktopSidebar = page.locator('aside').first();
-    if (await desktopSidebar.count() > 0) {
-      const isVisible = await desktopSidebar.isVisible();
-      // On mobile, sidebar should either be hidden or collapsed
-      // We accept both states since some implementations use off-canvas
-    }
   });
 
   test('Transactions page is usable on mobile', async ({ page }) => {

@@ -164,6 +164,7 @@ describe('Temporal Utils', () => {
     it('should exclude transactions entered after the as-of date', () => {
       const asOfDate = new Date('2024-06-01T00:00:00Z');
       const where = buildBitemporalAsOfWhere(asOfDate);
+      expect(where.systemFrom).toEqual({ lte: asOfDate });
 
       // A transaction with systemFrom = June 15 should NOT match
       // because systemFrom <= June 1 would be false
@@ -174,6 +175,8 @@ describe('Temporal Utils', () => {
     it('should include transactions entered before the as-of date', () => {
       const asOfDate = new Date('2024-06-15T00:00:00Z');
       const where = buildBitemporalAsOfWhere(asOfDate);
+      expect(where.systemFrom).toEqual({ lte: asOfDate });
+      expect(where.systemTo).toEqual({ gt: asOfDate });
 
       // A transaction with systemFrom = June 1 should match
       const txSystemFrom = new Date('2024-06-01T00:00:00Z');

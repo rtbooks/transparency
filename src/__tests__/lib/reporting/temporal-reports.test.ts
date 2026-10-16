@@ -8,7 +8,7 @@
  * - Cash flow beginning balance calculation
  */
 
-import { MAX_DATE, buildCurrentVersionWhere, buildAsOfDateWhere } from '@/lib/temporal/temporal-utils';
+import { MAX_DATE } from '@/lib/temporal/temporal-utils';
 
 // ── Prisma mock ────────────────────────────────────────────
 

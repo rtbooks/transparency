@@ -14,7 +14,7 @@ const createRequestSchema = z.object({
  * List pending access requests (admin only).
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {

@@ -19,7 +19,7 @@ export default async function MaintenancePage({
 
   if (!clerkUserId) redirect('/login');
 
-  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId, false);
+  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId);
 
   if (!userAccess || (userAccess.role !== 'ORG_ADMIN' && !user.isPlatformAdmin)) {
     return (

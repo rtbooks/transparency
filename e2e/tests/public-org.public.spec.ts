@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { checkAccessibility, waitForPageReady } from '../helpers/accessibility';
+import { checkAccessibility } from '../helpers/accessibility';
 
 /**
  * Discovers an org slug from the /organizations listing page.

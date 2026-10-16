@@ -21,8 +21,7 @@ export default async function CampaignsPage({ params }: CampaignsPageProps) {
 
   const { organization, userAccess, user } = await checkOrganizationAccess(
     slug,
-    clerkUserId,
-    false
+    clerkUserId
   );
 
   if (!userAccess) {

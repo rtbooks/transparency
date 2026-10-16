@@ -68,17 +68,6 @@ function amountsMatch(statementAmount: number, txnAmount: number): boolean {
 }
 
 /**
- * Get the remaining unmatched amount for a statement line.
- */
-async function getUnmatchedAmount(lineId: string, lineAmount: number): Promise<number> {
-  const existingMatches = await prisma.bankStatementLineMatch.findMany({
-    where: { lineId },
-  });
-  const matchedTotal = existingMatches.reduce((sum, m) => sum + Number(m.amount), 0);
-  return Math.abs(lineAmount) - matchedTotal;
-}
-
-/**
  * Run auto-matching for a bank statement.
  * Auto-match only creates 1:1 full-amount matches. Split/combine matching is manual only.
  */

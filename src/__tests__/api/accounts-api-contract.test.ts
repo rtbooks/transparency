@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { GET, POST } from '@/app/api/organizations/[slug]/accounts/route';
+import { GET } from '@/app/api/organizations/[slug]/accounts/route';
 import { z } from 'zod';
 
 // Mock withOrgAuth
@@ -38,10 +38,7 @@ jest.mock('@/services/account.service', () => ({
   findAccountById: jest.fn(),
 }));
 
-import {
-  findAccountsByOrganization,
-  findActiveAccounts,
-} from '@/services/account.service';
+import { findActiveAccounts } from '@/services/account.service';
 
 import { AuthError } from '@/lib/auth/with-org-auth';
 

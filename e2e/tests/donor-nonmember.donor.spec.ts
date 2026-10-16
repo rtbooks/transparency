@@ -129,7 +129,7 @@ test.describe('Non-Member Donor: Admin Route Protection', () => {
 });
 
 test.describe('Non-Member Donor: No Auto-Join Side Effects', () => {
-  test('Visiting donation page does not create org membership', async ({ page, request }) => {
+  test('Visiting donation page does not create org membership', async ({ page }) => {
     await signInAsDonor(page);
     // Visit the donation page
     await page.goto(`/org/${ORG_SLUG}/my-donations/new`);

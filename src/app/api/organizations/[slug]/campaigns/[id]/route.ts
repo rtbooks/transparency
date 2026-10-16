@@ -42,7 +42,7 @@ const updateCampaignSchema = z.object({
  * Get a single campaign with progress.
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {
@@ -135,7 +135,7 @@ export async function PATCH(
 
     const { tiers, items, ...campaignFields } = validated;
 
-    const updated = await updateCampaign(id, {
+    await updateCampaign(id, {
       ...campaignFields,
       startDate: campaignFields.startDate !== undefined
         ? (campaignFields.startDate ? new Date(campaignFields.startDate) : null)

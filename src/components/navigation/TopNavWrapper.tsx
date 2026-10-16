@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { TopNav } from './TopNav';
 import { NavLink } from '@/lib/navigation';
-import { buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap, MAX_DATE } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere, MAX_DATE } from '@/lib/temporal/temporal-utils';
 
 interface TopNavWrapperProps {
   organizationSlug?: string;

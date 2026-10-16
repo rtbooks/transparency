@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Shield, DollarSign, TrendingUp, TrendingDown, UserPlus, Clock, ArrowRight, Target, Share2, Heart } from 'lucide-react';
+import { Shield, DollarSign, TrendingUp, TrendingDown, UserPlus, Clock, ArrowRight, Target, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {

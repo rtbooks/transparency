@@ -21,8 +21,7 @@ export default async function FiscalPeriodsPage({ params }: FiscalPeriodsPagePro
 
   const { organization, userAccess, user } = await checkOrganizationAccess(
     slug,
-    clerkUserId,
-    false
+    clerkUserId
   );
 
   if (!userAccess || (userAccess.role !== "ORG_ADMIN" && !user.isPlatformAdmin)) {

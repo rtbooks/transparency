@@ -295,7 +295,7 @@ describe('Manual Matching', () => {
   });
 
   it('should allow unmatching a line', async () => {
-    const txn = await createCheckingDeposit(77, 'To unmatch', '2026-04-18');
+    await createCheckingDeposit(77, 'To unmatch', '2026-04-18');
     const stmt = await importBankLines([
       { date: '2026-04-18', description: 'Deposit', amount: 77 },
     ]);
@@ -435,7 +435,7 @@ describe('Complete Reconciliation', () => {
   });
 
   it('should throw if statement already completed', async () => {
-    const txn = await createCheckingDeposit(50, 'Double complete', '2026-05-15');
+    await createCheckingDeposit(50, 'Double complete', '2026-05-15');
     const stmt = await importBankLines([
       { date: '2026-05-15', description: 'Deposit', amount: 50 },
     ]);
@@ -524,7 +524,7 @@ describe('Balance Integrity', () => {
   it('should not change account balances when completing reconciliation', async () => {
     const balanceBefore = await db.getAccountBalance(db.accounts.checking);
 
-    const txn = await createCheckingDeposit(150, 'Balance integrity test', '2026-06-10');
+    await createCheckingDeposit(150, 'Balance integrity test', '2026-06-10');
     const balanceAfterTxn = await db.getAccountBalance(db.accounts.checking);
     expect(balanceAfterTxn).toBeCloseTo(balanceBefore + 150, 2);
 

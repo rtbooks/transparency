@@ -19,7 +19,7 @@ export default async function ReconciliationPage({
 
   if (!clerkUserId) redirect('/login');
 
-  const { organization, userAccess } = await checkOrganizationAccess(slug, clerkUserId, false);
+  const { organization, userAccess } = await checkOrganizationAccess(slug, clerkUserId);
 
   if (!userAccess) {
     return (

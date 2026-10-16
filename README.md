@@ -251,6 +251,22 @@ We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for gu
 6. Push: `git push origin feature/amazing-feature`
 7. Open a Pull Request
 
+### Unused-code checks
+
+- `npm run type-check` rejects unused local variables, imports, functions, classes,
+  and parameters via TypeScript's `noUnusedLocals` and `noUnusedParameters`.
+  Required positional parameters (for example, unused Next.js request arguments)
+  use an `_` prefix. Remove unnecessary parameters instead of renaming them.
+- `npm run check:unused` uses Knip to reject unused files and dependencies.
+  Generated Prisma code is excluded; `pg` is retained for the Prisma PostgreSQL
+  adapter, and the `stripe` binary is an externally installed developer tool.
+- Both checks are enforced in CI; TypeScript also runs during `npm run build`.
+  CI runs `npm run lint` separately because Next.js 16 no longer runs lint in builds.
+
+Knip export/type analysis remains an additional review tool:
+`npx knip --include exports,types`. It is not currently a CI gate; exported service
+helpers and shared UI primitives still need a separate usage review.
+
 ## 📝 License
 
 This project is licensed under the MIT License - see [LICENSE](./LICENSE) for details.

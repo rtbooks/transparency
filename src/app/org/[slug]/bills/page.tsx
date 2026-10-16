@@ -23,8 +23,7 @@ export default async function BillsPage({ params }: BillsPageProps) {
 
   const { organization, userAccess, user } = await checkOrganizationAccess(
     slug,
-    clerkUserId,
-    false
+    clerkUserId
   );
 
   if (!userAccess) {

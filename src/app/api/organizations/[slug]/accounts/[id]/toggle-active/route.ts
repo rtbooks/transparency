@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {

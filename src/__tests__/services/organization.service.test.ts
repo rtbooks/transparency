@@ -5,7 +5,6 @@
  * Integration tests with actual database would be in a separate file.
  */
 
-import type { Prisma } from '@/generated/prisma/client';
 
 describe('Organization Service', () => {
   describe('Version Management', () => {

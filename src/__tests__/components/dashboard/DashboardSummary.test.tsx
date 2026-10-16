@@ -13,7 +13,6 @@
  * - Handles loading and error states
  */
 
-import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { DashboardSummary } from '@/components/dashboard/DashboardSummary';

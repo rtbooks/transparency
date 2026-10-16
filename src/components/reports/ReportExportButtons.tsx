@@ -10,7 +10,6 @@ interface ReportExportButtonsProps {
 
 export function ReportExportButtons({
   onExportCSV,
-  reportTitle,
 }: ReportExportButtonsProps) {
   return (
     <div className="flex gap-2 print:hidden">

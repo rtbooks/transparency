@@ -151,7 +151,7 @@ export async function getMembershipChanges(
   });
 
   // Analyze each user's version history
-  userVersions.forEach((userHistory, userId) => {
+  userVersions.forEach((userHistory) => {
     userHistory.forEach((version, index) => {
       const previous = index > 0 ? userHistory[index - 1] : null;
 

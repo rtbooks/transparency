@@ -5,7 +5,6 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { MAX_DATE } from '@/lib/temporal/temporal-utils';
 
 // Mock prisma
 jest.mock('@/lib/prisma', () => ({

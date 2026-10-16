@@ -8,7 +8,7 @@ import { completeReconciliation } from '@/services/reconciliation.service';
  * Finalize reconciliation: mark all matched transactions as reconciled.
  */
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string; statementId: string }> }
 ) {
   try {

@@ -10,7 +10,7 @@ import { AccountService } from '@/services/account.service';
 import { ProgramSpendingService } from '@/services/program-spending.service';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; date: string }> }
 ) {
   try {

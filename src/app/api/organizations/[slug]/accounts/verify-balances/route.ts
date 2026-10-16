@@ -13,7 +13,7 @@ import {
  * Returns list of accounts with balance discrepancies
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
@@ -126,7 +126,7 @@ export async function GET(
  * Fix account balances by recalculating from transactions
  */
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {

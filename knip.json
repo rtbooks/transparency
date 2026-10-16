@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": [
+    "e2e/**/*.spec.ts",
+    "e2e/auth.setup.ts",
+    "e2e/global.setup.ts",
+    "prisma/load-env.js"
+  ],
+  "include": ["files", "dependencies", "devDependencies", "binaries"],
+  "project": ["src/**/*.{ts,tsx,css}", "e2e/**/*.{ts,tsx}", "prisma/**/*.{ts,js,prisma}"],
+  "ignore": ["src/generated/prisma/**"],
+  "ignoreDependencies": ["pg"],
+  "ignoreBinaries": ["stripe"]
+}

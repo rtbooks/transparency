@@ -4,7 +4,6 @@
  * Tests account versioning, balance calculations, and hierarchy management.
  */
 
-import type { Prisma } from '@/generated/prisma/client';
 
 describe('Account Service', () => {
   describe('Version Management', () => {

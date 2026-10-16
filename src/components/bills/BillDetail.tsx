@@ -102,7 +102,7 @@ function getStatusBadge(status: BillDetailData["status"]) {
   );
 }
 
-export function BillDetail({ organizationSlug, bill, accounts, canEdit = true, onClose, onRefresh }: BillDetailProps) {
+export function BillDetail({ organizationSlug, bill, accounts, canEdit = true, onRefresh }: BillDetailProps) {
   const [detail, setDetail] = useState<BillDetailData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

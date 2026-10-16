@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { buildCurrentVersionWhere, MAX_DATE } from "@/lib/temporal/temporal-utils";
+import { buildCurrentVersionWhere } from "@/lib/temporal/temporal-utils";
 import { Metadata } from "next";
 import Link from "next/link";
 

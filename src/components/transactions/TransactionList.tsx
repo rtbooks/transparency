@@ -30,7 +30,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +37,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { formatCurrency, formatTransactionAmount } from "@/lib/utils/account-tree";
+import { formatTransactionAmount } from "@/lib/utils/account-tree";
 import { ChevronLeft, ChevronRight, Download, Search, Info, Pencil, Ban, MoreVertical, CalendarClock, Eye, CheckCircle2, X, FileText } from "lucide-react";
 import { format, subDays, subMonths, startOfDay } from "date-fns";
 import { EditTransactionForm } from "./EditTransactionForm";

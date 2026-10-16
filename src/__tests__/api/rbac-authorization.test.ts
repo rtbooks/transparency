@@ -123,20 +123,6 @@ function makeAdminCtx() {
   };
 }
 
-function makeSupporterCtx() {
-  return {
-    ...makeAdminCtx(),
-    role: 'SUPPORTER' as const,
-    permissions: {
-      viewOrganization: true, editOrganization: false, deleteOrganization: false,
-      viewAccounts: true, createAccounts: false, editAccounts: false, deleteAccounts: false,
-      viewTransactions: true, createTransactions: false, editTransactions: false, deleteTransactions: false,
-      viewUsers: false, inviteUsers: false, editUserRoles: false, removeUsers: false,
-      viewBalances: true, exportData: false, viewPublicDashboard: true,
-    },
-  };
-}
-
 function makePlatformAuthCtx(overrides?: Partial<{ orgRole: string | null }>) {
   return {
     userId: 'user-1',

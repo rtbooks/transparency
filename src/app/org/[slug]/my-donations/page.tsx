@@ -21,7 +21,7 @@ export default async function DonationsPage({ params, searchParams }: DonationsP
     redirect('/login');
   }
 
-  const { organization } = await checkOrganizationAccess(slug, clerkUserId, false);
+  const { organization } = await checkOrganizationAccess(slug, clerkUserId);
 
   const verificationMessage = VerificationStatusMessage({
     status: organization.verificationStatus,

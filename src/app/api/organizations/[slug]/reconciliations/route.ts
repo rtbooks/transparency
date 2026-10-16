@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
-import { startReconciliation, listReconciliations, getLastEndingBalance } from '@/services/account-reconciliation.service';
+import { startReconciliation, listReconciliations } from '@/services/account-reconciliation.service';
 import { z } from 'zod';
 
 const createSchema = z.object({

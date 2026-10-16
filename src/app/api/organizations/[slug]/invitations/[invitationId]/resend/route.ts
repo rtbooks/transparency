@@ -14,7 +14,7 @@ interface RouteParams {
 
 // POST /api/organizations/[slug]/invitations/[invitationId]/resend - Resend an invitation
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: RouteParams
 ) {
   try {

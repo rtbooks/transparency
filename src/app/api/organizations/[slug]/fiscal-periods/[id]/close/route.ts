@@ -5,7 +5,7 @@ import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { executeClose } from '@/services/fiscal-period.service';
 
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {

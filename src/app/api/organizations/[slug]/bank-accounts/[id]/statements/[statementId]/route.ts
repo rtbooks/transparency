@@ -8,7 +8,7 @@ import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
  * Get statement detail with all lines.
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string; statementId: string }> }
 ) {
   try {
@@ -66,7 +66,7 @@ export async function GET(
  * Delete a draft statement.
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string; statementId: string }> }
 ) {
   try {

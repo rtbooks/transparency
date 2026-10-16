@@ -1,9 +1,8 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { Upload, X, FileText, ImageIcon } from 'lucide-react';
+import { Upload, FileText, ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 
 const ALLOWED_TYPES = [
   'application/pdf',

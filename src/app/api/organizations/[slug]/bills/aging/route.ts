@@ -9,7 +9,7 @@ import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
  * Buckets: Current (not yet due), 1-30, 31-60, 61-90, 90+ days past due
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {

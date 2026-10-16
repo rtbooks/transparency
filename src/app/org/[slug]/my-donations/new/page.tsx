@@ -24,7 +24,7 @@ export default async function NewPledgePage({ params, searchParams }: NewPledgeP
     redirect(`/login?redirect_url=${encodeURIComponent(returnUrl)}`);
   }
 
-  const { organization } = await checkOrganizationAccess(slug, clerkUserId, false);
+  const { organization } = await checkOrganizationAccess(slug, clerkUserId);
 
   const verificationMessage = VerificationStatusMessage({
     status: organization.verificationStatus,
