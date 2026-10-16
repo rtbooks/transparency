@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { formatCurrency } from "@/lib/utils/account-tree";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -171,14 +172,22 @@ export function CampaignList({
                   {campaign.status}
                 </Badge>
                 {campaign.status === 'ACTIVE' && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSharingCampaign(campaign)}
-                    title="Share campaign"
-                  >
-                    <Share2 className="h-4 w-4" />
-                  </Button>
+                  <>
+                    <Button variant="outline" size="sm" asChild title="View campaign page">
+                      <Link href={`/org/${organizationSlug}/donate/${campaign.id}`}>
+                        <Eye className="h-4 w-4" />
+                        View
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSharingCampaign(campaign)}
+                      title="Share campaign"
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </>
                 )}
                 {showEditControls && (
                   <Button

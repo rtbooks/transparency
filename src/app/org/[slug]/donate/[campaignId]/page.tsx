@@ -28,6 +28,28 @@ export default async function DonateCampaignPage({ params }: Props) {
     notFound();
   }
 
+  // Only query donor names for public donations. Anonymous entries intentionally
+  // never load or serialize contact information.
+  const publicDonations = await prisma.donation.findMany({
+    where: { campaignId, status: { not: 'CANCELLED' } },
+    select: { id: true, amount: true, isAnonymous: true, contactId: true, donationDate: true },
+    orderBy: { donationDate: 'desc' },
+    take: 10,
+  });
+  const publicContactIds = publicDonations.filter(d => !d.isAnonymous).map(d => d.contactId);
+  const publicContacts = publicContactIds.length
+    ? await prisma.contact.findMany({
+        where: buildCurrentVersionWhere({ id: { in: publicContactIds } }),
+        select: { id: true, name: true },
+      })
+    : [];
+  const contactNames = new Map(publicContacts.map(contact => [contact.id, contact.name]));
+  const serializedDonations = publicDonations.map(donation => ({
+    id: donation.id,
+    amount: Number(donation.amount),
+    donorName: donation.isAnonymous ? 'Anonymous' : (contactNames.get(donation.contactId) || 'Donor'),
+  }));
+
   // Serialize Decimal fields
   const serializedCampaign = {
     id: campaign.id,
@@ -64,6 +86,7 @@ export default async function DonateCampaignPage({ params }: Props) {
       maxPerOrder: i.maxPerOrder,
       isRequired: i.isRequired,
     })),
+    recentDonations: serializedDonations,
   };
 
   return (

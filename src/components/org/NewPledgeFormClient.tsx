@@ -103,6 +103,7 @@ export function NewPledgeFormClient({
   const [createdDonationId, setCreatedDonationId] = useState<string | null>(null);
   const [createdLineItems, setCreatedLineItems] = useState<{ campaignItemId: string; quantity: number }[] | undefined>();
   const [stripeLoading, setStripeLoading] = useState(false);
+  const [isAnonymous, setIsAnonymous] = useState(false);
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -228,6 +229,7 @@ export function NewPledgeFormClient({
             amount: finalAmount,
             description,
             donorMessage: data.donorMessage || undefined,
+            isAnonymous,
             campaignId: selectedCampaignId || null,
             unitCount: isFixedUnit ? unitCount : null,
             tierId: isTiered ? selectedTierId : null,
@@ -361,6 +363,7 @@ export function NewPledgeFormClient({
                                       amount: createdDonationAmount,
                                       campaignId: selectedCampaignId || undefined,
                                       donationId: createdDonationId || undefined,
+                                      isAnonymous,
                                       lineItems: createdLineItems || undefined,
                                     }),
                                   }
@@ -707,6 +710,21 @@ export function NewPledgeFormClient({
                 </FormItem>
               )}
             />
+
+            {selectedCampaignId && (
+              <label className="flex items-start gap-3 rounded-md border p-3 text-sm">
+                <input
+                  type="checkbox"
+                  checked={isAnonymous}
+                  onChange={(event) => setIsAnonymous(event.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                />
+                <span>
+                  <span className="font-medium text-gray-900">Make my donation anonymous</span>
+                  <span className="mt-1 block text-gray-500">Your donation amount will still appear on the campaign page under “Anonymous,” without your name or other identifying information.</span>
+                </span>
+              </label>
+            )}
 
             <div className="flex gap-3 pt-4">
               <Button type="submit" disabled={isSubmitting}>
