@@ -280,6 +280,20 @@ describe('Temporal Reporting', () => {
 // ── Bug-fix regression tests ───────────────────────────────
 
 describe('Income Statement - temporal query correctness', () => {
+  it('should exclude year-end closing entries so a closed year retains its income statement', async () => {
+    const revenueAccount = makeAccount({ id: 'rev-1', code: '4000', name: 'Donations', type: 'REVENUE' });
+    (prisma.account.findMany as jest.Mock).mockResolvedValue([revenueAccount]);
+    (prisma.transaction.findMany as jest.Mock).mockResolvedValue([
+      { amount: { toString: () => '1000' }, debitAccountId: 'cash-1', creditAccountId: 'rev-1' },
+    ]);
+
+    const result = await generateIncomeStatement('org-1', new Date('2024-01-01'), new Date('2024-12-31'));
+
+    const transactionQuery = (prisma.transaction.findMany as jest.Mock).mock.calls[0][0];
+    expect(transactionQuery.where.type).toEqual({ not: 'CLOSING' });
+    expect(result.revenue.total).toBe(1000);
+  });
+
   it('should use buildCurrentVersionWhere with isActive filter', async () => {
     (prisma.account.findMany as jest.Mock).mockResolvedValue([]);
     (prisma.transaction.findMany as jest.Mock).mockResolvedValue([]);

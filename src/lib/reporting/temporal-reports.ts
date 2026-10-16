@@ -174,6 +174,9 @@ export async function generateIncomeStatement(
   const transactions = await prisma.transaction.findMany({
     where: {
       organizationId,
+      // Closing entries transfer temporary-account balances to equity; they
+      // must not offset the activity being reported for the fiscal year.
+      type: { not: 'CLOSING' },
       transactionDate: {
         gte: startDate,
         lte: endDate,
