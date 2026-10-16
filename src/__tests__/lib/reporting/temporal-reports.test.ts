@@ -395,13 +395,26 @@ describe('Income Statement - debit/credit activity logic', () => {
 });
 
 describe('Balance Sheet - temporal query correctness', () => {
-  it('should include systemTo: MAX_DATE in account query', async () => {
-    (prisma.account.findMany as jest.Mock).mockResolvedValue([]);
+  it('should reconstruct balances from posted transactions through the report date', async () => {
+    (prisma.account.findMany as jest.Mock).mockResolvedValue([
+      makeAccount({ id: 'cash', code: '1000', type: 'ASSET' }),
+      makeAccount({ id: 'revenue', code: '4000', type: 'REVENUE' }),
+    ]);
+    (prisma.transaction.findMany as jest.Mock).mockResolvedValue([
+      { amount: { toString: () => '250' }, debitAccountId: 'cash', creditAccountId: 'revenue' },
+    ]);
 
-    await generateBalanceSheet('org-1', new Date('2024-06-30'));
+    const result = await generateBalanceSheet('org-1', new Date('2024-06-30'));
 
-    const query = (prisma.account.findMany as jest.Mock).mock.calls[0][0];
-    expect(query.where.systemTo).toEqual(MAX_DATE);
+    const accountQuery = (prisma.account.findMany as jest.Mock).mock.calls[0][0];
+    const transactionQuery = (prisma.transaction.findMany as jest.Mock).mock.calls[0][0];
+    expect(accountQuery.where.validTo).toEqual(MAX_DATE);
+    expect(accountQuery.where.systemTo).toEqual(MAX_DATE);
+    expect(accountQuery.where.validFrom).toBeUndefined();
+    expect(transactionQuery.where.transactionDate).toEqual({ lte: new Date('2024-06-30') });
+    expect(transactionQuery.where.isVoided).toBe(false);
+    expect(result.assets.total).toBe(250);
+    expect(result.equity.total).toBe(250);
   });
 });
 
@@ -415,6 +428,11 @@ describe('Balance Sheet - accounting equation (A = L + E)', () => {
       makeAccount({ id: 'exp', code: '5000', name: 'Supplies', type: 'EXPENSE', currentBalance: { toString: () => '3000' } }),
     ];
     (prisma.account.findMany as jest.Mock).mockResolvedValue(accounts);
+    (prisma.transaction.findMany as jest.Mock).mockResolvedValue([
+      { amount: { toString: () => '15000' }, debitAccountId: 'cash', creditAccountId: 'retained' },
+      { amount: { toString: () => '8000' }, debitAccountId: 'retained', creditAccountId: 'rev' },
+      { amount: { toString: () => '3000' }, debitAccountId: 'exp', creditAccountId: 'ap' },
+    ]);
 
     const result = await generateBalanceSheet('org-1', new Date('2024-12-31'));
 
@@ -436,6 +454,10 @@ describe('Balance Sheet - accounting equation (A = L + E)', () => {
       makeAccount({ id: 'exp', code: '5000', type: 'EXPENSE', currentBalance: { toString: () => '500' } }),
     ];
     (prisma.account.findMany as jest.Mock).mockResolvedValue(accounts);
+    (prisma.transaction.findMany as jest.Mock).mockResolvedValue([
+      { amount: { toString: () => '2000' }, debitAccountId: 'cash', creditAccountId: 'rev' },
+      { amount: { toString: () => '500' }, debitAccountId: 'exp', creditAccountId: 'cash' },
+    ]);
 
     const result = await generateBalanceSheet('org-1', new Date('2024-12-31'));
 
@@ -449,6 +471,7 @@ describe('Balance Sheet - accounting equation (A = L + E)', () => {
       makeAccount({ id: 'cash', code: '1000', type: 'ASSET', currentBalance: { toString: () => '5000' } }),
     ];
     (prisma.account.findMany as jest.Mock).mockResolvedValue(accounts);
+    (prisma.transaction.findMany as jest.Mock).mockResolvedValue([]);
 
     const result = await generateBalanceSheet('org-1', new Date('2024-12-31'));
     const netIncomeLine = result.equity.accounts.find(a => a.name === 'Current Period Net Income');
