@@ -68,15 +68,45 @@ export async function generateBalanceSheet(
   organizationId: string,
   asOfDate: Date
 ): Promise<BalanceSheetData> {
-  // Get accounts as they existed on the date (bitemporal: valid-time + system-time)
+  // Use current account definitions, but reconstruct balances from ledger activity.
+  // Account balance versions are stamped when transactions are entered, not with
+  // their transaction dates, so querying those snapshots by valid time can return
+  // zero accounts for a historical report date.
   const accounts = await prisma.account.findMany({
-    where: {
-      ...buildAsOfDateWhere(asOfDate, { organizationId }),
-      systemTo: MAX_DATE,
-      isActive: true,
-    },
+    where: buildCurrentVersionWhere({ organizationId }),
     orderBy: { code: 'asc' },
   });
+
+  const transactions = await prisma.transaction.findMany({
+    where: {
+      organizationId,
+      transactionDate: { lte: asOfDate },
+      validTo: MAX_DATE,
+      systemTo: MAX_DATE,
+      isDeleted: false,
+      isVoided: false,
+    },
+    select: { amount: true, debitAccountId: true, creditAccountId: true },
+  });
+
+  const accountTypes = new Map(accounts.map((account) => [account.id, account.type]));
+  const balances = new Map(accounts.map((account) => [account.id, 0]));
+  for (const transaction of transactions) {
+    const amount = Number(transaction.amount);
+    const debitType = accountTypes.get(transaction.debitAccountId);
+    const creditType = accountTypes.get(transaction.creditAccountId);
+    if (debitType) {
+      const debitIncrease = debitType === 'ASSET' || debitType === 'EXPENSE';
+      balances.set(transaction.debitAccountId,
+        (balances.get(transaction.debitAccountId) ?? 0) + (debitIncrease ? amount : -amount));
+    }
+    if (creditType) {
+      const creditIncrease = creditType === 'LIABILITY' || creditType === 'EQUITY' || creditType === 'REVENUE';
+      balances.set(transaction.creditAccountId,
+        (balances.get(transaction.creditAccountId) ?? 0) + (creditIncrease ? amount : -amount));
+    }
+  }
+  const balanceOf = (account: Account) => balances.get(account.id) ?? 0;
 
   // Categorize accounts
   const assets = accounts.filter((a) => a.type === 'ASSET');
@@ -104,24 +134,24 @@ export async function generateBalanceSheet(
   const mapAccount = (acc: Account) => ({
     code: acc.code,
     name: acc.name,
-    balance: Number(acc.currentBalance),
+    balance: balanceOf(acc),
   });
 
   const assetsData = {
     current: currentAssets.map(mapAccount),
     fixed: fixedAssets.map(mapAccount),
-    total: assets.reduce((sum, a) => sum + Number(a.currentBalance), 0),
+    total: assets.reduce((sum, a) => sum + balanceOf(a), 0),
   };
 
   const liabilitiesData = {
     current: currentLiabilities.map(mapAccount),
     longTerm: longTermLiabilities.map(mapAccount),
-    total: liabilities.reduce((sum, a) => sum + Number(a.currentBalance), 0),
+    total: liabilities.reduce((sum, a) => sum + balanceOf(a), 0),
   };
 
   // Net income = Revenue balances - Expense balances (must be added to equity for A = L + E)
-  const revenueTotal = revenueAccounts.reduce((sum, a) => sum + Number(a.currentBalance), 0);
-  const expenseTotal = expenseAccounts.reduce((sum, a) => sum + Number(a.currentBalance), 0);
+  const revenueTotal = revenueAccounts.reduce((sum, a) => sum + balanceOf(a), 0);
+  const expenseTotal = expenseAccounts.reduce((sum, a) => sum + balanceOf(a), 0);
   const netIncome = revenueTotal - expenseTotal;
 
   const equityAccountsList = equity.map(mapAccount);
@@ -132,7 +162,7 @@ export async function generateBalanceSheet(
 
   const equityData = {
     accounts: equityAccountsList,
-    total: equity.reduce((sum, a) => sum + Number(a.currentBalance), 0) + netIncome,
+    total: equity.reduce((sum, a) => sum + balanceOf(a), 0) + netIncome,
   };
 
   return {
@@ -174,6 +204,9 @@ export async function generateIncomeStatement(
   const transactions = await prisma.transaction.findMany({
     where: {
       organizationId,
+      // Closing entries transfer temporary-account balances to equity; they
+      // must not offset the activity being reported for the fiscal year.
+      type: { not: 'CLOSING' },
       transactionDate: {
         gte: startDate,
         lte: endDate,
