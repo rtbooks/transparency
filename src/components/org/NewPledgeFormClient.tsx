@@ -22,6 +22,7 @@ import { Loader2, CheckCircle, Target, CreditCard, Smartphone, Mail, Link2, Buil
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils/account-tree';
 import { VenmoQRCode } from '@/components/donations/VenmoQRCode';
+import { meetsStripeMinimum, STRIPE_MINIMUM_USD } from '@/lib/stripe-minimum';
 
 const donationSchema = z.object({
   amount: z.number().optional(),
@@ -333,15 +334,21 @@ export function NewPledgeFormClient({
                       const rate = pct / 100;
                       const total = Math.ceil(((createdDonationAmount + fixed) / (1 - rate)) * 100) / 100;
                       const fee = total - createdDonationAmount;
+                      const canPayByCard = meetsStripeMinimum(createdDonationAmount);
                       return (
                         <div className="mt-3 space-y-2">
+                          {!canPayByCard && (
+                            <p className="text-sm text-amber-700" role="status">
+                              Card payments require a donation of at least ${STRIPE_MINIMUM_USD.toFixed(2)}. Choose another payment method or increase your donation.
+                            </p>
+                          )}
                           <p className="text-xs text-gray-500">
                             A processing fee of ${fee.toFixed(2)} will be added — you&apos;ll pay ${total.toFixed(2)} so {organizationName} receives the full ${createdDonationAmount.toFixed(2)}.
                           </p>
                           <Button
                             size="sm"
                             className="w-full"
-                            disabled={stripeLoading}
+                            disabled={stripeLoading || !canPayByCard}
                             onClick={async () => {
                               setStripeLoading(true);
                               try {

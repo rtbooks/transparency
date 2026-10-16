@@ -3,10 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { buildCurrentVersionWhere } from "@/lib/temporal/temporal-utils";
 import { getStripe } from "@/lib/stripe";
 import { getPaymentMethodByType } from "@/services/payment-method.service";
+import { STRIPE_MINIMUM_USD } from "@/lib/stripe-minimum";
 import { z } from "zod";
 
 const checkoutSchema = z.object({
-  amount: z.number().positive().min(5, "Minimum donation amount for card payments is $5"),
+  amount: z.number().min(STRIPE_MINIMUM_USD, "Minimum donation amount for card payments is $0.50"),
   campaignId: z.string().nullable().optional(),
   tierId: z.string().nullable().optional(),
   unitCount: z.number().int().positive().nullable().optional(),
@@ -189,7 +190,7 @@ export async function POST(
       const messages = error.errors.map((e) => `${e.path.join('.')}: ${e.message}`);
       console.error("Checkout validation failed:", messages);
       return NextResponse.json(
-        { error: "Invalid input", details: error.errors },
+        { error: error.errors[0]?.message || "Invalid checkout input", details: error.errors },
         { status: 400 }
       );
     }
