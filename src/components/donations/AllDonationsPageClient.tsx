@@ -84,11 +84,6 @@ export function AllDonationsPageClient({
 
   const isAdmin = data?.isAdmin ?? false;
 
-  const canModifyDonation = (donation: DonationItem) => {
-    if (!isAdmin) return false;
-    return donation.status !== 'CANCELLED' && donation.status !== 'RECEIVED';
-  };
-
   const canRecordPayment = (donation: DonationItem) => {
     if (!isAdmin) return false;
     return donation.status === 'PLEDGED' || donation.status === 'PARTIAL';

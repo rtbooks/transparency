@@ -10,7 +10,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
+import { closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 import { ServiceError } from '@/lib/errors/service-error';
 
 // Mock prisma

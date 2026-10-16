@@ -77,7 +77,7 @@ export async function PATCH(
  * Deactivate a bank account (soft delete).
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {

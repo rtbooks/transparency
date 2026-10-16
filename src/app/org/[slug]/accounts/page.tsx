@@ -19,7 +19,7 @@ export default async function AccountsPage({ params }: AccountsPageProps) {
     redirect('/login');
   }
 
-  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId, false);
+  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId);
 
   if (!userAccess) {
     return (

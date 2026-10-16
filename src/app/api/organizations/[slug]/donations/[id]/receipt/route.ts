@@ -11,7 +11,7 @@ import { generateReceiptPdf } from '@/services/donation-receipt.service';
  * Any org member can download receipts for their own donations; admins can download any.
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {

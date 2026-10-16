@@ -30,7 +30,7 @@ const uploadSchema = z.object({
  * List bank statements for a bank account.
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {

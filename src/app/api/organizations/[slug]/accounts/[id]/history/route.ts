@@ -8,7 +8,7 @@ import { AccountService } from '@/services/account.service';
 import { withOrgAuth, AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string }> }
 ) {
   try {

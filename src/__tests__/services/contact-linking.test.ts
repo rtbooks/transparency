@@ -184,7 +184,7 @@ describe('unlinkContactFromUser', () => {
     (mockTx.contact.findFirst as jest.Mock).mockResolvedValue(makeContact());
     (mockTx.contact.create as jest.Mock).mockResolvedValue(unlinked);
 
-    const result = await unlinkContactFromUser(ORG_ID, CONTACT_ID, 'admin-1');
+    await unlinkContactFromUser(ORG_ID, CONTACT_ID, 'admin-1');
 
     // The new version should have userId set to null
     const createArgs = (mockTx.contact.create as jest.Mock).mock.calls[0][0];

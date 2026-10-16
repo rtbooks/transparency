@@ -8,7 +8,7 @@ import { auth } from '@clerk/nextjs/server';
 import { OrganizationService } from '@/services/organization.service';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {

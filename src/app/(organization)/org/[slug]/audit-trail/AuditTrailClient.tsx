@@ -33,7 +33,6 @@ interface AuditTrailClientProps {
 }
 
 export function AuditTrailClient({
-  organization,
   orgHistory,
   accountsHistory,
 }: AuditTrailClientProps) {
@@ -46,7 +45,6 @@ export function AuditTrailClient({
 
     // Organization changes
     orgHistory.forEach((version, index) => {
-      const previous = orgHistory[index + 1];
       entries.push({
         id: version.versionId,
         timestamp: new Date(version.systemFrom),

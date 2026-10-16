@@ -34,7 +34,7 @@ export default async function BalanceSheetPage({
     redirect('/login');
   }
 
-  const { organization } = await checkOrganizationAccess(slug, clerkUserId, false);
+  const { organization } = await checkOrganizationAccess(slug, clerkUserId);
 
   const fiscalYearStartDate = new Date(organization.fiscalYearStart);
   const now = new Date();

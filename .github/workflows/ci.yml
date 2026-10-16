@@ -122,6 +122,14 @@ jobs:
         env:
           DATABASE_URL: postgresql://user:password@localhost:5432/db
 
+      - name: Check for unused code
+        run: npm run check:unused
+        env:
+          DATABASE_URL: postgresql://unused:unused@localhost:5432/unused
+
+      - name: Lint
+        run: npm run lint
+
       - name: Build project
         run: npm run build
         env:

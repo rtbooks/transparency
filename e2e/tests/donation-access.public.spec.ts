@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 const ORG_SLUG = process.env.E2E_ORG_SLUG || 'e2e-test-org';
 

@@ -20,7 +20,7 @@ export default async function ReportsPage({ params }: ReportsPageProps) {
     redirect('/login');
   }
 
-  const { organization } = await checkOrganizationAccess(slug, clerkUserId, false);
+  const { organization } = await checkOrganizationAccess(slug, clerkUserId);
 
   const reports = [
     {

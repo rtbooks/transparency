@@ -21,8 +21,7 @@ export default async function ContactsPage({ params }: ContactsPageProps) {
 
   const { organization, userAccess, user } = await checkOrganizationAccess(
     slug,
-    clerkUserId,
-    false
+    clerkUserId
   );
 
   if (!userAccess) {

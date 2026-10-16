@@ -8,7 +8,7 @@ import { prisma } from '@/lib/prisma';
 import { reverseAccountBalances } from '@/lib/accounting/balance-calculator';
 import { MAX_DATE, buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap, closeVersion, buildNewVersionData } from '@/lib/temporal/temporal-utils';
 import { createTransactionRecord } from '@/services/transaction.service';
-import type { Donation, Bill } from '@/generated/prisma/client';
+import type { Donation } from '@/generated/prisma/client';
 import type { Prisma } from '@/generated/prisma/client';
 
 // ── Inputs ──────────────────────────────────────────────────────────────

@@ -12,7 +12,7 @@ interface RouteParams {
 
 // DELETE /api/organizations/[slug]/invitations/[invitationId] - Revoke an invitation
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: RouteParams
 ) {
   try {

@@ -3,7 +3,7 @@ import { User } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { OrganizationCard } from "./OrganizationCard";
 import { MarketingNav } from "@/app/(marketing)/MarketingNav";
-import { buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap, MAX_DATE } from "@/lib/temporal/temporal-utils";
+import { buildCurrentVersionWhere, MAX_DATE } from "@/lib/temporal/temporal-utils";
 
 async function getUserOrganizations(clerkUserId: string) {
   const dbUser = await prisma.user.findUnique({

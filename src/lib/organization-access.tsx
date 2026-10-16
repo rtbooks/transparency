@@ -10,13 +10,13 @@ export type OrganizationAccessCheck = {
 };
 
 /**
- * Check if a user has access to an organization and if the organization is verified.
+ * Look up an organization and the user's membership.
+ * Callers are responsible for enforcing access and verification requirements.
  * For authenticated routes (dashboard, settings, etc.)
  */
 export async function checkOrganizationAccess(
   slug: string,
-  userId: string,
-  requireVerified: boolean = true
+  userId: string
 ): Promise<OrganizationAccessCheck> {
   const user = await ensureUserExists(userId);
 

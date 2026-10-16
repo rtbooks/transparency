@@ -44,7 +44,7 @@ const createCampaignSchema = z.object({
  * List campaigns. Public for donors (ACTIVE only), full list for admins.
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {

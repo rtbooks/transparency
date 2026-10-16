@@ -4,7 +4,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { MAX_DATE, buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap } from '@/lib/temporal/temporal-utils';
 import { createTransactionRecord } from '@/services/transaction.service';
 import type { Bill, BillPayment, Transaction } from '@/generated/prisma/client';
 

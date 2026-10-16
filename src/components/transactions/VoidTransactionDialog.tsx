@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { formatCurrency, formatTransactionAmount } from '@/lib/utils/account-tree';
+import { formatTransactionAmount } from '@/lib/utils/account-tree';
 
 interface VoidTransactionDialogProps {
   open: boolean;

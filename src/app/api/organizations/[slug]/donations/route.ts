@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withPlatformAuth, type PlatformAuthContext } from '@/lib/auth/with-platform-auth';
+import { withPlatformAuth } from '@/lib/auth/with-platform-auth';
 import { AuthError, authErrorResponse } from '@/lib/auth/with-org-auth';
 import { prisma } from '@/lib/prisma';
 import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';

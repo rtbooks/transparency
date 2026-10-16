@@ -21,7 +21,7 @@ export default async function OrganizationDashboard({
     redirect('/login');
   }
 
-  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId, false);
+  const { organization, userAccess } = await checkOrganizationAccess(slug, clerkUserId);
 
   // Check if user has access to this organization
   if (!userAccess) {

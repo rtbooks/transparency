@@ -35,7 +35,7 @@ const createPaymentMethodSchema = z.object({
  * List payment methods. Admins see all; public/donors see enabled only.
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {

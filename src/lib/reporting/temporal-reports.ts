@@ -5,7 +5,6 @@
 
 import { prisma } from '@/lib/prisma';
 import type { Account, AccountType } from '@/generated/prisma/client';
-import type { Prisma } from '@/generated/prisma/client';
 import { buildCurrentVersionWhere, buildAsOfDateWhere, buildEntitiesWhere, buildEntityMap, MAX_DATE } from '@/lib/temporal/temporal-utils';
 
 interface BalanceSheetData {

@@ -10,7 +10,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { MAX_DATE, buildCurrentVersionWhere, buildEntitiesWhere, buildEntityMap } from '@/lib/temporal/temporal-utils';
+import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 
 // Mock prisma
 jest.mock('@/lib/prisma', () => ({

@@ -10,7 +10,6 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
 import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
 
 // Must be declared before jest.mock so the factory can reference it

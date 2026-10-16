@@ -22,7 +22,7 @@ export default async function OrganizationSettingsPage({
     redirect('/login');
   }
 
-  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId, false);
+  const { organization, userAccess, user } = await checkOrganizationAccess(slug, clerkUserId);
   
   // Platform admins have access, otherwise need ORG_ADMIN role in this org
   const hasAccess = user.isPlatformAdmin || (userAccess && userAccess.role === 'ORG_ADMIN');

@@ -15,7 +15,6 @@ import { Badge } from '@/components/ui/badge';
 import { ROLE_LABELS } from '@/lib/auth/permissions';
 import { RoleAssignmentDialog } from './RoleAssignmentDialog';
 import { RemoveUserDialog } from './RemoveUserDialog';
-import { UserPlus } from 'lucide-react';
 
 // Serialized user type with Decimal converted to number
 interface SerializedUser {
@@ -41,7 +40,6 @@ interface UserListProps {
 }
 
 export function UserList({
-  organizationId,
   organizationSlug,
   users,
   currentUserRole,

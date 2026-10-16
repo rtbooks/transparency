@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, formatTransactionAmount } from '@/lib/utils/account-tree';
-import { DollarSign, TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle, Landmark } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, AlertTriangle, Landmark } from 'lucide-react';
 
 interface AccountData {
   type: string;

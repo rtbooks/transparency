@@ -12,7 +12,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { updateAccountBalances } from '@/lib/accounting/balance-calculator';
-import { MAX_DATE, buildCurrentVersionWhere } from '@/lib/temporal/temporal-utils';
+import { MAX_DATE } from '@/lib/temporal/temporal-utils';
 
 // ── mockTx must be declared before jest.mock so the factory can close over it ─
 const mockTx = {

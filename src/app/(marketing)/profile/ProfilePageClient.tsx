@@ -79,8 +79,6 @@ export function ProfilePageClient({ user, organizations, donations }: ProfilePag
   const totalDonated = parseFloat(user.totalDonated) || 0;
   const totalDonations = donations.length;
   const pendingPledges = donations.filter(d => d.status === 'PLEDGED' || d.status === 'PARTIAL');
-  const receivedDonations = donations.filter(d => d.status === 'RECEIVED');
-  const totalPledged = pendingPledges.reduce((sum, d) => sum + parseFloat(d.amount), 0);
   const totalOutstanding = pendingPledges.reduce(
     (sum, d) => sum + (parseFloat(d.amount) - parseFloat(d.amountReceived)),
     0

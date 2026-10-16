@@ -10,7 +10,6 @@ import {
   TemporalFields,
   buildCurrentVersionWhere,
   buildAsOfDateWhere,
-  isCurrentVersion,
   closeVersion,
 } from './temporal-utils';
 

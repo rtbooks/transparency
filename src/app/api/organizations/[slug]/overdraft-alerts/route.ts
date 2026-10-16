@@ -9,7 +9,7 @@ import { getOverdraftAlerts } from '@/services/projected-balance.service';
  * Returns accounts at risk of overdraft from pending payable bills.
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {

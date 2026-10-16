@@ -8,7 +8,7 @@ import { autoMatchStatement } from '@/services/reconciliation.service';
  * Run auto-matching algorithm on unmatched statement lines.
  */
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string; id: string; statementId: string }> }
 ) {
   try {

@@ -21,8 +21,7 @@ export default async function ProgramSpendingPage({ params }: PageProps) {
 
   const { organization, userAccess } = await checkOrganizationAccess(
     slug,
-    clerkUserId,
-    false
+    clerkUserId
   );
 
   if (!userAccess) {

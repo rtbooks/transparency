@@ -69,7 +69,7 @@ test.describe('Auth Redirect Flow', () => {
   });
 
   test('API webhook routes are publicly accessible', async ({ page }) => {
-    const response = await page.goto('/api/webhooks/stripe');
+    await page.goto('/api/webhooks/stripe');
 
     // Should get a method error, NOT a redirect to login
     const url = page.url();

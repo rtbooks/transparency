@@ -177,7 +177,7 @@ export async function POST(
 
 // GET - List invitations for an organization
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
