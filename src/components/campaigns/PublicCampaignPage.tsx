@@ -46,6 +46,7 @@ interface CampaignData {
   endDate: string | null;
   tiers: CampaignTier[];
   items?: CampaignItem[];
+  recentDonations: { id: string; amount: number; donorName: string }[];
 }
 
 interface PublicCampaignPageProps {
@@ -146,6 +147,23 @@ export function PublicCampaignPage({
               </div>
             )}
           </div>
+
+          {/* Public donor list */}
+          <section className="mb-6" aria-labelledby="recent-donations-heading">
+            <h2 id="recent-donations-heading" className="mb-3 text-lg font-semibold text-gray-900">Recent donations</h2>
+            {campaign.recentDonations.length ? (
+              <ul className="divide-y rounded-lg border bg-white">
+                {campaign.recentDonations.map((donation) => (
+                  <li key={donation.id} className="flex items-center justify-between px-4 py-3">
+                    <span className="font-medium text-gray-800">{donation.donorName}</span>
+                    <span className="text-gray-700">{formatCurrency(donation.amount)}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="rounded-lg border bg-white px-4 py-5 text-sm text-gray-500">Be the first to support this campaign.</p>
+            )}
+          </section>
 
           {/* Tier Details */}
           {campaign.campaignType === 'TIERED' && campaign.tiers.length > 0 && (
