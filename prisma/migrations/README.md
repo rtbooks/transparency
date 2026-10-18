@@ -2,14 +2,17 @@
 
 This directory contains the migration history for the RadBooks database.
 
-## Future Migrations
+## Creating migrations
 
-All future schema changes will be tracked as new migration files in this directory. Each migration:
+Commit each schema change with a new migration. Migration files:
 
 - Has a timestamp prefix (e.g., `20260211123456_add_feature`)
 - Contains the SQL needed to apply the change
-- Is automatically applied during Vercel deployment
-- Can be rolled back if needed
+- Are applied to production only when the deployment is configured to run `prisma migrate deploy`
+
+Prisma Migrate does not automatically reverse an applied migration. To undo a schema
+change, normally create and deploy a new forward migration. `prisma migrate resolve`
+only changes migration bookkeeping; it does not reverse SQL or restore data.
 
 ## Creating New Migrations
 
@@ -18,12 +21,14 @@ All future schema changes will be tracked as new migration files in this directo
 npx prisma migrate dev --name descriptive_migration_name
 ```
 
-## Applying Migrations in Production
+## Applying migrations in production
 
-Migrations are automatically applied during Vercel deployment via the `vercel-build` script:
+This repository's `vercel-build` script applies migrations before building:
 
 ```
 prisma migrate deploy && prisma generate && next build
 ```
 
-No manual intervention needed! 🎉
+Confirm the Vercel project uses `npm run vercel-build` (or an equivalent deployment
+command) and has a direct, non-pooled migration URL configured. Other deployment
+platforms must run `prisma migrate deploy` as part of their release process.

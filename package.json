@@ -21,7 +21,6 @@
     "test:e2e:seed": "npx tsx e2e/seed.ts",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
@@ -93,12 +92,8 @@
     "prisma": "^7.8.0",
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.4.9",
-    "ts-node": "^10.9.2",
     "tsx": "^4.22.2",
     "typescript": "^5.3.3"
-  },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "allowScripts": {
     "@clerk/shared@3.47.2": true,

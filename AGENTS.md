@@ -1,31 +1,23 @@
-# Copilot Development Guidelines
+# Repository Instructions for Coding Agents
 
-This document contains critical information for GitHub Copilot and developers working on RadBooks.
+Use these repository-wide instructions with the more detailed
+[development guide](docs/development/README.md). Treat the current code and configuration
+as authoritative when documentation and implementation differ.
 
-## MUST DO : Git development process
+## Work safely in the current checkout
 
-**The `main` branch is PROTECTED. New work must be committed to a branch. When substantial work is completed, the commits should be pushed**
+Before editing, inspect `git status --short` and the current branch. Preserve unrelated
+changes and follow the branch or worktree supplied by the harness. If the checkout is on
+`main` and clean, create a task branch before making changes. Do not automatically switch
+to `main`, pull, reset, clean, or overwrite existing work. `main` is protected; changes
+should go through a pull request.
 
-```bash
-# Start new work
-git checkout main
-git pull origin main
-git checkout -b feature/your-feature-name
+Do not commit or push unrelated changes. Follow the user's and repository's requested
+review/commit workflow when the task is complete.
 
-# Make changes and commit
-git add -A
-git commit -m "feat: your change description"
+## Validation before commit
 
-# Push and create PR
-git push origin feature/your-feature-name
-# Then create PR via GitHub UI
-```
-
----
-
-## Before Every Commit
-
-Run these checks to catch issues early:
+Run the relevant tests for the change. Before committing, run:
 
 ```bash
 # 1. Type check
@@ -38,7 +30,7 @@ npm run lint
 npm run build
 ```
 
-If any of these fail, fix the issues before committing.
+If a check fails, report the failure and whether it is related to the change.
 
 ---
 
@@ -52,11 +44,15 @@ If any of these fail, fix the issues before committing.
 
 ---
 
-## Documentation to Reference
+## Project guidance
 
-Before implementing new features, check:
-
-- `PROJECT_STRUCTURE.md` - File organization
+- Follow [the development guide](docs/development/README.md) for code layout, authorization,
+  financial invariants, and test selection.
+- For Prisma schema or migration work, read `.github/skills/prisma/SKILL.md` before editing.
+- For new or changed tests, read `.github/skills/testing/SKILL.md` and follow the matching
+  test patterns.
+- Consult relevant records in `docs/adr/`; use route handlers and services as the source
+  of truth for current API behavior.
 
 ---
 

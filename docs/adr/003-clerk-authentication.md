@@ -20,10 +20,11 @@ We evaluated building custom auth, using NextAuth.js, and using Clerk.
 We chose **Clerk** as our authentication provider.
 
 Key integration points:
-- `@clerk/nextjs` middleware protects all routes by default
-- Public routes are explicitly whitelisted in middleware configuration
+- `@clerk/nextjs` middleware calls `auth.protect()` for routes not marked public when
+  Clerk keys are configured; API handlers still need the appropriate authorization checks
+- Public routes are explicitly listed in `src/middleware.ts`
 - Clerk `userId` (external auth ID) is mapped to our internal `User` model via `authId` field
-- On first visit after login, the profile page creates the internal User if it doesn't exist
+- `ensureUserExists()` maps the Clerk identity to the internal `User` model when needed
 - Email migration: if `authId` doesn't match, we fall back to email lookup to handle Clerk instance migrations
 
 We wrap Clerk's `ClerkProvider` in a `SafeClerkProvider` client component to prevent `useContext` null errors during Next.js static prerendering.
@@ -35,7 +36,7 @@ We wrap Clerk's `ClerkProvider` in a `SafeClerkProvider` client component to pre
 - Social login support without custom OAuth implementation
 - Pre-built UI components for login/register flows
 - Handles security concerns (CSRF, session fixation, etc.)
-- Free tier sufficient for current scale
+- Avoids maintaining password storage and session infrastructure in the application
 
 ### Negative
 - External dependency — auth is critical path

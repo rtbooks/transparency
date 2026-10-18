@@ -13,35 +13,34 @@ Make financial transparency the norm for charitable organizations, enabling dono
 ## ✨ Key Features
 
 ### For the Public
-- **Real-time Financial Dashboard** - View all income and expenses
-- **Historical Data Access** - View financial state as of any past date
-- **Complete Audit Trail** - See all changes with full transparency
+- **Financial Dashboard** - Review organizational financial activity
+- **Historical Views** - View supported records as of past dates
+- **Audit History** - Review recorded changes to supported records
 - **Donor Highlights** - Recognize supporters (with opt-in)
 - **Program Spending** - See what organizations plan to buy
 - **Completed Purchases Gallery** - Photos of impact
 - **Historical Reports** - Fiscal year comparisons and trends
 
 ### For Donors
-- **Secure Online Donations** - Stripe-powered giving
+- **Online Donations** - Stripe-powered giving
 - **Multi-Organization Tracking** - See giving across all supported orgs
 - **Impact Visibility** - Track where your money went
 - **Anonymous Options** - Donate privately if desired
-- **Automatic Receipts** - Tax documentation
+- **Donation Receipts** - Downloadable receipts for recorded gifts
 
 ### For Organization Admins
 - **General Ledger** - Full double-entry bookkeeping
 - **Transaction Recording** - Income and expenses
 - **Chart of Accounts** - Hierarchical account structure
-- **Version History** - Track all changes to accounts and settings
-- **Audit Trail** - Complete change log with timestamps
+- **Version History** - Review temporal history for supported records
+- **Audit Trail** - Review recorded changes with timestamps
 - **Program Spending Management** - Track planned and actual spending
 - **Bill Management** - Payables and receivables with payment tracking
 - **Bank Reconciliation** - Match statements to ledger transactions
 - **Fundraising Campaigns** - Fixed, tiered, and open campaigns
 - **File Attachments** - Receipts and invoices on transactions/bills
-- **Financial Reports** - Comprehensive reporting with historical accuracy
-- **Time Machine** - View organization state as of any past date
-- **Bank Reconciliation** - Match transactions to bank statements
+- **Financial Reports** - Income Statement, Balance Sheet, cash-flow, and analytics reports
+- **Time Machine** - View supported temporal data as of a selected date
 
 ### For Platform Admins
 - **Multi-Tenant Management** - Manage all organizations
@@ -65,7 +64,7 @@ Make financial transparency the norm for charitable organizations, enabling dono
 
 ### Infrastructure
 - **Vercel** - Hosting and deployment
-- **Neon** - Serverless PostgreSQL with branch databases
+- **Neon** - Serverless PostgreSQL; branching is available when configured
 - **Clerk** - Authentication
 - **Vercel Blob** - Private file storage (attachments)
 - **Resend** - Transactional email
@@ -75,121 +74,51 @@ Make financial transparency the norm for charitable organizations, enabling dono
 ### Getting Started
 - **[DEV_SETUP.md](./DEV_SETUP.md)** - Development environment setup
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Code standards and contribution workflow
+- **[Development guide](./docs/development/README.md)** - Code layout, safety, and testing guidance for developers and agents
 
 ### Architecture & Design
-- **[APPROACH.md](./APPROACH.md)** - System architecture and technical approach
-- **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Folder structure and organization
-- **[TEMPORAL_SCHEMA_DESIGN.md](./TEMPORAL_SCHEMA_DESIGN.md)** - Bi-temporal versioning patterns
+- **[Bi-temporal versioning](./docs/architecture/bitemporal-versioning.md)** - Temporal data patterns
 - **[docs/adr/](./docs/adr/)** - Architecture Decision Records
 
 ### Operations & Reference
 - **[DEPLOYMENT_SETUP.md](./DEPLOYMENT_SETUP.md)** - Production deployment guide
-- **[PREVIEW_DEPLOYMENTS.md](./PREVIEW_DEPLOYMENTS.md)** - Preview environments with Neon branches
-- **[API_REFERENCE.md](./API_REFERENCE.md)** - API documentation for temporal endpoints
+- **[Preview deployments](./docs/operations/preview-deployments.md)** - Preview environments with Neon branches
+- **[Temporal API reference](./docs/api/temporal-endpoints.md)** - Temporal endpoint reference
 - **[CHANGELOG.md](./CHANGELOG.md)** - Version history and release notes
-- **[IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)** - Feature roadmap and progress
 
 ## 🚀 Quick Start
 
-### Option 1: Devcontainer (Recommended) ⚡
+### Devcontainer (Recommended)
 
-**One-click reproducible development environment!**
-
-Prerequisites:
-- Docker Desktop
-- VS Code with Dev Containers extension
+Clone the repository, open it in VS Code with the Dev Containers extension, and choose
+**Reopen in Container**. Once the container is ready, run:
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/rtbooks/transparency.git
-cd transparency
-
-# 2. Test your setup (optional)
-./test-devcontainer.sh
-
-# 3. Open in VS Code
-code .
-
-# 4. Click "Reopen in Container" when prompted
-# Everything else is automatic! ✨
-```
-
-After the container starts (~5-10 mins first time):
-```bash
-npm run dev  # Start developing!
-```
-
-**Benefits:**
-- ✅ No manual installation needed
-- ✅ PostgreSQL pre-configured and running
-- ✅ All dependencies installed automatically
-- ✅ Consistent environment for all collaborators
-- ✅ VS Code extensions pre-installed
-
-See [.devcontainer/README.md](.devcontainer/README.md) for full details.
-
-### Option 2: Manual Setup
-
-Prerequisites:
-- Node.js 18+
-- PostgreSQL 14+
-- npm or yarn
-
-```bash
-# Clone and navigate
-git clone https://github.com/rtbooks/transparency.git
-cd transparency
-
-# Install dependencies
-npm install
-
-# Set up environment
-cp .env.example .env.local
-# Edit .env.local with your credentials
-
-# Set up database
-npx prisma generate
-npx prisma db push
-npx prisma db seed  # Seeds sample data for GRIT Hoops (development only)
-
-# Start development
 npm run dev
 ```
 
-**Note:** Database seeding is automatically skipped in production environments. The production database starts empty and organizations are created through the application UI.
-
-Visit [http://localhost:3000](http://localhost:3000)
-
-For detailed manual setup instructions, see [DEV_SETUP.md](./DEV_SETUP.md).
+Open [http://localhost:3000](http://localhost:3000). See [DEV_SETUP.md](./DEV_SETUP.md)
+for manual setup and troubleshooting, or [.devcontainer/README.md](./.devcontainer/README.md)
+for container details.
 
 ## 🏗️ Project Status
 
-**Current Phase**: Production ✅ — Live at [radbooks.org](https://radbooks.org)
+RadBooks is live at [radbooks.org](https://radbooks.org).
 
-### Roadmap
-
-- [x] Core ledger (double-entry bookkeeping)
-- [x] Public transparency dashboard
-- [x] Bi-temporal versioning and audit trails
-- [x] Financial reports (Income Statement, Balance Sheet)
-- [x] Bills, contacts, and payment tracking
-- [x] Fundraising campaigns and donor workflows
-- [x] Bank reconciliation
-- [x] File attachments (receipts, invoices)
-- [x] Fiscal year-end closing
-- [x] Production deployment (Vercel + Neon)
-- [ ] Donation processing (Stripe)
-- [ ] Beta launch with GRIT Hoops
-
-See [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) for detailed progress.
+For current work, see the [GitHub issues](https://github.com/rtbooks/transparency/issues);
+the changelog records released changes.
 
 ## 💡 Core Principles
 
 ### Radical Transparency
-Every financial transaction is visible to the public (except anonymous donor names). No hidden fees, no obscured expenses. Complete audit trail of all changes.
+Organizations can publish financial activity to support public transparency while
+protecting private account credentials and donor identity choices.
 
 ### Temporal Data Architecture
-All financial data is versioned with complete history. Query the state of any account or organization as of any past date. Never lose information - all changes are tracked and reversible.
+Selected records—including organizations, accounts, transactions, and program spending—
+retain temporal history for audit and historical views. See the
+[bi-temporal versioning guide](./docs/architecture/bitemporal-versioning.md) for scope
+and implementation notes.
 
 ### Double-Entry Bookkeeping
 Professional accounting standards ensure accuracy and audit-ability. Every transaction affects two accounts.
@@ -198,44 +127,10 @@ Professional accounting standards ensure accuracy and audit-ability. Every trans
 Donors can track their impact across multiple organizations and see exactly where their money went.
 
 ### Cost-Effective
-Free tier for small organizations (<$50k annual revenue). Premium features at affordable prices. Never profit-seeking at the expense of charitable missions.
+We aim to keep the platform affordable for charitable organizations.
 
 ### Privacy-Respecting
 Donors control their visibility. Anonymous donations are fully supported and respected.
-
-## 🔒 Security
-
-- End-to-end encryption for sensitive data
-- PCI DSS compliance via Stripe
-- Row-level security for multi-tenancy
-- Regular security audits
-- GDPR compliant
-
-## 📊 Business Model
-
-### Freemium Tiers
-
-**Free Tier** (Small Organizations)
-- Up to $50k annual revenue
-- 100 transactions/month
-- 1GB storage
-- All core features
-
-**Premium - $29/month** (Growing Organizations)
-- Unlimited transactions
-- 10GB storage
-- Priority support
-- Custom branding
-
-**Enterprise - $99/month** (Large Nonprofits)
-- Bank account sync
-- QuickBooks integration
-- Dedicated support
-- Custom features
-
-**Advertising** (Future)
-- Ethical sponsor placements
-- Revenue share with organizations
 
 ## 🤝 Contributing
 
@@ -292,7 +187,7 @@ This platform was designed with GRIT Hoops Westwood Basketball as the inaugural 
 - Equipment purchase planning
 - Travel expense visibility
 - Donor recognition (opt-in)
-- Annual reporting for IRS compliance
+- Financial summaries to support organizational reporting (not tax or legal advice)
 
 ---
 

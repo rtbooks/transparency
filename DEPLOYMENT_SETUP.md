@@ -1,27 +1,29 @@
 # Deployment Setup Guide
 
-Complete step-by-step instructions for deploying RadBooks to production.
+Complete step-by-step instructions for deploying your own RadBooks instance to
+production. These steps configure infrastructure and credentials for that deployment;
+they do not configure the hosted RadBooks service at radbooks.org.
 
 ## Overview
 
 This guide will deploy:
-- **Next.js application** → Vercel (serverless, auto-hibernates)
-- **PostgreSQL database** → Neon (serverless, auto-suspends after 5 min idle)
+- **Next.js application** → Vercel (runtime behavior depends on project configuration and plan)
+- **PostgreSQL database** → Neon (configure compute and autosuspend behavior for your plan)
 - **Authentication** → Clerk
 - **Payment processing** → Stripe
-- **Preview environments** → Automatic with Neon branch databases (see PREVIEW_DEPLOYMENTS.md)
-- **Custom domain** → radbooks.org
+- **Optional preview environments** → Configure and verify separately (see [Preview deployments](./docs/operations/preview-deployments.md))
+- **Optional custom domain** → a domain you control
 
-**Cost when idle:** $0/month  
-**Cost under light use:** $0-5/month
+Hosting, database, authentication, and payment-provider costs depend on current plans,
+usage, region, and configuration. Check each provider's current pricing before deploying.
 
 ---
 
 ## Related Documentation
 
-- **PREVIEW_DEPLOYMENTS.md** - Set up automatic preview environments for PRs
+- **[Preview deployments](./docs/operations/preview-deployments.md)** - Configure and verify preview environments
 - **CONTRIBUTING.md** - Development workflow and branch protection
-- **QUICKSTART.md** - Local development setup
+- **[DEV_SETUP.md](./DEV_SETUP.md)** - Local development setup
 
 ---
 
@@ -41,26 +43,15 @@ You'll also need:
 
 ---
 
-## Step 1: Push Code to GitHub
+## Step 1: Put your instance in a GitHub repository
 
-If you haven't already pushed this repository to GitHub:
+For your own RadBooks instance, deploy from a repository that you control (for example,
+a fork or a separately created repository). Do not push directly to this project's
+protected `main` branch. If creating a new repository, use GitHub's current instructions
+to create it and push the branch you intend to deploy. Preserve the repository's branch
+and pull-request protections.
 
-```bash
-# Initialize git (if not already initialized)
-git init
-
-# Add all files
-git add .
-
-# Commit changes
-git commit -m "Initial commit - ready for deployment"
-
-# Create a new repository on GitHub (via web interface)
-# Then connect and push:
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-git branch -M main
-git push -u origin main
-```
+If the repository is already on GitHub, skip this step.
 
 ---
 
@@ -72,7 +63,7 @@ git push -u origin main
 2. Click **"New Project"**
 3. Configure:
    - **Project name:** `transparency-platform` (or your choice)
-   - **Region:** Choose closest to your users (e.g., `US East (Ohio)`)
+   - **Region:** Choose a region supported by your account and appropriate for your users
    - **PostgreSQL version:** 16 (recommended)
 4. Click **"Create Project"**
 
@@ -92,11 +83,10 @@ postgresql://user:password@ep-xxxxx.us-east-2.aws.neon.tech/neondb?sslmode=requi
 
 **Important:** The pooled URL has `-pooler` in the hostname. Save both.
 
-### 2.3 Verify Auto-Suspend is Enabled
+### 2.3 Review compute settings
 
-1. In Neon dashboard, go to **Settings → Compute**
-2. Confirm **"Auto-suspend compute after inactivity"** is enabled (default: 5 minutes)
-3. This ensures your database hibernates when idle to save costs
+1. In the Neon dashboard, review the project's compute, autosuspend, and retention settings.
+2. Check current plan limits, pricing, and expected availability/cold-start behavior.
 
 ---
 
@@ -158,16 +148,20 @@ You'll return to this step after deploying to Vercel to set up the webhook endpo
 
 ### 5.2 Configure Build Settings
 
-Vercel should auto-detect these, but verify:
+Verify the project uses the settings required by this repository:
 - **Framework Preset:** Next.js
 - **Root Directory:** `./` (project root)
-- **Build Command:** `npm run vercel-build` (auto-detected from package.json)
+- **Build Command:** `npm run vercel-build` (applies migrations, generates Prisma Client, then builds)
 - **Output Directory:** `.next` (auto-detected)
 - **Install Command:** `npm install` (auto-detected)
 
 ### 5.3 Add Environment Variables
 
 Before deploying, click **"Environment Variables"** and add all of the following:
+
+Use test-mode credentials in Preview and live credentials only in Production after
+verification. Assign secrets to the intended environment in Vercel; never reuse
+production secrets for previews or commit secret values to the repository.
 
 #### Platform Administration
 ```
@@ -180,10 +174,14 @@ You can add multiple emails separated by commas: `admin@example.com,owner@exampl
 #### Database
 ```
 DATABASE_URL=<paste Neon POOLED connection string>
-DATABASE_URL_UNPOOLED=<paste Neon DIRECT connection string>
+DATABASE_URL_UNPOOLED=<paste Neon DIRECT connection string, if provided>
 ```
 
-**Note:** If using Vercel's Neon integration, these are automatically provided. Only set manually if not using the integration.
+The Neon Vercel integration may provide these values when configured for the project.
+Verify the Preview and Production environment assignments in Vercel. For manual setup,
+set `DATABASE_URL` to the pooled runtime connection and `DIRECT_DATABASE_URL` to the
+direct connection used by Prisma migrations. `prisma.config.mjs` falls back to
+`DATABASE_URL` for local development.
 
 #### Clerk Authentication
 ```
@@ -200,21 +198,34 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/profile
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<paste Stripe publishable key>
 STRIPE_SECRET_KEY=<paste Stripe secret key>
 STRIPE_WEBHOOK_SECRET=<leave blank for now, will add after webhook setup>
+STRIPE_CLIENT_ID=<Stripe Connect client ID, if using Connect onboarding>
 ```
+
+#### File attachments
+
+Create a Vercel Blob store and connect it to this project/environment so
+`BLOB_READ_WRITE_TOKEN` is available. Use a separate development or preview store/token
+where appropriate; do not copy production credentials into previews.
 
 #### Application Config
 ```
 NEXT_PUBLIC_APP_URL=<will be https://your-app.vercel.app>
 NEXT_PUBLIC_APP_NAME=RadBooks
-NODE_ENV=production
 ```
 
-**Note:** For `NEXT_PUBLIC_APP_URL`, you can use the Vercel preview URL for now. You'll update this after deployment.
+Do not set Vercel-managed variables such as `NODE_ENV` manually unless the platform
+documentation for your setup specifically requires it. Set `NEXT_PUBLIC_APP_URL` to
+the URL appropriate for each deployment environment.
+
+#### Email (optional)
+
+Set `RESEND_API_KEY` if this instance will send invitation or donation-receipt emails.
+Configure the sender/domain in Resend according to its current verification process.
 
 ### 5.4 Deploy
 
 1. Click **"Deploy"**
-2. Wait for build to complete (2-5 minutes)
+2. Wait for the build to complete; duration varies by project and platform conditions.
 3. Once deployed, note your production URL: `https://your-app-name.vercel.app`
 
 ---
@@ -223,19 +234,16 @@ NODE_ENV=production
 
 ### 6.1 Monitor Deployment
 
-1. Vercel will automatically deploy from your latest commit
+1. Vercel deploys when triggered by the configured Git integration and branch rules.
 2. Watch the build logs for any errors
-3. The deployment process will:
-   - Install dependencies (`npm install`)
-   - Run database migrations (`prisma migrate deploy`)
-   - Generate Prisma Client (`prisma generate`)
-   - Build the Next.js app (`next build`)
+3. Confirm that the configured build command ran migrations against the intended database.
+4. Confirm Blob storage is connected and available in the intended environment if the
+   deployment will use attachments.
 
-**Database migrations are automatic!** Vercel runs `prisma migrate deploy` during each deployment, which:
-- Applies any pending migrations from `prisma/migrations/`
-- Ensures your database schema matches your code
-- Tracks migration history in the `_prisma_migrations` table
-- Is safe to run multiple times (idempotent)
+This repository's `vercel-build` script runs `prisma migrate deploy`, `prisma generate`,
+and `next build` in sequence. Migrations run only if the deployment invokes this script
+and has a valid direct database URL. Verify the build command and migration logs for
+your project; do not assume every Vercel deployment configuration applies migrations.
 
 ### 6.2 Verify Deployment Success
 
@@ -244,7 +252,10 @@ After deployment completes:
 2. You should see the homepage
 3. The database schema is now deployed and ready
 
-**Note:** The database starts empty - no seed data is created in production. Organizations and users are created through the application UI.
+Do not assume a new production database is seeded. This repository currently has no
+general-purpose `prisma/seed.ts` script; create the first organization through the
+application after configuring its initial administrator. Never run E2E seed/reset
+commands against production.
 
 ---
 
@@ -268,10 +279,9 @@ Now that you have a production URL, return to Clerk to add allowed domains.
 2. Click **"Add endpoint"**
 3. Configure:
    - **Endpoint URL:** `https://your-app-name.vercel.app/api/webhooks/stripe`
-   - **Events to send:** Select these events:
-     - `checkout.session.completed`
-     - `payment_intent.succeeded`
-     - `payment_intent.payment_failed`
+   - **Events to send:** Enable `checkout.session.completed` and `account.updated` for
+     the Stripe/Connect endpoint mode used by this instance. These are the event types
+     handled by the current webhook route.
 4. Click **"Add endpoint"**
 
 ### 8.2 Get Webhook Signing Secret
@@ -288,9 +298,10 @@ After creating the endpoint:
 3. Go to **Settings → Environment Variables**
 4. Add a new variable:
    - **Key:** `STRIPE_WEBHOOK_SECRET`
-   - **Value:** `<paste webhook signing secret>`
+   - **Value:** `<paste this endpoint's signing secret>`
    - **Environment:** Production
-5. Click **"Save"**
+5. Click **"Save"**. Configure separate signing secrets for separate webhook endpoints
+   and environments. Donation processing will not work until the correct secret is set.
 
 ### 8.4 Redeploy
 
@@ -386,9 +397,8 @@ After completing all steps, verify:
 - [ ] Can add accounts to chart of accounts
 - [ ] Can record a transaction
 - [ ] Can view transactions in the list
-- [ ] Site hibernates after 5 min idle (check Neon dashboard "Active time")
-- [ ] Site wakes up when accessed after idle (expect 1-3s first load)
 - [ ] Stripe test donation flow works (optional)
+- [ ] Preview and production environment variables point to the intended services
 
 ---
 
@@ -402,33 +412,20 @@ After completing all steps, verify:
 
 **Neon:**
 - Go to project → Monitoring to see active compute time
-- Verify auto-suspend is working (compute should show 0 when idle)
+- Review compute, storage, and backup/restore options available on your plan
 
 **Clerk:**
 - Go to Users to see registered accounts
-- Free tier: up to 10,000 monthly active users
 
 **Stripe:**
 - Go to Dashboard to see payments
-- Test mode is free, live mode charges standard processing fees
 
-### Stay Within Free Tiers
+### Review provider limits and costs
 
-**Vercel Hobby:**
-- 1M function invocations/month
-- 100GB bandwidth/month
-- If you exceed, upgrade to Pro ($20/mo)
-
-**Neon Free:**
-- 0.5GB storage (for multiple orgs, upgrade to Launch at $19/mo)
-- 100 compute hours/month (auto-suspend helps stay within limit)
-
-**Clerk Free:**
-- 10,000 monthly active users
-- If exceeded, upgrade to Pro ($25/mo)
-
-**Stripe:**
-- No monthly fee, only 2.9% + $0.30 per transaction
+Plan features, quotas, and pricing change. Review your account's current Vercel, Neon,
+Clerk, and Stripe plans and estimate costs from each provider's billing dashboard before
+launching. Payment processing fees depend on payment method, region, and your Stripe
+agreement.
 
 ---
 
@@ -472,34 +469,20 @@ After completing all steps, verify:
 
 ### Cold Start Delays
 
-**Issue:** First request after idle takes 3-5 seconds
-- **Expected behavior** with free tier scale-to-zero
-- **Optional fix:** Keep the cron job in `vercel.json` to ping `/api/health` every 30 min (keeps app warm, uses more resources)
-- **Upgrade fix:** Vercel Pro includes cold start prevention
+**Issue:** First request after an idle period is slower than expected.
+
+Startup behavior depends on the Vercel runtime, database compute settings, region, and
+current provider plan. Measure the delay in your deployment and review provider logs and
+settings; do not assume a scheduled health check keeps either service warm or that a
+particular plan removes cold starts.
 
 ---
 
 ## Scaling Up
 
-When your organization grows beyond free tiers:
-
-### Neon Launch ($19/mo)
-- 10GB storage
-- 300 compute hours/month
-- Upgrade when storage exceeds 0.5GB
-
-### Vercel Pro ($20/mo)
-- 10M function invocations/month
-- 1TB bandwidth/month
-- Cold start prevention
-- Upgrade when traffic exceeds free limits
-
-### Clerk Pro ($25/mo)
-- 100,000 monthly active users
-- Advanced features (organizations, SAML SSO)
-- Upgrade when users exceed 10,000
-
-**Total monthly cost at scale:** ~$64/mo for a growing organization with multiple active users.
+Review usage and billing in each provider dashboard as the instance grows. Choose plans
+based on current quotas, support needs, data residency, and availability requirements;
+do not rely on fixed prices or limits in this guide.
 
 ---
 
@@ -536,12 +519,14 @@ When you need to make changes to your database schema in the future:
    git push
    ```
 
-5. **Vercel automatically applies the migration** on deployment!
+5. Deploy using a build command that runs migrations (this repository's
+   `npm run vercel-build` does). Verify the deployment log and target database.
 
 ### Migration Best Practices
 
 - **Always test migrations locally first**
-- **Make small, incremental changes** (easier to rollback if needed)
+- **Make small, incremental changes** and prepare a corrective forward migration for
+  changes that need to be undone
 - **Never edit existing migration files** (create new ones instead)
 - **Commit migrations with your code changes** (they're part of your app)
 - **Use descriptive migration names**: `add_user_preferences`, not `migration_1`
@@ -553,65 +538,21 @@ When you need to make changes to your database schema in the future:
 - Verify `DATABASE_URL_UNPOOLED` is set in Vercel env vars (or `DIRECT_DATABASE_URL` for manual setup)
 - Test the migration locally with the same database state
 
-**Need to rollback a migration:**
-```bash
-# Locally, mark the migration as rolled back
-npx prisma migrate resolve --rolled-back 20260211_migration_name
-
-# Create a new migration that reverts the changes
-npx prisma migrate dev --name revert_previous_change
-```
+**Need to recover from a migration problem?** `prisma migrate resolve --rolled-back`
+changes Prisma's migration bookkeeping; it does not undo SQL or restore data. Use it
+only as part of a reviewed recovery procedure for a failed migration, after inspecting
+the database state. For a successfully applied migration, normally create a new forward
+migration that corrects the schema/data. Back up important data before recovery work.
 
 ---
 
-## Preview Deployments & Database Branches
+## Preview deployments
 
-**Want to test changes before merging to production?**
-
-Vercel automatically creates preview deployments for every branch you push. With Neon's branching feature, each preview can have its own isolated database!
-
-### Quick Setup
-
-1. **Install Neon's Vercel Integration**
-   - Go to [Vercel Integrations → Neon](https://vercel.com/integrations/neon)
-   - Click "Add Integration"
-   - Select your Vercel project and Neon database
-   - That's it!
-
-2. **How it works:**
-   ```
-   Push feature branch → Vercel creates preview → Neon creates database branch
-   ```
-   - Database branches are copies of production
-   - Changes are isolated (don't affect production)
-   - Auto-deleted when PR is closed
-
-3. **Benefits:**
-   - ✅ Test database migrations safely in preview
-   - ✅ Preview with realistic production data
-   - ✅ Catch issues before merging to main
-   - ✅ No manual database management
-
-### Example Workflow
-
-```bash
-# Create feature branch
-git checkout -b feature/add-export
-
-# Make changes, create migration
-npx prisma migrate dev --name add_export_feature
-
-# Push branch
-git push origin feature/add-export
-# → Vercel creates preview with isolated Neon database branch
-# → Migrations run against preview database only
-# → Test in preview environment
-
-# If everything works, merge PR
-# → Preview database automatically deleted
-```
-
-**For complete setup instructions and troubleshooting, see: [PREVIEW_DEPLOYMENTS.md](./PREVIEW_DEPLOYMENTS.md)**
+Vercel preview deployments and Neon database branching require provider-side project and
+environment configuration. Do not assume a preview has an isolated database, sanitized
+data, or test credentials until verified. Follow
+[Preview deployments](./docs/operations/preview-deployments.md) to configure and check
+your instance.
 
 ---
 
@@ -624,7 +565,8 @@ Before going live with real financial data:
 - [ ] Review Vercel deployment protection settings
 - [ ] Set up error monitoring (optional: Sentry)
 - [ ] Set up uptime monitoring (optional: UptimeRobot, Pingdom)
-- [ ] Backup database regularly (Neon provides point-in-time recovery)
+- [ ] Configure backups/point-in-time recovery according to the selected provider plan
+- [ ] Test database restoration procedures; database branching is not a backup by itself
 - [ ] Review Clerk session timeout settings
 - [ ] Ensure all secrets are in environment variables (not hardcoded)
 
@@ -648,8 +590,7 @@ If you encounter issues:
 
 3. **Common resources:**
    - This project's `README.md` for local development
-   - `APPROACH.md` for architecture overview
-   - `PROJECT_STRUCTURE.md` for codebase structure
+   - `docs/adr/` for recorded architecture decisions
 
 ---
 
@@ -658,14 +599,13 @@ If you encounter issues:
 After successful deployment:
 
 1. Invite organization admins via Users tab
-2. Set up recurring donation tiers (Stripe Products)
+2. Configure supported donation and Stripe Connect settings, then test payment flows in test mode
 3. Configure organization branding (logo, colors)
 4. Share public dashboard URL with donors
 5. Export transaction reports for accounting
-6. Set up regular database backups (Neon branching)
+6. Configure and test database backups/restoration for the selected provider and plan
 
 ---
 
-**Deployment complete!** 🎉
-
-Your platform is now live, hibernating when idle, and costing $0/month until actively used.
+**Deployment steps complete.** Verify the production URL, provider configuration,
+monitoring, and backup/restore plan for your instance.

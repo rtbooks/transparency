@@ -10,7 +10,10 @@ tags:
 
 **⚠️ Every new feature or model change MUST include tests. Do not consider a feature complete without them.**
 
-Tests live in `src/__tests__/` mirroring the source structure. Run with `npx jest`.
+Jest tests live in `src/__tests__/` and are grouped by layer. Run the standard suite with
+`npm test`; run database integration tests separately with `npm run test:integration`.
+Playwright browser tests live in `e2e/` and run with `npm run test:e2e` when their test
+environment and credentials are configured.
 
 ### 1. API Contract Tests (`src/__tests__/api/`)
 
@@ -25,8 +28,7 @@ const BillDetailResponseSchema = z.object({
   // ... every field the UI reads
 });
 
-it('should validate response with all required fields', () => {/yolo
-
+it('should validate response with all required fields', () => {
   const result = BillDetailResponseSchema.safeParse(mockResponse);
   expect(result.success).toBe(true);
 });
@@ -117,7 +119,7 @@ where: buildCurrentVersionWhere({ organizationId })  // includes deactivated acc
 - [ ] **API contract test** validates the response schema matches what the UI reads
 - [ ] **PATCH/PUT schema test** confirms every field the edit form sends is accepted
 - [ ] **Bitemporal lookups** for related entities are tested (contact, account, transaction)
-- [ ] **All existing tests still pass** (`npx jest`)
+- [ ] **All relevant existing tests still pass** (`npm test`; integration/E2E suites as applicable)
 - [ ] **TypeScript compiles** (`npm run type-check`)
 
 ### Existing Test Examples to Follow
@@ -126,6 +128,7 @@ where: buildCurrentVersionWhere({ organizationId })  // includes deactivated acc
 | ------------------ | -------------------------------------------------------------- |
 | Service unit tests | `src/__tests__/services/bill.service.test.ts`                  |
 | API contract tests | `src/__tests__/api/bills-api-contract.test.ts`                 |
-| Integration tests  | `src/__tests__/integration/double-entry-integrity.test.ts`     |
+| Accounting integrity tests (standard Jest suite) | `src/__tests__/integration/double-entry-integrity.test.ts` |
+| Database integration tests | `src/__tests__/integration/account-balances.integration.test.ts` |
 | Library unit tests | `src/__tests__/lib/temporal/temporal-utils.test.ts`            |
 | Component tests    | `src/__tests__/components/dashboard/DashboardSummary.test.tsx` |
