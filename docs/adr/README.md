@@ -13,6 +13,7 @@ ADRs document significant architectural decisions, the context behind them, and 
 | [003](003-clerk-authentication.md) | Clerk for Authentication | Accepted |
 | [004](004-vercel-blob-attachments.md) | Vercel Blob for File Attachments | Accepted |
 | [005](005-partial-unique-indexes.md) | Partial Unique Indexes for Soft Constraints | Accepted |
+| [006](006-cross-org-data-isolation.md) | Cross-Organization Data Isolation | Proposed |
 
 ## Template
 

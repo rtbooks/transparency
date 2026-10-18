@@ -2,7 +2,10 @@
 
 ## Overview
 
-This document defines the bi-temporal versioning pattern used for all mutable financial entities in RadBooks.
+This document describes the bi-temporal versioning pattern used in RadBooks. Treat the
+current Prisma schema and service implementations as authoritative for exact fields and
+behavior; examples here explain concepts, are not guaranteed to be executable, and may
+not cover every entity.
 
 ## Temporal Pattern
 
@@ -32,12 +35,15 @@ Every versioned entity tracks two time dimensions:
 
 ## Standard Temporal Fields
 
-All versioned entities include these fields:
+The following is a conceptual shape, not a copy-paste Prisma model. In the current
+schema `versionId` is the row primary key and `id` is the stable logical identifier.
+Temporal fields vary by model; check `prisma/schema.prisma` before adding or changing
+fields.
 
 ```prisma
 // Core identity
-id                  String   @id @default(uuid())
-versionId           String   @unique @default(uuid())
+versionId           String   @id @default(uuid())
+id                  String   @default(uuid())
 previousVersionId   String?  @map("previous_version_id")
 
 // Valid time (business time)
@@ -118,18 +124,21 @@ Tracks changes to:
 - Donor preferences affect public display
 - Join date preserved in first version's validFrom
 
-### PlannedPurchase
+### ProgramSpending
 
-Tracks changes to:
-- Title, description, category
-- Estimated amount, target date
-- Status, priority
-- Actual transaction linkage
+Tracks changes to program-spending details such as description, budget estimate,
+target date, and status. See the current Prisma schema for the authoritative fields.
 
 **Key Considerations:**
-- Amount estimates can change frequently
-- Status transitions must be tracked
-- Link to actual transaction is immutable once set
+- Amount estimates and status may change over time
+- Actual spending is linked to one or more ledger transactions
+
+### Transaction and Contact
+
+Both models currently include temporal fields. Transaction edits and voids have
+additional ledger-specific behavior; use `src/services/transaction.service.ts` rather
+than implementing generic CRUD. Contact temporal operations are implemented in
+`src/services/contact.service.ts`.
 
 ## Query Patterns
 
@@ -142,14 +151,15 @@ const current = await prisma.organization.findFirst({
   where: {
     slug: 'grit-hoops',
     validTo: MAX_DATE,
+    systemTo: MAX_DATE,
     isDeleted: false
   }
 });
 ```
 
-### As-Of Query
+### Valid-time query
 
-Get version valid at a specific point in time:
+Get the version whose business-validity interval includes a date:
 
 ```typescript
 const asOfDate = new Date('2024-06-15');
@@ -163,13 +173,19 @@ const historical = await prisma.organization.findFirst({
 });
 ```
 
+This valid-time query does not answer what the system knew at a past wall-clock time.
+For a bi-temporal query, also constrain `systemFrom <= systemAsOfDate` and
+`systemTo > systemAsOfDate`, or use the repository helper appropriate to the use case.
+See `buildAsOfDateWhere()` and `buildBitemporalAsOfWhere()` in
+`src/lib/temporal/temporal-utils.ts`.
+
 ### Version History Query
 
-Get all versions of an entity:
+Get all versions using the stable logical `id` (not the row-level `versionId`):
 
 ```typescript
 const history = await prisma.organization.findMany({
-  where: { slug: 'grit-hoops' },
+  where: { id: organizationId },
   orderBy: { validFrom: 'desc' }
 });
 ```
@@ -190,63 +206,33 @@ const changes = await prisma.organization.findMany({
 
 ## Update Pattern
 
-Creating a new version:
+The general version-update workflow is:
 
-```typescript
-async function updateVersion<T>(
-  current: T & TemporalFields,
-  updates: Partial<T>,
-  userId: string
-): Promise<T & TemporalFields> {
-  const now = new Date();
-  
-  // Step 1: Close current version
-  await prisma[model].update({
-    where: { versionId: current.versionId },
-    data: {
-      validTo: now,
-      systemTo: now
-    }
-  });
-  
-  // Step 2: Create new version
-  return await prisma[model].create({
-    data: {
-      ...current,
-      ...updates,
-      versionId: generateUuid(),
-      previousVersionId: current.versionId,
-      validFrom: now,
-      validTo: MAX_DATE,
-      systemFrom: now,
-      systemTo: MAX_DATE,
-      changedBy: userId
-    }
-  });
-}
-```
+1. Find the current row with `buildCurrentVersionWhere()`.
+2. Close the current row with the existing temporal helper, which uses optimistic
+   locking.
+3. Create a new row with the same stable `id`, a new `versionId`, a
+   `previousVersionId` pointing to the closed row, and open-ended valid/system periods.
+4. Preserve `changedBy` and any entity-specific audit/void/delete fields.
+
+Use the entity's service/repository implementation as the actual contract. Closing and
+creating a version must be atomic where the domain operation requires it; the generic
+repository helper by itself should not be assumed to provide a database transaction.
 
 ## Foreign Key Handling
 
-### Principle
-- Foreign keys reference the logical `id`, not `versionId`
-- This allows relationships to span versions automatically
+### Current schema pattern
 
-### Example
-```prisma
-model Transaction {
-  debitAccountId  String
-  creditAccountId String
-  
-  // References the logical account ID, not a specific version
-  debitAccount  Account @relation("DebitAccount", fields: [debitAccountId], references: [id])
-  creditAccount Account @relation("CreditAccount", fields: [creditAccountId], references: [id])
-}
-```
+Temporal models use `versionId` as the row primary key and `id` as the stable logical
+identifier. Related records commonly store that stable ID in scalar fields; the current
+schema does not necessarily declare a Prisma relation or database foreign key to the
+temporal model. Resolve related versions through the relevant service/query helper.
 
 ### Temporal Joins
 
-When querying relationships as-of a date, both entities must be valid:
+When resolving a relationship as of a date, query each temporal entity using the same
+time semantics and scope it to the correct organization. The following is illustrative;
+use current services/helpers rather than copying it verbatim:
 
 ```typescript
 // Get organization and its accounts as of 2024-06-15
@@ -287,35 +273,9 @@ const accounts = await prisma.account.findMany({
 3. **Create indexes** for temporal queries
 4. **Validate integrity** of backfilled data
 
-### Example Backfill SQL
-
-```sql
--- Add temporal columns to Organization
-ALTER TABLE organizations
-  ADD COLUMN version_id UUID DEFAULT gen_random_uuid() UNIQUE,
-  ADD COLUMN previous_version_id UUID,
-  ADD COLUMN valid_from TIMESTAMP DEFAULT created_at,
-  ADD COLUMN valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59.999'::timestamp,
-  ADD COLUMN system_from TIMESTAMP DEFAULT created_at,
-  ADD COLUMN system_to TIMESTAMP DEFAULT '9999-12-31 23:59:59.999'::timestamp,
-  ADD COLUMN is_deleted BOOLEAN DEFAULT false,
-  ADD COLUMN deleted_at TIMESTAMP,
-  ADD COLUMN deleted_by TEXT,
-  ADD COLUMN changed_by TEXT;
-
--- Backfill with initial version data
-UPDATE organizations
-SET 
-  version_id = gen_random_uuid(),
-  valid_from = created_at,
-  system_from = created_at;
-
--- Create indexes
-CREATE INDEX idx_org_current ON organizations(id, valid_to);
-CREATE INDEX idx_org_valid_time ON organizations(id, valid_from, valid_to);
-CREATE INDEX idx_org_system_time ON organizations(system_from, system_to);
-CREATE INDEX idx_org_deleted ON organizations(is_deleted);
-```
+Migration SQL must be written for the exact database state and schema. Do not copy
+generic backfill SQL from design notes; use the existing migration history and test any
+data backfill against a disposable database first.
 
 ## Performance Considerations
 
@@ -346,7 +306,11 @@ CREATE INDEX idx_org_deleted ON organizations(is_deleted);
 4. `systemFrom` < `systemTo` always
 5. `previousVersionId` must reference valid version
 
-### Database Constraints
+### Possible database constraints
+
+These are examples of constraints to consider, not a statement that every temporal
+table currently has them. Check `prisma/schema.prisma` and committed migrations before
+relying on a constraint.
 ```sql
 -- Ensure valid time ordering
 ALTER TABLE organizations 

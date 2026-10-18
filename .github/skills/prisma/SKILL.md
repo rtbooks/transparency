@@ -90,7 +90,7 @@ import { prisma } from "@/lib/prisma";
 import { UserRole, OrganizationStatus } from "@/generated/prisma/client";
 
 // Service Files
-import { PrismaClient } from "@/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
 import type { Organization, Account } from "@/generated/prisma/client";
 
 // Type Imports
@@ -114,7 +114,11 @@ const prisma = new PrismaClient();
 
 ## Temporal Data Pattern
 
-When working with versioned entities (Organization, Account, OrganizationUser, PlannedPurchase):
+This skill applies when a change touches Prisma models, schema fields, or migrations.
+Read it before making those changes; also consult the current schema and relevant ADRs.
+
+When working with temporal entities (Organization, OrganizationUser, Account,
+Transaction, ProgramSpending, and Contact):
 
 ```typescript
 import { TemporalRepository } from "@/lib/temporal/temporal-repository";
@@ -130,7 +134,10 @@ const current = await orgRepo.findCurrentById(id);
 const updated = await orgRepo.update(id, { name: "New Name" }, userId);
 ```
 
-See `TEMPORAL_SCHEMA_DESIGN.md` for complete patterns.
+This illustrates the repository API, not an atomicity guarantee. For multi-step or
+financial workflows, use the owning service and its transaction boundaries.
+
+See `docs/architecture/bitemporal-versioning.md` for temporal data patterns.
 
 ---
 
@@ -139,5 +146,6 @@ See `TEMPORAL_SCHEMA_DESIGN.md` for complete patterns.
 1. **Prisma Generate**: After schema changes, always run `npx prisma generate`
 2. **Migration Names**: Use descriptive names: `npx prisma migrate dev --name add_user_roles`
 3. **Environment Variables**: Use `.env.local` for local dev (never commit this file)
-4. **Route Organization**: All org routes use `/org/[slug]` prefix
+4. **Route Organization**: Organization UI pages use `/org/[slug]`; organization API
+   routes use `/api/organizations/[slug]`
 5. **Temporal Queries**: Always check if entity is temporal before using standard CRUD

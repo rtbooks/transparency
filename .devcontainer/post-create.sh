@@ -12,7 +12,7 @@ cd /workspace
 if [ ! -f "package.json" ]; then
     echo "⚠️  No package.json found!"
     echo "This devcontainer expects the Next.js project to already exist."
-    echo "Please initialize the project first following QUICKSTART.md"
+    echo "Please initialize the project first following README.md and DEV_SETUP.md"
     exit 1
 fi
 
@@ -39,4 +39,3 @@ echo "📌 Next steps:"
 echo "   1. Run 'npm run dev' to start the development server"
 echo "   2. Run 'npx prisma studio' to view the database"
 echo ""
-

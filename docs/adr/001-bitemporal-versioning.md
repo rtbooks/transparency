@@ -15,7 +15,11 @@ Traditional soft-delete or simple versioning approaches don't capture the full p
 
 ## Decision
 
-We adopted a **bi-temporal versioning pattern** for all core financial entities (Organization, Account, OrganizationUser, Contact, Transaction, PlannedPurchase/ProgramSpending). Each versioned row includes:
+We adopted a **bi-temporal versioning pattern** for selected entities. The current
+Prisma schema applies temporal fields to `Organization`, `OrganizationUser`, `Account`,
+`Transaction`, `ProgramSpending`, and `Contact`. Other financial models (including
+`Bill` and `Donation`) do not currently use this versioning pattern. Each versioned row
+includes:
 
 - `id` — stable entity identifier (same across all versions)
 - `versionId` — unique per-row identifier (UUID, auto-generated)
@@ -32,13 +36,13 @@ We adopted a **bi-temporal versioning pattern** for all core financial entities 
 ## Consequences
 
 ### Positive
-- Full audit trail of every change to every financial entity
-- "As of" queries supported natively (time-machine feature)
-- No data is ever physically deleted — complete accountability
-- Enables regulatory compliance and donor transparency
+- Audit history and historical queries for the entities that implement temporal versioning
+- Supports historical views for temporal data
+- Versioned rows are retained rather than destructively overwritten by temporal updates
+- Supports auditability and donor transparency; this alone does not establish regulatory compliance
 
 ### Negative
-- Every query must include temporal filters (mitigated by `buildCurrentVersionWhere()`)
+- Queries over temporal models must use the appropriate current, valid-time, or bi-temporal filters
 - Table sizes grow faster (each update adds a row instead of modifying in place)
 - Unique constraints must use `versionId` not `id` (since `id` is shared across versions)
 - More complex migration and data import logic

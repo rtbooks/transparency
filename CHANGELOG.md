@@ -7,14 +7,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- Donation tax-receipt PDF generation and receipt downloads
+- Event campaign type and campaign donation display
+- Playwright E2E suite and CI coverage for public flows
+- Stripe payment domain model and centralized transaction-record creation
+- Donation and pledge flows that support donors without organization membership
 - Security headers (HSTS, X-Frame-Options, CSP, Referrer-Policy) via `next.config.js`
 - Dependabot configuration for automated dependency updates
 - Jest coverage thresholds for services and lib directories
 - npm audit step in CI pipeline
 - Dependency review action for pull requests
 
+### Changed
+- Donation flow supports a donation-first, pay-later pledge path
+- Financial reports preserve historical results after fiscal-period close
+- Reconciliation and program-spending calculations were refined
+- Improved public donation, invitation, and donor navigation flows
+
 ### Fixed
+- Stripe card donations now enforce the provider's minimum amount
+- Donation amount fields can be cleared while editing
+- Anonymous-donation settings and campaign donor display were corrected
+- E2E CI failures and security-audit workflow issues were resolved
 - npm audit vulnerabilities (minimatch ReDoS, qs DoS) resolved
+
+### Maintenance
+- Updated vulnerable and outdated production/development dependencies and GitHub Actions
+- Removed unused code and added CI enforcement for the corresponding checks
+- Improved green accent contrast to meet WCAG AA
 
 ## [0.9.0] - 2026-02-27
 

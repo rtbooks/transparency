@@ -20,7 +20,9 @@ Quick reference for getting the development environment running.
    npm run dev
    ```
 
-Done! Everything is automatically set up. ✨
+The container installs dependencies and initializes the local database automatically.
+External-service credentials are separate; add development keys to `.env.local` only
+for the integrations you want to test.
 
 ## 📋 What You Get
 
@@ -44,7 +46,7 @@ If you prefer not to use devcontainers:
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
-# PostgreSQL 14+
+# PostgreSQL 16 (the devcontainer version; newer supported versions may also work)
 sudo apt install postgresql postgresql-contrib
 
 # Start PostgreSQL
@@ -55,19 +57,30 @@ sudo systemctl enable postgresql
 ### 2. Create Database
 
 ```bash
-sudo -u postgres createdb transparency_dev
 sudo -u postgres psql -c "CREATE USER transparency WITH PASSWORD 'your_password';"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE transparency_dev TO transparency;"
+sudo -u postgres createdb --owner=transparency transparency_dev
 ```
 
-### 3. Initialize Project
+### 3. Install Dependencies
 
 ```bash
 cd /path/to/transparency
-
-# Install dependencies
 npm install
+```
 
+### 4. Configure Environment
+
+```bash
+# Copy the example environment file
+cp .env.example .env.local
+
+# Edit .env.local; at minimum, set DATABASE_URL for your local database
+nano .env.local
+```
+
+### 5. Initialize Database
+
+```bash
 # Generate Prisma Client
 npx prisma generate
 
@@ -75,25 +88,8 @@ npx prisma generate
 npx prisma db push
 ```
 
-### 4. Configure Environment
-
-```bash
-# Copy example env file
-cp ../.env.example .env.local
-
-# Edit .env.local with your credentials
-nano .env.local
-```
-
-### 5. Initialize Database
-
-```bash
-# Push schema to database
-npx prisma db push
-
-# Seed with sample data
-npx prisma db seed
-```
+There is currently no general-purpose Prisma seed script. The E2E seed script is for
+test databases only; do not use it as application sample data or against production.
 
 ### 6. Start Development
 
@@ -113,8 +109,10 @@ You'll need accounts and API keys from:
   - `CLERK_SECRET_KEY`
 
 ### 2. Vercel Blob (File Storage)
-- Configured automatically when deploying to Vercel
-- For local dev: `BLOB_READ_WRITE_TOKEN` in `.env.local`
+- Create a Blob store and connect it to the Vercel project to provide
+  `BLOB_READ_WRITE_TOKEN` in that deployment environment.
+- For local development, configure a development store/token in `.env.local` if testing
+  attachment uploads.
 
 ### 3. Resend (Email) - Optional for local dev
 - Sign up: https://resend.com
@@ -153,7 +151,6 @@ npm run lint             # Lint code
 
 # Database
 npm run db:push          # Push schema changes
-npm run db:seed          # Seed with data
 npm run db:studio        # Open Prisma Studio
 npm run db:reset         # Reset database (⚠️ deletes data)
 

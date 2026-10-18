@@ -1,22 +1,33 @@
 # ADR-006: Cross-Organization Data Isolation (IDOR Prevention)
 
-**Status:** Proposed
+**Status:** Proposed (not accepted)
 
 **Date:** 2026-03-03
 
 ## Context
 
-RadBooks is a multi-tenant platform where each organization's financial data must be strictly isolated. API routes are nested under `/api/organizations/[slug]/` and protected by RBAC via `withOrgAuth()`, which verifies the authenticated user has membership (and optionally a required role) in the organization identified by the URL slug.
+RadBooks is a multi-tenant platform where each organization's financial data must be
+strictly isolated. Many organization-scoped API routes use `withOrgAuth()` to verify
+membership (and optionally a required role) for the organization identified by the URL
+slug. Public routes and platform-wide routes have different access patterns.
 
 However, many routes also accept record IDs as path parameters (e.g., `/api/organizations/[slug]/accounts/[id]`). Even with valid RBAC, a malicious user in Org A could substitute a record ID belonging to Org B. If the query fetches by ID alone without filtering by `organizationId`, the user gains unauthorized access to another organization's data. This is the **Insecure Direct Object Reference (IDOR)** vulnerability.
 
-### Audit Findings (March 2026)
+### Audit findings (March 3, 2026 snapshot)
+
+The counts below describe the audit performed on that date; they are not a current
+security audit and must be rechecked before relying on them.
 
 - **23 of 24** ID-based routes correctly scope queries by `organizationId`
 - **1 route** (`accounts/[id]/history`) was vulnerable — fixed immediately
 - Org scoping is enforced via ad-hoc patterns: some routes filter in the WHERE clause, others validate post-fetch, others delegate to service-layer functions
 - **No database-level enforcement** exists (no RLS policies, no Prisma middleware)
-- **No systematic mechanism** prevents a developer from forgetting to add org scoping to a new route
+- **No systematic mechanism** was identified in that audit to prevent missing org scoping
+
+The Phase 1 fix is present in `src/app/api/organizations/[slug]/accounts/[id]/history/route.ts`.
+As of October 18, 2026, a repository check found no `scopedPrisma`/`prisma-scoped.ts`
+implementation. The other implementation-plan items below remain proposals, not
+completed work.
 
 ### Tables With `organizationId`
 
@@ -71,7 +82,7 @@ const ctx = await withOrgAuth(slug, { requiredRole: 'ORG_ADMIN' });
 const db = scopedPrisma(ctx.orgId);
 
 // organizationId filter is automatically injected:
-const account = await db.account.findUnique({ where: { id } });
+const account = await db.account.findFirst({ where: { id } });
 const bills = await db.bill.findMany({ where: { status: 'PENDING' } });
 ```
 
@@ -102,13 +113,17 @@ Implement Option C for primary enforcement, then add Postgres RLS policies as a 
 - Double filtering (minimal performance impact but cognitive overhead)
 - RLS policies must be kept in sync with schema changes
 
-## Decision
+## Proposed direction (not accepted)
 
-**Option C: Scoped Prisma Client Factory** — with Option D (adding RLS) as a future phase if the risk profile demands it.
+The original proposal favors **Option C: a scoped Prisma client factory**, with
+PostgreSQL RLS considered later if the risk profile warrants it. This is not an accepted
+architecture decision. Re-evaluate the options, assumptions, compatibility, and scope
+before implementing; the analysis below reflects the March 2026 context.
 
 ### Rationale
 
-1. **Fits the existing architecture**: The `withOrgAuth` pattern already returns `orgId` in every route handler. A scoped client is a natural extension — one additional line per handler.
+1. **Fits the existing architecture**: Many organization-scoped routes already resolve
+   an `orgId` through `withOrgAuth`; a scoped client could build on that pattern.
 
 2. **Incremental adoption**: Unlike RLS (all-or-nothing migration), the scoped client can be adopted route-by-route while existing org-scoped queries continue to work.
 
@@ -120,34 +135,33 @@ Implement Option C for primary enforcement, then add Postgres RLS policies as a 
 
 6. **RLS remains an option**: If the application grows to include raw SQL queries, third-party integrations, or other data access paths that bypass Prisma, RLS can be added as Phase 2 without conflicting with the scoped client.
 
-## Implementation Plan
+## Proposed implementation plan (not scheduled)
 
 ### Phase 1: Immediate Fix ✅
-- Fixed the 1 IDOR vulnerability (`accounts/[id]/history`) by adding `withOrgAuth` and org ownership validation.
+- The audited IDOR issue in `accounts/[id]/history` was fixed by adding `withOrgAuth`
+  and organization-ownership validation.
 
 ### Phase 2: Build Scoped Prisma Client
-- Create `src/lib/prisma-scoped.ts` with `scopedPrisma(orgId)` factory
-- Wrap core operations (findUnique, findFirst, findMany, update, delete) to auto-inject `organizationId`
-- Handle child tables (no `organizationId`) — either pass through unscoped or scope via relation
-- Handle platform admin bypass if needed
-- Unit tests for the scoped client
+- [ ] Decide whether this approach is still appropriate before implementation.
+- [ ] If accepted, design safe behavior for reads, writes, aggregates, and related tables.
+- [ ] Add tests for tenant boundaries and platform-admin behavior.
 
 ### Phase 3: Migrate Routes
-- Migrate high-risk routes first (those accepting `[id]` params)
-- Optionally extend `withOrgAuth` to return `{ ...ctx, db: scopedPrisma(ctx.orgId) }`
-- Migrate remaining routes over time
+- [ ] If the scoped-client proposal is accepted, migrate routes incrementally, starting
+  with ID-based routes and verifying each route's behavior.
 
 ### Phase 4: Guardrails
-- Add an integration test verifying cross-org access is blocked on all ID-based routes
-- Consider an ESLint rule or code review checklist item to prevent bare `prisma.` imports in route handlers
+- [ ] Add cross-organization access tests for ID-based routes.
+- [ ] Consider static-analysis or review guardrails for tenant scoping.
 
 ## Consequences
 
-- **Positive**: Systematic IDOR prevention with minimal architectural disruption
-- **Positive**: New routes get org-scoping by default when using the scoped client
-- **Positive**: Clear migration path to RLS if defense-in-depth becomes necessary
-- **Negative**: Developers must remember to use `scopedPrisma` instead of bare `prisma` — mitigated by lint rules and code review
-- **Negative**: Raw SQL queries are not covered — mitigated by the fact that the codebase uses zero raw SQL queries today
+If the proposed approach is accepted and implemented, expected consequences include:
+
+- **Potential positive:** more systematic tenant scoping and a possible incremental
+  migration path.
+- **Potential negative:** added client-wrapper complexity; direct SQL and unsupported
+  query paths would still need explicit protection.
 
 ## References
 
