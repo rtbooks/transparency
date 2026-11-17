@@ -9,6 +9,6 @@
   "include": ["files", "dependencies", "devDependencies", "binaries"],
   "project": ["src/**/*.{ts,tsx,css}", "e2e/**/*.{ts,tsx}", "prisma/**/*.{ts,js,prisma}"],
   "ignore": ["src/generated/prisma/**"],
-  "ignoreDependencies": ["pg"],
+  "ignoreDependencies": ["pg", "ts-node"],
   "ignoreBinaries": ["stripe"]
 }
